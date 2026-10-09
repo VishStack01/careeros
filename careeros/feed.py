@@ -156,10 +156,15 @@ def run(feed_src: str, settings: Settings, known_path: str | None, out_dir: str 
     out = Path(out_dir)
     (out / "kept").mkdir(parents=True, exist_ok=True)
     (out / "skipped").mkdir(parents=True, exist_ok=True)
-    kept, skipped, known = [], [], 0
+    kept, skipped, known, dupes = [], [], 0, 0
+    seen_fp: set[str] = set()
     for r in records:
-        if r["id"] in ids or canonical_url(r["url"]) in urls or fingerprint(r["company"], r["title"]) in fps:
+        fp = fingerprint(r["company"], r["title"])
+        if r["id"] in ids or canonical_url(r["url"]) in urls or fp in fps:
             known += 1
+            continue
+        if fp in seen_fp:  # the same role listed once per city: one card is enough
+            dupes += 1
             continue
         board = r.get("via") == "board"
         job = Job(company=r["company"], title=r["title"], url=r["url"],
@@ -172,6 +177,7 @@ def run(feed_src: str, settings: Settings, known_path: str | None, out_dir: str 
         role_ok = "Role" not in failed and "Company" not in failed
         if not d.kept and not (role_ok and len(failed) == 1 and failed[0] in NEAR_MISS_GATES):
             continue
+        seen_fp.add(fp)
         doc = job.to_record()
         doc["brief"] = {"about": _about(r.get("summary", "")),
                         "sources": [{"title": f"{r['source']} listing" if board else f"{r['company']} careers page", "url": r["url"]}]}
@@ -192,7 +198,7 @@ def run(feed_src: str, settings: Settings, known_path: str | None, out_dir: str 
     for sub, items in (("kept", kept), ("skipped", skipped)):
         for doc_id, doc in items:
             (out / sub / f"{doc_id}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
-    index = {"feedRecords": len(records), "alreadyKnown": known, "kept": [i for i, _ in kept], "skipped": [i for i, _ in skipped],
+    index = {"feedRecords": len(records), "alreadyKnown": known, "duplicates": dupes, "kept": [i for i, _ in kept], "skipped": [i for i, _ in skipped],
              "byRegion": {k: sum(1 for _, d in kept if d.get("region") == k) for k in order}}
     index.update(stale(_known_docs(known_path), {canonical_url(r["url"]) for r in records}, summary, settings, now))
     if summary:

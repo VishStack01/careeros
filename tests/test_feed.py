@@ -372,6 +372,17 @@ def test_filter_feed_finds_closed_and_expired_roles(boards, tmp_path):
     assert idx["feed"]["boards"] == 4
 
 
+def test_filter_feed_collapses_same_role_in_many_cities(tmp_path):
+    base = {"company": "Tether", "title": "AI Technical Product Manager (100% remote)", "source": "Ashby", "location": "Remote", "workMode": "remote",
+            "postedAt": "2026-10-08T00:00:00Z", "salary": "", "experienceHeader": "", "summary": "Work from anywhere.", "via": "careers",
+            "facts": {"expMin": None, "fresherOk": None, "scope": "worldwide", "scopeEligible": True, "scopeQuote": "anywhere"}}
+    path = tmp_path / "f.jsonl"
+    path.write_text("\n".join(json.dumps(base | {"id": f"t-{i}", "url": f"https://jobs.ashbyhq.com/tether/{i}"}) for i in range(5)))
+    s = Settings(role_keywords=Settings().role_keywords + ["product manager"])
+    idx = feed.run(str(path), s, None, tmp_path / "new", now=NOW, summary={})
+    assert len(idx["kept"]) == 1 and idx["duplicates"] == 4
+
+
 def test_filter_feed_cli(boards, tmp_path, capsys):
     scan.run(boards, tmp_path / "feed", workers=4, log=lambda *_: None)
     sj = tmp_path / "settings.json"
