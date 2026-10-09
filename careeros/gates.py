@@ -121,6 +121,13 @@ def gate_location(job: Job, s: Settings) -> tuple[Check, str]:
     mode = job.work_mode
     where = geo.classify(job.location)
     if mode == "remote":
+        # A country in the title ("Product Engineer (Remote/US)") outranks a vague location field.
+        t = extract.remote_scope(job.title or "", "")
+        if t.india_eligible is False:
+            who = {"us": "people in the US or Canada", "europe": "people in Europe", "americas": "people in the Americas"}.get(t.scope, t.scope)
+            return Check("Location", False, f"Remote, but only for {who} (says the title).", job.title), ""
+        if t.scope == "india" and p.rest_of_india != "never":
+            return Check("Location", True, "Remote, India (says the title)", job.title), "remote-india"
         f = _facts(job)
         if f is not None and "scope" in f:
             scope = extract.RemoteScope(f.get("scopeEligible"), f.get("scope") or "", f.get("scopeQuote") or "")

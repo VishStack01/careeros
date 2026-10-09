@@ -93,3 +93,14 @@ def test_role_keywords_match_plurals():
     from careeros.settings import Settings
     assert gate_role(Job(company="X", title="Full-stack Engineer - Creative Agents", url="", source="test"), Settings()).passed
     assert not gate_role(Job(company="X", title="Account Executive", url="", source="test"), Settings()).passed
+
+
+def test_remote_country_in_title():
+    from careeros.gates import gate_location
+    from careeros.models import Job
+    from careeros.settings import Settings
+    for title in ("Product Engineer (Remote/US)", "QA Analyst (Mexico, Remote)", "Product Engineers in Canada (Remote)"):
+        c, region = gate_location(Job(company="X", title=title, url="", source="t", location="Remote", work_mode="remote"), Settings())
+        assert not c.passed and region == "", title
+    c, region = gate_location(Job(company="X", title="Backend Engineer (Remote, India)", url="", source="t", location="Remote", work_mode="remote"), Settings())
+    assert c.passed and region == "remote-india"

@@ -210,7 +210,7 @@ _APAC = re.compile(r"\bapac\b|\bapj\b|\basia[- ]pacific\b|\basia\b", re.I)
 _US_CS = re.compile(r"\bUS\b|\bU\.S\.\b|\bUSA\b")
 _US = re.compile(r"\bunited states\b|\bnorth america\b|\bnamer\b|\bcanada\b|\bus[- ]based\b|\bus citizens?\b|\bmust (?:reside|live) in the us\b", re.I)
 _EU = re.compile(r"\bemea\b|\beurope(?:an)?\b|\bEU\b|\bunited kingdom\b|\buk[- ]only\b|\bCET\b", re.I)
-_AMERICAS = re.compile(r"\bamericas\b|\blatam\b|\blatin america\b|\bsouth america\b", re.I)
+_AMERICAS = re.compile(r"\bamericas\b|\blatam\b|\blatin america\b|\bsouth america\b|\bmexico\b|\bbrazil\b|\bcolombia\b|\bargentina\b|\bchile\b|\bperu\b", re.I)
 _TZ_RANGE = re.compile(
     r"(?:GMT|UTC)\s*([+-]\s?\d{1,2}(?::?\d{2})?)\s*(?:to|-|–|and|through)\s*(?:GMT|UTC)?\s*([+-]\s?\d{1,2}(?::?\d{2})?)", re.I
 )

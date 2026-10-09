@@ -413,3 +413,11 @@ def test_platforms_cli_json(capsys):
     main(["platforms", "--run", "1", "--json"])
     out = json.loads(capsys.readouterr().out)
     assert out["summary"]["total"] >= 80 and out["thisRun"]
+
+
+def test_dashboard_title_exclusions():
+    s = feed.settings_from_dashboard({"targetRoles": ["Engineer"], "titleExclude": ["Sales", "Mechanical"]})
+    from careeros.gates import gate_role
+    from careeros.models import Job
+    assert gate_role(Job(company="X", title="Backend Engineer", url="", source="t"), s).passed
+    assert not gate_role(Job(company="X", title="Sales Engineer", url="", source="t"), s).passed

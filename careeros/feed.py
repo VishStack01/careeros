@@ -47,6 +47,8 @@ def settings_from_dashboard(doc: dict) -> Settings:
     s.salary_floor_lpa = float(floor) if floor not in (None, "", 0) else None
     if doc.get("targetRoles"):
         s.role_keywords = [r.lower() for r in doc["targetRoles"]] + s.role_keywords
+    if doc.get("titleExclude"):
+        s.title_exclude = [t.strip().lower() for t in doc["titleExclude"] if str(t).strip()]
     if doc.get("dealbreakers"):
         s.dealbreakers = [d.strip() for d in re.split(r"[,\n]", str(doc["dealbreakers"])) if d.strip()]
     if doc.get("companyBlocklist"):
