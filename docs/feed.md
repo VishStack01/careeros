@@ -8,7 +8,7 @@ feeds directly, for about 1,000 companies, every 3 hours.
 
 ```mermaid
 flowchart LR
-  List["config/companies/<br/>companies.csv<br/>(1,085 companies)"] --> Discover["careeros discover<br/>find each company's board"]
+  List["config/companies/<br/>companies.csv<br/>(1,396 companies)"] --> Discover["careeros discover<br/>find each company's board"]
   Discover --> Boards[("feed/boards.json")]
   Boards --> Scan["careeros scan<br/>8 hiring systems"]
   Remote["9 remote job boards<br/>(public JSON / RSS)"] --> Scan
@@ -25,9 +25,12 @@ flowchart LR
 companies and India engineering centres, grouped by category: AI-native, dev
 tools and infra, SaaS, fintech, consumer, mobility / industrial / climate /
 space, global companies hiring engineers in India, remote-first global companies
-and more. `scripts/build_company_list.py` merges it with the Y Combinator
-directory (active Indian companies plus YC companies hiring remotely) into
-`config/companies/companies.csv`: 1,085 companies.
+and more. `scripts/build_company_list.py` merges it with
+[moreThanFAANGM](https://github.com/Kaustubh-Natuskar/moreThanFAANGM) (483 product
+companies and startups with their careers pages, MIT licensed; saved in
+`config/companies/morethanfaangm.csv`) and the Y Combinator directory (active
+Indian companies plus YC companies hiring remotely) into
+`config/companies/companies.csv`: 1,396 companies after removing duplicates.
 
 Each line is `Name | aliases | city | ats:token`. The ATS part is optional:
 discovery finds it.
@@ -102,7 +105,7 @@ Fork the repo and enable Actions: the `scan` workflow runs every 3 hours on
 GitHub's free runners and publishes your fork's `feed` branch. Or run it locally:
 
 ```bash
-careeros discover            # first run: ~30 minutes for 1,085 companies
+careeros discover            # first run: ~40 minutes for 1,396 companies
 careeros scan                # a few minutes
 careeros filter-feed --feed feed/india.jsonl.gz --settings config/settings.toml --out new
 ```

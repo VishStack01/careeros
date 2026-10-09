@@ -26,7 +26,7 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 
 | Source | How many | How |
 |---|---|---|
-| Company career pages | 1,085 Indian product companies and India engineering centres | Public feeds of 8 hiring systems (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Breezy, Personio), scanned every 3 hours on GitHub Actions. [docs/feed.md](docs/feed.md) |
+| Company career pages | 1,396 product companies: Indian product companies, India engineering centres, the [moreThanFAANGM](https://github.com/Kaustubh-Natuskar/moreThanFAANGM) list, and YC companies in India or hiring remotely | Public feeds of 8 hiring systems (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Breezy, Personio), scanned every 3 hours on GitHub Actions. [docs/feed.md](docs/feed.md) |
 | Remote job boards with feeds | 9 | Remote OK, Remotive, Himalayas, Jobicy, Working Nomads, We Work Remotely, HN jobs, HN "Who is hiring?", Arbeitnow |
 | Other platforms | 96 in the registry, 50 low-competition | 26 VC portfolio boards, Indian startup and fresher boards, 11 x-ray searches that find career pages on Keka, Zoho Recruit, Darwinbox and others. [docs/platforms.md](docs/platforms.md) |
 | Big boards | LinkedIn, Naukri, Indeed, foundit, Glassdoor, Shine | Their own email alerts only; never automated |
@@ -102,7 +102,7 @@ careeros/            Python package (standard library only; Playwright optional)
                      reviewer, apply, outreach, tracker, coach, weekly-review
 dashboard/           app.html (single source), demo data, built index.html
 prompts/             scheduled search and apply prompts
-config/companies/    the company list (curated + YC), 1,085 companies
+config/companies/    the company list (curated + moreThanFAANGM + YC), 1,396 companies
 config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume and an application package

@@ -1,10 +1,17 @@
-"""Build config/companies/companies.csv from the curated list and the public YC dataset.
+"""Build config/companies/companies.csv from three sources, in this order:
+
+  1. config/companies/curated.txt         hand-picked Indian product companies
+  2. config/companies/morethanfaangm.csv  the moreThanFAANGM list of product companies
+                                          and startups with their careers pages
+                                          (github.com/Kaustubh-Natuskar/moreThanFAANGM, MIT)
+  3. the public YC dataset                https://github.com/yc-oss/api (companies/all.json):
+                                          active companies in India, plus YC companies
+                                          hiring remotely
 
   python scripts/build_company_list.py [--yc path/to/yc_all.json]
 
-The YC dataset is https://github.com/yc-oss/api (companies/all.json). We take
-active companies located in India, plus YC companies that are hiring and list
-remote work. Board slugs come from the name, the website domain and any aliases.
+Board slugs come from the name, the careers-site domain and any aliases.
+A company listed twice keeps its first entry.
 """
 from __future__ import annotations
 
@@ -18,6 +25,12 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 CURATED = ROOT / "config" / "companies" / "curated.txt"
+MTF = ROOT / "config" / "companies" / "morethanfaangm.csv"
+SUBDOMAINS = {"www", "careers", "career", "jobs", "job", "apply", "tech", "join", "work", "team", "hiring", "engineering",
+              "about", "en", "in", "corporate", "life", "people", "talent", "recruit", "recruitment"}
+ATS_HOSTS = {"workable", "lever", "greenhouse", "ashbyhq", "smartrecruiters", "recruitee", "breezy", "personio",
+             "myworkdayjobs", "keka", "darwinbox", "zohorecruit", "freshteam", "icims", "taleo", "oraclecloud", "eightfold",
+             "linkedin", "google", "notion", "github", "wellfound", "angel"}
 OUT = ROOT / "config" / "companies" / "companies.csv"
 YC_URL = "https://raw.githubusercontent.com/yc-oss/api/main/companies/all.json"
 
@@ -30,9 +43,14 @@ def norm(name: str) -> str:
 def slugs_for(name: str, website: str = "", aliases: list[str] | None = None) -> list[str]:
     base = name.lower().replace("&", "and")
     out = [re.sub(r"[^a-z0-9]", "", base), re.sub(r"[^a-z0-9]+", "-", base).strip("-")]
-    host = urlparse(website if "://" in website else f"https://{website}").netloc.lower().removeprefix("www.") if website else ""
-    if host:
-        out.append(host.split(".")[0])
+    host = urlparse(website if "://" in website else f"https://{website}").netloc.lower().split(":")[0] if website else ""
+    labels = [x for x in host.split(".") if x]
+    while len(labels) > 2 and labels[0] in SUBDOMAINS:
+        labels = labels[1:]
+    if labels and labels[0] in SUBDOMAINS and len(labels) > 1:
+        labels = labels[1:]
+    if labels and labels[0] not in ATS_HOSTS and len(labels) >= 2:
+        out.append(labels[0])
     out += [a.strip().lower() for a in (aliases or []) if a.strip()]
     seen, res = set(), []
     for s in out:
@@ -57,6 +75,19 @@ def load_curated() -> list[dict]:
         rows.append({"name": name, "category": cat, "city": city, "website": "",
                      "slugs": slugs_for(name, "", aliases.split(",") if aliases else []),
                      "ats": ats, "token": token, "source": "curated"})
+    return rows
+
+
+def load_morethanfaangm() -> list[dict]:
+    if not MTF.exists():
+        return []
+    rows = []
+    with MTF.open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            url = r.get("careers_url", "")
+            rows.append({"name": r["name"], "category": "more-than-faang", "city": "", "website": url,
+                         "slugs": slugs_for(r["name"], url, [r["token"]] if r.get("token") else []),
+                         "ats": r.get("ats", ""), "token": r.get("token", ""), "source": "moreThanFAANGM"})
     return rows
 
 
@@ -87,6 +118,10 @@ def main():
     a = ap.parse_args()
     rows = load_curated()
     seen = {norm(r["name"]) for r in rows}
+    for r in load_morethanfaangm():
+        if norm(r["name"]) not in seen:
+            seen.add(norm(r["name"]))
+            rows.append(r)
     yc = load_yc(a.yc)
     yc.sort(key=lambda r: (r["category"] != "yc-india", r["name"].lower()))
     remote_added = 0
