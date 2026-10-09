@@ -85,3 +85,11 @@ def test_closed_and_deadline():
 def test_non_target_role_skipped():
     d = evaluate(job(title="Field Sales Executive", location="Bengaluru"), S, NOW)
     assert "Role" in failed(d)
+
+
+def test_role_keywords_match_plurals():
+    from careeros.gates import gate_role
+    from careeros.models import Job
+    from careeros.settings import Settings
+    assert gate_role(Job(company="X", title="Full-stack Engineer - Creative Agents", url="", source="test"), Settings()).passed
+    assert not gate_role(Job(company="X", title="Account Executive", url="", source="test"), Settings()).passed

@@ -41,7 +41,8 @@ def _facts(job: Job) -> dict | None:
 
 
 def _kw_regex(words: list[str]) -> re.Pattern:
-    parts = [r"(?<![a-z0-9])" + re.escape(w.lower()) + r"(?![a-z0-9])" for w in words if w.strip()]
+    # Plurals count: "agent" matches "Creative Agents".
+    parts = [r"(?<![a-z0-9])" + re.escape(w.lower()) + r"(?:s|es)?(?![a-z0-9])" for w in words if w.strip()]
     return re.compile("|".join(parts) or r"(?!x)x", re.I)
 
 
