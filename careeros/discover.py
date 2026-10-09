@@ -29,7 +29,10 @@ from . import geo
 from .models import iso
 from .sources import http
 
-ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters", "recruitee", "breezy", "personio"]
+ATS_ORDER = ["greenhouse", "lever", "ashby", "smartrecruiters", "recruitee", "breezy", "personio", "workable"]
+# Workable rate-limits hard and answers for any name with an empty board, so it
+# is tried last and with the first slug only, unless the company list names it.
+SLUGS_PER_ATS = {"workable": 1}
 GLOBAL_CATEGORIES = {"global-india-engineering", "remote-first-global", "yc-remote"}
 PROBE_INTERVAL = 0.25  # seconds between requests to one host while discovering
 _deadline = [float("inf")]  # time.monotonic() after which no new company is started
@@ -142,10 +145,12 @@ def discover_one(company: dict) -> dict | None:
         pairs.append((company["ats"], company["token"]))
     slugs = [s for s in company.get("slugs", []) if s][:4]
     for ats in ATS_ORDER:
-        for slug in slugs:
+        for slug in slugs[: SLUGS_PER_ATS.get(ats, len(slugs))]:
             pairs.append((ats, slug))
     empty = False
     for ats, slug in pairs:
+        if time.monotonic() > _deadline[0] + 180:
+            return None  # well past the time budget: leave the rest of this company for the next run
         tried += 1
         found = probe(ats, slug)
         if not found:
