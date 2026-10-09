@@ -27,9 +27,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -48,12 +48,18 @@ jobs:
         # New companies, boards that errored last scan, and unmapped companies
         # every 14 days. At most 400 per run, so the first full pass is spread
         # over a few runs and stays gentle on each hiring system.
-        run: careeros discover --companies config/companies/companies.csv --cache feed/boards.json --refresh-days 14 --limit 400
+        run: |
+          set -o pipefail
+          careeros discover --companies config/companies/companies.csv --cache feed/boards.json --refresh-days 14 --limit 400 2>&1 | tee feed/discover.log
 
       - name: Scan boards
-        run: careeros scan --boards feed/boards.json --out feed
+        run: |
+          set -o pipefail
+          careeros scan --boards feed/boards.json --out feed 2>&1 | tee feed/scan.log
 
       - name: Publish to the feed branch
+        # Also after a failed step, so the board map and the logs are kept.
+        if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -68,4 +74,4 @@ jobs:
           git add -A
           git commit -qm "feed: $(date -u +%Y-%m-%dT%H:%MZ)"
           git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" feed
-          python -c "import json; s=json.load(open('feed/summary.json')); print(f\"{s['openings']} openings from {s['boards']} company boards; remote boards: {s['remoteBoards']}\")" >> "$GITHUB_STEP_SUMMARY"
+          python -c "import json; s=json.load(open('feed/summary.json')); print(f\"{s['openings']} openings from {s['boards']} company boards; remote boards: {s.get('remoteBoards')}\")" >> "$GITHUB_STEP_SUMMARY" || true

@@ -21,7 +21,6 @@ import gzip
 import hashlib
 import json
 import re
-import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
@@ -43,8 +42,9 @@ TECH = re.compile(
 
 def _ts(s: str | None) -> float:
     try:
-        return datetime.fromisoformat((s or "").replace("Z", "+00:00")).timestamp()
-    except ValueError:
+        dt = datetime.fromisoformat(str(s or "").replace("Z", "+00:00"))
+        return (dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)).timestamp()
+    except (ValueError, TypeError, OverflowError):
         return 0.0
 
 
@@ -75,20 +75,23 @@ def scan_board(name: str, entry: dict, detail_budget: list[int]) -> tuple[list[d
         return [], f"{name}: unknown ATS {entry.get('ats')}"
     try:
         jobs = scout(entry["token"], name)
-    except FetchError as e:
-        return [], f"{name} ({entry['ats']}:{entry['token']}): {e}"
+    except Exception as e:  # one odd board never stops the scan
+        return [], f"{name} ({entry.get('ats')}:{entry.get('token')}): {type(e).__name__}: {e}"[:300]
     out = []
     for j in jobs:
-        j.company = name
-        if not TECH.search(j.title or "") or not relevant_location(j):
-            continue
-        if j.raw.get("needs_detail") and detail_budget[0] > 0:
-            detail_budget[0] -= 1
-            try:
-                smartrecruiters.describe(j)
-            except FetchError:
-                pass
-        out.append(to_feed(j, entry))
+        try:
+            j.company = name
+            if not TECH.search(j.title or "") or not relevant_location(j):
+                continue
+            if j.raw.get("needs_detail") and detail_budget[0] > 0:
+                detail_budget[0] -= 1
+                try:
+                    smartrecruiters.describe(j)
+                except Exception:
+                    pass
+            out.append(to_feed(j, entry))
+        except Exception:
+            continue  # skip one malformed posting, keep the rest of the board
     return out, None
 
 
@@ -108,13 +111,18 @@ def scan_aggregator(name: str, cache_dir: Path, now: datetime) -> tuple[list[dic
             return prev["records"], None, False
     try:
         jobs = AGGREGATORS[name]()
-    except (FetchError, ValueError, KeyError, TypeError, AttributeError, ET.ParseError) as e:
-        return (prev or {}).get("records", []), f"{name}: {e}"[:300], False
-    recs = [to_feed(j, {"category": "remote-board"}, via="board") for j in jobs
-            if j.title and j.url and TECH.search(j.title) and relevant_location(j)]
+    except Exception as e:  # keep the last good result when a board is down
+        return (prev or {}).get("records", []), f"{name}: {type(e).__name__}: {e}"[:300], False
+    recs = []
+    for j in jobs:
+        try:
+            if j.title and j.url and TECH.search(j.title) and relevant_location(j):
+                recs.append(to_feed(j, {"category": "remote-board"}, via="board"))
+        except Exception:
+            continue
     cache_dir.mkdir(parents=True, exist_ok=True)
     with gzip.open(cache, "wt", encoding="utf-8") as f:
-        json.dump({"fetchedAt": iso(now), "records": recs}, f, ensure_ascii=False)
+        json.dump({"fetchedAt": iso(now), "records": recs}, f, ensure_ascii=False, default=str)
     return recs, None, True
 
 
@@ -132,7 +140,10 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futs = {pool.submit(scan_board, n, e, budget): n for n, e in mapped.items()}
         for fut in as_completed(futs):
-            recs, err = fut.result()
+            try:
+                recs, err = fut.result()
+            except Exception as e:
+                recs, err = [], f"{futs[fut]}: {type(e).__name__}: {e}"[:300]
             records += recs
             if err:
                 errors.append(err)
@@ -162,7 +173,7 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
     unique.sort(key=lambda r: -_ts(r.get("postedAt")))
     with gzip.open(out_dir / "india.jsonl.gz", "wt", encoding="utf-8") as f:
         for r in unique:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+            f.write(json.dumps(r, ensure_ascii=False, default=str) + "\n")
     with (out_dir / "unmapped.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["name", "category", "city", "website"])
@@ -182,4 +193,6 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
     Path(boards_path).write_text(json.dumps(boards, indent=1, ensure_ascii=False), encoding="utf-8")
     log(f"Feed: {len(unique)} open tech roles in India or remote from {len(mapped)} company boards "
         f"and {len(board_counts)} remote job boards ({len(errors)} errors).")
+    for e in errors[:40]:
+        log(f"  ! {e}")
     return summary
