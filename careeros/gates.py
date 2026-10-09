@@ -134,12 +134,16 @@ def gate_location(job: Job, s: Settings) -> tuple[Check, str]:
         else:
             scope = extract.remote_scope(job.location, job.description)
         if scope.scope == "worldwide":
+            if p.abroad == "never":
+                return Check("Location", False, "Remote roles at companies abroad are switched off.", scope.quote), ""
             return Check("Location", True, "Remote worldwide", scope.quote), "remote-global"
         if where["india"] or scope.scope == "india":
             if p.rest_of_india == "never" and not where["south"]:
                 return Check("Location", False, "Remote roles in India are switched off."), ""
             return Check("Location", True, "Remote, India", scope.quote or job.location), "remote-india"
         if scope.india_eligible is True:
+            if p.abroad == "never":
+                return Check("Location", False, "Remote roles at companies abroad are switched off.", scope.quote), ""
             return Check("Location", True, f"Remote ({scope.scope}), open to India", scope.quote), "remote-global"
         if scope.india_eligible is False:
             who = {"us": "people in the US", "europe": "people in Europe", "americas": "people in the Americas", "timezone": "a time-zone range that excludes India"}.get(scope.scope, scope.scope)

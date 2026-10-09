@@ -53,9 +53,42 @@ def relevant_location(job: Job) -> bool:
     return where["india"] or job.work_mode == "remote" or bool(re.search(r"remote|anywhere|worldwide|apac|asia", job.location or "", re.I))
 
 
+def loc_class(job: Job, f: dict) -> tuple[str, str]:
+    """Where a role can be done from, independent of anyone's preferences.
+
+    remote-worldwide | remote-open (open to India or APAC) | remote-india |
+    remote-unclear | remote-excluded | south | india | abroad | unknown,
+    with the text that decided it. Personal filters map these to keep/skip."""
+    where = geo.classify(job.location)
+    if job.work_mode == "remote":
+        t = extract.remote_scope(job.title or "", "")
+        if t.india_eligible is False:
+            return "remote-excluded", job.title
+        if t.scope == "india":
+            return "remote-india", job.title
+        if f.get("scope") == "worldwide":
+            return "remote-worldwide", f.get("scopeQuote") or job.location
+        if where["india"] or f.get("scope") == "india":
+            return "remote-india", f.get("scopeQuote") or job.location
+        if f.get("scopeEligible") is True:
+            return "remote-open", f.get("scopeQuote") or job.location
+        if f.get("scopeEligible") is False:
+            return "remote-excluded", f.get("scopeQuote") or job.location
+        return "remote-unclear", job.location
+    if where["south"]:
+        return "south", job.location
+    if where["india"]:
+        return "india", job.location
+    if where["abroad"]:
+        return "abroad", job.location
+    return "unknown", job.location
+
+
 def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
     url = canonical_url(job.url)
     f = extract.facts(job.description, str(job.raw.get("experience_header", "")), job.location, job.salary_text)
+    f["senior"] = extract.title_seniority(job.title) == "senior"
+    f["loc"], f["locQuote"] = loc_class(job, f)
     summary = re.sub(r"\s+", " ", job.description or "").strip()[:1500]
     where = geo.classify(job.location)
     return {
