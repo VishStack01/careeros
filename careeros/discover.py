@@ -216,6 +216,8 @@ def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 1
             known[c["name"]] = {"category": c.get("category", ""), "city": c.get("city", ""), "website": c.get("website", ""), **res}
             if i % 50 == 0:
                 log(f"  {i}/{len(todo)} checked")
+                cache_path.parent.mkdir(parents=True, exist_ok=True)  # keep progress if the run is cut short
+                cache_path.write_text(json.dumps(cache, indent=1, ensure_ascii=False), encoding="utf-8")
     for c in companies:  # keep metadata current for every company
         e = known.setdefault(c["name"], {"status": "pending"})
         e["category"], e["city"] = c.get("category", ""), c.get("city", "")
