@@ -1,0 +1,43 @@
+# Company career boards to poll. These are the public JSON feeds behind each
+# company's own careers page: the fastest, most accurate source, and the place
+# you should apply from.
+#
+# Find a company's board:
+#   Greenhouse  job-boards.greenhouse.io/<token>   -> ats = "greenhouse", token = "<token>"
+#   Lever       jobs.lever.co/<token>              -> ats = "lever",      token = "<token>"
+#   Ashby       jobs.ashbyhq.com/<token>           -> ats = "ashby",      token = "<token>"
+
+[[boards]]
+ats = "ashby"
+token = "sarvam"
+company = "Sarvam AI"
+
+[[boards]]
+ats = "ashby"
+token = "atlan"
+company = "Atlan"
+
+[[boards]]
+ats = "ashby"
+token = "livekit"
+company = "LiveKit"
+
+[[boards]]
+ats = "ashby"
+token = "composio"
+company = "Composio"
+
+[[boards]]
+ats = "greenhouse"
+token = "gleanwork"
+company = "Glean"
+
+[[boards]]
+ats = "greenhouse"
+token = "databricks"
+company = "Databricks"
+
+[[boards]]
+ats = "lever"
+token = "100ms"
+company = "100ms"

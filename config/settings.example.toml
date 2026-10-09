@@ -1,0 +1,48 @@
+# Search settings. Copy to config/settings.toml (git-ignored) and adjust.
+
+[search]
+# Highest experience a role may ask for. The gate reads the whole description,
+# not just the header, and uses the highest requirement it finds.
+max_required_years = 1
+
+# Skip roles posted longer ago than this, and anything already closed.
+max_posting_age_days = 25
+
+# Roles open this long are treated as stale or evergreen listings.
+ghost_after_days = 60
+
+# Roles younger than this are flagged as priority (apply first).
+priority_within_hours = 48
+
+# Skip a role only when the TOP of its posted pay range is below this (LPA).
+# Roles that don't state pay are kept. Set to 0 to turn the floor off.
+salary_floor_lpa = 7
+
+# Used to convert USD pay to LPA. Update it now and then.
+usd_inr = 88.0
+
+# A role must have one of these in its title. Matched as whole words.
+role_keywords = [
+  "ai", "artificial intelligence", "genai", "gen ai", "generative", "llm", "agent", "agentic",
+  "machine learning", "ml", "mlops", "nlp", "prompt", "automation", "forward deployed",
+  "applied scientist", "data scientist", "ai product", "conversational", "rag",
+]
+
+# Skip titles containing any of these.
+title_exclude = ["sales", "account executive", "recruiter", "teacher", "video editor"]
+
+# Skip postings whose description mentions any of these.
+dealbreakers = ["bond of", "service agreement", "unpaid", "night shift only"]
+
+# Never apply to these companies (your employer, its clients, competitors).
+company_blocklist = []
+
+allow_internships = true
+daily_cap = 8
+reapply_cooldown_days = 180
+
+[location]
+south_india = "any"        # any | remote | never
+rest_of_india = "remote"   # any | remote | never
+abroad = "remote"          # remote | never  (remote abroad requires that people in India can apply)
+keep_unclear_remote = true # keep remote roles that don't say who can apply, flagged for a check

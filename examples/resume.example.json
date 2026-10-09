@@ -1,0 +1,11 @@
+{
+  "_note": "A tailored resume as data. Every bullet names the brain claims it comes from. Check it with: careeros claims-check examples/resume.example.json --brain brain/brain.example.json",
+  "headline": "AI Engineer",
+  "summary": "AI engineer who ships LLM features with evals: an open-source ticket router and a RAG assistant measured on real questions.",
+  "skills": ["Python", "LLM APIs", "RAG", "FastAPI", "n8n"],
+  "bullets": [
+    {"text": "Built TicketRouter, an open-source LLM router that tags and prioritises 1,500 tickets a week at 94% tag accuracy for 3 teams.", "refs": ["proj-triage"]},
+    {"text": "Shipped a RAG assistant over a 2,000-page policy wiki; 87% accuracy on an eval set of 120 real support questions.", "refs": ["ach-rag"]},
+    {"text": "Automated entry of 600 invoices a month with an n8n flow and an LLM extractor, cutting manual work from 30 to 4 hours a month.", "refs": ["ach-invoices"]}
+  ]
+}

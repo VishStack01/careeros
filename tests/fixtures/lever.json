@@ -1,0 +1,16 @@
+[
+  {
+    "id": "a1b2c3",
+    "text": "Junior AI Automation Engineer",
+    "hostedUrl": "https://jobs.lever.co/samplecorp/a1b2c3",
+    "categories": {"location": "Remote, India", "commitment": "Full-time"},
+    "workplaceType": "remote",
+    "createdAt": 1791500000000,
+    "descriptionPlain": "Sample Corp automates finance operations with LLM agents.",
+    "lists": [
+      {"text": "Requirements", "content": "<li>1+ year of experience with Python</li><li>Familiarity with n8n or similar tools</li>"}
+    ],
+    "additionalPlain": "This role is fully remote within India.",
+    "salaryRange": {"currency": "INR", "interval": "per-year-salary", "min": 800000, "max": 1200000}
+  }
+]

@@ -1,0 +1,65 @@
+# Application profile: the answers every form asks for.
+# Copy to config/profile.toml (git-ignored) and fill in your own.
+# Never put passwords, Aadhaar, PAN, bank or passport numbers here.
+# Fields CareerOS can't answer from this file are sent to you for review.
+
+[identity]
+first_name = "Asha"
+last_name = "Example"
+full_name = "Asha Example"
+email = "asha@example.com"
+phone = "+91 90000 00000"
+city = "Bengaluru"
+state = "Karnataka"
+country = "India"
+linkedin = "https://www.linkedin.com/in/asha-example"
+github = "https://github.com/asha-example"
+portfolio = "https://asha.example.dev"
+
+[education]
+degree = "B.Tech"
+branch = "Computer Science"
+college = "Example Institute of Technology"
+university = "Example Technological University"
+graduation_month = "May"
+graduation_year = 2025
+cgpa = "8.4 / 10"
+class12 = "91%"
+class10 = "93%"
+backlogs = false
+
+[work]
+status = "working"                  # student | graduated | working | freelancing
+current_company = "Acme Fintech"
+current_title = "AI Automation Engineer"
+total_experience_months = 14
+current_ctc_lpa = 6
+expected_ctc_lpa = 10
+min_ctc_lpa = 8
+notice_days = 30
+earliest_start = "Within 30 days of offer"
+
+[terms]
+work_authorization = ["India"]      # countries you can legally work in without sponsorship
+needs_sponsorship = false           # for roles that would need a visa
+open_to_internships = true
+open_to_contract = false
+relocate_within = ["South India"]
+us_hours = "partly"                 # yes | no | partly
+languages = ["English (fluent)", "Hindi (fluent)", "Telugu (native)"]
+
+[eeo]
+# Leave as "decline" to pick "prefer not to say" wherever it's offered.
+gender = "decline"
+race = "decline"
+veteran = "decline"
+disability = "decline"
+
+[answers]
+how_heard = "Company careers page"
+
+[policy]
+# Tick a form's privacy-notice / data-processing acknowledgement automatically?
+auto_acknowledge_privacy_notice = false
+# Let answers inferred from your brain (e.g. "years of Python") go out without review?
+allow_inferred_answers = true

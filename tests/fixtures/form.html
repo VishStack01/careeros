@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Apply: Applied AI Engineer at Demo Co</title></head>
+<body>
+<h1>Applied AI Engineer</h1>
+<form id="application">
+  <div class="field"><label for="first_name">First Name *</label><input id="first_name" name="first_name" required></div>
+  <div class="field"><label for="last_name">Last Name *</label><input id="last_name" name="last_name" required></div>
+  <div class="field"><label for="email">Email *</label><input id="email" name="email" type="email" required></div>
+  <div class="field"><label for="phone">Phone *</label><input id="phone" name="phone" type="tel" required></div>
+  <div class="field"><label for="resume">Resume/CV *</label><input id="resume" name="resume" type="file" required style="display:none"></div>
+  <div class="field"><label for="linkedin">LinkedIn Profile</label><input id="linkedin" name="linkedin"></div>
+  <fieldset><legend>Will you now or in the future require visa sponsorship? *</legend>
+    <label><input type="radio" name="sponsor" value="yes" required> Yes</label>
+    <label><input type="radio" name="sponsor" value="no"> No</label>
+  </fieldset>
+  <div class="field"><label for="notice">Notice period *</label>
+    <select id="notice" name="notice" required><option value="">Select...</option><option>Immediate</option><option>Up to 30 days</option><option>31-60 days</option><option>More than 60 days</option></select></div>
+  <div class="field"><label for="gender">Gender</label>
+    <select id="gender" name="gender"><option value="">Select...</option><option>Male</option><option>Female</option><option>Decline to self-identify</option></select></div>
+  <div class="field"><label for="why">Why do you want to work at Demo Co? *</label><textarea id="why" name="why" required></textarea></div>
+  <div class="field"><label for="hobby">Favourite programming meme</label><input id="hobby" name="hobby"></div>
+  <button type="submit">Submit application</button>
+</form>
+<script>
+document.getElementById('application').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  const bad = [...f.querySelectorAll('[required]')].filter(el => el.type === 'radio' ? !f.querySelector('input[name="' + el.name + '"]:checked') : el.type === 'file' ? !el.files.length : !el.value);
+  bad.forEach(el => el.setAttribute('aria-invalid', 'true'));
+  if (bad.length) return;
+  document.body.innerHTML = '<h1>Thank you for applying!</h1><p>Your application has been received.</p>';
+});
+</script>
+</body></html>

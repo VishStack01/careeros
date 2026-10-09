@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "careeros"
+version = "0.1.0"
+description = "Evidence-first job application agent: finds fresh roles, verifies them on source, tailors truthful applications and applies with you in control."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "VishStack" }]
+keywords = ["job-search", "agents", "claude-code", "ats", "automation", "careers"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+browser = ["playwright>=1.44"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+careeros = "careeros.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["careeros*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

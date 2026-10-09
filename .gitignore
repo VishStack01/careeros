@@ -1,0 +1,27 @@
+# Your private data: never commit these
+config/settings.toml
+config/profile.toml
+config/watchlist.toml
+brain/brain.json
+brain/evidence/
+packages/
+receipts/
+reports/
+data/
+*.db
+*.db-journal
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

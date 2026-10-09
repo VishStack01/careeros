@@ -1,0 +1,90 @@
+{
+  "_note": "Fictional example. Copy to brain/brain.json (git-ignored) and replace with your own career. Every claim needs evidence before it can reach a resume.",
+  "identity": {
+    "name": "Asha Example",
+    "headline": "AI engineer building agent workflows that ship",
+    "location": "Bengaluru, India",
+    "links": {"github": "https://github.com/asha-example", "portfolio": "https://asha.example.dev"}
+  },
+  "targets": {
+    "roles": ["AI Engineer", "Agentic AI Engineer", "AI Automation Engineer"],
+    "positioning": {
+      "AI Engineer": ["proj-triage", "ach-rag"],
+      "AI Automation Engineer": ["ach-invoices", "proj-triage"]
+    }
+  },
+  "skills": [
+    {"name": "Python", "proficiency": 4, "years": 2, "last_used": "2026-10", "evidence": ["ev-triage-repo"]},
+    {"name": "LLM APIs", "aliases": ["OpenAI API", "Anthropic API"], "proficiency": 4, "years": 1.5, "last_used": "2026-10", "evidence": ["ev-triage-repo"]},
+    {"name": "RAG", "proficiency": 3, "years": 1, "last_used": "2026-09", "evidence": ["ev-rag-demo"]},
+    {"name": "n8n", "proficiency": 3, "years": 1, "last_used": "2026-08", "evidence": ["ev-invoice-loom"]},
+    {"name": "FastAPI", "proficiency": 3, "years": 1, "last_used": "2026-10", "evidence": ["ev-triage-repo"]}
+  ],
+  "experience": [
+    {
+      "id": "exp-acme",
+      "org": "Acme Fintech (example)",
+      "title": "AI Automation Intern",
+      "start": "2025-06",
+      "end": "2026-01",
+      "status": "past",
+      "entries": [
+        {
+          "id": "ach-invoices",
+          "problem": "Finance team keyed 600 invoices a month into the ERP by hand.",
+          "action": "Built an n8n flow that reads invoices with an LLM, validates totals and posts them to the ERP.",
+          "tools": ["n8n", "Python", "OpenAI API"],
+          "outcome": "Manual entry dropped from 30 hours to 4 hours a month.",
+          "metrics": [{"value": "600", "what": "invoices a month"}, {"value": "30", "what": "hours before"}, {"value": "4", "what": "hours after"}],
+          "evidence": ["ev-invoice-loom"]
+        },
+        {
+          "id": "ach-rag",
+          "problem": "Support agents searched a 2,000-page policy wiki for answers.",
+          "action": "Shipped a RAG assistant over the wiki with citations and an eval set of 120 real questions.",
+          "tools": ["Python", "RAG", "FastAPI"],
+          "outcome": "Answer accuracy on the eval set reached 87%.",
+          "metrics": [{"value": "2000", "what": "wiki pages"}, {"value": "120", "what": "eval questions"}, {"value": "87%", "what": "accuracy"}],
+          "evidence": ["ev-rag-demo"]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj-triage",
+      "name": "TicketRouter",
+      "status": "current",
+      "problem": "Small SaaS teams triage support tickets by hand.",
+      "action": "Open-source LLM router that tags, prioritises and drafts replies for incoming tickets.",
+      "tools": ["Python", "FastAPI", "Anthropic API"],
+      "outcome": "Used by 3 teams; routes 1,500 tickets a week at 94% tag accuracy.",
+      "metrics": [{"value": "3", "what": "teams"}, {"value": "1500", "what": "tickets a week"}, {"value": "94%", "what": "tag accuracy"}],
+      "evidence": ["ev-triage-repo"]
+    },
+    {
+      "id": "proj-voice",
+      "name": "Voice agent for clinics",
+      "status": "planned",
+      "problem": "Clinics miss calls after hours.",
+      "action": "Planned: a voice agent that books appointments.",
+      "tools": ["Python"],
+      "outcome": "",
+      "evidence": ["ev-voice-plan"]
+    }
+  ],
+  "evidence": [
+    {"id": "ev-triage-repo", "kind": "repo", "ref": "https://github.com/asha-example/ticketrouter", "note": "README has usage stats"},
+    {"id": "ev-rag-demo", "kind": "url", "ref": "https://asha.example.dev/rag-demo", "note": "Eval results page"},
+    {"id": "ev-invoice-loom", "kind": "video", "ref": "https://asha.example.dev/invoice-flow", "note": "Walkthrough recorded with manager's permission"},
+    {"id": "ev-voice-plan", "kind": "doc", "ref": "notes/voice-agent-plan.md", "note": "Design doc only"}
+  ],
+  "stories": [
+    {"id": "st-ambiguity", "competency": "ambiguity", "situation": "Invoice formats varied across 40 vendors.", "task": "Automate entry without a template per vendor.", "action": "Used an LLM extractor with a validation step that rejects totals that don't add up.", "result": "Entry time fell from 30 to 4 hours a month.", "refs": ["ach-invoices"]}
+  ],
+  "voice": {
+    "banned_words": ["leverage", "spearhead", "synergy", "results-driven", "passionate", "cutting-edge"],
+    "preferred_verbs": ["built", "shipped", "cut", "replaced", "measured", "automated"],
+    "samples": []
+  }
+}

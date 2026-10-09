@@ -1,0 +1,9 @@
+{
+  "_note": "What `careeros apply --package` reads. Answers are written by the tailor skill and approved by the reviewer before use.",
+  "resume": "packages/demo-co-applied-ai-engineer/resume.pdf",
+  "cover_note": "Your support agent needs reliable routing before it needs more tools. I built TicketRouter, an open-source router that tags and prioritises 1,500 tickets a week at 94% accuracy, with an eval set I run on every change. I'd like to bring that habit of measuring first to your team.",
+  "answers": {
+    "Why do you want to work at Demo Co?": "You're solving ticket routing with agents, which is the problem I've spent the last year on in TicketRouter.",
+    "Describe a project you're proud of.": "TicketRouter: an open-source LLM router used by 3 teams that routes 1,500 tickets a week at 94% tag accuracy. I built the eval set first, so every prompt change is measured."
+  }
+}

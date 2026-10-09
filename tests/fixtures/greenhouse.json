@@ -1,0 +1,30 @@
+{
+  "jobs": [
+    {
+      "id": 4012001,
+      "title": "AI Engineer, Agents",
+      "absolute_url": "https://job-boards.greenhouse.io/examplelabs/jobs/4012001?gh_src=abc123",
+      "location": {"name": "Bengaluru, India"},
+      "first_published": "2026-10-07T09:00:00-04:00",
+      "updated_at": "2026-10-08T09:00:00-04:00",
+      "requisition_id": "ENG-221",
+      "content": "&lt;p&gt;Example Labs builds agent tooling for support teams.&lt;/p&gt;&lt;h3&gt;What you need&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;0-1 years of experience shipping Python services&lt;/li&gt;&lt;li&gt;Hands-on work with LLM APIs&lt;/li&gt;&lt;/ul&gt;&lt;h3&gt;Nice to have&lt;/h3&gt;&lt;ul&gt;&lt;li&gt;3+ years of Kubernetes experience&lt;/li&gt;&lt;/ul&gt;"
+    },
+    {
+      "id": 4012002,
+      "title": "Senior ML Engineer",
+      "absolute_url": "https://job-boards.greenhouse.io/examplelabs/jobs/4012002",
+      "location": {"name": "Remote - US"},
+      "first_published": "2026-10-01T09:00:00-04:00",
+      "content": "&lt;p&gt;You have 6+ years of experience in ML.&lt;/p&gt;"
+    },
+    {
+      "id": 4012003,
+      "title": "Account Executive",
+      "absolute_url": "https://job-boards.greenhouse.io/examplelabs/jobs/4012003",
+      "location": {"name": "Mumbai"},
+      "first_published": "2026-10-05T09:00:00-04:00",
+      "content": "&lt;p&gt;Sell our product.&lt;/p&gt;"
+    }
+  ]
+}

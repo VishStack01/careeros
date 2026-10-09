@@ -1,0 +1,26 @@
+{
+  "jobs": [
+    {
+      "id": "f00d-1",
+      "title": "Applied AI Engineer (New Grad)",
+      "location": "Remote",
+      "secondaryLocations": [],
+      "workplaceType": "Remote",
+      "isListed": true,
+      "publishedAt": "2026-10-08T10:00:00.000+00:00",
+      "jobUrl": "https://jobs.ashbyhq.com/demo-co/f00d-1",
+      "descriptionPlain": "Demo Co is remote-first and hires anywhere in the world. New grads welcome. You will build evaluation pipelines for agents.",
+      "compensation": {"compensationTierSummary": "$40K – $60K"}
+    },
+    {
+      "id": "f00d-2",
+      "title": "Product Designer",
+      "location": "San Francisco",
+      "workplaceType": "OnSite",
+      "isListed": true,
+      "publishedAt": "2026-10-08T10:00:00.000+00:00",
+      "jobUrl": "https://jobs.ashbyhq.com/demo-co/f00d-2",
+      "descriptionPlain": "Design our product in our SF office."
+    }
+  ]
+}
