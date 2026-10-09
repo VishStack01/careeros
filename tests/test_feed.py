@@ -194,6 +194,42 @@ def test_accept_rules():
     assert discover.accept(india, {"board_name": "Acme", "locations": ["Austin, TX"]}) == (True, "name")
     glob = {"name": "Acme", "category": "remote-first-global"}
     assert discover.accept(glob, {"board_name": "", "locations": ["Berlin"]})[0]
+    # Some systems answer for any name with an empty board: never proof.
+    assert discover.accept(india, {"board_name": "Acme", "locations": []}) == (False, "empty")
+    assert discover.accept(glob, {"board_name": "", "locations": []}) == (False, "empty")
+
+
+def test_empty_board_is_retried_sooner_and_old_empty_mappings_rechecked(tmp_path, monkeypatch):
+    monkeypatch.setattr(discover, "probe", lambda ats, slug: {"board_name": slug, "locations": []} if ats == "workable" else None)
+    res = discover.discover_one({"name": "Gupshup", "slugs": ["gupshup"]})
+    assert res["status"] == "unmapped" and res["retryDays"] == 3
+    companies = tmp_path / "c.csv"
+    companies.write_text("name,category,city,website,slugs,ats,token,source\nGupshup,ai-native,Bengaluru,,gupshup,,,curated\n")
+    cache = tmp_path / "boards.json"
+    cache.write_text(json.dumps({"companies": {"Gupshup": {"status": "mapped", "ats": "workable", "token": "gupshup", "confidence": "name-empty", "checkedAt": "2026-10-09T10:00:00Z"}}}))
+    out = discover.run(companies, cache, workers=1, log=lambda *_: None)
+    assert out["companies"]["Gupshup"]["status"] == "unmapped"
+
+
+def test_http_backs_off_on_429(monkeypatch):
+    import urllib.error
+    calls, sleeps = [], []
+
+    def flaky(req, timeout=0, context=None):
+        calls.append(1)
+        if len(calls) == 1:
+            raise urllib.error.HTTPError(req.full_url, 429, "Too Many Requests", {"Retry-After": "1"}, None)
+
+        class R:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b'{"ok": true}'
+        return R()
+
+    monkeypatch.setattr(http.urllib.request, "urlopen", flaky)
+    monkeypatch.setattr(http.time, "sleep", lambda s: sleeps.append(s))
+    assert http.get_json("https://slow.example/x", min_interval=0) == {"ok": True}
+    assert len(calls) == 2 and 1.0 in sleeps
 
 
 def test_discover_one_tries_known_token_then_slugs(monkeypatch):

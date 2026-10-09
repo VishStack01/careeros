@@ -19,6 +19,7 @@ from __future__ import annotations
 import csv
 import json
 import re
+import time
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
@@ -31,6 +32,7 @@ from .sources import http
 ATS_ORDER = ["greenhouse", "lever", "ashby", "workable", "smartrecruiters", "recruitee", "breezy", "personio"]
 GLOBAL_CATEGORIES = {"global-india-engineering", "remote-first-global", "yc-remote"}
 PROBE_INTERVAL = 0.25  # seconds between requests to one host while discovering
+_deadline = [float("inf")]  # time.monotonic() after which no new company is started
 
 
 def _norm(s: str) -> str:
@@ -109,7 +111,13 @@ def _india_or_remote(loc: str) -> bool:
 
 
 def accept(company: dict, found: dict) -> tuple[bool, str]:
-    """Is this board really this company's? Returns (ok, confidence)."""
+    """Is this board really this company's? Returns (ok, confidence).
+
+    A board with no openings is never accepted: some systems (Workable,
+    Breezy) answer for any name with an empty board, so an empty board proves
+    nothing. Those companies are re-checked after a few days instead."""
+    if not found.get("locations"):
+        return False, "empty"
     if found.get("board_name"):
         if not names_match(company["name"], found["board_name"]):
             return False, "name-mismatch"
@@ -117,14 +125,16 @@ def accept(company: dict, found: dict) -> tuple[bool, str]:
     else:
         conf = "slug"
     locs = found.get("locations", [])
-    if company.get("category") in GLOBAL_CATEGORIES or not locs:
-        return True, conf if locs else conf + "-empty"
+    if company.get("category") in GLOBAL_CATEGORIES:
+        return True, conf
     if any(_india_or_remote(l) for l in locs):
         return True, conf + "+india"
     return (True, conf) if conf == "name" else (False, "no-india-roles")
 
 
-def discover_one(company: dict) -> dict:
+def discover_one(company: dict) -> dict | None:
+    if time.monotonic() > _deadline[0]:
+        return None  # out of time this run; it stays due for the next one
     now = iso(datetime.now(timezone.utc))
     tried = 0
     pairs: list[tuple[str, str]] = []
@@ -134,6 +144,7 @@ def discover_one(company: dict) -> dict:
     for ats in ATS_ORDER:
         for slug in slugs:
             pairs.append((ats, slug))
+    empty = False
     for ats, slug in pairs:
         tried += 1
         found = probe(ats, slug)
@@ -143,7 +154,11 @@ def discover_one(company: dict) -> dict:
         if ok:
             return {"status": "mapped", "ats": ats, "token": slug, "confidence": conf,
                     "boardName": found.get("board_name", ""), "openings": len(found.get("locations", [])), "checkedAt": now}
-    return {"status": "unmapped", "checkedAt": now, "probes": tried}
+        empty = empty or conf == "empty"
+    out = {"status": "unmapped", "checkedAt": now, "probes": tried}
+    if empty:
+        out["retryDays"] = 3  # an empty board may be real and start hiring soon
+    return out
 
 
 def load_companies(path: str | Path) -> list[dict]:
@@ -156,7 +171,7 @@ def load_companies(path: str | Path) -> list[dict]:
 
 
 def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 14, workers: int = 32,
-        limit: int | None = None, log=print) -> dict:
+        limit: int | None = None, max_minutes: float | None = None, log=print) -> dict:
     companies = load_companies(companies_csv)
     cache_path = Path(cache_path)
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {"companies": {}}
@@ -167,18 +182,21 @@ def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 1
         e = known.get(c["name"])
         if not e:
             return True
-        if e.get("status") == "mapped" and not e.get("stale"):
-            return False
+        if e.get("status") == "mapped":
+            # Re-check boards that errored, and boards accepted while empty by older versions.
+            return bool(e.get("stale")) or str(e.get("confidence", "")).endswith("-empty")
         try:
             last = datetime.fromisoformat(e.get("checkedAt", "").replace("Z", "+00:00"))
         except ValueError:
             return True
-        return now - last > timedelta(days=refresh_days)
+        return now - last > timedelta(days=e.get("retryDays", refresh_days))
 
     todo = [c for c in companies if due(c)]
     if limit:
         todo = todo[:limit]
     log(f"Discovering boards for {len(todo)} of {len(companies)} companies…")
+    _deadline[0] = time.monotonic() + max_minutes * 60 if max_minutes else float("inf")
+    skipped = 0
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futs = {pool.submit(discover_one, c): c for c in todo}
         for i, fut in enumerate(as_completed(futs), 1):
@@ -187,6 +205,9 @@ def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 1
                 res = fut.result()
             except Exception as e:  # one bad company never stops the run
                 res = {"status": "error", "error": str(e)[:200], "checkedAt": iso(now)}
+            if res is None:
+                skipped += 1
+                continue
             known[c["name"]] = {"category": c.get("category", ""), "city": c.get("city", ""), "website": c.get("website", ""), **res}
             if i % 50 == 0:
                 log(f"  {i}/{len(todo)} checked")
@@ -199,5 +220,7 @@ def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 1
                       "byAts": {a: sum(1 for e in known.values() if e.get("ats") == a and e.get("status") == "mapped") for a in ATS_ORDER}}
     cache_path.parent.mkdir(parents=True, exist_ok=True)
     cache_path.write_text(json.dumps(cache, indent=1, ensure_ascii=False), encoding="utf-8")
+    if skipped:
+        log(f"  time budget reached; {skipped} companies left for the next run")
     log(f"Mapped {mapped} of {len(companies)} companies to a public job board.")
     return cache

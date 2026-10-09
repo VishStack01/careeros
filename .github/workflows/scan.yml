@@ -50,7 +50,7 @@ jobs:
         # over a few runs and stays gentle on each hiring system.
         run: |
           set -o pipefail
-          careeros discover --companies config/companies/companies.csv --cache feed/boards.json --refresh-days 14 --limit 400 2>&1 | tee feed/discover.log
+          careeros discover --companies config/companies/companies.csv --cache feed/boards.json --refresh-days 14 --limit 400 --max-minutes 25 2>&1 | tee feed/discover.log
 
       - name: Scan boards
         run: |

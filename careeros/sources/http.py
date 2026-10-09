@@ -15,6 +15,7 @@ MIN_INTERVAL = 1.0  # seconds between requests to the same host; discovery lower
 
 _locks: dict[str, threading.Lock] = {}
 _last: dict[str, float] = {}
+_slow: dict[str, float] = {}  # per-host interval raised after a 429
 _guard = threading.Lock()
 
 
@@ -28,7 +29,7 @@ def _wait_turn(host: str, interval: float) -> None:
     with _guard:
         lock = _locks.setdefault(host, threading.Lock())
     with lock:
-        wait = _last.get(host, 0) + interval - time.monotonic()
+        wait = _last.get(host, 0) + max(interval, _slow.get(host, 0.0)) - time.monotonic()
         if wait > 0:
             time.sleep(wait)
         _last[host] = time.monotonic()
@@ -46,11 +47,24 @@ def get_bytes(url: str, timeout: float = 20.0, retries: int = 2, interval: float
                                                                **({"Content-Type": "application/json"} if data else {})})
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read()
+                body = resp.read()
+            if host in _slow:  # recover speed gradually after a 429
+                with _guard:
+                    _slow[host] *= 0.85
+                    if _slow[host] < 0.5:
+                        _slow.pop(host, None)
+            return body
         except urllib.error.HTTPError as e:
             last, status = e, e.code
             if e.code in (400, 401, 403, 404, 410, 422):
                 break  # wrong board name or not allowed: retrying won't help
+            if e.code == 429:  # too fast for this host: slow down for the rest of the run
+                with _guard:
+                    _slow[host] = min(max(_slow.get(host, 0.0) * 2, 2.0), 15.0)
+                ra = (e.headers.get("Retry-After") if e.headers else None) or ""
+                if attempt < retries:
+                    time.sleep(min(float(ra), 30.0) if ra.strip().isdigit() else _slow[host])
+                continue
         except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
             last = e
         if attempt < retries:

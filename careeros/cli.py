@@ -183,7 +183,7 @@ def cmd_resume(a):
 
 def cmd_discover(a):
     from . import discover
-    discover.run(a.companies, a.cache, refresh_days=a.refresh_days, workers=a.workers, limit=a.limit)
+    discover.run(a.companies, a.cache, refresh_days=a.refresh_days, workers=a.workers, limit=a.limit, max_minutes=a.max_minutes)
 
 
 def cmd_scan(a):
@@ -289,6 +289,7 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--refresh-days", type=int, default=14)
     sp.add_argument("--workers", type=int, default=32)
     sp.add_argument("--limit", type=int)
+    sp.add_argument("--max-minutes", type=float, help="Stop starting new companies after this long")
     sp.set_defaults(fn=cmd_discover)
 
     sp = sub.add_parser("scan", help="Read every mapped board and write the India feed")
