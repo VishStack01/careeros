@@ -34,6 +34,12 @@ def _parse_dt(s: str) -> datetime | None:
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
+def _facts(job: Job) -> dict | None:
+    """Pre-extracted facts (from the India feed), if this job carries them."""
+    f = job.raw.get("facts") if isinstance(job.raw, dict) else None
+    return f if isinstance(f, dict) else None
+
+
 def _kw_regex(words: list[str]) -> re.Pattern:
     parts = [r"(?<![a-z0-9])" + re.escape(w.lower()) + r"(?![a-z0-9])" for w in words if w.strip()]
     return re.compile("|".join(parts) or r"(?!x)x", re.I)
@@ -65,7 +71,11 @@ def gate_seniority(job: Job, s: Settings) -> Check:
 
 
 def gate_experience(job: Job, s: Settings) -> Check:
-    req = extract.extract_experience(job.description, header=str(job.raw.get("experience_header", "")))
+    f = _facts(job)
+    if f is not None:
+        req = extract.ExperienceReq(f.get("expMin"), f.get("fresherOk"), f.get("expQuote") or "")
+    else:
+        req = extract.extract_experience(job.description, header=str(job.raw.get("experience_header", "")))
     if req.min_years is not None and req.min_years > s.max_required_years:
         return Check(
             "Experience", False,
@@ -91,7 +101,8 @@ def gate_freshness(job: Job, s: Settings, now: datetime) -> tuple[Check, bool]:
 
 
 def gate_open(job: Job, today: date) -> Check:
-    q = extract.closed_signal(job.description)
+    f = _facts(job)
+    q = (f.get("closedQuote") or "") if f is not None else extract.closed_signal(job.description)
     if q:
         return Check("Open", False, "The posting says it's closed.", q)
     if job.apply_by:
@@ -109,7 +120,11 @@ def gate_location(job: Job, s: Settings) -> tuple[Check, str]:
     mode = job.work_mode
     where = geo.classify(job.location)
     if mode == "remote":
-        scope = extract.remote_scope(job.location, job.description)
+        f = _facts(job)
+        if f is not None and "scope" in f:
+            scope = extract.RemoteScope(f.get("scopeEligible"), f.get("scope") or "", f.get("scopeQuote") or "")
+        else:
+            scope = extract.remote_scope(job.location, job.description)
         if scope.scope == "worldwide":
             return Check("Location", True, "Remote worldwide", scope.quote), "remote-global"
         if where["india"] or scope.scope == "india":
@@ -119,7 +134,7 @@ def gate_location(job: Job, s: Settings) -> tuple[Check, str]:
         if scope.india_eligible is True:
             return Check("Location", True, f"Remote ({scope.scope}), open to India", scope.quote), "remote-global"
         if scope.india_eligible is False:
-            who = {"us": "people in the US", "europe": "people in Europe", "timezone": "a time-zone range that excludes India"}.get(scope.scope, scope.scope)
+            who = {"us": "people in the US", "europe": "people in Europe", "americas": "people in the Americas", "timezone": "a time-zone range that excludes India"}.get(scope.scope, scope.scope)
             return Check("Location", False, f"Remote, but only for {who}.", scope.quote), ""
         if p.abroad == "never":
             return Check("Location", False, "Remote abroad is switched off."), ""
@@ -142,7 +157,12 @@ def gate_location(job: Job, s: Settings) -> tuple[Check, str]:
 
 
 def gate_pay(job: Job, s: Settings) -> tuple[Check, extract.Salary | None]:
-    sal = extract.parse_salary(job.salary_text, s.usd_inr) or extract.parse_salary(job.description, s.usd_inr)
+    f = _facts(job)
+    sal = extract.parse_salary(job.salary_text, s.usd_inr)
+    if not sal and f is not None and f.get("salaryHigh") is not None:
+        sal = extract.Salary(f.get("salaryLow") or f["salaryHigh"], f["salaryHigh"], "", "year", f.get("salaryQuote") or "")
+    if not sal and f is None:
+        sal = extract.parse_salary(job.description, s.usd_inr)
     if not sal:
         return Check("Pay", True, "Not stated"), None
     if s.salary_floor_lpa is not None and sal.high_lpa < s.salary_floor_lpa:

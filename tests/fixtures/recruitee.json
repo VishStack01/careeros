@@ -1,0 +1,34 @@
+{
+ "offers": [
+  {
+   "id": 555,
+   "title": "AI Engineer",
+   "slug": "ai-engineer",
+   "status": "published",
+   "careers_url": "https://acme.recruitee.com/o/ai-engineer",
+   "location": "Remote, India",
+   "city": "",
+   "country": "India",
+   "remote": true,
+   "hybrid": false,
+   "description": "<p>Ship LLM features.</p>",
+   "requirements": "<p>1+ year building with Python. Open to candidates anywhere in India.</p>",
+   "published_at": "2026-10-04 10:00:00 UTC",
+   "created_at": "2026-10-03 10:00:00 UTC",
+   "salary": {
+    "min": "1200000",
+    "max": "1800000",
+    "currency": "INR",
+    "period": "year"
+   }
+  },
+  {
+   "id": 556,
+   "title": "Old Draft",
+   "status": "draft",
+   "careers_url": "https://acme.recruitee.com/o/old",
+   "location": "Pune",
+   "published_at": ""
+  }
+ ]
+}

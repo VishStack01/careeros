@@ -1,0 +1,821 @@
+# Curated list of product companies hiring engineers in India, plus remote-first
+# companies that hire from India. One per line:
+#   Name | extra board slugs (comma-separated, optional) | city (optional) | ats:token (optional, if known)
+# `careeros discover` finds each company's public job board from these names.
+# Pull requests welcome; please keep it to product companies.
+
+## ai-native
+Sarvam AI | sarvam | Bengaluru | ashby:sarvam
+Krutrim | olakrutrim | Bengaluru
+Haptik | | Mumbai
+Yellow.ai | yellowai,yellowmessenger | Bengaluru
+Gupshup | | Bengaluru
+Uniphore | | Chennai
+Observe.AI | observeai | Bengaluru
+Vue.ai | madstreetden,vueai | Chennai
+Arya.ai | aryaai | Mumbai
+Saarthi.ai | saarthiai | Bengaluru
+Skit.ai | skitai,vernacularai | Bengaluru
+Qure.ai | qureai | Mumbai
+Niramai | | Bengaluru
+SigTuple | | Bengaluru
+Mihup | | Kolkata
+Gnani.ai | gnaniai | Bengaluru
+Reverie Language Technologies | reverie | Bengaluru
+Atomicwork | | Bengaluru
+Composio | | Bengaluru | ashby:composio
+Giga | gigaml | Bengaluru
+Lyzr | lyzrai | Bengaluru
+CoRover | | Bengaluru
+Avaamo | | Bengaluru
+Nanonets | | Bengaluru
+Docsumo | | Bengaluru
+Infrrd | | Bengaluru
+HyperVerge | | Bengaluru
+IDfy | | Mumbai
+Signzy | | Bengaluru
+Perfios | | Bengaluru
+FinBox | finboxio | Bengaluru
+Scienaptic AI | scienaptic | Bengaluru
+Bobble AI | bobble | Gurugram
+Pixis | pixisai | Bengaluru
+Rocketium | | Bengaluru
+Netradyne | | Bengaluru
+Ati Motors | atimotors | Bengaluru
+CynLr | | Bengaluru
+TrueFoundry | | Bengaluru
+Simplismart | | Bengaluru
+Neysa | neysanetworks | Mumbai
+E2E Networks | e2enetworks | Delhi
+LimeChat | | Gurugram
+Verloop.io | verloop | Bengaluru
+Kapture CX | kapturecx | Bengaluru
+Engati | | Bengaluru
+AiSensy | | Gurugram
+Wati | clare.ai | Bengaluru
+SquadStack | | Noida
+Spyne | spyneai | Gurugram
+Gan.ai | ganai | Bengaluru
+Wadhwani AI | wadhwaniai | Mumbai
+Fractal Analytics | fractal | Mumbai
+Tredence | | Bengaluru
+Sigmoid | | Bengaluru
+Quantiphi | | Mumbai
+LatentView Analytics | latentview | Chennai
+Tiger Analytics | | Chennai
+MathCo | themathcompany | Bengaluru
+Gramener | | Hyderabad
+Crayon Data | | Chennai
+Detect Technologies | | Chennai
+Avataar | avataar | Bengaluru
+Dashtoon | | Bengaluru
+Smallest.ai | smallestai | Bengaluru
+Bolna | bolnaai | Bengaluru
+Dubverse | | Delhi
+Segwise | | Bengaluru
+Pipeshift | | Bengaluru
+Jivi | jiviai | Delhi
+Leena AI | leenaai | Gurugram
+Darwix AI | darwix | Gurugram
+Convin | convinai | Bengaluru
+Salesken | | Bengaluru
+Enterpret | | Bengaluru
+Fireflies.ai | fireflies | Remote
+Rezo.ai | rezo | Noida
+NeuroPixel.AI | neuropixel | Bengaluru
+GreyOrange | | Gurugram
+Addverb | addverbtech | Noida
+Unbox Robotics | unboxrobotics | Pune
+Sastra Robotics | | Kochi
+Genrobotics | | Thiruvananthapuram
+Planys Technologies | planys | Chennai
+Innoplexus | | Pune
+Tracxn | | Bengaluru
+Toplyne | | Bengaluru
+Kissan AI | kissanai | Bengaluru
+Jugalbandi | | Bengaluru
+CogniCor | | Bengaluru
+
+## devtools-infra
+Postman | postman,getpostman | Bengaluru
+BrowserStack | | Mumbai
+LambdaTest | | Noida
+Hasura | | Bengaluru
+Appsmith | | Bengaluru
+ToolJet | | Remote
+SigNoz | | Bengaluru
+Middleware | middlewareio | Bengaluru
+Plane | makeplane | Bengaluru
+Hoppscotch | | Remote
+Requestly | | Bengaluru
+Keploy | | Bengaluru
+Dyte | dyteio | Bengaluru
+100ms | | Bengaluru | lever:100ms
+Fynd | gofynd | Mumbai
+Shipsy | | Gurugram
+Devtron | devtronlabs | Gurugram
+Last9 | | Bengaluru
+Zenduty | | Bengaluru
+Squadcast | | Bengaluru
+Sprinto | | Bengaluru
+Scrut Automation | scrut | Bengaluru
+Setu | setu.co | Bengaluru
+Juspay | | Bengaluru
+RudderStack | rudderlabs | Bengaluru
+DronaHQ | | Mumbai
+Kissflow | | Chennai
+Facilio | | Chennai
+DeepSource | | Bengaluru
+CodeRabbit | coderabbitai | Remote
+SuprSend | | Bengaluru
+OpenObserve | | Bengaluru
+Zipy | zipyai | Bengaluru
+Signeasy | | Bengaluru
+Appwrite | | Remote
+Polygon | polygontechnology,polygonlabs | Bengaluru
+Biconomy | | Bengaluru
+Router Protocol | routerprotocol | Remote
+Hevo Data | hevodata | Bengaluru
+Atlan | | Bengaluru | ashby:atlan
+Draup | | Bengaluru
+Rocketlane | | Chennai
+Zuddl | | Bengaluru
+Hubilo | | Bengaluru
+Airmeet | | Bengaluru
+SuperOps | superopsai | Chennai
+Zluri | | Bengaluru
+Fyle | fylehq | Bengaluru
+Exotel | | Bengaluru
+Ozonetel | | Hyderabad
+Knowlarity | | Gurugram
+Instamojo | | Bengaluru
+Dukaan | mydukaan | Bengaluru
+Amagi | amagimedia | Bengaluru
+Tejas Networks | | Bengaluru
+Saankhya Labs | | Bengaluru
+Mindgrove Technologies | mindgrove | Chennai
+Netrasemi | | Kochi
+Signalchip | | Bengaluru
+Ola Electric | olaelectric | Bengaluru
+
+## saas
+Freshworks | | Chennai
+Zoho | | Chennai
+Chargebee | | Chennai
+Darwinbox | | Hyderabad
+Keka | kekahr | Hyderabad
+LeadSquared | | Bengaluru
+Capillary Technologies | capillary | Bengaluru
+MoEngage | | Bengaluru
+CleverTap | | Mumbai
+WebEngage | | Mumbai
+Netcore Cloud | netcore | Mumbai
+Wingify | vwo | Delhi
+Zenoti | | Hyderabad
+Mindtickle | | Pune
+Whatfix | | Bengaluru
+Icertis | | Pune
+HighRadius | | Hyderabad
+Druva | | Pune
+Innovaccer | | Noida
+Sprinklr | | Gurugram
+Spotdraft | | Bengaluru
+Leegality | | Gurugram
+Recruit CRM | recruitcrm | Remote
+Springworks | | Bengaluru
+Vantage Circle | vantagecircle | Guwahati
+Plum | plumhq,plumhealth | Bengaluru
+greytHR | greytip | Bengaluru
+Zimyo | | Gurugram
+HROne | | Noida
+Vymo | | Bengaluru
+MyOperator | | Noida
+Shopflo | | Bengaluru
+GoKwik | | Delhi
+ClickPost | | Noida
+FarEye | | Noida
+Locus | locussh | Bengaluru
+LogiNext | | Mumbai
+Unicommerce | | Gurugram
+Increff | | Bengaluru
+Bik.ai | bikai | Bengaluru
+Interakt | | Mumbai
+Route Mobile | routemobile | Mumbai
+Tanla Platforms | tanla | Hyderabad
+Beaconstac | uniqode | Bengaluru
+Mailmodo | | Bengaluru
+Kylas | | Pune
+Exly | | Delhi
+Classplus | | Noida
+Teachmint | | Bengaluru
+Toddle | toddleapp | Bengaluru
+Planful | | Hyderabad
+Tekion | | Bengaluru
+ThoughtSpot | | Bengaluru
+Gainsight | | Hyderabad
+Zeta | zetasuite | Bengaluru
+M2P Fintech | m2p | Chennai
+Mobile Premier League | mpl | Bengaluru
+Yubi | credavenue | Chennai
+Lentra | lentraai | Pune
+Credgenics | | Noida
+Vahan | vahanai | Bengaluru
+Apna | apnaco | Mumbai
+Synup | | Hyderabad
+Wizikey | | Gurugram
+Clootrack | | Bengaluru
+Uolo | | Gurugram
+Zoko | | Bengaluru
+
+## fintech
+Razorpay | | Bengaluru
+Cashfree Payments | cashfree | Bengaluru
+PayU India | payu | Gurugram
+Pine Labs | pinelabs | Noida
+BharatPe | | Delhi
+Open Financial | bankopen,open | Bengaluru
+Jupiter | jupitermoney | Bengaluru
+Fi Money | epifi | Bengaluru
+Slice | sliceit | Bengaluru
+Uni Cards | unicards | Bengaluru
+OneCard | fpltechnologies | Pune
+Navi | navitechnologies | Bengaluru
+Jar | jarapp,changejar | Bengaluru
+Smallcase | | Bengaluru
+INDmoney | | Gurugram
+Upstox | | Mumbai
+Groww | | Bengaluru
+Zerodha | | Bengaluru
+Dhan | raisefinancial | Mumbai
+Angel One | angelone | Mumbai
+Paytm | | Noida
+PhonePe | | Bengaluru
+MobiKwik | | Gurugram
+CRED | dreamplug | Bengaluru
+Khatabook | | Bengaluru
+OkCredit | | Bengaluru
+Vyapar | vyaparapp | Bengaluru
+Clear | cleartax | Bengaluru
+Zolve | | Bengaluru
+Volopay | | Bengaluru
+EnKash | | Mumbai
+Happay | | Bengaluru
+Vayana | vayananetwork | Pune
+Lendingkart | | Ahmedabad
+Indifi | | Gurugram
+KreditBee | | Bengaluru
+Moneyview | | Bengaluru
+Fibe | earlysalary | Pune
+Kissht | | Mumbai
+Simpl | getsimpl | Bengaluru
+Rupeek | | Bengaluru
+CoinDCX | | Mumbai
+CoinSwitch | | Bengaluru
+Decentro | | Bengaluru
+Cashify | | Gurugram
+Acko | | Bengaluru
+Digit Insurance | godigit | Bengaluru
+PolicyBazaar | pbfintech | Gurugram
+Ditto Insurance | joinditto | Bengaluru
+Onsurity | | Bengaluru
+InsuranceDekho | | Gurugram
+Turtlemint | | Mumbai
+Fisdom | | Bengaluru
+Scripbox | | Bengaluru
+Kuvera | | Bengaluru
+Stable Money | stablemoney | Bengaluru
+Wint Wealth | wintwealth | Bengaluru
+Grip Invest | gripinvest | Mumbai
+Niyo | goniyo | Bengaluru
+Zaggle | | Hyderabad
+Easebuzz | | Pune
+PayGlocal | | Bengaluru
+Xflow | | Bengaluru
+Skydo | | Bengaluru
+Aspora | vance | Bengaluru
+Dezerv | | Mumbai
+Sensibull | | Bengaluru
+Rupifi | | Bengaluru
+FlexiLoans | | Mumbai
+Progcap | | Delhi
+Mintifi | | Mumbai
+Vivriti Capital | vivriti | Chennai
+Kiwi | gokiwi | Bengaluru
+super.money | supermoney | Bengaluru
+Freo | moneytap | Bengaluru
+Ezetap | | Bengaluru
+Innoviti | | Bengaluru
+Mswipe | | Mumbai
+Spice Money | | Delhi
+
+## consumer
+Flipkart | | Bengaluru
+Myntra | | Bengaluru
+Meesho | | Bengaluru
+Swiggy | bundltechnologies | Bengaluru
+Zomato | eternal | Gurugram
+Blinkit | | Gurugram
+Zepto | zeptonow | Mumbai
+Dunzo | | Bengaluru
+BigBasket | | Bengaluru
+Licious | | Bengaluru
+Nykaa | | Mumbai
+Lenskart | | Delhi
+boAt | boatlifestyle | Delhi
+Honasa Consumer | mamaearth | Gurugram
+Purplle | | Mumbai
+FirstCry | brainbees | Pune
+Urban Company | urbanclap | Gurugram
+OYO | oyorooms | Gurugram
+MakeMyTrip | | Gurugram
+ixigo | | Gurugram
+Cleartrip | | Bengaluru
+redBus | | Bengaluru
+Rapido | | Bengaluru
+Ola | olacabs,anitechnologies | Bengaluru
+Yulu | yulubike | Bengaluru
+Bounce | | Bengaluru
+Cars24 | | Gurugram
+Spinny | | Gurugram
+CarDekho | girnarsoft | Jaipur
+Droom | | Gurugram
+OLX India | olx | Gurugram
+NoBroker | | Bengaluru
+Housing.com | housing | Gurugram
+Info Edge | naukri | Noida
+PharmEasy | | Mumbai
+Tata 1mg | 1mg | Gurugram
+HealthifyMe | | Bengaluru
+Cult.fit | curefit | Bengaluru
+Pristyn Care | | Gurugram
+MediBuddy | | Bengaluru
+Practo | | Bengaluru
+ShareChat | mohallatech | Bengaluru
+VerSe Innovation | dailyhunt | Bengaluru
+Glance | glanceinmobi | Bengaluru
+InMobi | | Bengaluru
+Pocket FM | | Bengaluru
+Kuku FM | | Mumbai
+Pratilipi | | Bengaluru
+Eloelo | | Bengaluru
+Dream Sports | dream11 | Mumbai
+Games24x7 | | Mumbai
+Nazara Technologies | nazara | Mumbai
+WinZO | | Delhi
+Zupee | | Gurugram
+Junglee Games | | Gurugram
+Gameskraft | | Bengaluru
+Hike | | Delhi
+Truecaller | | Bengaluru
+JioSaavn | saavn | Mumbai
+JioHotstar | hotstar,disneyhotstar | Bengaluru
+Zee5 | | Bengaluru
+SonyLIV | | Mumbai
+Byju's | byjus | Bengaluru
+Unacademy | | Bengaluru
+upGrad | | Mumbai
+Physics Wallah | physicswallah | Noida
+Vedantu | | Bengaluru
+Eruditus | | Mumbai
+Simplilearn | | Bengaluru
+Scaler | interviewbit | Bengaluru
+Great Learning | | Gurugram
+Coding Ninjas | | Delhi
+LEAD Group | leadschool | Mumbai
+Cuemath | | Bengaluru
+Testbook | | Mumbai
+Adda247 | | Gurugram
+Leverage Edu | | Delhi
+Leap Scholar | leap | Bengaluru
+Masai School | masai | Bengaluru
+NxtWave | | Hyderabad
+Newton School | | Bengaluru
+AlmaBetter | | Bengaluru
+Udaan | | Bengaluru
+Jumbotail | | Bengaluru
+DealShare | | Bengaluru
+CityMall | | Gurugram
+WorkIndia | | Mumbai
+Tata Digital | tataneu | Bengaluru
+Bewakoof | | Mumbai
+The Souled Store | thesouledstore | Mumbai
+Snitch | | Bengaluru
+SUGAR Cosmetics | sugarcosmetics | Mumbai
+Minimalist | beminimalist | Jaipur
+Bombay Shaving Company | | Delhi
+Country Delight | | Gurugram
+Rebel Foods | | Mumbai
+Wakefit | | Bengaluru
+Pepperfry | | Mumbai
+Livspace | | Bengaluru
+HomeLane | | Bengaluru
+Treebo | | Bengaluru
+FabHotels | | Delhi
+Thrillophilia | | Bengaluru
+Headout | | Bengaluru
+Pickyourtrail | | Chennai
+Scapia | | Bengaluru
+Zingbus | | Gurugram
+RailYatri | intrcity | Noida
+Chalo | | Mumbai
+Park+ | parkplus | Gurugram
+Seekho | | Bengaluru
+STAGE | stage | Noida
+Snapdeal | | Delhi
+CaratLane | | Chennai
+BlueStone | | Bengaluru
+GIVA | | Bengaluru
+Mokobara | | Bengaluru
+Zivame | | Bengaluru
+Kutumb | | Bengaluru
+Frontier Markets | | Jaipur
+Zoomcar | | Bengaluru
+Ultrahuman | | Bengaluru
+Sugar.fit | sugarfit | Bengaluru
+Fitterfly | | Mumbai
+Truemeds | | Mumbai
+Medikabazaar | | Mumbai
+Allo Health | | Bengaluru
+Loop Health | | Chennai
+Healthians | | Gurugram
+Redcliffe Labs | | Noida
+Orange Health | | Bengaluru
+Eka Care | | Bengaluru
+HealthPlix | | Bengaluru
+Tricog Health | tricog | Bengaluru
+Cloudphysician | | Bengaluru
+Dozee | | Bengaluru
+4baseCare | | Bengaluru
+Wysa | | Bengaluru
+Even Healthcare | | Bengaluru
+Neodocs | | Mumbai
+Mylo | | Gurugram
+
+## mobility-industrial-climate-space
+Delhivery | | Gurugram
+Shiprocket | | Delhi
+Shadowfax | | Bengaluru
+Ecom Express | | Gurugram
+XpressBees | | Pune
+BlackBuck | zinka | Bengaluru
+Rivigo | | Gurugram
+Porter | theporter | Bengaluru
+LoadShare | loadsharenetworks | Bengaluru
+Ninjacart | | Bengaluru
+DeHaat | | Patna
+Moglix | | Noida
+OfBusiness | | Gurugram
+Zetwerk | | Bengaluru
+Infra.Market | inframarket | Mumbai
+Bizongo | | Mumbai
+ElasticRun | | Pune
+Arzooo | | Bengaluru
+Ather Energy | atherenergy | Bengaluru
+Euler Motors | | Delhi
+River | rivermobility | Bengaluru
+Exponent Energy | | Bengaluru
+Log9 Materials | log9 | Bengaluru
+Sun Mobility | | Bengaluru
+Ultraviolette | | Bengaluru
+Simple Energy | | Bengaluru
+Agnikul Cosmos | agnikul | Chennai
+Skyroot Aerospace | skyroot | Hyderabad
+Pixxel | | Bengaluru
+Digantara | | Bengaluru
+Bellatrix Aerospace | | Bengaluru
+Dhruva Space | | Hyderabad
+ideaForge | | Mumbai
+Garuda Aerospace | | Chennai
+Tonbo Imaging | | Bengaluru
+Cropin | | Bengaluru
+Fasal | | Bengaluru
+AgroStar | | Pune
+Gramophone | | Indore
+Arya.ag | aryaag | Noida
+Bijak | | Gurugram
+Vegrow | | Bengaluru
+WayCool | | Chennai
+Intello Labs | | Gurugram
+SatSure | | Bengaluru
+GalaxEye | | Bengaluru
+Sarla Aviation | | Bengaluru
+The ePlane Company | eplane | Chennai
+Vecmocon | | Noida
+Matter | matter | Ahmedabad
+Statiq | | Gurugram
+ChargeZone | | Vadodara
+Kazam | | Bengaluru
+BluSmart | | Gurugram
+Zypp Electric | | Gurugram
+Battery Smart | | Gurugram
+Stellapps | | Bengaluru
+Blue Energy Motors | | Pune
+Zeno Motors | | Bengaluru
+Altor | | Bengaluru
+
+## global-india-engineering
+Google | | Bengaluru
+Microsoft | | Hyderabad
+Amazon | | Bengaluru
+Apple | | Hyderabad
+Meta | | Bengaluru
+Adobe | | Noida
+Salesforce | | Hyderabad
+Oracle | | Bengaluru
+SAP Labs India | sap | Bengaluru
+Intuit | | Bengaluru
+Atlassian | | Bengaluru
+Uber | | Bengaluru
+LinkedIn | | Bengaluru
+Walmart Global Tech | walmart | Bengaluru
+Target | | Bengaluru
+PayPal | | Chennai
+Visa | | Bengaluru
+Mastercard | | Pune
+American Express | | Gurugram
+Goldman Sachs | | Bengaluru
+JPMorgan Chase | | Bengaluru
+Morgan Stanley | | Mumbai
+Cisco | | Bengaluru
+Broadcom | vmware | Bengaluru
+NetApp | | Bengaluru
+Nutanix | | Bengaluru
+Hewlett Packard Enterprise | hpe,juniper | Bengaluru
+Arista Networks | arista | Bengaluru
+Qualcomm | | Hyderabad
+NVIDIA | | Bengaluru
+Intel | | Bengaluru
+AMD | | Hyderabad
+Texas Instruments | | Bengaluru
+Synopsys | | Bengaluru
+Cadence | | Noida
+Samsung R&D Institute | samsung | Bengaluru
+LG Soft India | lg | Bengaluru
+Sony | | Bengaluru
+Siemens | | Bengaluru
+Siemens Healthineers | | Bengaluru
+Philips | | Bengaluru
+GE HealthCare | gehealthcare | Bengaluru
+Bosch Global Software Technologies | bosch | Bengaluru
+Continental | | Bengaluru
+Mercedes-Benz R&D India | mercedesbenz | Bengaluru
+Harman | | Bengaluru
+Honeywell | | Bengaluru
+ServiceNow | | Hyderabad
+Workday | | Pune
+Zendesk | | Pune
+HubSpot | | Remote
+Okta | | Bengaluru
+Rubrik | | Bengaluru
+Cohesity | | Bengaluru
+Palo Alto Networks | paloaltonetworks | Bengaluru
+Zscaler | | Bengaluru
+CrowdStrike | | Pune
+Akamai | | Bengaluru
+Confluent | | Bengaluru
+MongoDB | | Gurugram
+Databricks | | Bengaluru | greenhouse:databricks
+Snowflake | | Pune
+Elastic | | Remote
+Couchbase | | Bengaluru
+Stripe | | Bengaluru
+Airbnb | | Bengaluru
+Expedia Group | expedia | Gurugram
+Twilio | | Bengaluru
+Autodesk | | Pune
+PTC | | Pune
+Dassault Systemes | 3ds | Pune
+MathWorks | | Hyderabad
+Thomson Reuters | | Bengaluru
+Rippling | | Bengaluru
+Grab | | Bengaluru
+Glean | gleanwork | Bengaluru | greenhouse:gleanwork
+Zoom | | Bengaluru
+Box | | Pune
+Coinbase | | Remote
+Kraken | | Remote
+Toast | | Chennai
+Wayfair | | Bengaluru
+Lowe's | lowes | Bengaluru
+Tesco | | Bengaluru
+Nike | | Bengaluru
+Commvault | | Hyderabad
+Veritas | | Pune
+Sophos | | Ahmedabad
+McAfee | | Bengaluru
+Trellix | | Bengaluru
+Gen Digital | gen | Chennai
+Qualys | | Pune
+New Relic | newrelic | Hyderabad
+Dynatrace | | Bengaluru
+UiPath | | Bengaluru
+Automation Anywhere | automationanywhere | Bengaluru
+Pegasystems | pega | Hyderabad
+Informatica | | Bengaluru
+Teradata | | Hyderabad
+Cloudera | | Bengaluru
+Red Hat | redhat | Pune
+Model N | modeln | Hyderabad
+Coupa | | Pune
+Anaplan | | Gurugram
+Netskope | | Bengaluru
+Agoda | | Gurugram
+Deutsche Telekom Digital Labs | dtdl | Gurugram
+Groupon | | Chennai
+Tripadvisor | | Gurugram
+Electronic Arts | ea | Hyderabad
+Ubisoft | | Pune
+Zynga | | Bengaluru
+Unity | unity3d | Bengaluru
+Rockstar Games | | Bengaluru
+Jio Platforms | jio | Mumbai
+Airtel Digital | airtel | Gurugram
+
+## remote-first-global
+GitLab | | Remote
+Automattic | | Remote
+Zapier | | Remote
+Canonical | | Remote
+DuckDuckGo | | Remote
+Mozilla | | Remote
+Wikimedia Foundation | wikimedia | Remote
+Buffer | | Remote
+Remote | remotecom | Remote
+Deel | | Remote
+Grafana Labs | grafanalabs | Remote
+Supabase | | Remote
+Vercel | | Remote
+Cal.com | calcom | Remote
+Sourcegraph | | Remote
+Mattermost | | Remote
+Chainlink Labs | chainlink | Remote
+Binance | | Remote
+Toggl | | Remote
+Doist | | Remote
+Hotjar | | Remote
+Help Scout | helpscout | Remote
+Close | closeio | Remote
+Discourse | | Remote
+Ghost | | Remote
+Hugging Face | huggingface | Remote
+Weaviate | | Remote
+Qdrant | | Remote
+deepset | | Remote
+Lightning AI | lightningai | Remote
+LiveKit | | Remote | ashby:livekit
+Airbyte | | Remote
+PostHog | | Remote
+Tether | | Remote
+Turing | | Remote
+Toptal | | Remote
+Andela | | Remote
+Crossover | | Remote
+Mercor | | Remote
+micro1 | | Remote
+Scale AI | scaleai | Remote
+Invisible Technologies | invisible | Remote
+Outlier | | Remote
+Braintrust | | Remote
+Netlify | | Remote
+Fly.io | flyio | Remote
+Railway | | Remote
+Render | | Remote
+Temporal | temporaltechnologies | Remote
+Prefect | | Remote
+Dagster Labs | dagster | Remote
+dbt Labs | dbtlabs | Remote
+MotherDuck | | Remote
+ClickHouse | | Remote
+Redpanda | redpandadata | Remote
+Tailscale | | Remote
+1Password | | Remote
+Bitwarden | | Remote
+Sentry | | Remote
+Linear | | Remote
+Raycast | | Remote
+Zed Industries | zed | Remote
+Replit | | Remote
+Modal | modallabs | Remote
+Baseten | | Remote
+Together AI | togetherai | Remote
+Fireworks AI | fireworksai | Remote
+Anyscale | | Remote
+Weights & Biases | wandb | Remote
+LangChain | | Remote
+LlamaIndex | | Remote
+Pinecone | | Remote
+Zilliz | | Remote
+Jina AI | jinaai | Remote
+Cohere | | Remote
+Nomic AI | nomic | Remote
+
+## more-india-product
+DevRev | | Bengaluru
+Kore.ai | koreai | Hyderabad
+Plivo | | Bengaluru
+Murf AI | murf | Bengaluru
+Writesonic | | Bengaluru
+SciSpace | typeset | Bengaluru
+Locofy.ai | locofy | Bengaluru
+Zocket | | Chennai
+Fluid AI | fluidai | Mumbai
+Nurix AI | nurix | Bengaluru
+Pepper Content | peppercontent | Mumbai
+Testsigma | | Bengaluru
+Workativ | | Bengaluru
+Xoxoday | | Bengaluru
+Pazcare | | Bengaluru
+Nova Benefits | | Bengaluru
+FieldAssist | | Gurugram
+Bizom | | Bengaluru
+Tally Solutions | tally | Bengaluru
+EasyEcom | | Gurugram
+Fretron | | Gurugram
+Cogoport | | Mumbai
+SolarSquare | | Mumbai
+Recykal | | Hyderabad
+Attero | | Noida
+LOHUM | lohum | Noida
+Apollo 24|7 | apollo247,apollohealthco | Chennai
+Cureskin | | Bengaluru
+Traya | | Mumbai
+Mosaic Wellness | | Mumbai
+HealthKart | | Gurugram
+Fittr | | Pune
+Noise | gonoise | Gurugram
+QpiAI | | Bengaluru
+BosonQ Psi | | Bengaluru
+InCore Semiconductors | incore | Chennai
+NewSpace Research | | Bengaluru
+Skylark Drones | | Bengaluru
+Ethereal Machines | | Bengaluru
+Haber | | Pune
+Altizon | | Pune
+Uptime AI | | Bengaluru
+Infinite Uptime | | Pune
+Ripik.ai | ripik | Noida
+Jodo | | Bengaluru
+Refyne | | Bengaluru
+Snapmint | | Mumbai
+BharatX | | Bengaluru
+Tartan | tartanhq | Bengaluru
+Hyperface | | Bengaluru
+Bureau | bureauid | Bengaluru
+Mudrex | | Bengaluru
+Liminal | liminalcustody | Bengaluru
+Magicpin | samast | Gurugram
+Pocket Aces | | Mumbai
+Lokal | | Hyderabad
+Josh Talks | | Gurugram
+Rooter | | Delhi
+Loco | | Bengaluru
+SpeakX | | Bengaluru
+Heads Up For Tails | hutf | Delhi
+Supertails | | Bengaluru
+The Whole Truth | thewholetruth | Mumbai
+FreshToHome | | Bengaluru
+Swish | | Bengaluru
+Slikk | | Bengaluru
+Kirana Club | | Delhi
+ShopKirana | | Indore
+BharatAgri | | Pune
+Unstop | | Delhi
+Instahyre | | Bengaluru
+Cutshort | | Bengaluru
+Internshala | | Gurugram
+Superset | joinsuperset | Bengaluru
+Qapita | | Bengaluru
+Media.net | medianet | Mumbai
+Radix | directi | Mumbai
+Rakuten India | rakuten | Bengaluru
+Arcesium | | Hyderabad
+D. E. Shaw India | deshaw | Hyderabad
+Tower Research Capital | towerresearch | Gurugram
+Graviton Research Capital | graviton | Gurugram
+Quadeye | | Gurugram
+AlphaGrep | | Mumbai
+WorldQuant | | Mumbai
+BlackRock | | Gurugram
+LSEG | | Bengaluru
+Nasdaq | | Bengaluru
+Dodo Payments | dodopayments | Bengaluru
+Pazy | | Bengaluru
+Credflow | | Delhi
+Fampay | | Bengaluru
+Kredily | | Bengaluru
+Probo | | Gurugram
+Rario | | Delhi
+FanCode | | Mumbai
+Wiom | | Delhi
+Servify | | Mumbai
+Cashkaro | | Gurugram
+Agrim | | Gurugram
+OneAssist | | Mumbai
+Alt DRX | altdrx | Bengaluru
+Stockgro | | Mumbai
+Univest | | Mumbai
+Liquide | | Mumbai
+Shopdeck | | Bengaluru
+Kapiva | | Bengaluru
+Neeman's | neemans | Hyderabad
+Atlys | | Bengaluru

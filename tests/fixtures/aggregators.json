@@ -1,0 +1,115 @@
+{
+ "remoteok": [
+  {
+   "legal": "API terms: link back to Remote OK"
+  },
+  {
+   "id": "901",
+   "epoch": 1791300000,
+   "date": "2026-10-06T10:00:00+00:00",
+   "company": "Nimbus",
+   "position": "Junior Python Developer",
+   "tags": [
+    "python"
+   ],
+   "description": "<p>Entry level, 0-1 years. Work from anywhere.</p>",
+   "location": "Worldwide",
+   "salary_min": 30000,
+   "salary_max": 45000,
+   "url": "https://remoteok.com/remote-jobs/901"
+  },
+  {
+   "id": "902",
+   "date": "2026-10-06T10:00:00+00:00",
+   "company": "Bigco",
+   "position": "Account Executive",
+   "location": "USA",
+   "description": "",
+   "url": "https://remoteok.com/remote-jobs/902"
+  }
+ ],
+ "remotive": {
+  "jobs": [
+   {
+    "id": 1,
+    "url": "https://remotive.com/remote-jobs/software-dev/ml-engineer-1",
+    "title": "Machine Learning Engineer",
+    "company_name": "Orbit",
+    "candidate_required_location": "USA Only",
+    "publication_date": "2026-10-05T08:00:00",
+    "salary": "",
+    "description": "<p>2+ years.</p>"
+   },
+   {
+    "id": 2,
+    "url": "https://remotive.com/remote-jobs/software-dev/ai-eng-2",
+    "title": "AI Engineer (Entry Level)",
+    "company_name": "Kite Labs",
+    "candidate_required_location": "India",
+    "publication_date": "2026-10-07T08:00:00",
+    "salary": "\u20b910-14 LPA",
+    "description": "<p>Freshers welcome.</p>"
+   }
+  ]
+ },
+ "himalayas": {
+  "jobs": [
+   {
+    "title": "Applied AI Engineer",
+    "companyName": "Lumen",
+    "locationRestrictions": [],
+    "pubDate": 1791400000,
+    "applicationLink": "https://himalayas.app/companies/lumen/jobs/applied-ai-engineer",
+    "guid": "h-1",
+    "description": "<p>0-1 years of experience with LLMs.</p>",
+    "minSalary": 40000,
+    "maxSalary": 60000,
+    "currency": "USD"
+   }
+  ],
+  "totalCount": 1
+ },
+ "jobicy": {
+  "jobs": [
+   {
+    "id": 77,
+    "url": "https://jobicy.com/jobs/77-data-analyst",
+    "jobTitle": "Data Analyst",
+    "companyName": "Tally Co",
+    "jobGeo": "APAC",
+    "pubDate": "2026-10-06 12:31:20",
+    "jobDescription": "<p>1+ year with SQL.</p>",
+    "annualSalaryMin": "",
+    "annualSalaryMax": ""
+   }
+  ]
+ },
+ "hn_thread": {
+  "hits": [
+   {
+    "objectID": "4100",
+    "title": "Ask HN: Who is hiring? (October 2026)"
+   }
+  ]
+ },
+ "hn_items": {
+  "id": 4100,
+  "children": [
+   {
+    "id": 4101,
+    "created_at": "2026-10-01T15:00:00.000Z",
+    "text": "Quill (YC S25) | Founding AI Engineer | REMOTE (India, GMT+5:30) | Full-time<p>We build agents. 1+ years of Python. Apply: jobs@quill.example</p>"
+   },
+   {
+    "id": 4102,
+    "created_at": "2026-10-01T15:05:00.000Z",
+    "text": "Stonebridge | Senior Backend Engineer | ONSITE New York, NY<p>8+ years.</p>"
+   },
+   {
+    "id": 4103,
+    "created_at": "2026-10-01T15:10:00.000Z",
+    "text": "Just a comment without structure"
+   }
+  ]
+ }
+}

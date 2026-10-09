@@ -26,6 +26,10 @@ careeros claims-check packages/<id>/resume.json
 careeros apply <url> --job-id <id> --package packages/<id>/package.json [--submit]
 careeros pause | careeros resume     # kill switch
 careeros serve                       # dashboard at http://127.0.0.1:8765
+careeros discover                    # find job boards for config/companies/companies.csv
+careeros scan                        # read every board + remote feeds -> feed/india.jsonl.gz
+careeros filter-feed --feed URL --settings-json S.json --known DIR --out DIR
+careeros platforms --json            # platforms for the agent to visit this run
 python -m pytest -q                  # all tests must pass before a commit
 python scripts/build_dashboard.py    # after editing dashboard/app.html
 ```
@@ -34,7 +38,7 @@ python scripts/build_dashboard.py    # after editing dashboard/app.html
 | Agent | Skill | Good model for it |
 |---|---|---|
 | Brain builder | `career-brain` | strongest available; it's an interview |
-| Scout + gatekeeper | `job-scout` + `careeros scout/evaluate` | fast model is fine; gates are code |
+| Scout + gatekeeper | `job-scout` + `careeros filter-feed/platforms/evaluate` | fast model is fine; gates are code |
 | Researcher | `company-research` | strong reasoning model |
 | Tailor | `tailor` | strong writing model |
 | Reviewer / red team | `reviewer` | **a different model from the tailor** (e.g. Codex reviews Claude) |

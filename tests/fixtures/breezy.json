@@ -1,0 +1,47 @@
+[
+ {
+  "id": "b1",
+  "friendly_id": "b1-frontend-developer",
+  "name": "Frontend Developer",
+  "url": "https://acme.breezy.hr/p/b1-frontend-developer",
+  "published_date": "2026-10-03T08:00:00.000Z",
+  "type": {
+   "id": "fullTime",
+   "name": "Full-Time"
+  },
+  "location": {
+   "country": {
+    "name": "India",
+    "id": "IN"
+   },
+   "state": {
+    "id": "KA",
+    "name": "Karnataka"
+   },
+   "city": "Bengaluru",
+   "is_remote": false,
+   "name": "Bengaluru, IN"
+  },
+  "department": "Engineering",
+  "company": {
+   "name": "Acme",
+   "friendly_id": "acme"
+  }
+ },
+ {
+  "id": "b2",
+  "friendly_id": "b2-qa",
+  "name": "QA Engineer",
+  "url": "https://acme.breezy.hr/p/b2-qa",
+  "published_date": "2026-10-02T08:00:00.000Z",
+  "location": {
+   "country": {
+    "name": "India",
+    "id": "IN"
+   },
+   "city": "",
+   "is_remote": true,
+   "name": "Remote"
+  }
+ }
+]

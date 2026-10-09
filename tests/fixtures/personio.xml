@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workzag-jobs>
+  <position>
+    <id>1234567</id>
+    <subcompany>Acme GmbH</subcompany>
+    <office>Bengaluru</office>
+    <department>Engineering</department>
+    <name>Junior Data Engineer</name>
+    <jobDescriptions>
+      <jobDescription>
+        <name>Your tasks</name>
+        <value><![CDATA[<p>Build data pipelines in Python and SQL.</p>]]></value>
+      </jobDescription>
+      <jobDescription>
+        <name>Your profile</name>
+        <value><![CDATA[<ul><li>Fresh graduates are welcome to apply.</li></ul>]]></value>
+      </jobDescription>
+    </jobDescriptions>
+    <employmentType>permanent</employmentType>
+    <seniority>entry-level</seniority>
+    <schedule>full-time</schedule>
+    <yearsOfExperience>lt-1</yearsOfExperience>
+    <createdAt>2026-10-01T10:00:00+00:00</createdAt>
+  </position>
+</workzag-jobs>

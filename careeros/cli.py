@@ -12,6 +12,13 @@
                                         fill an application form; submit only if safe
   careeros pause | resume               kill switch for all submissions
   careeros serve [--port 8765]          open the dashboard locally
+
+India feed (runs on GitHub Actions; see .github/workflows/scan.yml):
+  careeros discover                     find each company's public job board
+  careeros scan                         read every mapped board, write feed/india.jsonl.gz
+  careeros filter-feed --feed URL --settings-json S.json --known DIR --out DIR
+                                        apply your filters to the feed (agent use)
+  careeros platforms [--run N] [--json] job platforms for the agent to visit this run
 """
 
 from __future__ import annotations
@@ -174,6 +181,40 @@ def cmd_resume(a):
     print("Resumed.")
 
 
+def cmd_discover(a):
+    from . import discover
+    discover.run(a.companies, a.cache, refresh_days=a.refresh_days, workers=a.workers, limit=a.limit)
+
+
+def cmd_scan(a):
+    from . import scan
+    scan.run(a.boards, a.out, workers=a.workers, detail_cap=a.detail_cap, aggregators=not a.no_remote_boards)
+
+
+def cmd_filter_feed(a):
+    from . import feed
+    if a.settings_json:
+        doc = json.loads(Path(a.settings_json).read_text(encoding="utf-8"))
+        doc = doc.get("data", doc) if isinstance(doc, dict) else doc
+        s = feed.settings_from_dashboard(doc)
+    else:
+        s = Settings.load(a.settings)
+    idx = feed.run(a.feed, s, a.known, a.out, max_skips=a.max_skips, max_kept=a.max_kept)
+    print(json.dumps({k: (len(v) if isinstance(v, list) and k in ("kept", "skipped") else v) for k, v in idx.items()}, indent=2))
+
+
+def cmd_platforms(a):
+    from . import platforms
+    ps = platforms.load(a.file)
+    todo = ps if a.all else platforms.for_run(ps, a.run)
+    if a.json:
+        print(json.dumps({"summary": platforms.summary(ps), "thisRun": todo}, indent=2, ensure_ascii=False))
+        return
+    for p in todo:
+        print(f"{p['competition']:6} {p['access']:6} {p['name'][:44]:44} {p['url']}")
+    print(f"\n{len(todo)} of {len(ps)} platforms")
+
+
 def cmd_serve(a):
     from .server import serve
     serve(Store(a.db), Path(a.root), a.port)
@@ -241,6 +282,39 @@ def main(argv: list[str] | None = None) -> None:
 
     sub.add_parser("pause").set_defaults(fn=cmd_pause)
     sub.add_parser("resume").set_defaults(fn=cmd_resume)
+
+    sp = sub.add_parser("discover", help="Find public job boards for the company list")
+    sp.add_argument("--companies", default="config/companies/companies.csv")
+    sp.add_argument("--cache", default="feed/boards.json")
+    sp.add_argument("--refresh-days", type=int, default=14)
+    sp.add_argument("--workers", type=int, default=32)
+    sp.add_argument("--limit", type=int)
+    sp.set_defaults(fn=cmd_discover)
+
+    sp = sub.add_parser("scan", help="Read every mapped board and write the India feed")
+    sp.add_argument("--boards", default="feed/boards.json")
+    sp.add_argument("--out", default="feed")
+    sp.add_argument("--workers", type=int, default=16)
+    sp.add_argument("--detail-cap", type=int, default=400, help="Max SmartRecruiters detail requests per scan")
+    sp.add_argument("--no-remote-boards", action="store_true", help="Company boards only")
+    sp.set_defaults(fn=cmd_scan)
+
+    sp = sub.add_parser("filter-feed", help="Apply your filters to the India feed")
+    sp.add_argument("--feed", default="https://raw.githubusercontent.com/VishStack01/careeros/feed/feed/india.jsonl.gz")
+    sp.add_argument("--settings-json", help="The dashboard's settings/profile document (JSON)")
+    sp.add_argument("--settings", default="config/settings.toml")
+    sp.add_argument("--known", help="Folder or file of roles already on the dashboard")
+    sp.add_argument("--out", default="new")
+    sp.add_argument("--max-skips", type=int, default=60)
+    sp.add_argument("--max-kept", type=int, default=400)
+    sp.set_defaults(fn=cmd_filter_feed)
+
+    sp = sub.add_parser("platforms", help="Job platforms for the agent to visit this run")
+    sp.add_argument("--file", help="Registry TOML (default: config/platforms.toml)")
+    sp.add_argument("--run", type=int, help="Run number for the rotation (default: from the clock)")
+    sp.add_argument("--all", action="store_true")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_platforms)
 
     sp = sub.add_parser("serve")
     sp.add_argument("--port", type=int, default=8765)

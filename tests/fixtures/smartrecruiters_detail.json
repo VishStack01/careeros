@@ -1,0 +1,23 @@
+{
+ "id": "744000011111",
+ "jobAd": {
+  "sections": {
+   "companyDescription": {
+    "title": "Company",
+    "text": "<p>We build analytics.</p>"
+   },
+   "jobDescription": {
+    "title": "Job Description",
+    "text": "<p>Train and ship forecasting models.</p>"
+   },
+   "qualifications": {
+    "title": "Qualifications",
+    "text": "<ul><li>0-2 years of experience with Python and SQL</li></ul>"
+   },
+   "additionalInformation": {
+    "title": "Additional",
+    "text": "<p>Hybrid, 3 days a week in Hyderabad.</p>"
+   }
+  }
+ }
+}

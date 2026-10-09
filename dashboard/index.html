@@ -104,6 +104,9 @@ main{display:block}
 .seg .n{color:var(--good);font-weight:600}
 .sources{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;padding-block:4px 30px;color:var(--muted);font-weight:600;font-size:16px;letter-spacing:-.01em}
 .sources span:first-child{font-weight:500;font-size:13.5px;letter-spacing:0}
+.sources .cov-at{font-weight:500;font-size:13.5px;letter-spacing:0}
+.more-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding-top:22px}
+.more-row .c{color:var(--muted);font-weight:500;margin-left:4px}
 
 /* Stage cards in tier style */
 .tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding-top:20px}
@@ -357,151 +360,479 @@ textarea{resize:vertical;min-height:84px}
 </head>
 <body>
 <script type="application/json" id="demo-data">{
-  "settings": {
-    "profile": {
-      "experienceLevels": ["Fresher", "1+ years"],
-      "maxRequiredYears": 1,
-      "maxPostingAgeDays": 25,
-      "locations": ["South India (any work mode)", "Rest of India (remote only)", "Remote worldwide (first priority)"],
-      "salaryFloorLpa": 7,
-      "dailyCap": 8,
-      "approvalMode": "auto-when-clear",
-      "schedule": "Search every 3 hours"
-    }
-  },
-  "brain": {
-    "status": {
-      "state": "ready",
-      "summary": "Demo brain: 2 roles, 3 projects and 9 pieces of evidence for a fictional AI engineer.",
-      "counts": {"roles": 2, "projects": 3, "evidence": 9, "stories": 6},
-      "updatedAtHoursAgo": 20
-    }
-  },
-  "runs": {
-    "r1": {"startedAtHoursAgo": 1, "summary": "Scanned 214 listings: 3 kept, 11 skipped, 40 already known. Best new role: Applied AI Engineer at Northwind Labs."},
-    "r2": {"startedAtHoursAgo": 4, "summary": "Scanned 198 listings: 1 kept, 9 skipped, 38 already known. Best new role: LLM Evaluation Engineer at Quill Health."},
-    "r3": {"startedAtHoursAgo": 7, "summary": "Scanned 205 listings: 0 kept, 7 skipped, 41 already known. No new role passed every gate."}
-  },
-  "jobs": {
-    "northwind-applied-ai": {
-      "company": "Northwind Labs", "title": "Applied AI Engineer", "location": "Remote (worldwide)", "workMode": "remote",
-      "region": "remote-global", "source": "Ashby", "url": "https://example.com/northwind/applied-ai", "postedAtHoursAgo": 9,
-      "salary": "$30–40K", "experience": "0–1 years", "stage": "ready", "decision": "A", "fitBand": "strong",
-      "decisionReason": "Your support-ticket router solves the exact problem their agent team is hiring for, and the role welcomes new grads.",
-      "dimensions": [
-        {"name": "Skill evidence", "level": 3, "reason": "Shipped LLM routing with evals; public repo with usage numbers."},
-        {"name": "Experience", "level": 2, "reason": "Asks 0–1 years; you have 14 months including the internship."},
-        {"name": "Project relevance", "level": 3, "reason": "TicketRouter maps to their triage-agent roadmap."},
-        {"name": "Location", "level": 3, "reason": "Remote worldwide; India explicitly allowed."}
-      ],
-      "checks": [
-        {"gate": "Role", "passed": true, "value": "Target role", "quote": "Applied AI Engineer"},
-        {"gate": "Experience", "passed": true, "value": "Fresher (0 years)", "quote": "0–1 years of experience shipping production code; new grads welcome."},
-        {"gate": "Posted", "passed": true, "value": "Posted 9h ago", "quote": ""},
-        {"gate": "Location", "passed": true, "value": "Remote worldwide", "quote": "We are remote-first and hire anywhere in the world."},
-        {"gate": "Pay", "passed": true, "value": "26.4–35.2 LPA", "quote": "$30K – $40K"}
-      ],
-      "brief": {
-        "about": "A fictional startup building AI agents that resolve customer-support tickets.",
-        "team": "The agents team owns routing, tool calls and evaluation for the support agent.",
-        "whyNow": "They are moving from a demo to paying customers this quarter.",
-        "problems": ["Route tickets to the right tool reliably", "Measure agent quality with real evals", "Keep latency under two seconds"],
-        "stack": ["Python", "FastAPI", "Postgres", "LLM APIs"],
-        "salaryBand": "$30–40K a year", "interviewIntel": "Take-home: build a small tool-calling agent in 3 hours.",
-        "sources": [{"title": "Demo posting", "url": "https://example.com/northwind/applied-ai"}]
-      },
-      "evidence": [
-        {"requirement": "Built LLM features in production", "evidence": "TicketRouter routes 1,500 tickets a week at 94% tag accuracy.", "source": "brain: proj-triage"},
-        {"requirement": "Evaluation mindset", "evidence": "120-question eval set for the RAG assistant; 87% accuracy.", "source": "brain: ach-rag"}
-      ],
-      "gaps": ["No production Postgres tuning experience in the brain."],
-      "resume": {"label": "Tailored resume v3", "version": "northwind-2026-10-09"},
-      "coverNote": "Your support agent needs reliable routing before it needs more tools. I built TicketRouter, an open-source router that tags and prioritises 1,500 tickets a week at 94% accuracy, with an eval set I run on every change. I'd like to bring that habit of measuring first to your agents team. Happy to walk through the repo.",
-      "screening": [{"q": "Why Northwind?", "a": "You're solving ticket routing with agents, which is the problem I've spent the last year on in TicketRouter."}],
-      "knockouts": [{"q": "Can work 3 hours overlapping with UTC", "a": "Yes, 2–5 pm IST", "ok": true}],
-      "outreach": {
-        "contact": {"name": "Priya N. (fictional)", "role": "Engineering Manager, Agents"},
-        "email": {"status": "drafted", "subject": "Ticket routing evals for Northwind's agent", "body": "Hi Priya, I applied for the Applied AI Engineer role today. I built TicketRouter, an open-source LLM router that handles 1,500 tickets a week at 94% tag accuracy, and I'd be glad to share how I evaluate it. Would a 15-minute call next week be useful?"},
-        "linkedin": {"note": "Hi Priya, I just applied for Applied AI Engineer. I build ticket-routing agents with evals (open-source repo in my profile). Would love to connect.", "status": "todo"}
-      },
-      "timeline": [{"atHoursAgo": 8, "event": "Found on Ashby by the 3-hourly search"}, {"atHoursAgo": 2, "event": "Package prepared and passed the claims check"}]
-    },
-    "kestrel-ai-automation": {
-      "company": "Kestrel AI", "title": "AI Automation Engineer", "location": "Remote (India)", "workMode": "remote",
-      "region": "remote-india", "source": "Wellfound", "url": "https://example.com/kestrel/automation", "postedAtHoursAgo": 30,
-      "salary": "9–12 LPA", "experience": "1 year", "stage": "ready", "decision": "C", "fitBand": "good",
-      "decisionReason": "Good fit, and a former teammate works there. Ask for a referral before applying.",
-      "checks": [
-        {"gate": "Experience", "passed": true, "value": "1+ years", "quote": "1+ year building automations with n8n, Zapier or code."},
-        {"gate": "Location", "passed": true, "value": "Remote, India", "quote": "Remote within India."},
-        {"gate": "Pay", "passed": true, "value": "9–12 LPA", "quote": "9–12 LPA"}
-      ],
-      "brief": {"about": "A fictional company automating finance back-office work with LLMs.", "problems": ["Invoice and receipt extraction", "Approval workflows", "Audit trails"], "stack": ["n8n", "Python", "OpenAI API"]},
-      "timeline": [{"atHoursAgo": 29, "event": "Found on Wellfound"}]
-    },
-    "orbit-junior-ai": {
-      "company": "Orbit Systems", "title": "Junior AI Engineer", "location": "Hyderabad", "workMode": "hybrid",
-      "region": "south-india", "source": "Greenhouse", "url": "https://example.com/orbit/junior-ai", "postedAtHoursAgo": 20,
-      "salary": "8–11 LPA", "experience": "Fresher welcome", "stage": "found", "fitBand": "pending",
-      "checks": [
-        {"gate": "Experience", "passed": true, "value": "Fresher welcome", "quote": "Freshers from the 2025 and 2026 batches are welcome."},
-        {"gate": "Location", "passed": true, "value": "Hybrid, Hyderabad (south India)", "quote": "Hyderabad"}
-      ],
-      "brief": {"about": "A fictional logistics software company adding AI to route planning.", "problems": ["Parse shipment documents", "Answer ops questions over internal data", "Evaluate model quality"], "stack": ["Python", "RAG", "Postgres"]}
-    },
-    "quill-llm-eval": {
-      "company": "Quill Health", "title": "LLM Evaluation Engineer (New Grad)", "location": "Remote (APAC)", "workMode": "remote",
-      "region": "remote-global", "source": "Lever", "url": "https://example.com/quill/llm-eval", "postedAtHoursAgo": 33,
-      "salary": "", "experience": "Fresher welcome", "stage": "found", "fitBand": "pending",
-      "checks": [{"gate": "Location", "passed": true, "value": "Remote (apac), open to India", "quote": "We hire across APAC time zones."}]
-    },
-    "banyan-fde": {
-      "company": "Banyan Robotics", "title": "Forward Deployed Engineer", "location": "Chennai", "workMode": "onsite",
-      "region": "south-india", "source": "YC jobs", "url": "https://example.com/banyan/fde", "postedAtHoursAgo": 120,
-      "salary": "12–18 LPA", "experience": "1+ years", "stage": "found", "fitBand": "pending"
-    },
-    "lumen-ml-associate": {
-      "company": "Lumen Data", "title": "ML Associate", "location": "Kochi", "workMode": "onsite",
-      "region": "south-india", "source": "Internshala", "url": "https://example.com/lumen/ml", "postedAtHoursAgo": 300,
-      "salary": "7–9 LPA", "experience": "Fresher (0 years)", "stage": "found", "fitBand": "pending"
-    },
-    "tessera-ai-engineer": {
-      "company": "Tessera", "title": "AI Engineer", "location": "Remote (worldwide)", "workMode": "remote",
-      "region": "remote-global", "source": "Ashby", "url": "https://example.com/tessera/ai", "postedAtHoursAgo": 210,
-      "appliedAtHoursAgo": 204, "screenAtHoursAgo": 40, "stage": "screen", "decision": "A", "fitBand": "strong",
-      "outreach": {"contact": {"name": "Dev K. (fictional)"}, "email": {"status": "sent", "sentAtHoursAgo": 200}},
-      "interviewAtHoursAgo": -50
-    },
-    "cobalt-genai": {
-      "company": "Cobalt Pay", "title": "GenAI Engineer", "location": "Bengaluru", "workMode": "hybrid",
-      "region": "south-india", "source": "Greenhouse", "url": "https://example.com/cobalt/genai", "postedAtHoursAgo": 40,
-      "appliedAtHoursAgo": 31, "stage": "applied", "decision": "A", "fitBand": "good",
-      "outreach": {"linkedin": {"note": "Hi, I applied for GenAI Engineer yesterday.", "status": "sent", "sentAtHoursAgo": 30}}
-    },
-    "atlas-senior-ml": {
-      "company": "Atlas Cloud", "title": "Senior ML Engineer", "location": "Remote (US only)", "workMode": "remote",
-      "source": "Greenhouse", "url": "https://example.com/atlas/senior-ml", "postedAtHoursAgo": 50, "stage": "skipped",
-      "skip": {"gate": "Seniority · Experience · Location", "reason": "Senior role asking for 5+ years, remote for people in the US only.", "wouldChange": "Nothing; it's a senior US role."},
-      "checks": [
-        {"gate": "Seniority", "passed": false, "value": "The title is a senior-level role.", "quote": "Senior ML Engineer"},
-        {"gate": "Experience", "passed": false, "value": "Asks for 5+ years; your limit is 1 year(s).", "quote": "You have 5+ years of experience training and serving models."},
-        {"gate": "Location", "passed": false, "value": "Remote, but only for people in the US.", "quote": "Remote (US only)"}
-      ]
-    },
-    "pine-ai-dev": {
-      "company": "Pine Analytics", "title": "AI Developer", "location": "Pune", "workMode": "onsite",
-      "source": "Internshala", "url": "https://example.com/pine/ai-dev", "postedAtHoursAgo": 70, "stage": "skipped",
-      "skip": {"gate": "Location", "reason": "On-site in Pune. Outside south India you only want remote roles.", "wouldChange": "A remote option."}
-    },
-    "ember-prompt": {
-      "company": "Ember Studio", "title": "Prompt Engineer (Fresher)", "location": "Remote (India)", "workMode": "remote",
-      "source": "Internshala", "url": "https://example.com/ember/prompt", "postedAtHoursAgo": 90, "stage": "skipped",
-      "skip": {"gate": "Pay", "reason": "Pays 3–4.2 LPA, below your 7 LPA floor.", "wouldChange": "Lowering your floor to 4 LPA."}
-    }
+ "settings": {
+  "profile": {
+   "experienceLevels": [
+    "Fresher",
+    "1+ years"
+   ],
+   "maxRequiredYears": 1,
+   "maxPostingAgeDays": 25,
+   "locations": [
+    "South India (any work mode)",
+    "Rest of India (remote only)",
+    "Remote worldwide (first priority)"
+   ],
+   "salaryFloorLpa": 7,
+   "dailyCap": 8,
+   "approvalMode": "auto-when-clear",
+   "schedule": "Search every 3 hours",
+   "coverage": {
+    "companies": 1085,
+    "platforms": 96,
+    "highlights": [
+     "Greenhouse",
+     "Lever",
+     "Ashby",
+     "Workable",
+     "Remotive",
+     "Himalayas",
+     "HN Who is hiring",
+     "VC portfolio boards"
+    ]
+   }
   }
-}
-</script>
-<div class="notice"><div class="wrap"><span id="notice-text">Daily search for <b>fresher and 1+ year</b> AI roles, posted in the last 7 days.</span><button type="button" data-act="tab" data-tab="setup">Change filters</button></div></div>
+ },
+ "brain": {
+  "status": {
+   "state": "ready",
+   "summary": "Demo brain: 2 roles, 3 projects and 9 pieces of evidence for a fictional AI engineer.",
+   "counts": {
+    "roles": 2,
+    "projects": 3,
+    "evidence": 9,
+    "stories": 6
+   },
+   "updatedAtHoursAgo": 20
+  }
+ },
+ "runs": {
+  "r1": {
+   "startedAtHoursAgo": 1,
+   "summary": "Scanned 214 listings: 3 kept, 11 skipped, 40 already known. Best new role: Applied AI Engineer at Northwind Labs."
+  },
+  "r2": {
+   "startedAtHoursAgo": 4,
+   "summary": "Scanned 198 listings: 1 kept, 9 skipped, 38 already known. Best new role: LLM Evaluation Engineer at Quill Health."
+  },
+  "r3": {
+   "startedAtHoursAgo": 7,
+   "summary": "Scanned 205 listings: 0 kept, 7 skipped, 41 already known. No new role passed every gate."
+  }
+ },
+ "jobs": {
+  "northwind-applied-ai": {
+   "company": "Northwind Labs",
+   "title": "Applied AI Engineer",
+   "location": "Remote (worldwide)",
+   "workMode": "remote",
+   "region": "remote-global",
+   "source": "Ashby",
+   "url": "https://example.com/northwind/applied-ai",
+   "postedAtHoursAgo": 9,
+   "salary": "$30–40K",
+   "experience": "0–1 years",
+   "stage": "ready",
+   "decision": "A",
+   "fitBand": "strong",
+   "decisionReason": "Your support-ticket router solves the exact problem their agent team is hiring for, and the role welcomes new grads.",
+   "dimensions": [
+    {
+     "name": "Skill evidence",
+     "level": 3,
+     "reason": "Shipped LLM routing with evals; public repo with usage numbers."
+    },
+    {
+     "name": "Experience",
+     "level": 2,
+     "reason": "Asks 0–1 years; you have 14 months including the internship."
+    },
+    {
+     "name": "Project relevance",
+     "level": 3,
+     "reason": "TicketRouter maps to their triage-agent roadmap."
+    },
+    {
+     "name": "Location",
+     "level": 3,
+     "reason": "Remote worldwide; India explicitly allowed."
+    }
+   ],
+   "checks": [
+    {
+     "gate": "Role",
+     "passed": true,
+     "value": "Target role",
+     "quote": "Applied AI Engineer"
+    },
+    {
+     "gate": "Experience",
+     "passed": true,
+     "value": "Fresher (0 years)",
+     "quote": "0–1 years of experience shipping production code; new grads welcome."
+    },
+    {
+     "gate": "Posted",
+     "passed": true,
+     "value": "Posted 9h ago",
+     "quote": ""
+    },
+    {
+     "gate": "Location",
+     "passed": true,
+     "value": "Remote worldwide",
+     "quote": "We are remote-first and hire anywhere in the world."
+    },
+    {
+     "gate": "Pay",
+     "passed": true,
+     "value": "26.4–35.2 LPA",
+     "quote": "$30K – $40K"
+    }
+   ],
+   "brief": {
+    "about": "A fictional startup building AI agents that resolve customer-support tickets.",
+    "team": "The agents team owns routing, tool calls and evaluation for the support agent.",
+    "whyNow": "They are moving from a demo to paying customers this quarter.",
+    "problems": [
+     "Route tickets to the right tool reliably",
+     "Measure agent quality with real evals",
+     "Keep latency under two seconds"
+    ],
+    "stack": [
+     "Python",
+     "FastAPI",
+     "Postgres",
+     "LLM APIs"
+    ],
+    "salaryBand": "$30–40K a year",
+    "interviewIntel": "Take-home: build a small tool-calling agent in 3 hours.",
+    "sources": [
+     {
+      "title": "Demo posting",
+      "url": "https://example.com/northwind/applied-ai"
+     }
+    ]
+   },
+   "evidence": [
+    {
+     "requirement": "Built LLM features in production",
+     "evidence": "TicketRouter routes 1,500 tickets a week at 94% tag accuracy.",
+     "source": "brain: proj-triage"
+    },
+    {
+     "requirement": "Evaluation mindset",
+     "evidence": "120-question eval set for the RAG assistant; 87% accuracy.",
+     "source": "brain: ach-rag"
+    }
+   ],
+   "gaps": [
+    "No production Postgres tuning experience in the brain."
+   ],
+   "resume": {
+    "label": "Tailored resume v3",
+    "version": "northwind-2026-10-09"
+   },
+   "coverNote": "Your support agent needs reliable routing before it needs more tools. I built TicketRouter, an open-source router that tags and prioritises 1,500 tickets a week at 94% accuracy, with an eval set I run on every change. I'd like to bring that habit of measuring first to your agents team. Happy to walk through the repo.",
+   "screening": [
+    {
+     "q": "Why Northwind?",
+     "a": "You're solving ticket routing with agents, which is the problem I've spent the last year on in TicketRouter."
+    }
+   ],
+   "knockouts": [
+    {
+     "q": "Can work 3 hours overlapping with UTC",
+     "a": "Yes, 2–5 pm IST",
+     "ok": true
+    }
+   ],
+   "outreach": {
+    "contact": {
+     "name": "Priya N. (fictional)",
+     "role": "Engineering Manager, Agents"
+    },
+    "email": {
+     "status": "drafted",
+     "subject": "Ticket routing evals for Northwind's agent",
+     "body": "Hi Priya, I applied for the Applied AI Engineer role today. I built TicketRouter, an open-source LLM router that handles 1,500 tickets a week at 94% tag accuracy, and I'd be glad to share how I evaluate it. Would a 15-minute call next week be useful?"
+    },
+    "linkedin": {
+     "note": "Hi Priya, I just applied for Applied AI Engineer. I build ticket-routing agents with evals (open-source repo in my profile). Would love to connect.",
+     "status": "todo"
+    }
+   },
+   "timeline": [
+    {
+     "atHoursAgo": 8,
+     "event": "Found on Ashby by the 3-hourly search"
+    },
+    {
+     "atHoursAgo": 2,
+     "event": "Package prepared and passed the claims check"
+    }
+   ]
+  },
+  "kestrel-ai-automation": {
+   "company": "Kestrel AI",
+   "title": "AI Automation Engineer",
+   "location": "Remote (India)",
+   "workMode": "remote",
+   "region": "remote-india",
+   "source": "Wellfound",
+   "url": "https://example.com/kestrel/automation",
+   "postedAtHoursAgo": 30,
+   "salary": "9–12 LPA",
+   "experience": "1 year",
+   "stage": "ready",
+   "decision": "C",
+   "fitBand": "good",
+   "decisionReason": "Good fit, and a former teammate works there. Ask for a referral before applying.",
+   "checks": [
+    {
+     "gate": "Experience",
+     "passed": true,
+     "value": "1+ years",
+     "quote": "1+ year building automations with n8n, Zapier or code."
+    },
+    {
+     "gate": "Location",
+     "passed": true,
+     "value": "Remote, India",
+     "quote": "Remote within India."
+    },
+    {
+     "gate": "Pay",
+     "passed": true,
+     "value": "9–12 LPA",
+     "quote": "9–12 LPA"
+    }
+   ],
+   "brief": {
+    "about": "A fictional company automating finance back-office work with LLMs.",
+    "problems": [
+     "Invoice and receipt extraction",
+     "Approval workflows",
+     "Audit trails"
+    ],
+    "stack": [
+     "n8n",
+     "Python",
+     "OpenAI API"
+    ]
+   },
+   "timeline": [
+    {
+     "atHoursAgo": 29,
+     "event": "Found on Wellfound"
+    }
+   ]
+  },
+  "orbit-junior-ai": {
+   "company": "Orbit Systems",
+   "title": "Junior AI Engineer",
+   "location": "Hyderabad",
+   "workMode": "hybrid",
+   "region": "south-india",
+   "source": "Greenhouse",
+   "url": "https://example.com/orbit/junior-ai",
+   "postedAtHoursAgo": 20,
+   "salary": "8–11 LPA",
+   "experience": "Fresher welcome",
+   "stage": "found",
+   "fitBand": "pending",
+   "checks": [
+    {
+     "gate": "Experience",
+     "passed": true,
+     "value": "Fresher welcome",
+     "quote": "Freshers from the 2025 and 2026 batches are welcome."
+    },
+    {
+     "gate": "Location",
+     "passed": true,
+     "value": "Hybrid, Hyderabad (south India)",
+     "quote": "Hyderabad"
+    }
+   ],
+   "brief": {
+    "about": "A fictional logistics software company adding AI to route planning.",
+    "problems": [
+     "Parse shipment documents",
+     "Answer ops questions over internal data",
+     "Evaluate model quality"
+    ],
+    "stack": [
+     "Python",
+     "RAG",
+     "Postgres"
+    ]
+   }
+  },
+  "quill-llm-eval": {
+   "company": "Quill Health",
+   "title": "LLM Evaluation Engineer (New Grad)",
+   "location": "Remote (APAC)",
+   "workMode": "remote",
+   "region": "remote-global",
+   "source": "Lever",
+   "url": "https://example.com/quill/llm-eval",
+   "postedAtHoursAgo": 33,
+   "salary": "",
+   "experience": "Fresher welcome",
+   "stage": "found",
+   "fitBand": "pending",
+   "checks": [
+    {
+     "gate": "Location",
+     "passed": true,
+     "value": "Remote (apac), open to India",
+     "quote": "We hire across APAC time zones."
+    }
+   ]
+  },
+  "banyan-fde": {
+   "company": "Banyan Robotics",
+   "title": "Forward Deployed Engineer",
+   "location": "Chennai",
+   "workMode": "onsite",
+   "region": "south-india",
+   "source": "YC jobs",
+   "url": "https://example.com/banyan/fde",
+   "postedAtHoursAgo": 120,
+   "salary": "12–18 LPA",
+   "experience": "1+ years",
+   "stage": "found",
+   "fitBand": "pending"
+  },
+  "lumen-ml-associate": {
+   "company": "Lumen Data",
+   "title": "ML Associate",
+   "location": "Kochi",
+   "workMode": "onsite",
+   "region": "south-india",
+   "source": "Internshala",
+   "url": "https://example.com/lumen/ml",
+   "postedAtHoursAgo": 300,
+   "salary": "7–9 LPA",
+   "experience": "Fresher (0 years)",
+   "stage": "found",
+   "fitBand": "pending"
+  },
+  "tessera-ai-engineer": {
+   "company": "Tessera",
+   "title": "AI Engineer",
+   "location": "Remote (worldwide)",
+   "workMode": "remote",
+   "region": "remote-global",
+   "source": "Ashby",
+   "url": "https://example.com/tessera/ai",
+   "postedAtHoursAgo": 210,
+   "appliedAtHoursAgo": 204,
+   "screenAtHoursAgo": 40,
+   "stage": "screen",
+   "decision": "A",
+   "fitBand": "strong",
+   "outreach": {
+    "contact": {
+     "name": "Dev K. (fictional)"
+    },
+    "email": {
+     "status": "sent",
+     "sentAtHoursAgo": 200
+    }
+   },
+   "interviewAtHoursAgo": -50
+  },
+  "cobalt-genai": {
+   "company": "Cobalt Pay",
+   "title": "GenAI Engineer",
+   "location": "Bengaluru",
+   "workMode": "hybrid",
+   "region": "south-india",
+   "source": "Greenhouse",
+   "url": "https://example.com/cobalt/genai",
+   "postedAtHoursAgo": 40,
+   "appliedAtHoursAgo": 31,
+   "stage": "applied",
+   "decision": "A",
+   "fitBand": "good",
+   "outreach": {
+    "linkedin": {
+     "note": "Hi, I applied for GenAI Engineer yesterday.",
+     "status": "sent",
+     "sentAtHoursAgo": 30
+    }
+   }
+  },
+  "atlas-senior-ml": {
+   "company": "Atlas Cloud",
+   "title": "Senior ML Engineer",
+   "location": "Remote (US only)",
+   "workMode": "remote",
+   "source": "Greenhouse",
+   "url": "https://example.com/atlas/senior-ml",
+   "postedAtHoursAgo": 50,
+   "stage": "skipped",
+   "skip": {
+    "gate": "Seniority · Experience · Location",
+    "reason": "Senior role asking for 5+ years, remote for people in the US only.",
+    "wouldChange": "Nothing; it's a senior US role."
+   },
+   "checks": [
+    {
+     "gate": "Seniority",
+     "passed": false,
+     "value": "The title is a senior-level role.",
+     "quote": "Senior ML Engineer"
+    },
+    {
+     "gate": "Experience",
+     "passed": false,
+     "value": "Asks for 5+ years; your limit is 1 year(s).",
+     "quote": "You have 5+ years of experience training and serving models."
+    },
+    {
+     "gate": "Location",
+     "passed": false,
+     "value": "Remote, but only for people in the US.",
+     "quote": "Remote (US only)"
+    }
+   ]
+  },
+  "pine-ai-dev": {
+   "company": "Pine Analytics",
+   "title": "AI Developer",
+   "location": "Pune",
+   "workMode": "onsite",
+   "source": "Internshala",
+   "url": "https://example.com/pine/ai-dev",
+   "postedAtHoursAgo": 70,
+   "stage": "skipped",
+   "skip": {
+    "gate": "Location",
+    "reason": "On-site in Pune. Outside south India you only want remote roles.",
+    "wouldChange": "A remote option."
+   }
+  },
+  "ember-prompt": {
+   "company": "Ember Studio",
+   "title": "Prompt Engineer (Fresher)",
+   "location": "Remote (India)",
+   "workMode": "remote",
+   "source": "Internshala",
+   "url": "https://example.com/ember/prompt",
+   "postedAtHoursAgo": 90,
+   "stage": "skipped",
+   "skip": {
+    "gate": "Pay",
+    "reason": "Pays 3–4.2 LPA, below your 7 LPA floor.",
+    "wouldChange": "Lowering your floor to 4 LPA."
+   }
+  }
+ }
+}</script>
+<div class="notice"><div class="wrap"><span id="notice-text">Every 3 hours: <b>fresher and 1+ year</b> AI roles, posted in the last 25 days.</span><button type="button" data-act="tab" data-tab="setup">Change filters</button></div></div>
 
 <header class="nav" id="nav">
   <div class="wrap">
@@ -522,15 +853,15 @@ textarea{resize:vertical;min-height:84px}
     <div class="hero">
       <div>
         <h1 id="hero-h">Fresh roles, checked against your filters</h1>
-        <p class="sub" id="hero-sub">Fresher and 1+ year AI roles in Bengaluru, Hyderabad and remote. Anything posted more than 7 days ago is skipped.</p>
+        <p class="sub" id="hero-sub">Fresher and 1+ year AI roles in south India and remote. Anything posted more than 25 days ago, or already closed, is skipped.</p>
       </div>
       <div class="seg" id="seg" data-v="week" role="group" aria-label="How fresh">
         <span class="thumb"></span>
         <button type="button" data-act="window" data-w="day" aria-pressed="false">Last 24 hours <span class="n" id="n-day"></span></button>
-        <button type="button" data-act="window" data-w="week" aria-pressed="true">Last 7 days <span class="n" id="n-week"></span></button>
+        <button type="button" data-act="window" data-w="week" aria-pressed="true">Last 25 days <span class="n" id="n-week"></span></button>
       </div>
     </div>
-    <div class="sources" aria-label="Where the search looks"><span>Searching</span><span>Internshala</span><span>Wellfound</span><span>YC jobs</span><span>Cutshort</span><span>Greenhouse</span><span>Lever</span><span>Ashby</span></div>
+    <div class="sources" id="sources" aria-label="Where the search looks"><span>Searching</span><span>Internshala</span><span>Wellfound</span><span>YC jobs</span><span>Cutshort</span><span>Greenhouse</span><span>Lever</span><span>Ashby</span></div>
     <div class="tiers" id="tiers"></div>
     <div class="section" id="batch-sec"></div>
     <div class="section" id="fresh-sec"></div>
@@ -622,8 +953,10 @@ const state = {
   db: null, canWrite: true, status: 'connecting',
   jobs: new Map(), settings: null, brain: null, runs: [],
   loaded: {jobs:false}, tab: 'today', win: 'week', filter: 'active', q: '', openId: null, formDirty: false,
-  selected: new Set(), seenReady: new Set(), enter: true, counted: false
+  selected: new Set(), seenReady: new Set(), enter: true, counted: false,
+  freshLimit: 24, region: 'all'
 };
+const FRESH_PAGE = 24;
 
 /* ---------- derived ---------- */
 const jobsArr = () => Array.from(state.jobs.values());
@@ -744,11 +1077,30 @@ function renderBatch(){
   return `<div class="sh" id="batch"><h2>Today's batch</h2><p>${ready.length} ready, up to ${esc(s.dailyCap)} a day. Untick anything you don't want sent.</p></div><div class="panel">${body}${bar}</div>`;
 }
 
+function renderSources(){
+  const c = obj(settings().coverage);
+  const fmt = n => Number(n).toLocaleString('en-IN');
+  if (!c.companies && !c.platforms) return '';
+  const bits = ['<span>Searching</span>'];
+  if (c.companies) bits.push(`<span>${fmt(c.companies)} company career pages</span>`);
+  if (c.platforms) bits.push(`<span>${fmt(c.platforms)} job platforms</span>`);
+  arr(c.highlights).slice(0, 6).forEach(h => bits.push(`<span>${esc(h)}</span>`));
+  if (c.feedAt) bits.push(`<span class="cov-at">${c.openings ? fmt(c.openings) + ' openings checked, ' : ''}updated ${esc(when(c.feedAt))}</span>`);
+  return bits.join('');
+}
+
 function renderFresh(){
   const f = filterSummary();
-  const list = jobsArr().filter(j => (j.stage === 'found' || !j.stage) && inWindow(j, state.win)).sort(byPriority);
+  const all = jobsArr().filter(j => (j.stage === 'found' || !j.stage) && inWindow(j, state.win)).sort(byPriority);
+  const regions = [['all', 'All'], ['remote-global', 'Remote worldwide'], ['remote-india', 'Remote, India'], ['south-india', 'South India']];
+  const nIn = k => k === 'all' ? all.length : all.filter(j => j.region === k).length;
+  if (state.region !== 'all' && !nIn(state.region)) state.region = 'all';
+  const list = state.region === 'all' ? all : all.filter(j => j.region === state.region);
+  const shown = list.slice(0, state.freshLimit), left = list.length - shown.length;
+  const chips = all.length > FRESH_PAGE ? `<div class="filters fresh-chips" role="group" aria-label="Where">${regions.filter(([k]) => nIn(k)).map(([k, l]) => `<button class="fchip" data-act="region" data-r="${k}" aria-pressed="${state.region === k}">${l} <span class="c">${nIn(k)}</span></button>`).join('')}</div>` : '';
+  const more = left > 0 ? `<div class="more-row"><button class="btn" data-act="more-fresh">Show ${Math.min(left, FRESH_PAGE)} more <span class="c">${left} left</span></button><button class="btn ghost" data-act="tab" data-tab="pipeline">Open Pipeline</button></div>` : '';
   const title = state.win === 'day' ? 'Posted in the last 24 hours' : `Posted in the last ${f.days} days`;
-  const cards = list.map((j, i) => `
+  const cards = shown.map((j, i) => `
     <button class="jcard${enterCls(i)}" data-act="open" data-id="${esc(j.id)}" aria-label="Open ${esc(j.title)} at ${esc(j.company)}">
       <div class="jtop"><span class="eyebrow">${esc(j.company)}</span><span class="sq" aria-hidden="true">${I.arrow}</span></div>
       <h3>${esc(j.title)}</h3>
@@ -756,7 +1108,7 @@ function renderFresh(){
       <div class="pills">${regionPill(j)}${freshPill(j)}${fitPill(j)}</div>
     </button>`).join('');
   const none = state.loaded.jobs ? empty(state.win === 'day' ? 'Nothing new in the last 24 hours' : 'No fresh roles yet', state.win === 'day' ? 'Switch to Last 7 days to see the rest of the week.' : `The next run looks again. Roles that fail a filter go to Skipped with the reason.`) : empty('Loading roles', 'Reading your pipeline.');
-  return `<div class="sh"><h2>${esc(title)}</h2><p>Remote worldwide roles first, then remote in India, then south India. ${brainReady() ? 'Scored on the next run.' : 'Fit ratings appear once your Career Brain is built.'}</p></div><div class="panel">${cards ? `<div class="cards">${cards}</div>` : none}</div>`;
+  return `<div class="sh"><h2>${esc(title)}</h2><p>Remote worldwide roles first, then remote in India, then south India. ${brainReady() ? 'Scored on the next run.' : 'Fit ratings appear once your Career Brain is built.'}</p></div>${chips}<div class="panel">${cards ? `<div class="cards">${cards}</div>${more}` : none}</div>`;
 }
 
 function renderWaiting(){
@@ -807,6 +1159,7 @@ function renderTodayDynamic(){
   $('#hero-sub').textContent = `${f.exp.charAt(0).toUpperCase() + f.exp.slice(1)} AI roles ${f.locs}. Anything posted more than ${f.days} ${f.days === 1 ? 'day' : 'days'} ago, or already closed, is skipped.`;
   $('#n-day').textContent = nDay ? nDay : ''; $('#n-week').textContent = nWeek ? nWeek : '';
   const wk = document.querySelector('[data-w="week"]'); if (wk) wk.firstChild.textContent = `Last ${f.days} ${f.days === 1 ? 'day' : 'days'} `;
+  const src = renderSources(); if (src) $('#sources').innerHTML = src;
   $('#tiers').innerHTML = renderTiers();
   $('#batch-sec').innerHTML = renderBatch();
   $('#fresh-sec').innerHTML = renderFresh();
@@ -1005,7 +1358,7 @@ function renderNow(){
   $('#c-skipped').textContent = all.filter(j => j.stage === 'skipped').length;
   $('#cta-batch').textContent = ready ? `Review batch (${ready})` : 'Review batch';
   const f = filterSummary();
-  $('#notice-text').innerHTML = state.status === 'nodb' ? 'Open this page as its owner, signed in to Claude, to see your pipeline.' : state.status === 'demo' ? 'Demo with fictional companies. Run <b>careeros serve</b> to see your own pipeline.' : `Daily search for <b>${esc(f.exp)}</b> AI roles<span class="long"> ${esc(f.locs)}</span>, posted in the last ${esc(f.days)} ${f.days === 1 ? 'day' : 'days'}.`;
+  $('#notice-text').innerHTML = state.status === 'nodb' ? 'Open this page as its owner, signed in to Claude, to see your pipeline.' : state.status === 'demo' ? 'Demo with fictional companies. Run <b>careeros serve</b> to see your own pipeline.' : `Every 3 hours: <b>${esc(f.exp)}</b> AI roles<span class="long"> ${esc(f.locs)}</span>, posted in the last ${esc(f.days)} ${f.days === 1 ? 'day' : 'days'}.`;
   document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === state.tab)));
   const seg = $('#seg'); seg.dataset.v = state.win; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.w === state.win)));
   const ae = document.activeElement;
@@ -1067,7 +1420,9 @@ document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
   const act = el.dataset.act, id = el.dataset.id;
   if (act === 'tab') setTab(el.dataset.tab);
-  else if (act === 'window'){ if (state.win !== el.dataset.w){ state.win = el.dataset.w; state.enter = true; render(); } }
+  else if (act === 'window'){ if (state.win !== el.dataset.w){ state.win = el.dataset.w; state.freshLimit = FRESH_PAGE; state.enter = true; render(); } }
+  else if (act === 'region'){ if (state.region !== el.dataset.r){ state.region = el.dataset.r; state.freshLimit = FRESH_PAGE; state.enter = true; render(); } }
+  else if (act === 'more-fresh'){ state.freshLimit += FRESH_PAGE; state.enter = false; render(); }
   else if (act === 'go-batch'){ if (state.tab !== 'today'){ state.tab = 'today'; state.enter = true; renderNow(); } const b = $('#batch'); if (b) b.scrollIntoView({behavior:'smooth', block:'start'}); }
   else if (act === 'station'){ state.filter = el.dataset.stage; setTab('pipeline'); render(); }
   else if (act === 'filter'){ state.filter = el.dataset.f; state.enter = true; render(); }

@@ -41,7 +41,7 @@ flowchart LR
 | Layer | What it is | Where |
 |---|---|---|
 | Truth layer | Career Brain (claims, evidence, skills, stories, voice), validated by `brain-check` | `brain/`, `careeros/brain.py` |
-| Discovery | Public ATS feeds (code) + job boards (agent) | `careeros/sources/`, `job-scout` skill |
+| Discovery | ~1,000 company career pages and 9 remote boards scanned every 3 hours on GitHub Actions into a public feed (code); 96 more platforms in rotation (agent) | `careeros/discover.py`, `scan.py`, `feed.py`, `sources/`, `config/platforms.toml`, `job-scout` skill. See [feed.md](feed.md) |
 | Gatekeeper | Role, seniority, experience, freshness, open, location, pay, dealbreakers, company | `careeros/gates.py`, `careeros/extract.py`, `careeros/geo.py` |
 | State | Documents, dedupe keys, submit state machine, audit log, kill switch | `careeros/store.py` |
 | Generation | Research, decision A–F, tailored package | `company-research`, `tailor` skills |

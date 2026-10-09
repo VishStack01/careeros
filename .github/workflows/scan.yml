@@ -1,0 +1,71 @@
+name: scan
+
+# Every 3 hours: find company job boards, read every board plus the remote job
+# boards with public feeds, and publish the result to the `feed` branch as
+# feed/india.jsonl.gz. The feed is a public list of openings, not anyone's
+# personal data; `careeros filter-feed` applies personal filters elsewhere.
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      rediscover:
+        description: "Re-check every company's job board from scratch"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scan
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e .
+
+      - name: Restore the last feed (board map and caches)
+        run: |
+          if git fetch --depth 1 origin feed 2>/dev/null; then
+            git archive FETCH_HEAD feed | tar -x
+          fi
+          mkdir -p feed
+          if [ "${{ inputs.rediscover }}" = "true" ]; then rm -f feed/boards.json; fi
+
+      - name: Discover job boards
+        # New companies, boards that errored last scan, and unmapped companies
+        # every 14 days. At most 400 per run, so the first full pass is spread
+        # over a few runs and stays gentle on each hiring system.
+        run: careeros discover --companies config/companies/companies.csv --cache feed/boards.json --refresh-days 14 --limit 400
+
+      - name: Scan boards
+        run: careeros scan --boards feed/boards.json --out feed
+
+      - name: Publish to the feed branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pub="$RUNNER_TEMP/pub"
+          mkdir -p "$pub"
+          cp -r feed "$pub/feed"
+          cd "$pub"
+          printf '# CareerOS feed\n\nOpen tech roles in India and remote, regenerated every 3 hours by `.github/workflows/scan.yml` on the main branch.\n\n- `feed/india.jsonl.gz`: one role per line\n- `feed/summary.json`: counts and errors\n- `feed/boards.json`: which job board each company uses\n- `feed/unmapped.csv`: companies whose career site has no public feed\n\nSee docs/feed.md on main.\n' > README.md
+          git init -q -b feed
+          git config user.name "careeros-bot"
+          git config user.email "careeros-bot@users.noreply.github.com"
+          git add -A
+          git commit -qm "feed: $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" feed
+          python -c "import json; s=json.load(open('feed/summary.json')); print(f\"{s['openings']} openings from {s['boards']} company boards; remote boards: {s['remoteBoards']}\")" >> "$GITHUB_STEP_SUMMARY"

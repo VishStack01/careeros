@@ -1,41 +1,71 @@
-"""Polite JSON fetching: one request per host per second, bounded retries, backoff."""
+"""Polite, thread-safe fetching: a minimum gap between requests to each host,
+bounded retries with backoff, and fast failure on "not found"."""
 
 from __future__ import annotations
 
 import json
+import threading
 import time
 import urllib.error
 import urllib.request
 from urllib.parse import urlparse
 
-USER_AGENT = "careeros/0.1 (+https://github.com/VishStack01/careeros; job-search scout)"
+USER_AGENT = "careeros/0.2 (+https://github.com/VishStack01/careeros; job-search scout)"
+MIN_INTERVAL = 1.0  # seconds between requests to the same host; discovery lowers it
+
+_locks: dict[str, threading.Lock] = {}
 _last: dict[str, float] = {}
+_guard = threading.Lock()
 
 
 class FetchError(RuntimeError):
-    pass
+    def __init__(self, msg: str, status: int | None = None):
+        super().__init__(msg)
+        self.status = status
 
 
-def get_json(url: str, timeout: float = 20.0, retries: int = 2, min_interval: float = 1.0):
-    host = urlparse(url).netloc
-    wait = _last.get(host, 0) + min_interval - time.monotonic()
-    if wait > 0:
-        time.sleep(wait)
-    delay = 1.5
-    last_err: Exception | None = None
-    for attempt in range(retries + 1):
+def _wait_turn(host: str, interval: float) -> None:
+    with _guard:
+        lock = _locks.setdefault(host, threading.Lock())
+    with lock:
+        wait = _last.get(host, 0) + interval - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
         _last[host] = time.monotonic()
-        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
+
+
+def get_bytes(url: str, timeout: float = 20.0, retries: int = 2, interval: float | None = None,
+              accept: str = "application/json", data: bytes | None = None) -> bytes:
+    host = urlparse(url).netloc
+    delay = 1.5
+    last: Exception | None = None
+    status = None
+    for attempt in range(retries + 1):
+        _wait_turn(host, MIN_INTERVAL if interval is None else interval)
+        req = urllib.request.Request(url, data=data, headers={"User-Agent": USER_AGENT, "Accept": accept,
+                                                               **({"Content-Type": "application/json"} if data else {})})
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return json.loads(resp.read().decode("utf-8"))
+                return resp.read()
         except urllib.error.HTTPError as e:
-            last_err = e
-            if e.code in (404, 401, 403):
+            last, status = e, e.code
+            if e.code in (400, 401, 403, 404, 410, 422):
                 break  # wrong board name or not allowed: retrying won't help
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as e:
-            last_err = e
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as e:
+            last = e
         if attempt < retries:
             time.sleep(delay)
             delay *= 2
-    raise FetchError(f"{url}: {last_err}")
+    raise FetchError(f"{url}: {last}", status)
+
+
+def get_json(url: str, timeout: float = 20.0, retries: int = 2, min_interval: float | None = None):
+    raw = get_bytes(url, timeout, retries, min_interval)
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise FetchError(f"{url}: not JSON ({e})")
+
+
+def get_text(url: str, timeout: float = 20.0, retries: int = 2, min_interval: float | None = None) -> str:
+    return get_bytes(url, timeout, retries, min_interval, accept="*/*").decode("utf-8", "replace")

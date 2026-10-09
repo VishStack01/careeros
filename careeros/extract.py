@@ -210,6 +210,7 @@ _APAC = re.compile(r"\bapac\b|\bapj\b|\basia[- ]pacific\b|\basia\b", re.I)
 _US_CS = re.compile(r"\bUS\b|\bU\.S\.\b|\bUSA\b")
 _US = re.compile(r"\bunited states\b|\bnorth america\b|\bnamer\b|\bcanada\b|\bus[- ]based\b|\bus citizens?\b|\bmust (?:reside|live) in the us\b", re.I)
 _EU = re.compile(r"\bemea\b|\beurope(?:an)?\b|\bEU\b|\bunited kingdom\b|\buk[- ]only\b|\bCET\b", re.I)
+_AMERICAS = re.compile(r"\bamericas\b|\blatam\b|\blatin america\b|\bsouth america\b", re.I)
 _TZ_RANGE = re.compile(
     r"(?:GMT|UTC)\s*([+-]\s?\d{1,2}(?::?\d{2})?)\s*(?:to|-|–|and|through)\s*(?:GMT|UTC)?\s*([+-]\s?\d{1,2}(?::?\d{2})?)", re.I
 )
@@ -247,7 +248,7 @@ def remote_scope(location: str, text: str) -> RemoteScope:
         m = rx.search(location or "")
         if m:
             return RemoteScope(True, scope, location)
-    for rx, scope in ((_US, "us"), (_EU, "europe")):
+    for rx, scope in ((_US, "us"), (_EU, "europe"), (_AMERICAS, "americas")):
         m = rx.search(location or "")
         if m:
             return RemoteScope(False, scope, location)
@@ -332,6 +333,26 @@ def parse_salary(text: str, usd_inr: float = 88.0) -> Salary | None:
         lpa = v * mult * rate / 1e5
         return Salary(lpa, lpa, cur, period, quote_around(text, *m.span()))
     return None
+
+
+# ---------------------------------------------------------------- facts bundle
+
+def facts(text: str, header: str = "", location: str = "", salary_text: str = "", usd_inr: float = 88.0) -> dict:
+    """Everything the gates need, extracted once from the full posting.
+
+    The India feed stores these instead of whole descriptions, so personal
+    filters can run later without re-downloading every posting."""
+    exp = extract_experience(text, header)
+    scope = remote_scope(location, text)
+    sal = parse_salary(salary_text, usd_inr) or parse_salary(text, usd_inr)
+    out = {
+        "expMin": exp.min_years, "expQuote": exp.quote, "fresherOk": exp.fresher_ok,
+        "scope": scope.scope, "scopeEligible": scope.india_eligible, "scopeQuote": scope.quote,
+        "closedQuote": closed_signal(text), "applicants": applicants(text),
+    }
+    if sal:
+        out.update({"salaryLow": round(sal.low_lpa, 2), "salaryHigh": round(sal.high_lpa, 2), "salaryQuote": sal.quote})
+    return out
 
 
 # ---------------------------------------------------------------- misc signals
