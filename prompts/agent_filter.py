@@ -80,6 +80,7 @@ kept, skipped, seen, feed_urls = [], [], set(), set()
 for line in gzip.open(feed_p, "rt", encoding="utf-8"):
     if not line.strip(): continue
     r = json.loads(line); k = fp(r["company"], r["title"]); feed_urls.add(curl(r["url"]))
+    if "loc" not in (r.get("facts") or {}): continue  # written by an older scan without location classes
     if r["id"] in ids or curl(r["url"]) in urls or k in fps or k in seen: continue
     checks, region, age = decide(r)
     failed = [g for g, ok, _, _ in checks if not ok]
