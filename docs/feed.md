@@ -73,6 +73,8 @@ Output, published to the `feed` branch by `.github/workflows/scan.yml`:
 | `feed/summary.json` | counts by system and region, errors, boards that failed this scan |
 | `feed/boards.json` | each company's hiring system and board name |
 | `feed/unmapped.csv` | companies whose careers page has no public feed |
+| `feed/careeros.pyz` | the whole tool in one file, for agents that can download files but not clone: `python3 careeros.pyz filter-feed ...` |
+| `feed/scan.log`, `feed/discover.log` | the last run's logs |
 
 The feed is a public list of openings. It holds nothing about you.
 

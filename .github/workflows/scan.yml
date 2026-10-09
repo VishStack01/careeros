@@ -57,6 +57,20 @@ jobs:
           set -o pipefail
           careeros scan --boards feed/boards.json --out feed 2>&1 | tee feed/scan.log
 
+      - name: Package the filter tool next to the feed
+        # One-file copy of careeros (python3 careeros.pyz ...) for agents that
+        # can download files but can't clone repositories.
+        if: always()
+        run: |
+          app="$RUNNER_TEMP/app"
+          mkdir -p "$app" feed
+          cp -r careeros "$app/"
+          find "$app" -name __pycache__ -prune -exec rm -rf {} +
+          printf 'from careeros.cli import main\nmain()\n' > "$app/__main__.py"
+          python -m zipapp "$app" -o feed/careeros.pyz
+          cp config/platforms.toml feed/platforms.toml
+          python feed/careeros.pyz --version
+
       - name: Publish to the feed branch
         # Also after a failed step, so the board map and the logs are kept.
         if: always()
@@ -67,7 +81,7 @@ jobs:
           mkdir -p "$pub"
           cp -r feed "$pub/feed"
           cd "$pub"
-          printf '# CareerOS feed\n\nOpen tech roles in India and remote, regenerated every 3 hours by `.github/workflows/scan.yml` on the main branch.\n\n- `feed/india.jsonl.gz`: one role per line\n- `feed/summary.json`: counts and errors\n- `feed/boards.json`: which job board each company uses\n- `feed/unmapped.csv`: companies whose career site has no public feed\n\nSee docs/feed.md on main.\n' > README.md
+          printf '# CareerOS feed\n\nOpen tech roles in India and remote, regenerated every 3 hours by `.github/workflows/scan.yml` on the main branch.\n\n- `feed/india.jsonl.gz`: one role per line\n- `feed/summary.json`: counts and errors\n- `feed/boards.json`: which job board each company uses\n- `feed/unmapped.csv`: companies whose career site has no public feed\n- `feed/careeros.pyz`: the filter tool in one file (`python3 careeros.pyz filter-feed ...`)\n\nSee docs/feed.md on main.\n' > README.md
           git init -q -b feed
           git config user.name "careeros-bot"
           git config user.email "careeros-bot@users.noreply.github.com"
