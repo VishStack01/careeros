@@ -1,0 +1,902 @@
+# Job platforms CareerOS searches, beyond company career pages.
+#
+# access
+#   feed    public JSON/RSS; scanned automatically every 3 hours by `careeros scan`
+#   fetch   public pages; the agent reads them in its run (WebFetch / WebSearch)
+#   login   listings or applying need your account; the agent finds roles and
+#           prepares the application, you press submit (never automated logins)
+#   alerts  big boards whose terms forbid automation; set up their email alerts,
+#           the Gmail tracker reads them
+#   planned job-search APIs that need a free key; not used yet
+# competition   rough applicants per role: low (<50), medium, high (500+)
+# every_run     the agent checks it every 3-hour run; others rotate (about a third per run)
+# verify        the URL pattern hasn't been checked yet; the first run confirms or fixes it
+#
+# Why ~90 and not 500: past about a hundred, "job sites" are mostly clones and
+# scrapers re-posting the same listings (often stale), or sites that only show
+# jobs after login. Searching them adds duplicates, not openings. The real reach
+# comes from the ~1,000 company career pages in config/companies/.
+
+# ------------------------------------------------------------ remote boards with public feeds (scanned)
+
+[[platform]]
+name = "Remote OK"
+url = "https://remoteok.com"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "high"
+every_run = true
+notes = "JSON API at /api. Their terms ask for a link back to the listing, which the dashboard keeps."
+
+[[platform]]
+name = "Remotive"
+url = "https://remotive.com/remote-jobs"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "medium"
+every_run = true
+notes = "API at /api/remote-jobs. They ask for at most ~4 calls a day; the scan reuses results for 6 hours."
+
+[[platform]]
+name = "Himalayas"
+url = "https://himalayas.app/jobs"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "medium"
+every_run = true
+notes = "API at /jobs/api. Lists country restrictions per role, so India eligibility is explicit."
+
+[[platform]]
+name = "Jobicy"
+url = "https://jobicy.com"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "low"
+every_run = true
+notes = "API at /api/v2/remote-jobs; has APAC and India geo tags."
+
+[[platform]]
+name = "Working Nomads"
+url = "https://www.workingnomads.com/jobs"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "low"
+every_run = true
+notes = "API at /api/exposed_jobs/."
+
+[[platform]]
+name = "We Work Remotely"
+url = "https://weworkremotely.com"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "high"
+every_run = true
+notes = "RSS. Region field says 'Anywhere in the World' or 'USA Only'."
+
+[[platform]]
+name = "Hacker News jobs (YC companies)"
+url = "https://news.ycombinator.com/jobs"
+region = "global"
+kind = "community"
+access = "feed"
+competition = "low"
+every_run = true
+notes = "Official HN API. YC startups post here directly; few applicants."
+
+[[platform]]
+name = "HN: Who is hiring? (monthly)"
+url = "https://news.ycombinator.com/submitted?id=whoishiring"
+region = "global"
+kind = "community"
+access = "feed"
+competition = "low"
+every_run = true
+notes = "Algolia HN API. ~400 companies a month, many founders reading replies themselves. Many say 'REMOTE (worldwide)'."
+
+[[platform]]
+name = "Arbeitnow"
+url = "https://www.arbeitnow.com"
+region = "global-remote"
+kind = "remote-board"
+access = "feed"
+competition = "low"
+every_run = true
+notes = "API at /api/job-board-api; only its remote roles are kept. Mostly Europe; the location gate drops EU-only roles."
+
+# ------------------------------------------------------------ remote boards (read by the agent)
+
+[[platform]]
+name = "Remote Rocketship"
+url = "https://www.remoterocketship.com"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+every_run = true
+notes = "Pulls from company ATS pages; filter by 'India' or 'Worldwide' and entry/junior level."
+
+[[platform]]
+name = "Hiring Cafe"
+url = "https://hiring.cafe"
+region = "global"
+kind = "aggregator"
+access = "fetch"
+competition = "low"
+every_run = true
+notes = "Indexes company career pages directly (no reposts). Filter India + remote + 0-2 years."
+
+[[platform]]
+name = "EchoJobs"
+url = "https://echojobs.io"
+region = "global"
+kind = "aggregator"
+access = "fetch"
+competition = "low"
+notes = "Tech roles straight from company ATS boards; has Bengaluru and remote filters."
+
+[[platform]]
+name = "aijobs.net"
+url = "https://aijobs.net"
+region = "global"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+every_run = true
+notes = "AI/ML/data only. Filter by India and remote."
+
+[[platform]]
+name = "Arc"
+url = "https://arc.dev/remote-jobs"
+region = "global-remote"
+kind = "talent-marketplace"
+access = "login"
+competition = "medium"
+notes = "Remote roles open to India; profile vetting first."
+
+[[platform]]
+name = "DailyRemote"
+url = "https://dailyremote.com"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "medium"
+notes = "Filter location 'Worldwide' or 'India'."
+
+[[platform]]
+name = "Remote.co"
+url = "https://remote.co/remote-jobs/"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "medium"
+
+[[platform]]
+name = "JustRemote"
+url = "https://justremote.co"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "medium"
+
+[[platform]]
+name = "NoDesk"
+url = "https://nodesk.co/remote-jobs/"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "Jobspresso"
+url = "https://jobspresso.co"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "Remote First Jobs"
+url = "https://remotefirstjobs.com"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "4 Day Week"
+url = "https://4dayweek.io/remote-jobs"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "Pangian"
+url = "https://pangian.com/job-travel-remote/"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "Remote Python"
+url = "https://www.remotepython.com/jobs/"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "low"
+notes = "Python only."
+
+[[platform]]
+name = "Python.org job board"
+url = "https://www.python.org/jobs/"
+region = "global"
+kind = "community"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "web3.career"
+url = "https://web3.career"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "medium"
+notes = "Crypto/web3. Has an India filter; many roles are worldwide."
+
+[[platform]]
+name = "CryptoJobsList"
+url = "https://cryptojobslist.com"
+region = "global-remote"
+kind = "remote-board"
+access = "fetch"
+competition = "medium"
+
+[[platform]]
+name = "startup.jobs"
+url = "https://startup.jobs"
+region = "global"
+kind = "aggregator"
+access = "fetch"
+competition = "medium"
+notes = "Filter remote + India."
+
+[[platform]]
+name = "Levels.fyi jobs"
+url = "https://www.levels.fyi/jobs"
+region = "global"
+kind = "aggregator"
+access = "fetch"
+competition = "medium"
+notes = "Shows pay bands; filter Bengaluru/Hyderabad/Chennai and remote."
+
+# ------------------------------------------------------------ startup and community boards
+
+[[platform]]
+name = "Y Combinator jobs"
+url = "https://www.ycombinator.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+every_run = true
+notes = "Public listings; filter 'India' and 'Remote'. Applying goes through Work at a Startup."
+
+[[platform]]
+name = "Work at a Startup (YC)"
+url = "https://www.workatastartup.com"
+region = "global"
+kind = "vc-portfolio"
+access = "login"
+competition = "medium"
+notes = "One YC profile reaches every YC company; founders message you."
+
+[[platform]]
+name = "Wellfound (AngelList Talent)"
+url = "https://wellfound.com/jobs"
+region = "global"
+kind = "india-board"
+access = "login"
+competition = "high"
+notes = "Strong India startup coverage. Blocks automated access; the agent links roles, you apply."
+
+[[platform]]
+name = "Peerlist"
+url = "https://peerlist.io/jobs"
+region = "india"
+kind = "community"
+access = "fetch"
+competition = "low"
+every_run = true
+notes = "Indian builder community; many roles posted by founders and engineers."
+
+[[platform]]
+name = "Hasjob"
+url = "https://hasjob.co"
+region = "india"
+kind = "community"
+access = "fetch"
+competition = "low"
+notes = "HasGeek's board. Low volume now, but almost no competition."
+
+[[platform]]
+name = "r/developersIndia hiring threads"
+url = "https://www.reddit.com/r/developersIndia/"
+region = "india"
+kind = "community"
+access = "fetch"
+competition = "low"
+notes = "Monthly hiring threads and 'we are hiring' posts by engineers."
+
+[[platform]]
+name = "Weekday"
+url = "https://www.weekday.works"
+region = "india"
+kind = "india-board"
+access = "fetch"
+competition = "low"
+every_run = true
+notes = "Indian startup roles with salary bands; many not posted elsewhere."
+
+[[platform]]
+name = "Cutshort"
+url = "https://cutshort.io/jobs"
+region = "india"
+kind = "india-board"
+access = "login"
+competition = "medium"
+notes = "Tech startup roles; AI matching. Public pages show role details."
+
+[[platform]]
+name = "Instahyre"
+url = "https://www.instahyre.com"
+region = "india"
+kind = "india-board"
+access = "login"
+competition = "medium"
+notes = "Recruiters reach out; keep the profile current."
+
+[[platform]]
+name = "Hirist"
+url = "https://www.hirist.tech"
+region = "india"
+kind = "india-board"
+access = "login"
+competition = "medium"
+
+[[platform]]
+name = "Uplers"
+url = "https://www.uplers.com"
+region = "india"
+kind = "talent-marketplace"
+access = "login"
+competition = "medium"
+notes = "Remote roles at global companies for Indian engineers; vetting first."
+
+[[platform]]
+name = "Turing"
+url = "https://www.turing.com/jobs"
+region = "global-remote"
+kind = "talent-marketplace"
+access = "login"
+competition = "medium"
+
+[[platform]]
+name = "TechGig jobs"
+url = "https://www.techgig.com/jobs"
+region = "india"
+kind = "india-board"
+access = "fetch"
+competition = "medium"
+
+[[platform]]
+name = "GeeksforGeeks jobs"
+url = "https://www.geeksforgeeks.org/jobs"
+region = "india"
+kind = "fresher"
+access = "fetch"
+competition = "medium"
+notes = "Many fresher and 0-2 year roles."
+
+[[platform]]
+name = "HackerEarth jobs and hiring challenges"
+url = "https://www.hackerearth.com/challenges/hiring/"
+region = "india"
+kind = "fresher"
+access = "login"
+competition = "medium"
+notes = "Hiring challenges skip the resume screen."
+
+# ------------------------------------------------------------ fresher-first
+
+[[platform]]
+name = "Unstop"
+url = "https://unstop.com/jobs"
+region = "india"
+kind = "fresher"
+access = "login"
+competition = "medium"
+every_run = true
+notes = "Fresher jobs and hiring competitions."
+
+[[platform]]
+name = "Internshala jobs"
+url = "https://internshala.com/jobs/"
+region = "india"
+kind = "fresher"
+access = "login"
+competition = "high"
+notes = "Fresher jobs (filter 7 LPA+) and internships."
+
+[[platform]]
+name = "Cuvette"
+url = "https://cuvette.tech"
+region = "india"
+kind = "fresher"
+access = "login"
+competition = "medium"
+
+[[platform]]
+name = "Talentd"
+url = "https://www.talentd.in"
+region = "india"
+kind = "fresher"
+access = "fetch"
+competition = "medium"
+notes = "Fresher and off-campus tech roles; links to company pages."
+
+[[platform]]
+name = "Freshersworld"
+url = "https://www.freshersworld.com"
+region = "india"
+kind = "fresher"
+access = "fetch"
+competition = "high"
+
+# ------------------------------------------------------------ AI work marketplaces (contract, often fully remote)
+
+[[platform]]
+name = "Mercor"
+url = "https://work.mercor.com"
+region = "global-remote"
+kind = "ai-contract"
+access = "login"
+competition = "medium"
+notes = "AI-lab contract roles (evaluation, data, engineering); AI interview once, then many roles."
+
+[[platform]]
+name = "micro1"
+url = "https://www.micro1.ai/jobs"
+region = "global-remote"
+kind = "ai-contract"
+access = "login"
+competition = "medium"
+
+# ------------------------------------------------------------ VC portfolio job boards (India)
+# Most run on Getro or Consider. Roles here are often posted nowhere else.
+
+[[platform]]
+name = "Peak XV Partners portfolio jobs"
+url = "https://careers.peakxv.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+every_run = true
+verify = true
+
+[[platform]]
+name = "Accel India portfolio jobs"
+url = "https://jobs.accel.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+every_run = true
+verify = true
+
+[[platform]]
+name = "Lightspeed portfolio jobs"
+url = "https://jobs.lsvp.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Elevation Capital portfolio jobs"
+url = "https://jobs.elevationcapital.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Blume Ventures portfolio jobs"
+url = "https://jobs.blume.vc/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Nexus Venture Partners portfolio jobs"
+url = "https://jobs.nexusvp.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Z47 (formerly Matrix Partners India) portfolio jobs"
+url = "https://jobs.z47.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Together Fund portfolio jobs"
+url = "https://jobs.together.fund/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+notes = "India-founded SaaS and AI companies, many remote-first."
+
+[[platform]]
+name = "Kalaari Capital portfolio jobs"
+url = "https://jobs.kalaari.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Chiratae Ventures portfolio jobs"
+url = "https://jobs.chiratae.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "3one4 Capital portfolio jobs"
+url = "https://jobs.3one4capital.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Stellaris Venture Partners portfolio jobs"
+url = "https://jobs.stellarisvp.com/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Prime Venture Partners portfolio jobs"
+url = "https://jobs.primevp.in/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "India Quotient portfolio jobs"
+url = "https://jobs.indiaquotient.in/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Antler India portfolio jobs"
+url = "https://careers.antler.co/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Venture Highway portfolio jobs"
+url = "https://jobs.venturehighway.vc/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Bessemer India portfolio jobs"
+url = "https://jobs.bvp.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+# ------------------------------------------------------------ VC portfolio job boards (global, filter India/remote)
+
+[[platform]]
+name = "a16z portfolio jobs"
+url = "https://jobs.a16z.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+[[platform]]
+name = "Sequoia portfolio jobs"
+url = "https://jobs.sequoiacap.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+[[platform]]
+name = "General Catalyst portfolio jobs"
+url = "https://jobs.generalcatalyst.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+[[platform]]
+name = "Index Ventures startup jobs"
+url = "https://www.indexventures.com/startup-jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+[[platform]]
+name = "Greylock portfolio jobs"
+url = "https://jobs.greylock.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+[[platform]]
+name = "Khosla Ventures portfolio jobs"
+url = "https://jobs.khoslaventures.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+[[platform]]
+name = "Insight Partners portfolio jobs"
+url = "https://jobs.insightpartners.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "medium"
+verify = true
+
+# ------------------------------------------------------------ X-ray searches (find boards that aren't in the company list)
+# The agent runs these with web search, newest first. Any company it finds this
+# way is checked like a career page and suggested for config/companies/.
+
+[[platform]]
+name = "X-ray: Lever boards in India"
+url = 'search:site:jobs.lever.co (Bengaluru OR Bangalore OR Hyderabad OR Chennai OR "Remote - India")'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+every_run = true
+
+[[platform]]
+name = "X-ray: Greenhouse boards in India"
+url = 'search:(site:boards.greenhouse.io OR site:job-boards.greenhouse.io) (Bengaluru OR Hyderabad OR Chennai OR "Remote India")'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+every_run = true
+
+[[platform]]
+name = "X-ray: Ashby boards in India"
+url = 'search:site:jobs.ashbyhq.com (India OR Bengaluru OR Hyderabad OR Chennai)'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+every_run = true
+
+[[platform]]
+name = "X-ray: Workable boards in India"
+url = 'search:site:apply.workable.com (Bengaluru OR Hyderabad OR Chennai OR Kochi OR Coimbatore)'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "X-ray: SmartRecruiters in India"
+url = 'search:site:jobs.smartrecruiters.com (Bengaluru OR Hyderabad OR Chennai) engineer'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "X-ray: Keka career pages"
+url = 'search:site:keka.com/careers (engineer OR developer OR "data")'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+notes = "Keka is used by many Indian startups that never post on job boards."
+
+[[platform]]
+name = "X-ray: Zoho Recruit career pages"
+url = 'search:site:zohorecruit.in (engineer OR developer)'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "X-ray: Darwinbox career pages"
+url = 'search:site:darwinbox.in careers (engineer OR developer)'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "X-ray: Freshteam career pages"
+url = 'search:site:freshteam.com/jobs (engineer OR developer)'
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+
+[[platform]]
+name = "X-ray: 'remote, open to India'"
+url = 'search:"remote" ("open to candidates in India" OR "anywhere in the world" OR "worldwide") ("AI engineer" OR "software engineer") -senior'
+region = "global-remote"
+kind = "xray"
+access = "fetch"
+competition = "low"
+every_run = true
+
+[[platform]]
+name = "X-ray: founders hiring on LinkedIn posts"
+url = "search:site:linkedin.com/posts (\"we are hiring\" OR \"we're hiring\") (Bengaluru OR Hyderabad OR Chennai OR remote) (AI OR \"software engineer\") fresher"
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+notes = "Read-only via search results. The agent never logs into LinkedIn; it drafts the reply for you to send."
+
+# ------------------------------------------------------------ big boards: email alerts only (no automation)
+
+[[platform]]
+name = "LinkedIn Jobs"
+url = "https://www.linkedin.com/jobs/"
+region = "india"
+kind = "big-board"
+access = "alerts"
+competition = "high"
+notes = "Set job alerts (past 24 hours, Entry level, your cities + Remote). Automation breaks their terms and risks your account."
+
+[[platform]]
+name = "Naukri"
+url = "https://www.naukri.com"
+region = "india"
+kind = "big-board"
+access = "alerts"
+competition = "high"
+notes = "Keep the profile updated daily (recruiter search favours fresh profiles); use alerts."
+
+[[platform]]
+name = "Indeed India"
+url = "https://in.indeed.com"
+region = "india"
+kind = "big-board"
+access = "alerts"
+competition = "high"
+
+[[platform]]
+name = "foundit (Monster India)"
+url = "https://www.foundit.in"
+region = "india"
+kind = "big-board"
+access = "alerts"
+competition = "high"
+
+[[platform]]
+name = "Glassdoor India"
+url = "https://www.glassdoor.co.in/Job/"
+region = "india"
+kind = "big-board"
+access = "alerts"
+competition = "high"
+
+[[platform]]
+name = "Shine"
+url = "https://www.shine.com"
+region = "india"
+kind = "big-board"
+access = "alerts"
+competition = "high"
+
+# ------------------------------------------------------------ job-search APIs (free keys; optional)
+
+[[platform]]
+name = "Adzuna API (India)"
+url = "https://developer.adzuna.com"
+region = "india"
+kind = "aggregator"
+access = "planned"
+competition = "medium"
+notes = "Free app_id/app_key. Set ADZUNA_APP_ID and ADZUNA_APP_KEY as GitHub secrets to include it in the scan (planned)."
+
+[[platform]]
+name = "Jooble API"
+url = "https://jooble.org/api/about"
+region = "india"
+kind = "aggregator"
+access = "planned"
+competition = "medium"
+notes = "Free key; planned scan source."
+
+[[platform]]
+name = "Careerjet API"
+url = "https://www.careerjet.co.in"
+region = "india"
+kind = "aggregator"
+access = "planned"
+competition = "medium"
+notes = "Affiliate key; planned scan source."
+
+# ------------------------------------------------------------ lists of companies (feed the company list, not jobs)
+
+[[platform]]
+name = "Y Combinator company directory"
+url = "https://www.ycombinator.com/companies?regions=India"
+region = "india"
+kind = "company-list"
+access = "feed"
+competition = "low"
+notes = "Used by scripts/build_company_list.py."
+
+[[platform]]
+name = "remoteintech/remote-jobs"
+url = "https://github.com/remoteintech/remote-jobs"
+region = "global-remote"
+kind = "company-list"
+access = "feed"
+competition = "low"
+notes = "Hundreds of remote-friendly companies; candidates for the company list."

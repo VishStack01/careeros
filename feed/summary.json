@@ -1,0 +1,44 @@
+{
+  "generatedAt": "2026-10-10T10:03:21Z",
+  "companies": 1396,
+  "boards": 305,
+  "openings": 1733,
+  "remoteBoards": {
+    "hn-who-is-hiring": 71,
+    "remotive": 12,
+    "jobicy": 24,
+    "workingnomads": 17,
+    "remoteok": 36,
+    "weworkremotely": 33,
+    "arbeitnow": 25,
+    "hn-jobs": 3,
+    "himalayas": 86
+  },
+  "byAts": {
+    "Himalayas": 77,
+    "We Work Remotely": 24,
+    "Arbeitnow": 23,
+    "Jobicy": 19,
+    "Ashby": 542,
+    "Greenhouse": 556,
+    "HN Who is hiring": 70,
+    "SmartRecruiters": 163,
+    "Lever": 120,
+    "Working Nomads": 13,
+    "Remotive": 10,
+    "Recruitee": 62,
+    "Workable": 16,
+    "Remote OK": 34,
+    "Hacker News jobs": 3,
+    "Breezy": 1
+  },
+  "byGeo": {
+    "abroad": 945,
+    "remote/unknown": 420,
+    "india": 98,
+    "south": 270
+  },
+  "errors": 0,
+  "errorSamples": [],
+  "erroredCompanies": []
+}
