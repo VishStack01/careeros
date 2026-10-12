@@ -34,6 +34,18 @@ or Antigravity's browser agent) and follow the same rules by hand:
 4. Before submit, check: right resume version uploaded, email and phone match the profile, no placeholder text, every required field filled. Screenshot it.
 5. Submit once. Wait for the confirmation page or email. Screenshot it.
 
+## Answers that get read
+- Short written questions (up to about 150 words): one specific reason from the posting and one real proof point from the brain or resume, first person, no buzzwords.
+- Yes/no and years-with-a-tool questions: only what the brain or resume shows. An honest "No" beats a guess that fails at the interview.
+- Diversity questions: decline unless the profile says otherwise.
+- Apply early: roles posted in the last 72 hours go first.
+
+## Hosted dashboard
+Scheduled auto-apply from the Claude desktop app follows `prompts/scheduled-apply.md`:
+it reads `profile/applicant` and the uploaded resume, applies to roles you queued
+(and, with auto-apply on, roles whose must-haves your evidence covers), and writes
+`needsYou` with the exact reason whenever a role needs you.
+
 ## After
 - Confirmed → stage `applied`, `appliedAt`, receipt path, timeline event.
 - Not confirmed → leave it marked as submitting, tell the user, and don't retry until they've checked the site or their email.

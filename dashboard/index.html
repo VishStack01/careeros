@@ -242,6 +242,20 @@ table.grid{width:100%;border-collapse:separate;border-spacing:0 2px;min-width:72
 .never{font-size:13px;color:var(--muted);line-height:1.45}
 .pill.queued{background:var(--violet-tint);color:#4A2FB0}
 .pill.queued::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.needs{background:var(--gold);color:#000}
+.linkish{all:unset;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.linkish:hover{text-decoration:underline}
+.linkish:focus-visible{outline:2px solid var(--violet,#6A4CE0);outline-offset:2px;border-radius:4px}
+.waits{display:grid;gap:10px;margin-top:16px}
+.waits h3{font-size:16px;font-weight:600;margin:0}
+.wait{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;background:var(--panel);border-radius:var(--r-md);padding:12px 14px}
+.wait .tx{display:grid;gap:3px;min-width:0}
+.wait .tx b{font-size:15px;font-weight:600}
+.wait .tx small{font-size:13.5px;color:var(--muted);line-height:1.4}
+.wait .ract{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.needbox{display:grid;gap:6px;background:color-mix(in srgb,var(--gold) 22%,transparent);border-radius:var(--r-md);padding:12px 14px}
+.needbox b{font-size:14.5px}
+@media (max-width:640px){ .wait{grid-template-columns:minmax(0,1fr)} .wait .ract{justify-content:flex-start} }
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .resume{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:var(--field);border-radius:var(--r-md);padding:14px 16px}
@@ -671,7 +685,7 @@ textarea{resize:vertical;min-height:84px}
    "postedAtHoursAgo": 20,
    "salary": "8–11 LPA",
    "experience": "Fresher welcome",
-   "stage": "found",
+   "stage": "approved",
    "fitBand": "pending",
    "checks": [
     {
@@ -699,7 +713,8 @@ textarea{resize:vertical;min-height:84px}
      "RAG",
      "Postgres"
     ]
-   }
+   },
+   "autoApply": "queued"
   },
   "quill-llm-eval": {
    "company": "Quill Health",
@@ -735,7 +750,10 @@ textarea{resize:vertical;min-height:84px}
    "salary": "12–18 LPA",
    "experience": "1+ years",
    "stage": "found",
-   "fitBand": "pending"
+   "fitBand": "pending",
+   "needsYou": "The form asks you to create an account on Banyan's careers site. Sign in there once in the Claude app's browser, then press Try again.",
+   "needsYouAt": "2026-10-12T09:40:00Z",
+   "applyUrl": "https://example.com/banyan/apply"
   },
   "lumen-ml-associate": {
    "company": "Lumen Data",
@@ -863,7 +881,8 @@ textarea{resize:vertical;min-height:84px}
    }
   }
  }
-}</script>
+}
+</script>
 <div class="notice"><div class="wrap"><span id="notice-text">Every 3 hours: <b>fresher and 1+ year</b> AI roles, posted in the last 25 days.</span><button type="button" data-act="tab" data-tab="setup">Change filters</button></div></div>
 
 <header class="nav" id="nav">
@@ -1096,7 +1115,13 @@ function apMissing(){ const a = applicant(); return AP_REQUIRED.filter(([k]) => 
 function runnerLinked(){ const r = obj(state.runner); const t = toDate(r.lastSeenAt); return !!(r.linked && t && (Date.now() - t) < 7 * 864e5); }
 function autoOn(){ return settings().approvalMode === 'auto-when-clear'; }
 function appliedToday(){ const k = fKey.format(new Date()); return jobsArr().filter(j => j.appliedAt && toDate(j.appliedAt) && fKey.format(toDate(j.appliedAt)) === k).length; }
-function queuedJobs(){ return jobsArr().filter(j => j.autoApply === 'queued' && !isApplied(j) && j.stage !== 'skipped'); }
+function queuedJobs(){ return jobsArr().filter(j => j.autoApply === 'queued' && !isApplied(j) && j.stage !== 'skipped' && !j.needsYou); }
+function waitingJobs(){ return jobsArr().filter(j => j.needsYou && !isApplied(j) && j.stage !== 'skipped').sort((a, b) => (toDate(b.needsYouAt) || 0) - (toDate(a.needsYouAt) || 0)); }
+function waitActions(j, ro){
+  const u = safeUrl(j.applyUrl) || safeUrl(j.url);
+  return (u ? `<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">Open the form</a>` : '')
+    + `<button class="btn sm ghost" data-act="retry" data-id="${esc(j.id)}"${ro}>Try again</button><button class="btn sm solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>`;
+}
 function renderAutoApply(){
   const s = settings(), a = applicant(), r = obj(state.runner), res = obj(a.resume);
   const miss = apMissing(), detailsOk = !miss.length, resumeOk = !!res.id, brainOk = brainReady(), pcOk = runnerLinked();
@@ -1108,9 +1133,10 @@ function renderAutoApply(){
     [detailsOk, 'Your application details', detailsOk ? 'Name, contact, experience, notice period and pay expectations are saved.' : 'Still needed: ' + listJoin(miss.map(lc1)) + '.', `<button class="btn sm${detailsOk ? '' : ' solid'}" data-act="go-details">${detailsOk ? 'Edit' : 'Fill in'}</button>`],
     [resumeOk, 'Resume', resumeOk ? `${esc(res.name || 'resume.pdf')}, added ${esc(when(res.uploadedAt))}.` : 'A PDF of your current resume. Claude also builds your Career Brain from it.', (resumeOk ? `<a class="btn sm ghost" href="/_blob/${esc(res.id)}" target="_blank" rel="noopener">View</a>` : '') + upload],
     [brainOk, 'Career Brain', brainOk ? 'Ready. Every tailored resume line traces back to it.' : resumeOk ? 'Claude builds it from your resume. Say "build my Career Brain" in the chat.' : 'Built from your resume, so every line on a tailored resume is true.', ''],
-    [pcOk, 'Your computer', pcOk ? `Linked. Last check-in ${esc(when(r.lastSeenAt))}${r.device ? ' from ' + esc(r.device) : ''}.` : 'Applications are submitted from the Claude desktop app on your computer, where you sign in to job sites yourself. Approve the "CareerOS auto-apply" scheduled task there once.', '']
+    [pcOk, 'Your computer', pcOk ? `Linked. Last check-in ${esc(when(r.lastSeenAt))}${r.device ? ' from ' + esc(r.device) : ''}.` : (r.lastError ? esc(r.lastError) + ' ' : '') + 'Applications go out from the Claude desktop app on your computer, where you sign in to job sites yourself. In the app, open the "CareerOS auto-apply" scheduled task and turn on "Require this computer".', '']
   ].map(([ok, t, sub, act], i) => `<div class="step${ok ? ' done' : ''}">${num(ok, i + 1)}<div class="tx"><b>${t}</b><small>${sub}</small></div>${act ? `<div class="ract">${act}</div>` : ''}</div>`).join('');
-  const q = queuedJobs().length, today = appliedToday();
+  const q = queuedJobs().length, today = appliedToday(), waits = waitingJobs();
+  const waitHtml = waits.length ? `<div class="waits"><h3>Auto-apply needs you (${waits.length})</h3>${waits.slice(0, 8).map(j => `<div class="wait"><div class="tx"><b><button class="linkish" data-act="open" data-id="${esc(j.id)}">${esc(j.company)} · ${esc(j.title)}</button></b><small>${esc(j.needsYou)}</small></div><div class="ract">${waitActions(j, ro)}</div></div>`).join('')}${waits.length > 8 ? `<p class="muted" style="font-size:13.5px">${waits.length - 8} more in the pipeline.</p>` : ''}</div>` : '';
   const status = autoOn() ? (allOk ? '<span class="pill strong">On</span>' : '<span class="pill" style="background:var(--gold);color:#000">On, finishing setup</span>') : '<span class="pill">Off</span>';
   return `<div class="sh" id="auto"><h2>Auto-apply</h2><p>Applies on each company's own application page, newest and remote-worldwide roles first, with your details and a resume tailored to the role. ${status}</p></div>
     <div class="panel auto">
@@ -1120,7 +1146,7 @@ function renderAutoApply(){
         <div class="autostat"><div><b>${today}<span style="font-size:14px;color:var(--muted);font-weight:500"> / ${esc(s.dailyCap)}</span></b><span>applied today</span></div><div><b>${q}</b><span>queued by you</span></div></div>
         <p class="never">It stops and asks you when a form wants a captcha, a one-time code, a login it doesn't have, or an answer your details can't back up. It never asks for passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri or Indeed.</p>
       </div>
-    </div>`;
+    </div>${waitHtml}`;
 }
 function renderApplicantForm(){
   const a = applicant(), res = obj(a.resume), ro = wr();
@@ -1229,7 +1255,7 @@ function renderFresh(){
       <div class="jtop"><span class="eyebrow">${esc(j.company)}</span><span class="sq" aria-hidden="true">${I.arrow}</span></div>
       <h3>${esc(j.title)}</h3>
       ${metaLine(j)}
-      <div class="pills">${j.autoApply === 'queued' ? '<span class="pill queued">Auto-apply queued</span>' : ''}${regionPill(j)}${freshPill(j)}${fitPill(j)}</div>
+      <div class="pills">${j.needsYou ? '<span class="pill needs">Needs you</span>' : j.autoApply === 'queued' ? '<span class="pill queued">Auto-apply queued</span>' : ''}${regionPill(j)}${freshPill(j)}${fitPill(j)}</div>
     </button>`).join('');
   const none = state.loaded.jobs ? empty(state.win === 'day' ? 'Nothing new in the last 24 hours' : 'No fresh roles yet', state.win === 'day' ? 'Switch to Last 7 days to see the rest of the week.' : `The next run looks again. Roles that fail a filter go to Skipped with the reason.`) : empty('Loading roles', 'Reading your pipeline.');
   return `<div class="sh"><h2>${esc(title)}</h2><p>Remote worldwide roles first, then remote in India, then south India. ${brainReady() ? 'Scored on the next run.' : 'Fit ratings appear once your Career Brain is built.'}</p></div>${chips}<div class="panel">${cards ? `<div class="cards">${cards}</div>${more}` : none}</div>`;
@@ -1237,8 +1263,8 @@ function renderFresh(){
 
 function renderWaiting(){
   const items = [];
-  for (const j of jobsArr().filter(j => j.stage === 'approved')){
-    items.push(`<div class="todo"><span class="ic go">${I.send}</span><div class="tx">Queued for submission: <b>${esc(j.company)}</b>, ${esc(j.title)}<small>Approved ${esc(when(j.approvedAt))}</small></div><div class="ract"><button class="btn sm" data-act="open" data-id="${esc(j.id)}">Open</button></div></div>`);
+  for (const j of jobsArr().filter(j => j.stage === 'approved' && !j.needsYou)){
+    items.push(`<div class="todo"><span class="ic go">${I.send}</span><div class="tx">Queued for auto-apply: <b>${esc(j.company)}</b>, ${esc(j.title)}<small>${j.autoApply === 'queued' ? 'Queued' : 'Approved'} ${esc(when(j.queuedAt || j.approvedAt))}</small></div><div class="ract"><button class="btn sm" data-act="open" data-id="${esc(j.id)}">Open</button></div></div>`);
   }
   for (const t of outreachTodos()) items.push(todoRow(t));
   for (const j of jobsArr().filter(j => j.stage === 'interview' && toDate(j.interviewAt) && toDate(j.interviewAt) > new Date())){
@@ -1415,9 +1441,12 @@ function renderDrawer(){
     + (arr(brief.sources).length ? `<p class="sources-line">Source: ${arr(brief.sources).map(s => { const u = safeUrl(obj(s).url || s); return u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(obj(s).title || hostOf(u))}</a>` : ''; }).filter(Boolean).join(', ')}</p>` : '');
   const evid = arr(j.evidence).length ? `<div class="dims">${arr(j.evidence).map(e => `<div class="ev"><span class="rq">${esc(e.requirement)}</span><span>${esc(e.evidence)}</span>${e.source ? `<span class="src">${esc(e.source)}</span>` : ''}</div>`).join('')}</div>` : '';
   const gaps = arr(j.gaps).length ? `<div><b style="font-size:14.5px">Gaps, reported rather than papered over</b><ul class="gaps">${arr(j.gaps).map(g => `<li><span>${esc(g)}</span></li>`).join('')}</ul></div>` : '';
-  const res = obj(j.resume), resUrl = safeUrl(res.url);
+  const res = obj(j.resume), resUrl = safeUrl(res.url) || (/^[A-Za-z0-9_-]{8,64}$/.test(String(res.asset || '')) ? '/_blob/' + res.asset : null);
+  const needBox = j.needsYou && !isApplied(j) ? `<div class="needbox"><b>Auto-apply stopped here and needs you</b><span>${esc(j.needsYou)}</span><div class="ract" style="justify-content:flex-start;display:flex;gap:8px;flex-wrap:wrap">${waitActions(j, ro)}</div></div>` : '';
+  const appl = obj(j.application);
+  const applHtml = isApplied(j) && (appl.confirmation || j.appliedVia === 'careeros') ? `<p class="muted" style="font-size:14px">Submitted by auto-apply${appl.at ? ' ' + esc(when(appl.at)) : ''}.${appl.confirmation ? ' Confirmation: “' + esc(appl.confirmation) + '”' : ''}</p>` : '';
   const kos = arr(j.knockouts).length ? `<div style="display:grid;gap:10px"><b style="font-size:14.5px">Screening checks</b>${arr(j.knockouts).map(k => `<div class="ko"><span class="ck${k.ok === false ? ' no' : ''}">${k.ok === false ? I.cross : I.check}</span><span>${esc(k.q)}${k.a ? `<br><span class="muted" style="font-size:13.5px">${esc(k.a)}</span>` : ''}</span></div>`).join('')}</div>` : '';
-  const pkg = (resUrl ? `<div class="contact"><a class="btn" href="${esc(resUrl)}" target="_blank" rel="noopener">${esc(res.label || 'Tailored resume')}</a>${res.version ? `<span class="muted" style="font-size:13px">${esc(res.version)}</span>` : ''}</div>` : '')
+  const pkg = applHtml + (resUrl ? `<div class="contact"><a class="btn" href="${esc(resUrl)}" target="_blank" rel="noopener">${esc(res.label || 'Tailored resume')}</a>${res.version ? `<span class="muted" style="font-size:13px">${esc(res.version)}</span>` : ''}</div>` : '')
     + (j.coverNote ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Cover note</b>${copy(j.coverNote)}</div>` : '')
     + kos
     + (arr(j.screening).length ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Screening answers</b>${arr(j.screening).map(x => copy(x.a, x.q)).join('')}</div>` : '');
@@ -1432,19 +1461,20 @@ function renderDrawer(){
   const stageOpts = FLOW.concat(CLOSED, ['skipped']).map(s => `<option value="${s}"${(j.stage || 'found') === s ? ' selected' : ''}>${STAGE_LABEL[s]}</option>`).join('');
   let actions = '';
   if (j.stage === 'ready') actions = `<button class="btn ghost" data-act="skip" data-id="${esc(j.id)}"${ro}>Skip</button><button class="btn solid" data-act="approve" data-id="${esc(j.id)}"${ro}>Approve</button>`;
-  else if (j.stage === 'approved') actions = `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>Mark as applied</button>`;
+  else if (j.stage === 'approved') actions = (j.autoApply === 'queued' && !j.needsYou ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : '') + `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>${j.needsYou ? 'I applied' : 'Mark as applied'}</button>`;
   else if (j.stage === 'skipped') actions = `<button class="btn solid" data-act="override" data-id="${esc(j.id)}"${ro}>Prepare anyway</button>`;
   else if (j.stage === 'found' || !j.stage){
     const q = j.autoApply === 'queued';
     actions = (url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open posting</a>` : '')
-      + (q ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : `<button class="btn solid" data-act="queue" data-id="${esc(j.id)}"${ro}>Auto-apply</button>`);
+      + (j.needsYou ? `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>` : q ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : `<button class="btn solid" data-act="queue" data-id="${esc(j.id)}"${ro}>Auto-apply</button>`);
   }
   dr.innerHTML = `
     <div class="dhead ${esc(j.stage || 'found')}">
       <div class="row1"><div style="min-width:0;display:grid;gap:6px"><span class="co">${esc(j.company)}</span><h2 id="d-title">${esc(j.title)}</h2></div><button class="xbtn" data-act="close" aria-label="Close">Close</button></div>
-      <div class="meta">${j.autoApply === 'queued' ? '<span class="pill queued">Queued for auto-apply</span>' : ''}${j.location ? `<span>${I.pin}${esc(j.location)}</span>` : ''}${j.experience ? `<span>${I.spark}${esc(j.experience)}</span>` : ''}${j.salary ? `<span>${I.rupee}${esc(j.salary)}</span>` : ''}${postedText(j.postedAt) ? `<span>${I.clock}${esc(postedText(j.postedAt))}</span>` : ''}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener"><span style="display:inline-flex;gap:5px;align-items:center">${I.link}Posting</span></a>` : ''}</div>
+      <div class="meta">${j.needsYou && !isApplied(j) ? '<span class="pill needs">Needs you</span>' : j.autoApply === 'queued' && !isApplied(j) ? '<span class="pill queued">Queued for auto-apply</span>' : ''}${j.location ? `<span>${I.pin}${esc(j.location)}</span>` : ''}${j.experience ? `<span>${I.spark}${esc(j.experience)}</span>` : ''}${j.salary ? `<span>${I.rupee}${esc(j.salary)}</span>` : ''}${postedText(j.postedAt) ? `<span>${I.clock}${esc(postedText(j.postedAt))}</span>` : ''}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener"><span style="display:inline-flex;gap:5px;align-items:center">${I.link}Posting</span></a>` : ''}</div>
     </div>
     <div class="dbody">
+      ${needBox ? `<div class="dsec">${needBox}</div>` : ''}
       ${sec('Decision', skipBox + decision)}
       ${sec('Checks against your filters', checksHtml)}
       ${sec('Fit by dimension', dims)}
@@ -1574,12 +1604,13 @@ document.addEventListener('click', e => {
   }
   else if (act === 'approve'){ state.selected.delete(id); patchJob(id, {stage:'approved', approvedAt: nowIso()}, 'Approved by you', 'Approved and queued for submission.'); }
   else if (act === 'skip'){ state.selected.delete(id); leave(id).then(() => patchJob(id, {stage:'skipped', skip:{gate:'Your call', reason:'Skipped by you from the batch'}}, 'Skipped by you', 'Skipped. It is in the skip log if you change your mind.')); }
-  else if (act === 'applied') patchJob(id, {stage:'applied', appliedAt: nowIso(), appliedVia:'you'}, 'Marked as applied by you', 'Marked as applied.');
+  else if (act === 'applied') patchJob(id, {stage:'applied', appliedAt: nowIso(), appliedVia:'you', needsYou: ''}, 'Marked as applied by you', 'Marked as applied.');
   else if (act === 'override') patchJob(id, {stage:'found', override:true}, 'Override: prepare on the next run', 'It will be prepared on the next run.');
   else if (act === 'email-sent') patchJob(id, {outreach:{email:{status:'sent', sentAt: nowIso()}}}, 'Email to hiring contact sent', 'Marked sent. Follow-ups are scheduled from today.');
   else if (act === 'li-sent') patchJob(id, {outreach:{linkedin:{status:'sent', sentAt: nowIso()}}}, 'LinkedIn note sent', 'Marked sent.');
-  else if (act === 'queue'){ patchJob(id, {autoApply: 'queued', queuedAt: nowIso()}, 'Queued for auto-apply by you', autoReadyMsg()); }
-  else if (act === 'unqueue'){ patchJob(id, {autoApply: {__delete__: true}}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
+  else if (act === 'queue'){ const t = nowIso(); patchJob(id, {stage: 'approved', approvedAt: t, autoApply: 'queued', queuedAt: t}, 'Queued for auto-apply by you', autoReadyMsg()); }
+  else if (act === 'unqueue'){ patchJob(id, {stage: 'found', autoApply: 'off', needsYou: ''}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
+  else if (act === 'retry'){ const j = state.jobs.get(id), t = nowIso(); patchJob(id, Object.assign({autoApply: 'queued', queuedAt: t, needsYou: ''}, (!j || !j.stage || j.stage === 'found') ? {stage: 'approved', approvedAt: t} : {}), 'Sent back to auto-apply by you', 'Back in the queue for the next auto-apply run.'); }
   else if (act === 'go-details'){ if (state.tab !== 'setup'){ state.tab = 'setup'; state.enter = true; try { history.replaceState(null, '', '#setup'); } catch(e){} renderNow(); } setTimeout(() => { const d = $('#apply-details'); if (d) d.scrollIntoView({behavior:'smooth', block:'start'}); const f = $('#ap-fullName'); if (f && !f.value) f.focus({preventScroll:true}); }, 60); }
   else if (act === 'auto-toggle'){
     if (!state.db) return;

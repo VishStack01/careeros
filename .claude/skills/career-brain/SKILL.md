@@ -33,4 +33,4 @@ quality is capped by how rich and honest this file is, so take your time.
 - Never round numbers up. "About 30%" stays "about 30%".
 - If the user can't name proof, the claim stays in the brain with no evidence, and `brain-check` keeps it off resumes.
 - Don't store passwords, Aadhaar, PAN, bank or passport numbers here.
-- When the hosted dashboard is in use, set `brain/status` to `{state: "ready", summary, counts}` once the user has confirmed.
+- When the hosted dashboard is in use, the resume the user uploaded there is the asset named in `profile/applicant.resume.id` (read it with the Artifact tool's read action and that id as `path`). Once the user has confirmed, save the brain JSON as the `brain/brain` document and set `brain/status` to `{state: "ready", summary, counts}`; the auto-apply run tailors from it.

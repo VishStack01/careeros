@@ -116,7 +116,7 @@ for sub, items in (("kept", kept[:max_kept]), ("skipped", skipped[:max_skips])):
 gone, expired, errored = [], [], set((summary or {}).get("erroredCompanies", []))
 for i, d in known:
     if d.get("stage") not in ("found", None, ""): continue
-    if d.get("postedAt") and ts(d["postedAt"]) and (now.timestamp() - ts(d["postedAt"])) / 86400 > days: expired.append(i); continue
+    if d.get("postedAt") and d.get("autoApply") != "queued" and not d.get("needsYou") and ts(d["postedAt"]) and (now.timestamp() - ts(d["postedAt"])) / 86400 > days: expired.append(i); continue
     if summary and d.get("foundVia") in ("careers-feed", "remote-board") and d.get("url") and curl(d["url"]) not in feed_urls and d.get("company") not in errored: gone.append(i)
 json.dump({"kept": [i for i, _ in kept[:max_kept]], "skipped": [i for i, _ in skipped[:max_skips]], "gone": gone, "expired": expired},
           open(os.path.join(out_p, "index.json"), "w"), indent=1)

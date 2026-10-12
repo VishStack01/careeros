@@ -278,7 +278,7 @@
    "postedAtHoursAgo": 20,
    "salary": "8–11 LPA",
    "experience": "Fresher welcome",
-   "stage": "found",
+   "stage": "approved",
    "fitBand": "pending",
    "checks": [
     {
@@ -306,7 +306,8 @@
      "RAG",
      "Postgres"
     ]
-   }
+   },
+   "autoApply": "queued"
   },
   "quill-llm-eval": {
    "company": "Quill Health",
@@ -342,7 +343,10 @@
    "salary": "12–18 LPA",
    "experience": "1+ years",
    "stage": "found",
-   "fitBand": "pending"
+   "fitBand": "pending",
+   "needsYou": "The form asks you to create an account on Banyan's careers site. Sign in there once in the Claude app's browser, then press Try again.",
+   "needsYouAt": "2026-10-12T09:40:00Z",
+   "applyUrl": "https://example.com/banyan/apply"
   },
   "lumen-ml-associate": {
    "company": "Lumen Data",

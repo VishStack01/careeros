@@ -87,6 +87,7 @@ def test_agent_filter_finds_gone_and_expired(tmp_path):
         "closed": {"company": "A", "title": "AI Engineer", "url": "https://jobs.example.com/gone", "stage": "found", "foundVia": "careers-feed", "postedAt": new},
         "board-down": {"company": "B", "title": "AI Engineer", "url": "https://jobs.example.com/x", "stage": "found", "foundVia": "careers-feed", "postedAt": new},
         "old": {"company": "C", "title": "AI Engineer", "url": "https://x.example/2", "stage": "found", "foundVia": "agent", "postedAt": old},
+        "old-queued": {"company": "E", "title": "AI Engineer", "url": "https://x.example/3", "stage": "found", "foundVia": "agent", "postedAt": old, "autoApply": "queued"},
         "applied": {"company": "D", "title": "AI Engineer", "url": "https://jobs.example.com/y", "stage": "applied", "foundVia": "careers-feed", "postedAt": new},
     }.items():
         (known / f"{i}.json").write_text(json.dumps(d))
@@ -95,4 +96,9 @@ def test_agent_filter_finds_gone_and_expired(tmp_path):
     summ.write_text(json.dumps({"erroredCompanies": ["B"]}))
     subprocess.run([sys.executable, "-I", str(SCRIPT), str(fp), str(sj), str(tmp_path / "known"), str(tmp_path / "out"), "50", "40", str(summ)], check=True, capture_output=True)
     idx = json.loads((tmp_path / "out" / "index.json").read_text())
-    assert idx["gone"] == ["closed"] and idx["expired"] == ["old"]
+    assert idx["gone"] == ["closed"] and idx["expired"] == ["old"]  # a role you queued for auto-apply never expires
+
+
+def test_prompt_embeds_the_same_filter():
+    prompt = (SCRIPT.parent / "scheduled-search.md").read_text()
+    assert prompt.split("```python\n", 1)[1].split("```", 1)[0] == SCRIPT.read_text()
