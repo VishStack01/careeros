@@ -217,10 +217,42 @@ table.grid{width:100%;border-collapse:separate;border-spacing:0 2px;min-width:72
 .fchip .c{opacity:.7;font-weight:600}
 .search{flex:1 1 220px;max-width:320px;margin-left:auto}
 
+/* Auto-apply */
+.auto{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px 28px;align-items:start}
+.steps{display:grid;gap:2px;border-radius:var(--r-md);overflow:hidden}
+.step{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:6px 14px;align-items:center;background:var(--field);padding:14px 18px}
+.step .num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--panel-2);color:var(--ink-2)}
+.step.done .num{background:var(--good-soft);color:var(--good)}
+.step.done .num svg{width:16px;height:16px;stroke-width:3}
+.step .tx{min-width:0;font-size:14.5px}
+.step .tx b{font-weight:600}
+.step .tx small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.step .ract{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.autoside{background:var(--field);border-radius:var(--r-md);padding:18px;display:grid;gap:14px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:600;font-size:16px}
+.switch button{position:relative;width:52px;height:30px;border-radius:999px;border:0;background:var(--panel-2);cursor:pointer;flex:none;transition:background-color .2s var(--ease)}
+.switch button::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s var(--ease)}
+.switch button[aria-checked="true"]{background:var(--good)}
+.switch button[aria-checked="true"]::after{transform:translateX(22px)}
+.switch button:disabled{opacity:.5;cursor:not-allowed}
+.autostat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.autostat div{background:var(--panel);border-radius:10px;padding:10px 12px}
+.autostat b{display:block;font-size:22px;font-weight:600;letter-spacing:-.02em}
+.autostat span{font-size:12.5px;color:var(--muted)}
+.never{font-size:13px;color:var(--muted);line-height:1.45}
+.pill.queued{background:var(--violet-tint);color:#4A2FB0}
+.pill.queued::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.resume{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:var(--field);border-radius:var(--r-md);padding:14px 16px}
+.resume .doc{width:38px;height:46px;border-radius:6px;background:var(--panel-2);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ink-2);flex:none}
+.req{color:var(--bad)}
+@media (max-width:860px){ .auto{grid-template-columns:minmax(0,1fr)} .step{grid-template-columns:34px minmax(0,1fr)} .step .ract{grid-column:2;justify-content:flex-start} }
+
 /* Forms */
 label.f{display:grid;gap:6px;font-size:14px;font-weight:600}
 label.f small{font-weight:400;color:var(--muted);font-size:13px}
-input[type="text"],input[type="number"],input[type="search"],select,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
+input[type="text"],input[type="number"],input[type="search"],input[type="email"],input[type="tel"],input[type="url"],select,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px var(--panel-2)}
 textarea{resize:vertical;min-height:84px}
 .checks{display:flex;flex-wrap:wrap;gap:8px}
@@ -863,6 +895,7 @@ textarea{resize:vertical;min-height:84px}
     </div>
     <div class="sources" id="sources" aria-label="Where the search looks"><span>Searching</span><span>Internshala</span><span>Wellfound</span><span>YC jobs</span><span>Cutshort</span><span>Greenhouse</span><span>Lever</span><span>Ashby</span></div>
     <div class="tiers" id="tiers"></div>
+    <div class="section" id="auto-sec"></div>
     <div class="section" id="batch-sec"></div>
     <div class="section" id="fresh-sec"></div>
     <div class="section" id="wait-sec"></div>
@@ -954,7 +987,8 @@ const state = {
   jobs: new Map(), settings: null, brain: null, runs: [],
   loaded: {jobs:false}, tab: 'today', win: 'week', filter: 'active', q: '', openId: null, formDirty: false,
   selected: new Set(), seenReady: new Set(), enter: true, counted: false,
-  freshLimit: 24, region: 'all'
+  freshLimit: 24, region: 'all',
+  applicant: null, runner: null, assets: null, uploading: false
 };
 const FRESH_PAGE = 24;
 
@@ -1053,6 +1087,96 @@ function renderTiers(){
   ].join('');
 }
 
+/* ---------- Auto-apply ---------- */
+const AP_REQUIRED = [['fullName','Full name'],['email','Email'],['phone','Phone'],['city','City'],['experienceYears','Total experience'],['noticePeriod','Notice period'],['workAuthIndia','Work authorization in India']];
+const NOTICE = ['Immediate','15 days','30 days','45 days','60 days','90 days'];
+function applicant(){ return obj(state.applicant); }
+const lc1 = x => x.charAt(0).toLowerCase() + x.slice(1);
+function apMissing(){ const a = applicant(); return AP_REQUIRED.filter(([k]) => a[k] === undefined || a[k] === null || String(a[k]).trim() === '').map(x => x[1]); }
+function runnerLinked(){ const r = obj(state.runner); const t = toDate(r.lastSeenAt); return !!(r.linked && t && (Date.now() - t) < 7 * 864e5); }
+function autoOn(){ return settings().approvalMode === 'auto-when-clear'; }
+function appliedToday(){ const k = fKey.format(new Date()); return jobsArr().filter(j => j.appliedAt && toDate(j.appliedAt) && fKey.format(toDate(j.appliedAt)) === k).length; }
+function queuedJobs(){ return jobsArr().filter(j => j.autoApply === 'queued' && !isApplied(j) && j.stage !== 'skipped'); }
+function renderAutoApply(){
+  const s = settings(), a = applicant(), r = obj(state.runner), res = obj(a.resume);
+  const miss = apMissing(), detailsOk = !miss.length, resumeOk = !!res.id, brainOk = brainReady(), pcOk = runnerLinked();
+  const allOk = detailsOk && resumeOk && brainOk && pcOk;
+  const ro = wr();
+  const num = (ok, n) => `<span class="num">${ok ? I.check : n}</span>`;
+  const upload = state.assets && state.canWrite ? `<label class="btn sm filebtn${state.uploading ? ' is-busy' : ''}">${state.uploading ? 'Uploading…' : resumeOk ? 'Replace' : 'Upload PDF'}<input type="file" class="resume-file" accept="application/pdf" aria-label="Upload your resume as a PDF"${state.uploading ? ' disabled' : ''}></label>` : '';
+  const steps = [
+    [detailsOk, 'Your application details', detailsOk ? 'Name, contact, experience, notice period and pay expectations are saved.' : 'Still needed: ' + listJoin(miss.map(lc1)) + '.', `<button class="btn sm${detailsOk ? '' : ' solid'}" data-act="go-details">${detailsOk ? 'Edit' : 'Fill in'}</button>`],
+    [resumeOk, 'Resume', resumeOk ? `${esc(res.name || 'resume.pdf')}, added ${esc(when(res.uploadedAt))}.` : 'A PDF of your current resume. Claude also builds your Career Brain from it.', (resumeOk ? `<a class="btn sm ghost" href="/_blob/${esc(res.id)}" target="_blank" rel="noopener">View</a>` : '') + upload],
+    [brainOk, 'Career Brain', brainOk ? 'Ready. Every tailored resume line traces back to it.' : resumeOk ? 'Claude builds it from your resume. Say "build my Career Brain" in the chat.' : 'Built from your resume, so every line on a tailored resume is true.', ''],
+    [pcOk, 'Your computer', pcOk ? `Linked. Last check-in ${esc(when(r.lastSeenAt))}${r.device ? ' from ' + esc(r.device) : ''}.` : 'Applications are submitted from the Claude desktop app on your computer, where you sign in to job sites yourself. Approve the "CareerOS auto-apply" scheduled task there once.', '']
+  ].map(([ok, t, sub, act], i) => `<div class="step${ok ? ' done' : ''}">${num(ok, i + 1)}<div class="tx"><b>${t}</b><small>${sub}</small></div>${act ? `<div class="ract">${act}</div>` : ''}</div>`).join('');
+  const q = queuedJobs().length, today = appliedToday();
+  const status = autoOn() ? (allOk ? '<span class="pill strong">On</span>' : '<span class="pill" style="background:var(--gold);color:#000">On, finishing setup</span>') : '<span class="pill">Off</span>';
+  return `<div class="sh" id="auto"><h2>Auto-apply</h2><p>Applies on each company's own application page, newest and remote-worldwide roles first, with your details and a resume tailored to the role. ${status}</p></div>
+    <div class="panel auto">
+      <div class="steps">${steps}</div>
+      <div class="autoside">
+        <div class="switch"><span>Auto-apply</span><button type="button" role="switch" aria-checked="${autoOn()}" aria-label="Auto-apply" data-act="auto-toggle"${ro}></button></div>
+        <div class="autostat"><div><b>${today}<span style="font-size:14px;color:var(--muted);font-weight:500"> / ${esc(s.dailyCap)}</span></b><span>applied today</span></div><div><b>${q}</b><span>queued by you</span></div></div>
+        <p class="never">It stops and asks you when a form wants a captcha, a one-time code, a login it doesn't have, or an answer your details can't back up. It never asks for passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri or Indeed.</p>
+      </div>
+    </div>`;
+}
+function renderApplicantForm(){
+  const a = applicant(), res = obj(a.resume), ro = wr();
+  const inp = (id, label, type, opts) => { opts = opts || {}; const req = AP_REQUIRED.some(x => x[0] === id); return `<label class="f${opts.full ? ' full' : ''}" for="ap-${id}">${label}${req ? ' <span class="req" aria-hidden="true">*</span>' : ''}${opts.hint ? ` <small>${opts.hint}</small>` : ''}<input type="${type}" id="ap-${id}" name="${id}" value="${esc(a[id] ?? '')}"${opts.ph ? ` placeholder="${esc(opts.ph)}"` : ''}${opts.attrs || ''}${req ? ' required' : ''}${ro}></label>`; };
+  const sel = (id, label, options, def) => { const req = AP_REQUIRED.some(x => x[0] === id); const cur = a[id] ?? def ?? ''; return `<label class="f" for="ap-${id}">${label}${req ? ' <span class="req" aria-hidden="true">*</span>' : ''}<select id="ap-${id}" name="${id}"${ro}>${req && !cur ? '<option value="">Choose</option>' : ''}${options.map(o => `<option${o === cur ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`; };
+  const upload = state.assets && state.canWrite ? `<label class="btn filebtn">${state.uploading ? 'Uploading…' : res.id ? 'Replace PDF' : 'Upload PDF'}<input type="file" class="resume-file" accept="application/pdf" aria-label="Upload your resume as a PDF"${state.uploading ? ' disabled' : ''}></label>` : `<span class="small">Open this page in Claude, signed in, to upload.</span>`;
+  return `<div id="apply-details"><div class="sh"><h2 style="font-size:24px">Application details</h2><p>What auto-apply puts into application forms. Only you can read this.</p></div>
+    <div class="panel" style="display:grid;gap:22px">
+      <div class="resume"><span class="doc">PDF</span><div style="flex:1;min-width:180px"><b>${res.id ? esc(res.name || 'resume.pdf') : 'No resume yet'}</b><div class="small">${res.id ? 'Added ' + esc(when(res.uploadedAt)) + (res.sizeBytes ? ' · ' + Math.round(res.sizeBytes / 1024) + ' KB' : '') : 'Used for applications until your Career Brain makes tailored versions.'}</div></div>${res.id ? `<a class="btn ghost" href="/_blob/${esc(res.id)}" target="_blank" rel="noopener">View</a>` : ''}${upload}</div>
+      <form id="applicant-form" class="formgrid" novalidate>
+        ${inp('fullName', 'Full name', 'text', {attrs: ' autocomplete="name"'})}
+        ${inp('email', 'Email', 'email', {attrs: ' autocomplete="email"'})}
+        ${inp('phone', 'Phone', 'tel', {ph: '+91 98xxxxxxx', attrs: ' autocomplete="tel"'})}
+        ${inp('city', 'City', 'text', {ph: 'e.g. Bengaluru'})}
+        ${inp('linkedin', 'LinkedIn profile', 'url', {ph: 'https://www.linkedin.com/in/…'})}
+        ${inp('github', 'GitHub', 'url', {ph: 'https://github.com/…'})}
+        ${inp('portfolio', 'Portfolio or website', 'url', {ph: 'https://…', full: true})}
+        ${inp('currentTitle', 'Current title', 'text', {ph: 'e.g. AI Product Designer'})}
+        ${inp('currentCompany', 'Current company', 'text')}
+        ${inp('experienceYears', 'Total experience', 'number', {hint: 'years, e.g. 1.5', attrs: ' min="0" max="40" step="0.5"'})}
+        ${sel('noticePeriod', 'Notice period', NOTICE)}
+        ${inp('currentCtcLpa', 'Current CTC', 'number', {hint: 'LPA, optional', attrs: ' min="0" step="0.1"'})}
+        ${inp('expectedCtcLpa', 'Expected CTC', 'number', {hint: 'LPA', attrs: ' min="0" step="0.1"'})}
+        ${inp('degree', 'Highest degree', 'text', {ph: 'e.g. B.Tech, Computer Science'})}
+        ${inp('college', 'College', 'text')}
+        ${inp('graduationYear', 'Graduation year', 'number', {attrs: ' min="1980" max="2035"'})}
+        ${sel('workAuthIndia', 'Authorized to work in India', ['Yes', 'No'])}
+        ${sel('sponsorshipAbroad', 'Need visa sponsorship for roles abroad', ['Not applicable, remote only', 'Yes', 'No'], 'Not applicable, remote only')}
+        ${sel('relocate', 'Open to relocating', ['Yes', 'Within south India', 'No'], 'Within south India')}
+        ${sel('gender', 'Gender, for optional diversity questions', ['Prefer not to say', 'Woman', 'Man', 'Non-binary'], 'Prefer not to say')}
+        ${inp('howHeard', '"How did you hear about us?"', 'text', {ph: "Company careers page", full: true})}
+        <p class="never full">Never stored or asked for: passwords, one-time codes, Aadhaar, PAN, bank details, passport, date of birth. You sign in to job sites yourself in the Claude desktop app's browser.</p>
+        <div class="full"><button class="btn solid" type="submit"${ro}>Save details</button></div>
+      </form>
+    </div></div>`;
+}
+async function uploadResume(file){
+  if (!file || !state.assets || !state.db) return;
+  if (file.type && file.type !== 'application/pdf'){ toast('Choose a PDF file.'); return; }
+  if (file.size > 20 * 1024 * 1024){ toast('That file is over 20 MB. Export a smaller PDF.'); return; }
+  state.uploading = true; render();
+  const old = obj(applicant().resume).id;
+  try {
+    const up = await state.assets.upload(file, {type: 'application/pdf'});
+    const resume = {id: up.id, name: (file.name || 'resume.pdf').slice(0, 120), sizeBytes: up.sizeBytes, uploadedAt: nowIso()};
+    const path = 'profile/applicant';
+    await enqueue(path, () => state.applicant ? state.db.doc(path).update({resume, updatedAt: nowIso()}) : state.db.doc(path).set({resume, updatedAt: nowIso()}));
+    if (old && old !== up.id){ try { await state.assets.delete(old); } catch(e){} }
+    toast('Resume saved. Ask Claude in the chat to build your Career Brain from it.');
+  } catch(e){
+    const c = e && e.code;
+    toast(c === 'too_large' ? 'That file is too large.' : c === 'unsupported_type' ? 'Only PDF files can be used.' : c === 'rate_limited' ? 'Too many uploads. Try again in a minute.' : 'Upload failed. Try again.');
+  }
+  state.uploading = false; render();
+}
+
 function renderBatch(){
   const s = settings();
   const ready = jobsArr().filter(j => j.stage === 'ready').sort((a,b) => decOrder(a.decision) - decOrder(b.decision) || byFresh(a,b));
@@ -1105,7 +1229,7 @@ function renderFresh(){
       <div class="jtop"><span class="eyebrow">${esc(j.company)}</span><span class="sq" aria-hidden="true">${I.arrow}</span></div>
       <h3>${esc(j.title)}</h3>
       ${metaLine(j)}
-      <div class="pills">${regionPill(j)}${freshPill(j)}${fitPill(j)}</div>
+      <div class="pills">${j.autoApply === 'queued' ? '<span class="pill queued">Auto-apply queued</span>' : ''}${regionPill(j)}${freshPill(j)}${fitPill(j)}</div>
     </button>`).join('');
   const none = state.loaded.jobs ? empty(state.win === 'day' ? 'Nothing new in the last 24 hours' : 'No fresh roles yet', state.win === 'day' ? 'Switch to Last 7 days to see the rest of the week.' : `The next run looks again. Roles that fail a filter go to Skipped with the reason.`) : empty('Loading roles', 'Reading your pipeline.');
   return `<div class="sh"><h2>${esc(title)}</h2><p>Remote worldwide roles first, then remote in India, then south India. ${brainReady() ? 'Scored on the next run.' : 'Fit ratings appear once your Career Brain is built.'}</p></div>${chips}<div class="panel">${cards ? `<div class="cards">${cards}</div>${more}` : none}</div>`;
@@ -1161,6 +1285,7 @@ function renderTodayDynamic(){
   const wk = document.querySelector('[data-w="week"]'); if (wk) wk.firstChild.textContent = `Last ${f.days} ${f.days === 1 ? 'day' : 'days'} `;
   const src = renderSources(); if (src) $('#sources').innerHTML = src;
   $('#tiers').innerHTML = renderTiers();
+  $('#auto-sec').innerHTML = renderAutoApply();
   $('#batch-sec').innerHTML = renderBatch();
   $('#fresh-sec').innerHTML = renderFresh();
   $('#wait-sec').innerHTML = renderWaiting();
@@ -1234,7 +1359,7 @@ function renderSetup(){
   const runs = state.runs.length ? `<div class="rows">${state.runs.map(r => `<div class="runrow"><span class="when">${esc(when(r.startedAt))}</span><span>${r.error ? `<b style="color:var(--bad)">Failed:</b> ${esc(r.error)}` : esc(r.summary || '')}</span></div>`).join('')}</div>` : empty('No runs yet', 'The daily run starts once your brain is built.');
   return `<div class="hero" style="padding-bottom:18px"><div><h1>Brain &amp; setup</h1><p class="sub">What the search knows about you, the filters it applies, and what it has done.</p></div></div>
   <div class="setup">
-    <div style="display:grid;gap:34px;min-width:0;padding-top:20px">${brain}<div><div class="sh"><h2 style="font-size:24px">Preferences</h2><p>The daily run reads these.</p></div><div class="panel">${form}</div></div></div>
+    <div style="display:grid;gap:34px;min-width:0;padding-top:20px">${renderApplicantForm()}${brain}<div><div class="sh"><h2 style="font-size:24px">Preferences</h2><p>The daily run reads these.</p></div><div class="panel">${form}</div></div></div>
     <div style="display:grid;gap:34px;min-width:0;padding-top:20px">
       <div><div class="sh"><h2 style="font-size:24px">Ground rules</h2></div><div class="panel"><ul class="checklist">
         <li>${ck}<span>Nothing goes on a resume unless your brain has evidence for it.</span></li>
@@ -1252,7 +1377,8 @@ function renderSetup(){
 /* ---------- Footer ---------- */
 function renderFoot(){
   const f = filterSummary();
-  return `<div><h4>Where it looks</h4><ul><li>Internshala and Wellfound</li><li>YC jobs and Cutshort</li><li>Greenhouse, Lever and Ashby boards</li><li>Company career pages</li></ul></div>
+  const cov = obj(settings().coverage), n = x => Number(x).toLocaleString('en-IN');
+  return `<div><h4>Where it looks</h4><ul><li>${cov.companies ? n(cov.companies) + ' company career pages' : 'Company career pages'}</li><li>${cov.platforms ? n(cov.platforms) + ' job platforms' : 'Remote and Indian job boards'}</li><li>VC portfolio boards</li><li>Searches for new career pages</li></ul></div>
     <div><h4>Your filters</h4><ul><li>${esc(f.exp.charAt(0).toUpperCase() + f.exp.slice(1))}</li><li>Posted in the last ${esc(f.days)} days</li><li>${esc(f.locs)}</li><li>${settings().salaryFloorLpa !== '' ? 'Pay floor ' + esc(settings().salaryFloorLpa) + ' LPA' : 'No pay floor'}</li><li>Up to ${esc(settings().dailyCap)} prepared a day</li></ul></div>
     <div><h4>What it never does</h4><ul><li>Invent experience or numbers</li><li>Send LinkedIn messages</li><li>${autoMode() ? 'Guess an answer your profile can\'t back up' : 'Submit without your approval'}</li><li>Apply twice to one company in 6 months</li></ul></div>
     <div><h4>Privacy</h4><ul><li>Only you can read this pipeline, even if you share the link</li><li>Credentials never stored here</li></ul></div>`;
@@ -1308,11 +1434,15 @@ function renderDrawer(){
   if (j.stage === 'ready') actions = `<button class="btn ghost" data-act="skip" data-id="${esc(j.id)}"${ro}>Skip</button><button class="btn solid" data-act="approve" data-id="${esc(j.id)}"${ro}>Approve</button>`;
   else if (j.stage === 'approved') actions = `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>Mark as applied</button>`;
   else if (j.stage === 'skipped') actions = `<button class="btn solid" data-act="override" data-id="${esc(j.id)}"${ro}>Prepare anyway</button>`;
-  else if (url && (j.stage === 'found' || !j.stage)) actions = `<a class="btn solid" href="${esc(url)}" target="_blank" rel="noopener">Open posting</a>`;
+  else if (j.stage === 'found' || !j.stage){
+    const q = j.autoApply === 'queued';
+    actions = (url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open posting</a>` : '')
+      + (q ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : `<button class="btn solid" data-act="queue" data-id="${esc(j.id)}"${ro}>Auto-apply</button>`);
+  }
   dr.innerHTML = `
     <div class="dhead ${esc(j.stage || 'found')}">
       <div class="row1"><div style="min-width:0;display:grid;gap:6px"><span class="co">${esc(j.company)}</span><h2 id="d-title">${esc(j.title)}</h2></div><button class="xbtn" data-act="close" aria-label="Close">Close</button></div>
-      <div class="meta">${j.location ? `<span>${I.pin}${esc(j.location)}</span>` : ''}${j.experience ? `<span>${I.spark}${esc(j.experience)}</span>` : ''}${j.salary ? `<span>${I.rupee}${esc(j.salary)}</span>` : ''}${postedText(j.postedAt) ? `<span>${I.clock}${esc(postedText(j.postedAt))}</span>` : ''}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener"><span style="display:inline-flex;gap:5px;align-items:center">${I.link}Posting</span></a>` : ''}</div>
+      <div class="meta">${j.autoApply === 'queued' ? '<span class="pill queued">Queued for auto-apply</span>' : ''}${j.location ? `<span>${I.pin}${esc(j.location)}</span>` : ''}${j.experience ? `<span>${I.spark}${esc(j.experience)}</span>` : ''}${j.salary ? `<span>${I.rupee}${esc(j.salary)}</span>` : ''}${postedText(j.postedAt) ? `<span>${I.clock}${esc(postedText(j.postedAt))}</span>` : ''}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener"><span style="display:inline-flex;gap:5px;align-items:center">${I.link}Posting</span></a>` : ''}</div>
     </div>
     <div class="dbody">
       ${sec('Decision', skipBox + decision)}
@@ -1370,7 +1500,7 @@ function renderNow(){
     if (k === 'pipeline'){ const had = ae && ae.id === 'pipe-q'; const pos = had ? ae.selectionStart : 0; p.innerHTML = renderPipeline(); if (had){ const q = $('#pipe-q'); q.focus(); try { q.setSelectionRange(pos, pos); } catch(e){} } }
     if (k === 'outreach') p.innerHTML = renderOutreach();
     if (k === 'skipped') p.innerHTML = renderSkipped();
-    if (k === 'setup' && !state.formDirty) p.innerHTML = renderSetup();
+    if (k === 'setup' && !state.formDirty && !state.apDirty) p.innerHTML = renderSetup();
     if (state.enter && k !== 'today') p.classList.add('fade');
   });
   $('#foot').innerHTML = renderFoot();
@@ -1415,6 +1545,8 @@ function copyFrom(btn){
 }
 function setTab(t){ if (state.tab === t) return; state.tab = t; state.enter = true; try { history.replaceState(null, '', '#' + t); } catch(e){} render(); window.scrollTo({top: 0, behavior: 'smooth'}); }
 
+function autoReadyMsg(){ const m = []; if (apMissing().length) m.push('your details'); if (!obj(applicant().resume).id) m.push('your resume'); if (!runnerLinked()) m.push('your computer'); return m.length ? `Queued. It goes out once ${listJoin(m)} ${m.length === 1 ? 'is' : 'are'} set up.` : 'Queued. It goes out on the next auto-apply run.'; }
+
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
@@ -1446,6 +1578,15 @@ document.addEventListener('click', e => {
   else if (act === 'override') patchJob(id, {stage:'found', override:true}, 'Override: prepare on the next run', 'It will be prepared on the next run.');
   else if (act === 'email-sent') patchJob(id, {outreach:{email:{status:'sent', sentAt: nowIso()}}}, 'Email to hiring contact sent', 'Marked sent. Follow-ups are scheduled from today.');
   else if (act === 'li-sent') patchJob(id, {outreach:{linkedin:{status:'sent', sentAt: nowIso()}}}, 'LinkedIn note sent', 'Marked sent.');
+  else if (act === 'queue'){ patchJob(id, {autoApply: 'queued', queuedAt: nowIso()}, 'Queued for auto-apply by you', autoReadyMsg()); }
+  else if (act === 'unqueue'){ patchJob(id, {autoApply: {__delete__: true}}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
+  else if (act === 'go-details'){ if (state.tab !== 'setup'){ state.tab = 'setup'; state.enter = true; try { history.replaceState(null, '', '#setup'); } catch(e){} renderNow(); } setTimeout(() => { const d = $('#apply-details'); if (d) d.scrollIntoView({behavior:'smooth', block:'start'}); const f = $('#ap-fullName'); if (f && !f.value) f.focus({preventScroll:true}); }, 60); }
+  else if (act === 'auto-toggle'){
+    if (!state.db) return;
+    const on = !autoOn();
+    const next = Object.assign({}, settings(), {approvalMode: on ? 'auto-when-clear' : 'daily-batch', updatedAt: nowIso()});
+    enqueue('settings/profile', () => state.db.doc('settings/profile').set(next)).then(() => toast(on ? (apMissing().length || !obj(applicant().resume).id || !brainReady() || !runnerLinked() ? 'Auto-apply is on. It starts once the steps are done.' : 'Auto-apply is on.') : 'Auto-apply is off. Roles wait for your approval in the batch.')).catch(() => {});
+  }
   else if (act === 'fu-done'){ const j = state.jobs.get(id); if (!j) return; const i = Number(el.dataset.i); const f0 = arr(j.followUps)[i] || {}; const fus = arr(j.followUps).map((f, k) => k === i ? Object.assign({}, f, {done:true, doneAt: nowIso()}) : f); patchJob(id, {followUps: fus}, (f0.label || 'Follow-up') + ' sent', 'Follow-up marked done.'); }
 });
 document.addEventListener('keydown', e => {
@@ -1455,6 +1596,8 @@ document.addEventListener('keydown', e => {
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.closest && el.closest('#settings-form')) state.formDirty = true;
+  if (el.closest && el.closest('#applicant-form')) state.apDirty = true;
+  if (el.classList && el.classList.contains('resume-file')){ const f = el.files && el.files[0]; el.value = ''; uploadResume(f); return; }
   if (el.dataset && el.dataset.act === 'sel'){ if (el.checked) state.selected.add(el.dataset.id); else state.selected.delete(el.dataset.id); render(); }
   else if (el.dataset && el.dataset.act === 'stage'){
     const id = el.dataset.id, s = el.value, j = state.jobs.get(id); if (!j || s === j.stage) return;
@@ -1469,8 +1612,29 @@ document.addEventListener('change', e => {
 document.addEventListener('input', e => {
   if (e.target.id === 'pipe-q'){ state.q = e.target.value; render(); }
   else if (e.target.closest && e.target.closest('#settings-form')) state.formDirty = true;
+  else if (e.target.closest && e.target.closest('#applicant-form')) state.apDirty = true;
 });
 document.addEventListener('submit', e => {
+  if (e.target.id === 'applicant-form'){
+    e.preventDefault(); if (!state.db) return;
+    const f = e.target, data = {};
+    for (const el of f.querySelectorAll('input[name], select[name]')){
+      const v = el.value.trim();
+      if (el.type === 'number') data[el.name] = v === '' ? '' : Number(v); else data[el.name] = v;
+    }
+    const bad = [];
+    if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) bad.push('the email address');
+    if (data.phone && (data.phone.replace(/\D/g, '').length < 10)) bad.push('the phone number');
+    for (const k of ['linkedin','github','portfolio']) if (data[k] && !/^https?:\/\//i.test(data[k])) data[k] = 'https://' + data[k];
+    if (bad.length){ toast('Check ' + listJoin(bad) + '.'); return; }
+    const next = Object.assign({}, applicant(), data, {updatedAt: nowIso()});
+    if (document.activeElement) document.activeElement.blur();
+    enqueue('profile/applicant', () => state.db.doc('profile/applicant').set(next)).then(() => {
+      state.apDirty = false; const m = apMissing();
+      toast(m.length ? 'Saved. Still needed: ' + listJoin(m.map(lc1)) + '.' : 'Details saved. Auto-apply uses them on the next run.'); render();
+    }).catch(() => {});
+    return;
+  }
   if (e.target.id !== 'settings-form') return;
   e.preventDefault(); if (!state.db) return;
   const exp = EXPERIENCE.filter((x, i) => $('#s-exp-' + i).checked);
@@ -1565,6 +1729,8 @@ function subscribe(db, onErr){
   }, onErr);
   db.doc('settings/profile').onSnapshot(s => { state.settings = s.exists ? s.data() : null; render(); }, onErr);
   db.doc('brain/status').onSnapshot(s => { state.brain = s.exists ? s.data() : null; render(); }, onErr);
+  db.doc('profile/applicant').onSnapshot(s => { state.applicant = s.exists ? s.data() : null; render(); }, onErr);
+  db.doc('settings/applyRunner').onSnapshot(s => { state.runner = s.exists ? s.data() : null; render(); }, onErr);
   db.collection('runs').orderBy('startedAt', 'desc').limit(12).onSnapshot(snap => { state.runs = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); render(); }, onErr);
 }
 
@@ -1588,11 +1754,12 @@ async function boot(){
   try { [db, user] = await Promise.all([c.use('db'), c.use('user')]); } catch(e){}
   if (!db){ state.status = 'nodb'; renderNow(); return; }
   state.db = db; state.status = 'live';
+  try { state.assets = await c.use('assets'); } catch(e){ state.assets = null; }
   try { const w = user ? await user.can('data.write') : null; if (w === false) state.canWrite = false; } catch(e){}
   const onErr = e => { if (e && (e.code === 'revoked' || e.code === 'not_granted')){ state.status = 'nodb'; render(); } };
   subscribe(db, onErr);
   render();
-  setInterval(() => { if (!state.openId && !state.formDirty) render(); }, 60000);
+  setInterval(() => { if (!state.openId && !state.formDirty && !state.apDirty) render(); }, 60000);
 }
 boot();
 })();
