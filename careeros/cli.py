@@ -19,6 +19,7 @@ India feed (runs on GitHub Actions; see .github/workflows/scan.yml):
   careeros filter-feed --feed URL --settings-json S.json --known DIR --out DIR
                                         apply your filters to the feed (agent use)
   careeros platforms [--run N] [--json] job platforms for the agent to visit this run
+  careeros site --feed feed --out site  build the public job board (GitHub Pages)
 """
 
 from __future__ import annotations
@@ -215,6 +216,11 @@ def cmd_platforms(a):
     print(f"\n{len(todo)} of {len(ps)} platforms")
 
 
+def cmd_site(a):
+    from . import site
+    site.build(a.feed, a.out, demo=a.demo, base_url=a.base_url)
+
+
 def cmd_serve(a):
     from .server import serve
     serve(Store(a.db), Path(a.root), a.port)
@@ -316,6 +322,13 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--all", action="store_true")
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(fn=cmd_platforms)
+
+    sp = sub.add_parser("site", help="Build the public job board from the feed")
+    sp.add_argument("--feed", default="feed")
+    sp.add_argument("--out", default="site")
+    sp.add_argument("--demo", default="dashboard/index.html", help="Dashboard demo page to include at /demo/")
+    sp.add_argument("--base-url", default="", help="Public URL of the board, for API links and RSS")
+    sp.set_defaults(fn=cmd_site)
 
     sp = sub.add_parser("serve")
     sp.add_argument("--port", type=int, default=8765)

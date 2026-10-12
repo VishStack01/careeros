@@ -6,6 +6,7 @@ boards with public feeds (sources/aggregators.py).
 Output (in `out_dir`):
   india.jsonl.gz   one line per open tech role in India or remote, with
                    pre-extracted facts (experience, remote scope, pay, closed)
+  full.jsonl.gz    id + the full posting text, for the job board
   summary.json     counts by hiring system and region, errors
   unmapped.csv     companies whose career site isn't on a public feed; the
                    agent visits these in rotation
@@ -25,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import extract, geo
+from . import extract, geo, tags
 from .dedupe import canonical_url, fingerprint, job_id
 from .models import Job, iso
 from .sources import SCOUTS, FetchError, smartrecruiters
@@ -90,6 +91,7 @@ def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
     f["senior"] = extract.title_seniority(job.title) == "senior"
     f["loc"], f["locQuote"] = loc_class(job, f)
     summary = re.sub(r"\s+", " ", job.description or "").strip()[:1500]
+    text = re.sub(r"\n{3,}", "\n\n", (job.description or "").strip())[:20000]
     where = geo.classify(job.location)
     return {
         "id": job_id(job.company, job.title)[:70] + "-" + hashlib.sha1(url.encode()).hexdigest()[:6],
@@ -99,6 +101,8 @@ def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
         "category": company.get("category", ""), "hq": company.get("city", ""),
         "geo": "south" if where["south"] else "india" if where["india"] else "abroad" if where["abroad"] else "",
         "facts": f, "summary": summary, "via": via,
+        "tags": tags.tag(job.title, text, f),
+        "text": text,  # full posting; kept out of india.jsonl.gz, published for the job board
     }
 
 
@@ -204,9 +208,12 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
         fps.add(fp)
         unique.append(r)
     unique.sort(key=lambda r: -_ts(r.get("postedAt")))
-    with gzip.open(out_dir / "india.jsonl.gz", "wt", encoding="utf-8") as f:
+    with gzip.open(out_dir / "india.jsonl.gz", "wt", encoding="utf-8") as f, \
+            gzip.open(out_dir / "full.jsonl.gz", "wt", encoding="utf-8") as full:
         for r in unique:
+            text = r.pop("text", "")
             f.write(json.dumps(r, ensure_ascii=False, default=str) + "\n")
+            full.write(json.dumps({"id": r["id"], "text": text or r.get("summary", "")}, ensure_ascii=False) + "\n")
     with (out_dir / "unmapped.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["name", "category", "city", "website"])

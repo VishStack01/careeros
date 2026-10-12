@@ -28,5 +28,8 @@ careeros = "careeros.cli:main"
 [tool.setuptools.packages.find]
 include = ["careeros*"]
 
+[tool.setuptools.package-data]
+careeros = ["site_app.html"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

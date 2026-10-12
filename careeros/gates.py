@@ -174,7 +174,7 @@ def gate_pay(job: Job, s: Settings) -> tuple[Check, extract.Salary | None]:
     if not sal and f is not None and f.get("salaryHigh") is not None:
         sal = extract.Salary(f.get("salaryLow") or f["salaryHigh"], f["salaryHigh"], "", "year", f.get("salaryQuote") or "")
     if not sal and f is None:
-        sal = extract.parse_salary(job.description, s.usd_inr)
+        sal = extract.parse_salary(job.description, s.usd_inr, structured=False)
     if not sal:
         return Check("Pay", True, "Not stated"), None
     if s.salary_floor_lpa is not None and sal.high_lpa < s.salary_floor_lpa:

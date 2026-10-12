@@ -84,3 +84,28 @@ def test_misc_signals():
     now = datetime(2026, 10, 9, tzinfo=timezone.utc)
     assert extract.posted_from_relative("Posted 3 days ago", now) == now - timedelta(days=3)
     assert extract.posted_from_relative("Reposted 2 weeks ago", now) == now - timedelta(weeks=2)
+
+
+
+def test_salary_ignores_funding_and_revenue():
+    for text in ("We've raised $781M in funding and our last valuation was $11B.",
+                 "We've surpassed $400M in ARR and we're continuing to accelerate.",
+                 "Backed by Khosla Ventures and Mayfield with $150M+ raised.",
+                 "Experience at our current stage ($50-200M ARR range, high growth)."):
+        assert extract.parse_salary(text, structured=False) is None, text
+
+
+def test_salary_letter_after_number_is_not_a_multiplier():
+    s = extract.parse_salary("Salary range: $145,000 – $200,000\nMattermost takes a market-based approach to pay.", structured=False)
+    assert s and round(s.low_lpa) == 128 and round(s.high_lpa) == 176
+
+
+def test_salary_in_prose_needs_a_pay_word():
+    assert extract.parse_salary("The base salary for this role is $120k - $150k per year.", structured=False)
+    assert extract.parse_salary("Our customers process $120k - $150k per day.", structured=False) is None
+
+
+
+def test_salary_ignores_bare_commas():
+    assert extract.parse_salary("Budget: $, to be discussed", structured=False) is None
+    assert extract.parse_salary("₹, - ₹,") is None

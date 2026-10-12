@@ -1,13 +1,17 @@
 name: scan
 
-# Every 3 hours: find company job boards, read every board plus the remote job
-# boards with public feeds, and publish the result to the `feed` branch as
-# feed/india.jsonl.gz. The feed is a public list of openings, not anyone's
-# personal data; `careeros filter-feed` applies personal filters elsewhere.
+# Hourly: find company job boards, read every board plus the remote job boards
+# with public feeds, publish the result to the `feed` branch as
+# feed/india.jsonl.gz, and rebuild the public job board on GitHub Pages.
+# The feed and the board are public lists of openings, not anyone's personal
+# data; personal filters run elsewhere (`careeros filter-feed`).
+#
+# GitHub delays or drops scheduled runs when it is busy, so the schedule asks
+# every hour at an off-peak minute; caches keep the polite polling limits.
 
 on:
   schedule:
-    - cron: "17 */3 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
     inputs:
       rediscover:
@@ -17,6 +21,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: scan
@@ -26,6 +32,9 @@ jobs:
   scan:
     runs-on: ubuntu-latest
     timeout-minutes: 55
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
 
@@ -89,3 +98,21 @@ jobs:
           git commit -qm "feed: $(date -u +%Y-%m-%dT%H:%MZ)"
           git push -qf "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" feed
           python -c "import json; s=json.load(open('feed/summary.json')); print(f\"{s['openings']} openings from {s['boards']} company boards; remote boards: {s.get('remoteBoards')}\")" >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Build the job board
+        if: always()
+        run: |
+          base="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/"
+          careeros site --feed feed --out site --demo dashboard/index.html --base-url "$base"
+
+      - uses: actions/configure-pages@v5
+        if: always()
+
+      - uses: actions/upload-pages-artifact@v3
+        if: always()
+        with:
+          path: site
+
+      - id: deploy
+        if: always()
+        uses: actions/deploy-pages@v4

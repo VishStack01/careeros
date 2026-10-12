@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CareerOS Jobs</title>
+<meta name="description" content="Open tech roles in India and remote, read straight from company career pages every hour.">
+<link rel="alternate" type="application/rss+xml" title="CareerOS Jobs" href="feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: CareerOS look (same tokens as the dashboard). Plum strip, a white top bar, a left-aligned search hero,
+   then a two-column board: facet filters on the left with live counts, the role list on the right. A role opens
+   in a right-hand sheet (full screen on phones). Companies and API are views of the same page. */
+:root{
+  --page:#FFFFFF; --ink:#000000; --ink-2:#34322F; --muted:#6B6762; --panel:#F7F6F3; --panel-2:#EEECE7; --line:#E4E1DB; --field:#FFFFFF;
+  --blue:#3859F9; --blue-soft:#E3E8FF; --green:#02693E; --green-soft:#DDF3E5; --magenta:#B0068A; --magenta-soft:#FCE3F5;
+  --violet:#5B3FC4; --violet-soft:#ECE6FF; --gold:#F5B83D; --gold-soft:#FFF1D6; --plum:#45012E; --plum-text:#FCD6EF;
+  --btn:#000000; --btn-ink:#FFFFFF; --scrim:rgba(0,0,0,.34);
+  --f:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1); --r-lg:18px; --r-md:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#0E0D0C; --ink:#F6F4F0; --ink-2:#D9D5CE; --muted:#A49F97; --panel:#181715; --panel-2:#22201D; --line:#2F2C28; --field:#121110;
+    --blue:#7C93FF; --blue-soft:#1C2340; --green:#55C78A; --green-soft:#143322; --magenta:#F07ACF; --magenta-soft:#3A1430;
+    --violet:#B7A4FF; --violet-soft:#2A2244; --gold:#F5B83D; --gold-soft:#3A2E12; --plum:#3B0127;
+    --btn:#F6F4F0; --btn-ink:#000000; --scrim:rgba(0,0,0,.6); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#0E0D0C; --ink:#F6F4F0; --ink-2:#D9D5CE; --muted:#A49F97; --panel:#181715; --panel-2:#22201D; --line:#2F2C28; --field:#121110;
+  --blue:#7C93FF; --blue-soft:#1C2340; --green:#55C78A; --green-soft:#143322; --magenta:#F07ACF; --magenta-soft:#3A1430;
+  --violet:#B7A4FF; --violet-soft:#2A2244; --gold:#F5B83D; --gold-soft:#3A2E12; --plum:#3B0127;
+  --btn:#F6F4F0; --btn-ink:#000000; --scrim:rgba(0,0,0,.6); color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;padding-top:env(safe-area-inset-top,0px)}
+.wrap{max-width:1220px;margin:0 auto;padding-inline:clamp(16px,3.2vw,40px)}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+.muted{color:var(--muted)}
+.strip{background:var(--plum);color:var(--plum-text);font-size:13.5px}
+.strip .wrap{display:flex;justify-content:center;gap:6px 14px;flex-wrap:wrap;padding-block:8px;text-align:center}
+.strip b{color:#FFFFFF;font-weight:600}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--page);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:8px 22px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;letter-spacing:-.02em;text-decoration:none;white-space:nowrap}
+.mark{width:28px;height:28px;border-radius:8px;background:var(--btn);color:var(--btn-ink);display:grid;place-items:center}
+.mark svg{width:16px;height:16px}
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.nav a{text-decoration:none;font-weight:500;padding:6px 12px;border-radius:999px;color:var(--ink-2)}
+.nav a[aria-current="page"]{background:var(--panel-2);color:var(--ink)}
+.nav a:hover{background:var(--panel)}
+.hero{padding-block:clamp(32px,6vw,64px) 22px;display:grid;gap:16px}
+.hero h1{font-size:clamp(32px,5vw,56px);line-height:1.03}
+.hero .sub{max-width:64ch;color:var(--ink-2);font-size:17px}
+.search{display:flex;gap:8px;flex-wrap:wrap;max-width:860px}
+.search input{flex:1 1 280px;min-width:0;height:50px;border:1px solid var(--line);border-radius:999px;background:var(--field);padding:0 20px;font-size:16px}
+.search select{height:50px;border:1px solid var(--line);border-radius:999px;background:var(--field);padding:0 16px;max-width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:var(--field);font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background-color .2s var(--ease),transform .2s var(--ease)}
+.btn:hover{background:var(--panel)}
+.btn.solid{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
+.btn.solid:hover{transform:translateY(-1px)}
+.btn.big{height:50px;padding:0 24px}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--field);border-radius:999px;padding:5px 12px;font-size:13.5px;font-weight:500;cursor:pointer;transition:background-color .2s var(--ease),color .2s var(--ease)}
+.chip[aria-pressed="true"]{background:var(--btn);border-color:var(--btn);color:var(--btn-ink)}
+.board{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;padding-block:8px 64px;align-items:start}
+.filters{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);max-height:calc(100vh - 96px);overflow:auto;display:grid;gap:22px;padding-right:6px}
+.fgroup{display:grid;gap:6px}
+.fgroup h3{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:2px}
+.opt{display:flex;align-items:center;gap:9px;font-size:14.5px;cursor:pointer;padding:3px 0}
+.opt input{accent-color:var(--btn);margin:0;width:16px;height:16px;flex:none}
+.opt span:first-of-type{flex:1;min-width:0}
+.opt .n{color:var(--muted);font-size:13px}
+.opt.zero{opacity:.45}
+.fclear{justify-self:start;background:none;border:0;padding:0;color:var(--blue);font-weight:600;cursor:pointer}
+.rhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:12px}
+.rhead h2{font-size:20px;margin-right:auto}
+.rhead select{height:38px;border:1px solid var(--line);border-radius:999px;background:var(--field);padding:0 12px}
+.only-mobile{display:none}
+.list{display:grid;gap:10px}
+.job{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:14px;align-items:start;padding:16px 18px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--page);text-decoration:none;cursor:pointer;transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
+.job:hover{border-color:var(--ink-2);box-shadow:0 12px 30px -24px rgba(0,0,0,.5);transform:translateY(-1px)}
+.logo{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:17px;color:#FFFFFF}
+.jt{font-weight:600;font-size:16.5px;letter-spacing:-.01em;line-height:1.3;overflow-wrap:anywhere}
+.jc{color:var(--ink-2);font-size:14px;margin-top:2px;overflow-wrap:anywhere}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.tag{font-size:12.5px;font-weight:500;border-radius:7px;padding:2px 8px;background:var(--panel-2);color:var(--ink-2);white-space:nowrap}
+.tag.w-ww,.tag.w-ro{background:var(--blue-soft);color:var(--blue)}
+.tag.w-ri{background:var(--violet-soft);color:var(--violet)}
+.tag.w-s,.tag.w-i{background:var(--green-soft);color:var(--green)}
+.tag.w-ru{background:var(--gold-soft);color:var(--ink-2)}
+.tag.w-rx,.tag.w-a{background:var(--magenta-soft);color:var(--magenta)}
+.tag.lv{border:1px solid var(--line);background:transparent}
+.tag.perk{background:var(--gold-soft);color:var(--ink)}
+.jr{text-align:right;display:grid;gap:4px;justify-items:end}
+.age{font-size:13px;color:var(--muted);white-space:nowrap}
+.age.fresh{color:var(--green);font-weight:600}
+.sal{font-weight:600;font-size:14px;white-space:nowrap}
+.more{display:flex;justify-content:center;padding-top:16px}
+.empty{padding:48px 20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r-lg)}
+/* Sheet */
+#scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;transition:opacity .25s var(--ease)}
+#scrim.on{opacity:1}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(720px,100%);z-index:50;background:var(--page);box-shadow:-20px 0 60px -30px rgba(0,0,0,.5);transform:translateX(100%);transition:transform .32s var(--ease);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.sheet.on{transform:none}
+.shead{display:flex;align-items:center;gap:10px;padding:14px 22px;border-bottom:1px solid var(--line)}
+.shead .x{margin-left:auto}
+.sbody{overflow:auto;padding:24px 26px calc(40px + env(safe-area-inset-bottom,0px));display:grid;gap:22px}
+.dtitle{display:grid;grid-template-columns:56px minmax(0,1fr);gap:16px;align-items:center}
+.dtitle .logo{width:56px;height:56px;font-size:22px;border-radius:14px}
+.dtitle h2{font-size:clamp(22px,3vw,28px);line-height:1.15}
+.dmeta{color:var(--ink-2)}
+.dactions{display:flex;gap:8px;flex-wrap:wrap}
+.facts{background:var(--panel);border-radius:var(--r-lg);padding:6px 18px}
+.fact{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 14px;padding:12px 0;border-bottom:1px solid var(--line)}
+.fact:last-child{border-bottom:0}
+.fact .k{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;padding-top:2px}
+.fact .v{font-weight:600}
+.fact q{display:block;grid-column:2;color:var(--ink-2);font-size:14px;quotes:"\201C" "\201D"}
+.desc{display:grid;gap:10px;color:var(--ink-2);font-size:15.5px;line-height:1.65;max-width:72ch}
+.desc h4{margin:10px 0 0;font-size:15.5px;color:var(--ink)}
+.desc ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.small{font-size:13px;color:var(--muted)}
+.others{display:grid;gap:8px}
+.others a{display:flex;justify-content:space-between;gap:12px;text-decoration:none;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r-md)}
+.others a:hover{border-color:var(--ink-2)}
+/* Companies + API */
+.view{padding-block:clamp(32px,5vw,56px) 64px;display:grid;gap:22px}
+.view h1{font-size:clamp(30px,4.4vw,48px);line-height:1.05}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.co{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-md);text-decoration:none}
+.co:hover{border-color:var(--ink-2)}
+.co .logo{width:40px;height:40px;font-size:16px}
+.co b{display:block;overflow-wrap:anywhere;font-weight:600}
+.code{background:var(--panel);border-radius:var(--r-md);padding:14px 16px;overflow-x:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;line-height:1.55;white-space:pre}
+.prose{display:grid;gap:12px;max-width:72ch;color:var(--ink-2)}
+.prose h2{font-size:22px;color:var(--ink);margin-top:10px}
+footer{border-top:1px solid var(--line);padding-block:26px 40px;color:var(--muted);font-size:13.5px}
+footer .wrap{display:grid;gap:6px}
+@media (max-width:920px){
+  .top{position:static}
+  .nav{margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .nav a{white-space:nowrap}
+  .board{grid-template-columns:minmax(0,1fr)}
+  .filters{position:fixed;inset:auto 0 0 0;top:auto;max-height:82vh;z-index:45;background:var(--page);border-radius:22px 22px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 50px -30px rgba(0,0,0,.6);transform:translateY(105%);transition:transform .3s var(--ease)}
+  .filters.on{transform:none}
+  .only-mobile{display:inline-flex}
+  .job{grid-template-columns:40px minmax(0,1fr);padding:14px}
+  .job .logo{width:40px;height:40px}
+  .jr{grid-column:2;justify-items:start;text-align:left;display:flex;gap:10px;align-items:center}
+  .fact{grid-template-columns:minmax(0,1fr)}
+  .fact q{grid-column:1}
+  .sbody{padding:20px 18px calc(40px + env(safe-area-inset-bottom,0px))}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="strip"><div class="wrap"><span id="strip">Open tech roles in India and remote, read straight from company career pages.</span></div></div>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17 10 11l4 4 6-7"/><path d="M15 8h5v5"/></svg></span>CareerOS Jobs</a>
+  <nav class="nav" aria-label="Main">
+    <a href="#/" data-nav="jobs">Jobs</a>
+    <a href="#/companies" data-nav="companies">Companies</a>
+    <a href="#/api" data-nav="api">API</a>
+    <a href="demo/">Dashboard demo</a>
+    <a href="https://github.com/VishStack01/careeros" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</div></header>
+
+<main id="v-jobs">
+  <section class="wrap hero">
+    <h1 id="h1">Open tech roles in India and remote</h1>
+    <p class="sub" id="sub">Read straight from company career pages and remote job boards. Every role links to the company's own application page.</p>
+    <form class="search" id="sform" role="search">
+      <input id="q" type="search" placeholder="Role, skill or company: AI engineer, React, Razorpay" aria-label="Search roles" autocomplete="off">
+      <select id="where" aria-label="Where">
+        <option value="any">Anywhere you can work from India</option>
+        <option value="remote">Remote, open to India</option>
+        <option value="worldwide">Remote worldwide</option>
+        <option value="remote-india">Remote within India</option>
+        <option value="south">South India, on-site or hybrid</option>
+        <option value="india">India, on-site or hybrid</option>
+      </select>
+      <button class="btn solid big" type="submit">Search</button>
+    </form>
+    <div class="quick" id="quick" aria-label="Popular searches"></div>
+  </section>
+  <section class="wrap board">
+    <aside class="filters" id="filters" aria-label="Filters"></aside>
+    <section aria-labelledby="count">
+      <div class="rhead">
+        <h2 id="count" aria-live="polite">Loading roles</h2>
+        <button class="btn only-mobile" id="openf" type="button">Filters</button>
+        <select id="sort" aria-label="Sort"><option value="new">Newest first</option><option value="rel">Best match</option></select>
+      </div>
+      <div class="list" id="list"></div>
+      <div class="more" id="more"></div>
+    </section>
+  </section>
+</main>
+
+<main id="v-companies" class="wrap view" hidden>
+  <h1>Companies hiring now</h1>
+  <p class="sub muted" id="csub"></p>
+  <form class="search" id="cform" role="search"><input id="cq" type="search" placeholder="Search companies" aria-label="Search companies" autocomplete="off"></form>
+  <div class="cgrid" id="cgrid"></div>
+</main>
+
+<main id="v-api" class="wrap view" hidden>
+  <h1>Jobs API</h1>
+  <div class="prose">
+    <p>Every role on the board is available as JSON, free, no key. The data is regenerated with each scan (hourly). Please cache responses and link back to the role's <code>url</code>.</p>
+    <h2>All roles, 100 per page</h2>
+    <div class="code" id="api1"></div>
+    <p>Fields: <code>slug</code>, <code>company_name</code>, <code>title</code>, <code>description</code> (full posting text), <code>remote</code>, <code>url</code> (the company's application page), <code>tags</code>, <code>job_types</code>, <code>level</code>, <code>location</code>, <code>where</code>, <code>salary</code>, <code>experience_min_years</code>, <code>source</code>, <code>created_at</code>. Follow <code>links.next</code> for the next page.</p>
+    <h2>Compact list and single roles</h2>
+    <div class="code" id="api2"></div>
+    <h2>RSS</h2>
+    <div class="code" id="api3"></div>
+    <p><code>where</code> codes: <code>ww</code> remote worldwide, <code>ro</code> remote and open to India, <code>ri</code> remote within India, <code>ru</code> remote with eligibility not stated, <code>rx</code> remote but not open to India, <code>s</code> south India on-site or hybrid, <code>i</code> elsewhere in India, <code>a</code> abroad on-site, <code>u</code> not stated.</p>
+  </div>
+</main>
+
+<footer><div class="wrap">
+  <p id="foot">Roles come from each company's public job board (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Breezy, Personio) and from remote boards with public feeds. Postings belong to their companies; apply on the company's site.</p>
+  <p>Built with <a href="https://github.com/VishStack01/careeros" target="_blank" rel="noopener">CareerOS</a>, open source. <a href="feed.xml">RSS</a> · <a href="#/api">API</a></p>
+</div></footer>
+
+<div id="scrim" hidden></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="dtitle" hidden></aside>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => Number(n).toLocaleString('en-IN');
+const safeUrl = u => /^https?:\/\//i.test(u || '') ? u : '';
+const WHERE_LABEL = {ww:'Remote worldwide', ro:'Remote, open to India', ri:'Remote, India', ru:'Remote, check eligibility', rx:'Remote, not open to India', s:'South India', i:'India', a:'Abroad', u:''};
+const WHERE_SETS = {any:['ww','ro','ri','ru','s','i','u'], remote:['ww','ro','ri'], worldwide:['ww'], 'remote-india':['ri'], south:['s'], india:['s','i']};
+const LEVELS = ['Fresher','Entry','Internship','Mid','Senior','Not stated'];
+const POSTED = [['', 'Any time'], ['1', 'Last 24 hours'], ['3', 'Last 3 days'], ['7', 'Last 7 days'], ['25', 'Last 25 days']];
+const TYPES = ['Full-time','Internship','Contract','Part-time'];
+const QUICK = [['AI & ML','cat'],['Fresher','lv'],['Entry','lv'],['Internship','ty'],['Backend','cat'],['Frontend','cat'],['Full stack','cat'],['Data','cat'],['Design','cat'],['DevOps & Cloud','cat'],['Python','sk'],['React','sk'],['Visa sponsorship','pk']];
+let ALL = [], META = {}, COMPANIES = [], shown = 40;
+let F = {q:'', where:'any', lv:new Set(), posted:'', ty:new Set(), cat:new Set(), sk:new Set(), pk:new Set(), all:false, company:'', sort:'new'};
+
+const PALETTE = ['#3859F9','#02693E','#CC089E','#7F62DB','#C2410C','#0E7490','#9333EA','#B45309','#15803D','#BE123C'];
+function logo(name){ let h = 0; for (const ch of name || '') h = (h * 31 + ch.charCodeAt(0)) >>> 0; const c = PALETTE[h % PALETTE.length]; const ini = (name || '?').replace(/[^A-Za-z0-9]/g, '').slice(0, 1).toUpperCase() || '?'; return `<span class="logo" style="background:${c}" aria-hidden="true">${esc(ini)}</span>`; }
+function hoursAgo(p){ const t = Date.parse(p || ''); return isNaN(t) ? null : (Date.now() - t) / 36e5; }
+function ago(p){ const h = hoursAgo(p); if (h == null) return ''; if (h < 1) return 'just now'; if (h < 24) return Math.floor(h) + 'h ago'; const d = Math.floor(h / 24); return d === 1 ? '1 day ago' : d + ' days ago'; }
+
+/* ---- URL state ---- */
+function readState(){
+  const u = new URLSearchParams(location.search);
+  F.q = u.get('q') || ''; F.where = WHERE_SETS[u.get('where')] ? u.get('where') : 'any'; F.posted = u.get('posted') || ''; F.sort = u.get('sort') === 'rel' ? 'rel' : 'new';
+  for (const k of ['lv','ty','cat','sk','pk']) F[k] = new Set((u.get(k) || '').split('|').filter(Boolean));
+  F.all = u.get('all') === '1';
+}
+function writeState(){
+  const u = new URLSearchParams();
+  if (F.q) u.set('q', F.q); if (F.where !== 'any') u.set('where', F.where); if (F.posted) u.set('posted', F.posted); if (F.sort !== 'new') u.set('sort', F.sort);
+  for (const k of ['lv','ty','cat','sk','pk']) if (F[k].size) u.set(k, [...F[k]].join('|'));
+  if (F.all) u.set('all', '1');
+  const qs = u.toString();
+  history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+}
+
+/* ---- filtering ---- */
+function terms(){ return F.q.toLowerCase().split(/\s+/).filter(Boolean); }
+function hay(j){ return j._h || (j._h = [j.t, j.c, j.l, j.cat.join(' '), j.sk.join(' '), j.lv, j.ty].join(' ').toLowerCase()); }
+function pass(j, skip){
+  if (F.company && j.cs !== F.company) return false;
+  if (skip !== 'where'){ const set = WHERE_SETS[F.where]; if (!(set.includes(j.w) || (F.all && (j.w === 'rx' || j.w === 'a')))) return false; }
+  if (skip !== 'lv' && F.lv.size && !F.lv.has(j.lv)) return false;
+  if (skip !== 'ty' && F.ty.size && !F.ty.has(j.ty)) return false;
+  if (skip !== 'cat' && F.cat.size && !j.cat.some(c => F.cat.has(c))) return false;
+  if (skip !== 'sk' && F.sk.size && !j.sk.some(c => F.sk.has(c))) return false;
+  if (skip !== 'pk' && F.pk.size && !j.pk.some(c => F.pk.has(c))) return false;
+  if (skip !== 'posted' && F.posted){ const h = hoursAgo(j.p); if (h == null || h > Number(F.posted) * 24) return false; }
+  const ts = terms(); if (ts.length){ const h = hay(j); if (!ts.every(t => h.includes(t))) return false; }
+  return true;
+}
+function score(j){ const ts = terms(); let s = 0; const t = j.t.toLowerCase(); for (const w of ts){ if (t.includes(w)) s += 3; if (j.c.toLowerCase().includes(w)) s += 2; if (hay(j).includes(w)) s += 1; } return s; }
+
+/* ---- rendering ---- */
+function tagsFor(j, max){
+  const out = [];
+  if (WHERE_LABEL[j.w]) out.push(`<span class="tag w-${j.w}">${esc(WHERE_LABEL[j.w])}</span>`);
+  if (j.lv && j.lv !== 'Not stated') out.push(`<span class="tag lv">${esc(j.lv === 'Entry' ? 'Entry (0–2 yrs)' : j.lv)}</span>`);
+  if (j.ty && j.ty !== 'Full-time' && j.ty !== 'Internship') out.push(`<span class="tag">${esc(j.ty)}</span>`);
+  j.pk.forEach(p => out.push(`<span class="tag perk">${esc(p)}</span>`));
+  j.sk.slice(0, max).forEach(s => out.push(`<span class="tag">${esc(s)}</span>`));
+  return out.join('');
+}
+function row(j){
+  const h = hoursAgo(j.p);
+  return `<a class="job" href="#/job/${encodeURIComponent(j.id)}" data-id="${esc(j.id)}">
+    ${logo(j.c)}
+    <div><div class="jt">${esc(j.t)}</div><div class="jc">${esc(j.c)}${j.l ? ' · ' + esc(j.l) : ''}</div><div class="tags">${tagsFor(j, 3)}</div></div>
+    <div class="jr">${j.sal ? `<span class="sal">${esc(j.sal)}</span>` : ''}<span class="age${h != null && h < 48 ? ' fresh' : ''}">${esc(ago(j.p))}</span></div>
+  </a>`;
+}
+function facet(title, key, values, label){
+  const counts = {}; for (const j of ALL) if (pass(j, key)) for (const v of (Array.isArray(j[key]) ? j[key] : [j[key]])) counts[v] = (counts[v] || 0) + 1;
+  const opts = values.map(v => { const n = counts[v] || 0; return `<label class="opt${n ? '' : ' zero'}"><input type="checkbox" data-f="${key}" value="${esc(v)}" ${F[key].has(v) ? 'checked' : ''}><span>${esc(label ? label(v) : v)}</span><span class="n">${fmt(n)}</span></label>`; }).join('');
+  return `<div class="fgroup"><h3>${title}</h3>${opts}</div>`;
+}
+function renderFilters(){
+  const whereCounts = {}; for (const j of ALL) if (pass(j, 'where')) for (const [k, set] of Object.entries(WHERE_SETS)) if (set.includes(j.w)) whereCounts[k] = (whereCounts[k] || 0) + 1;
+  const whereOpts = [['any','Anywhere you can work from India'],['remote','Remote, open to India'],['worldwide','Remote worldwide'],['remote-india','Remote within India'],['south','South India, on-site or hybrid'],['india','India, on-site or hybrid']]
+    .map(([k, l]) => `<label class="opt"><input type="radio" name="where" data-f="where" value="${k}" ${F.where === k ? 'checked' : ''}><span>${l}</span><span class="n">${fmt(whereCounts[k] || 0)}</span></label>`).join('');
+  const postedCounts = {}; for (const j of ALL) if (pass(j, 'posted')){ const h = hoursAgo(j.p); for (const [d] of POSTED) if (!d || (h != null && h <= Number(d) * 24)) postedCounts[d] = (postedCounts[d] || 0) + 1; }
+  const postedOpts = POSTED.map(([d, l]) => `<label class="opt"><input type="radio" name="posted" data-f="posted" value="${d}" ${F.posted === d ? 'checked' : ''}><span>${l}</span><span class="n">${fmt(postedCounts[d] || 0)}</span></label>`).join('');
+  const catVals = [...new Set(ALL.flatMap(j => j.cat))].sort();
+  const skCount = {}; ALL.forEach(j => j.sk.forEach(s => skCount[s] = (skCount[s] || 0) + 1));
+  const skVals = Object.entries(skCount).sort((a, b) => b[1] - a[1]).slice(0, 14).map(x => x[0]);
+  const any = F.where !== 'any' || F.posted || F.lv.size || F.ty.size || F.cat.size || F.sk.size || F.pk.size || F.all;
+  $('#filters').innerHTML = `
+    ${any ? '<button class="fclear" type="button" data-act="clear">Clear filters</button>' : ''}
+    <div class="fgroup"><h3>Where</h3>${whereOpts}<label class="opt"><input type="checkbox" data-f="all" ${F.all ? 'checked' : ''}><span>Also show roles not open to India</span></label></div>
+    ${facet('Experience', 'lv', LEVELS, v => v === 'Entry' ? 'Entry (0–2 years)' : v)}
+    <div class="fgroup"><h3>Posted</h3>${postedOpts}</div>
+    ${facet('Contract', 'ty', TYPES)}
+    ${facet('Category', 'cat', catVals)}
+    ${facet('Skills', 'sk', skVals)}
+    ${facet('Perks', 'pk', ['Visa sponsorship', 'Relocation'])}
+    <button class="btn only-mobile" type="button" data-act="closef">Show results</button>`;
+}
+function renderList(){
+  let list = ALL.filter(j => pass(j));
+  if (F.sort === 'rel' && F.q) list = list.map(j => [score(j), j]).sort((a, b) => b[0] - a[0] || (b[1].p || '').localeCompare(a[1].p || '')).map(x => x[1]);
+  const co = F.company ? COMPANIES.find(c => c.slug === F.company) : null;
+  $('#count').textContent = `${fmt(list.length)} ${list.length === 1 ? 'role' : 'roles'}${co ? ' at ' + co.name : ''}`;
+  $('#list').innerHTML = list.length ? list.slice(0, shown).map(row).join('') : `<div class="empty">No role matches all of these filters. Remove one, or search for something broader.</div>`;
+  $('#more').innerHTML = list.length > shown ? `<button class="btn" type="button" data-act="more">Show more roles (${fmt(list.length - shown)} left)</button>` : '';
+}
+function renderQuick(){
+  $('#quick').innerHTML = QUICK.map(([v, k]) => `<button class="chip" type="button" data-q="${k}" data-v="${esc(v)}" aria-pressed="${F[k].has(v)}">${esc(v)}</button>`).join('');
+}
+function renderBoard(){ $('#q').value = F.q; $('#where').value = F.where; $('#sort').value = F.sort; renderQuick(); renderFilters(); renderList(); writeState(); }
+
+/* ---- job sheet ---- */
+function paragraphs(text){
+  const lines = String(text || '').split(/\n/).map(s => s.trim()).filter(Boolean);
+  let html = '', list = [];
+  const flush = () => { if (list.length){ html += '<ul>' + list.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>'; list = []; } };
+  for (const l of lines){
+    const m = l.match(/^([-•*·▪●]|\d+[.)])\s+(.*)$/);
+    if (m){ list.push(m[2]); continue; }
+    flush();
+    if (l.length < 60 && /:$|^[A-Z][^.!?]{2,58}$/.test(l)) html += `<h4>${esc(l.replace(/:$/, ''))}</h4>`; else html += `<p>${esc(l)}</p>`;
+  }
+  flush();
+  return html || '<p>The posting has no description text. Open it on the company site.</p>';
+}
+async function openJob(id){
+  const sheet = $('#sheet'), scrim = $('#scrim');
+  const base = ALL.find(j => j.id === id);
+  sheet.hidden = false; scrim.hidden = false; requestAnimationFrame(() => { sheet.classList.add('on'); scrim.classList.add('on'); });
+  document.body.style.overflow = 'hidden';
+  sheet.innerHTML = `<div class="shead"><span class="small">Loading the posting</span><button class="btn x" type="button" data-act="close" aria-label="Close">Close</button></div>`;
+  let d = null;
+  try { const r = await fetch('data/jobs/' + encodeURIComponent(id) + '.json'); if (r.ok) d = await r.json(); } catch(e) {}
+  d = d || base;
+  if (!d){ sheet.innerHTML = `<div class="shead"><span>This role is no longer listed</span><button class="btn x" type="button" data-act="close">Close</button></div><div class="sbody"><p>It was filled or taken down since the last scan.</p></div>`; return; }
+  const u = safeUrl(d.u);
+  const others = ALL.filter(j => j.cs === d.cs && j.id !== d.id).slice(0, 5);
+  sheet.innerHTML = `
+    <div class="shead"><span class="small">${esc(d.src || '')}${d.p ? ' · posted ' + esc(ago(d.p)) : ''}</span><button class="btn x" type="button" data-act="close" aria-label="Close">Close</button></div>
+    <div class="sbody">
+      <div class="dtitle">${logo(d.c)}<div><h2 id="dtitle">${esc(d.t)}</h2><p class="dmeta"><a href="#/company/${esc(d.cs)}">${esc(d.c)}</a>${d.l ? ' · ' + esc(d.l) : ''}</p></div></div>
+      <div class="tags">${tagsFor(d, 8)}${(d.cat || []).map(c => `<span class="tag">${esc(c)}</span>`).join('')}</div>
+      <div class="dactions">${u ? `<a class="btn solid big" href="${esc(u)}" target="_blank" rel="noopener">Apply on ${esc(d.c)}'s site</a>` : ''}<button class="btn big" type="button" data-act="copy">Copy link</button></div>
+      ${d.facts ? `<div class="facts" aria-label="What the posting says">${d.facts.map(f => `<div class="fact"><span class="k">${esc(f.k)}</span><span class="v">${esc(f.v)}</span>${f.q ? `<q>${esc(f.q)}</q>` : ''}</div>`).join('')}</div>` : ''}
+      <div><h3 style="font-size:18px;margin-bottom:10px">About the role</h3><div class="desc">${paragraphs(d.text)}</div></div>
+      ${others.length ? `<div class="others"><h3 style="font-size:18px">More roles at ${esc(d.c)}</h3>${others.map(o => `<a href="#/job/${encodeURIComponent(o.id)}"><span>${esc(o.t)}</span><span class="small">${esc(ago(o.p))}</span></a>`).join('')}</div>` : ''}
+      <p class="small">Read from the company's public job board. The posting and the decision to hire belong to ${esc(d.c)}.</p>
+    </div>`;
+  sheet.querySelector('.x').focus();
+}
+function closeJob(){
+  const sheet = $('#sheet'), scrim = $('#scrim');
+  sheet.classList.remove('on'); scrim.classList.remove('on'); document.body.style.overflow = '';
+  setTimeout(() => { if (!sheet.classList.contains('on')){ sheet.hidden = true; scrim.hidden = true; } }, 320);
+}
+
+/* ---- companies + api ---- */
+function renderCompanies(){
+  const q = ($('#cq').value || '').toLowerCase();
+  const list = COMPANIES.filter(c => !q || c.name.toLowerCase().includes(q));
+  $('#csub').textContent = `${fmt(COMPANIES.length)} companies with open tech roles right now, from ${fmt(META.companiesTracked || 0)} we track.`;
+  $('#cgrid').innerHTML = list.map(c => `<a class="co" href="#/company/${esc(c.slug)}">${logo(c.name)}<span><b>${esc(c.name)}</b><span class="small">${fmt(c.jobs)} open ${c.jobs === 1 ? 'role' : 'roles'}</span></span></a>`).join('') || '<div class="empty">No company matches.</div>';
+}
+function renderApi(){
+  const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+  $('#api1').textContent = `GET ${base}api/jobs.json\nGET ${base}api/jobs/page-2.json\n\n{ "data": [ { "slug", "company_name", "title", "description", "url", ... } ],\n  "links": { "first", "last", "prev", "next" },\n  "meta": { "current_page", "last_page", "per_page": 100, "total" } }`;
+  $('#api2').textContent = `GET ${base}data/jobs.json        compact list of every role (what this page uses)\nGET ${base}data/jobs/<id>.json   one role with the full text and the quoted facts\nGET ${base}data/companies.json   companies with open roles`;
+  $('#api3').textContent = `${base}feed.xml   the 100 newest roles`;
+}
+
+/* ---- routing ---- */
+function route(){
+  const h = location.hash.replace(/^#\/?/, '');
+  const [view, arg] = [h.split('/')[0], decodeURIComponent(h.split('/').slice(1).join('/'))];
+  const views = {jobs: $('#v-jobs'), companies: $('#v-companies'), api: $('#v-api')};
+  const which = view === 'companies' ? 'companies' : view === 'api' ? 'api' : 'jobs';
+  for (const [k, el] of Object.entries(views)) el.hidden = k !== which;
+  document.querySelectorAll('[data-nav]').forEach(a => { if (a.dataset.nav === which) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  if (which === 'companies'){ renderCompanies(); closeJob(); return; }
+  if (which === 'api'){ renderApi(); closeJob(); return; }
+  const newCompany = view === 'company' ? arg : '';
+  if (newCompany !== F.company){ F.company = newCompany; shown = 40; renderBoard(); }
+  if (view === 'job' && arg) openJob(arg); else closeJob();
+}
+
+/* ---- events ---- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act],[data-q]'); if (!t) return;
+  if (t.dataset.q){ const k = t.dataset.q, v = t.dataset.v; F[k].has(v) ? F[k].delete(v) : F[k].add(v); shown = 40; renderBoard(); return; }
+  const a = t.dataset.act;
+  if (a === 'more'){ shown += 40; renderList(); }
+  else if (a === 'clear'){ F = Object.assign(F, {where:'any', posted:'', lv:new Set(), ty:new Set(), cat:new Set(), sk:new Set(), pk:new Set(), all:false}); shown = 40; renderBoard(); }
+  else if (a === 'close'){ history.length > 1 && /^#\/job\//.test(location.hash) ? history.back() : (location.hash = F.company ? '#/company/' + F.company : '#/'); }
+  else if (a === 'copy'){ navigator.clipboard?.writeText(location.href).then(() => { t.textContent = 'Copied'; }, () => { t.textContent = 'Copy failed'; }); }
+  else if (a === 'closef'){ $('#filters').classList.remove('on'); }
+});
+$('#scrim').addEventListener('click', () => { location.hash = F.company ? '#/company/' + F.company : '#/'; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) location.hash = F.company ? '#/company/' + F.company : '#/'; });
+$('#filters').addEventListener('change', e => {
+  const t = e.target, k = t.dataset.f; if (!k) return;
+  if (k === 'where') F.where = t.value; else if (k === 'posted') F.posted = t.value; else if (k === 'all') F.all = t.checked;
+  else t.checked ? F[k].add(t.value) : F[k].delete(t.value);
+  shown = 40; renderBoard();
+});
+$('#sform').addEventListener('submit', e => { e.preventDefault(); F.q = $('#q').value.trim(); F.where = $('#where').value; if (F.q && F.sort === 'new') F.sort = 'rel'; shown = 40; renderBoard(); $('#count').scrollIntoView({behavior:'smooth', block:'start'}); });
+$('#q').addEventListener('input', e => { F.q = e.target.value.trim(); shown = 40; renderFilters(); renderList(); writeState(); });
+$('#where').addEventListener('change', e => { F.where = e.target.value; shown = 40; renderBoard(); });
+$('#sort').addEventListener('change', e => { F.sort = e.target.value; renderList(); writeState(); });
+$('#openf').addEventListener('click', () => $('#filters').classList.add('on'));
+$('#cq').addEventListener('input', renderCompanies);
+window.addEventListener('hashchange', route);
+
+/* ---- boot ---- */
+(async function(){
+  readState();
+  try {
+    const [jr, cr] = await Promise.all([fetch('data/jobs.json'), fetch('data/companies.json')]);
+    const data = await jr.json(); ALL = data.jobs || []; META = data.meta || {}; COMPANIES = await cr.json();
+  } catch(e) { $('#count').textContent = 'The role list could not load. Refresh the page to try again.'; return; }
+  ALL.forEach(j => { j.cat = j.cat || []; j.sk = j.sk || []; j.pk = j.pk || []; });
+  const upd = META.feedAt ? ago(META.feedAt) : '';
+  $('#h1').textContent = `${fmt(ALL.length)} open tech roles in India and remote`;
+  $('#sub').textContent = `Read straight from ${fmt(META.companyBoards || 0)} company career pages and ${fmt(META.remoteBoards || 0)} remote job boards${upd ? ', updated ' + upd : ''}. Every role links to the company's own application page.`;
+  $('#strip').innerHTML = `<b>${fmt(META.companiesTracked || 0)}</b> companies tracked · <b>${fmt(ALL.filter(j => (hoursAgo(j.p) ?? 1e9) < 24).length)}</b> roles posted in the last 24 hours`;
+  F.company = /^#\/company\//.test(location.hash) ? decodeURIComponent(location.hash.split('/').slice(2).join('/')) : '';
+  renderBoard();
+  route();
+})();
+</script>
+</body>
+</html>

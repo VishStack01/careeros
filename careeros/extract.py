@@ -272,11 +272,20 @@ _PERIOD = r"(?:\s*(?:/|per|a)\s*(year|yr|annum|month|mo|hour|hr))?"
 _LPA = re.compile(r"(\d+(?:\.\d+)?)\s*(?:-|–|to)\s*(\d+(?:\.\d+)?)\s*(?:lpa|lakhs?(?: per annum)?|l\.?p\.?a\.?)\b", re.I)
 _LPA_ONE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:lpa|lakhs? per annum)\b", re.I)
 _MONEY = re.compile(
-    r"(₹|rs\.?\s?|inr\s?|\$|usd\s?)\s*([\d,]+(?:\.\d+)?)\s*([kKmM])?\s*(?:-|–|to)\s*(?:₹|rs\.?\s?|inr\s?|\$|usd\s?)?\s*([\d,]+(?:\.\d+)?)\s*([kKmM])?"
+    r"(₹|rs\.?\s?|inr\s?|\$|usd\s?)\s*([\d,]+(?:\.\d+)?)\s*([kKmM](?![a-zA-Z]))?\s*(?:-|–|to)\s*(?:₹|rs\.?\s?|inr\s?|\$|usd\s?)?\s*([\d,]+(?:\.\d+)?)\s*([kKmM](?![a-zA-Z]))?"
     + _PERIOD,
     re.I,
 )
-_MONEY_ONE = re.compile(r"(₹|rs\.?\s?|inr\s?|\$|usd\s?)\s*([\d,]+(?:\.\d+)?)\s*([kKmM])?" + _PERIOD, re.I)
+_MONEY_ONE = re.compile(r"(₹|rs\.?\s?|inr\s?|\$|usd\s?)\s*([\d,]+(?:\.\d+)?)\s*([kKmM](?![a-zA-Z]))?" + _PERIOD, re.I)
+# Money that isn't pay: funding, revenue, deal sizes. A posting's prose mentions these far more
+# often than salaries, so a figure in running text counts as pay only next to a pay word.
+_NOT_PAY = re.compile(
+    r"\b(rais(e|ed|ing)|funding|funded|series [a-f]\b|valuation|valued|arr\b|revenue|investors?|backed|paid out|transactions?|"
+    r"pipeline|deals?|portfolio|capital|budget|spend|gmv|aum|tvl|grants?|customers|users|billion|ipo|acquisition|round)\b", re.I)
+_PAY = re.compile(
+    r"\b(salary|salaries|compensation|pay|paid|ctc|lpa|stipend|per annum|annual|annually|base|ote|package|pay range|"
+    r"per (year|month|hour)|a year|/\s*(year|yr|month|mo|hour|hr)|range)\b", re.I)
+_LPA_MIN, _LPA_MAX = 0.3, 450.0
 
 
 @dataclass
@@ -302,36 +311,70 @@ def _period_mult(p: str | None) -> tuple[float, str]:
     return 1.0, "year"
 
 
-def parse_salary(text: str, usd_inr: float = 88.0) -> Salary | None:
-    """Parse the first pay range in `text` into lakhs per annum (LPA)."""
+def _amount(s: str) -> float | None:
+    try:
+        return float((s or "").replace(",", ""))
+    except ValueError:
+        return None  # "," alone, or similar
+
+
+def _pay_context(text: str, start: int, end: int) -> bool:
+    before, after = text[max(0, start - 90):start], text[end:end + 60]
+    near = text[max(0, start - 60):start] + text[start:end] + text[end:end + 25]
+    return bool(_PAY.search(before + text[start:end] + after)) and not _NOT_PAY.search(near)
+
+
+def _plausible(sal: Salary) -> bool:
+    lo, hi = sorted((sal.low_lpa, sal.high_lpa))
+    return _LPA_MIN <= lo and hi <= _LPA_MAX and (lo == 0 or hi / lo <= 6)
+
+
+def parse_salary(text: str, usd_inr: float = 88.0, structured: bool = True) -> Salary | None:
+    """Parse the first pay range in `text` into lakhs per annum (LPA).
+
+    `structured`: text is a pay field (e.g. an ATS compensation line). For free
+    text (a job description) pass False: a figure then counts only next to a pay
+    word and away from funding or revenue words. Implausible values are ignored."""
     if not text:
         return None
-    m = _LPA.search(text)
-    if m:
-        lo, hi = float(m.group(1)), float(m.group(2))
-        return Salary(lo, hi, "INR", "year", quote_around(text, *m.span()))
-    m = _MONEY.search(text)
-    if m:
+    cands: list[tuple[int, Salary]] = []
+    for m in _LPA.finditer(text):
+        cands.append((m.start(), Salary(float(m.group(1)), float(m.group(2)), "INR", "year", quote_around(text, *m.span()))))
+    for m in _MONEY.finditer(text):
+        if not structured and not _pay_context(text, *m.span()):
+            continue
         cur = "USD" if ("$" in m.group(1) or "usd" in m.group(1).lower()) else "INR"
-        lo = float(m.group(2).replace(",", "")) * _MULT[(m.group(3) or "").lower()]
-        hi = float(m.group(4).replace(",", "")) * _MULT[(m.group(5) or m.group(3) or "").lower()]
+        a, b = _amount(m.group(2)), _amount(m.group(4))
+        if a is None or b is None:
+            continue
+        lo = a * _MULT[(m.group(3) or "").lower()]
+        hi = b * _MULT[(m.group(5) or m.group(3) or "").lower()]
         mult, period = _period_mult(m.group(6))
         rate = usd_inr if cur == "USD" else 1.0
-        return Salary(lo * mult * rate / 1e5, hi * mult * rate / 1e5, cur, period, quote_around(text, *m.span()))
-    m = _LPA_ONE.search(text)
-    if m:
+        cands.append((m.start(), Salary(lo * mult * rate / 1e5, hi * mult * rate / 1e5, cur, period, quote_around(text, *m.span()))))
+    for m in _LPA_ONE.finditer(text):
         v = float(m.group(1))
-        return Salary(v, v, "INR", "year", quote_around(text, *m.span()))
-    m = _MONEY_ONE.search(text)
-    if m:
-        cur = "USD" if ("$" in m.group(1) or "usd" in m.group(1).lower()) else "INR"
-        v = float(m.group(2).replace(",", "")) * _MULT[(m.group(3) or "").lower()]
-        if cur == "INR" and v < 10000 and not m.group(3):
-            return None  # "₹ 500" style noise
-        mult, period = _period_mult(m.group(4))
-        rate = usd_inr if cur == "USD" else 1.0
-        lpa = v * mult * rate / 1e5
-        return Salary(lpa, lpa, cur, period, quote_around(text, *m.span()))
+        cands.append((m.start() + 1, Salary(v, v, "INR", "year", quote_around(text, *m.span()))))
+    if not cands:
+        for m in _MONEY_ONE.finditer(text):
+            if not structured and not _pay_context(text, *m.span()):
+                continue
+            cur = "USD" if ("$" in m.group(1) or "usd" in m.group(1).lower()) else "INR"
+            a = _amount(m.group(2))
+            if a is None:
+                continue
+            v = a * _MULT[(m.group(3) or "").lower()]
+            if cur == "INR" and v < 10000 and not m.group(3):
+                continue  # "₹ 500" style noise
+            mult, period = _period_mult(m.group(4))
+            rate = usd_inr if cur == "USD" else 1.0
+            lpa = v * mult * rate / 1e5
+            cands.append((m.start(), Salary(lpa, lpa, cur, period, quote_around(text, *m.span()))))
+    for _, sal in sorted(cands, key=lambda c: c[0]):
+        if _plausible(sal):
+            if sal.low_lpa > sal.high_lpa:
+                sal.low_lpa, sal.high_lpa = sal.high_lpa, sal.low_lpa
+            return sal
     return None
 
 
@@ -344,7 +387,7 @@ def facts(text: str, header: str = "", location: str = "", salary_text: str = ""
     filters can run later without re-downloading every posting."""
     exp = extract_experience(text, header)
     scope = remote_scope(location, text)
-    sal = parse_salary(salary_text, usd_inr) or parse_salary(text, usd_inr)
+    sal = parse_salary(salary_text, usd_inr) or parse_salary(text, usd_inr, structured=False)
     out = {
         "expMin": exp.min_years, "expQuote": exp.quote, "fresherOk": exp.fresher_ok,
         "scope": scope.scope, "scopeEligible": scope.india_eligible, "scopeQuote": scope.quote,
