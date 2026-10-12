@@ -35,6 +35,20 @@ than guess.
 5. Confirmed → row becomes `submitted`, job becomes `applied`, `after-submit.png` saved.
 6. Not confirmed → the row stays `submitting`. Every later attempt raises `NeedsHumanCheck` until you check the site or your inbox and clear it.
 
+## Hosted auto-apply (Claude desktop app)
+With the hosted dashboard, a scheduled task follows [prompts/scheduled-apply.md](../prompts/scheduled-apply.md).
+It runs on your computer through the Claude desktop app, in its built-in browser
+(or Claude in Chrome), so it uses the sign-ins you made there and never sees a
+password.
+
+1. **Check in.** It writes `settings/applyRunner`, which the dashboard shows as "Your computer: linked".
+2. **Inputs.** Your saved application details (`profile/applicant`), the resume PDF you uploaded, and the Career Brain once built.
+3. **Order.** Roles you queued, then roles you approved, then (with the switch on) roles whose must-haves your evidence covers. Newest and remote-worldwide first; at most one role per company per run; never past the daily cap.
+4. **Fit check** for roles it picked itself: each must-have needs evidence in your resume or brain, and the evidence map and gaps are saved to the role.
+5. **Fill.** Every field from your details; honest "No" where your evidence doesn't show a skill; short answers with one real proof point; diversity questions declined.
+6. **Stop rules.** Sign-in or account pages, captchas, one-time codes, ID numbers, assessments, long essays and any guessed answer stop that role and list it under *Auto-apply needs you* with the reason, the form link, and *Try again* / *I applied* buttons.
+7. **Submit once**, confirm from the page or your inbox, and record the confirmation and the resume version that was sent.
+
 ## Platform rules
 - Company ATS pages (Greenhouse, Lever, Ashby, Workday, career sites) are the intended targets.
 - No automation of LinkedIn (including Easy Apply) or Indeed Apply; both prohibit it.

@@ -1,10 +1,10 @@
-# The India feed: 1,000 career pages every 3 hours
+# The India feed: 1,400 career pages every hour
 
 Most openings at Indian product companies never reach a job board, or reach it
 days later with hundreds of applicants already in. They are first posted on the
 company's own careers page, and most careers pages are a thin skin over a hiring
 system (ATS) that publishes every opening as public JSON. CareerOS reads those
-feeds directly, for about 1,000 companies, every 3 hours.
+feeds directly, for about 1,400 companies, every hour.
 
 ```mermaid
 flowchart LR
@@ -101,7 +101,7 @@ budget on the platforms the feed can't read (see [platforms.md](platforms.md)).
 
 ## Running it yourself
 
-Fork the repo and enable Actions: the `scan` workflow runs every 3 hours on
+Fork the repo and enable Actions: the `scan` workflow runs every hour on
 GitHub's free runners and publishes your fork's `feed` branch. Or run it locally:
 
 ```bash

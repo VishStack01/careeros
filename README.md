@@ -6,7 +6,7 @@ Built for Claude Code. Works with Codex and Antigravity.
 
 ![CareerOS dashboard: fresh roles, stage cards and today's batch](docs/assets/dashboard-today.png)
 
-**[Open the live demo](https://vishstack01.github.io/careeros/)** (fictional companies)
+**[Browse the live job board](https://vishstack01.github.io/careeros/)**: every open role the scan finds, updated hourly, with a free JSON API and RSS · **[Dashboard demo](https://vishstack01.github.io/careeros/demo/)** (fictional companies)
 
 ---
 
@@ -20,23 +20,46 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 - **It applies only when it can answer everything.** Each form answer has a confidence. Sensitive fields, essays nobody wrote, captchas and logins go to you.
 - **One submit per role, ever.** An idempotent state machine, receipts with screenshots, and a kill switch.
 - **Platform-safe.** No LinkedIn or Indeed automation, no account creation, no captcha solving. Outreach is drafted; you send it.
-- **Where the openings are first.** About 1,000 Indian product companies' career pages, read straight from their hiring systems every 3 hours, before roles reach the big boards.
+- **Where the openings are first.** About 1,400 product companies' career pages, read straight from their hiring systems every hour, before roles reach the big boards.
 
 ## Coverage
 
 | Source | How many | How |
 |---|---|---|
-| Company career pages | 1,396 product companies: Indian product companies, India engineering centres, the [moreThanFAANGM](https://github.com/Kaustubh-Natuskar/moreThanFAANGM) list, and YC companies in India or hiring remotely | Public feeds of 8 hiring systems (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Breezy, Personio), scanned every 3 hours on GitHub Actions. [docs/feed.md](docs/feed.md) |
+| Company career pages | 1,396 product companies: Indian product companies, India engineering centres, the [moreThanFAANGM](https://github.com/Kaustubh-Natuskar/moreThanFAANGM) list, and YC companies in India or hiring remotely | Public feeds of 8 hiring systems (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Breezy, Personio), scanned every hour on GitHub Actions. [docs/feed.md](docs/feed.md) |
 | Remote job boards with feeds | 9 | Remote OK, Remotive, Himalayas, Jobicy, Working Nomads, We Work Remotely, HN jobs, HN "Who is hiring?", Arbeitnow |
 | Other platforms | 96 in the registry, 50 low-competition | 26 VC portfolio boards, Indian startup and fresher boards, 11 x-ray searches that find career pages on Keka, Zoho Recruit, Darwinbox and others. [docs/platforms.md](docs/platforms.md) |
 | Big boards | LinkedIn, Naukri, Indeed, foundit, Glassdoor, Shine | Their own email alerts only; never automated |
+
+## The job board
+
+The hourly scan also publishes a public job board on GitHub Pages, in the spirit of Arbeitnow: search, filters with counts (where you can work from, experience, posted date, contract, category, skills, perks), a page per role with the full posting and the quoted facts, and a page per company. Only roles still open and posted in the last 60 days are listed.
+
+| Endpoint | What |
+|---|---|
+| [`/api/jobs.json`](https://vishstack01.github.io/careeros/api/jobs.json) | 100 roles per page, newest first; `links.next` points to `api/jobs/page-2.json` |
+| [`/feed.xml`](https://vishstack01.github.io/careeros/feed.xml) | RSS of the 100 newest roles |
+| `/data/jobs/<id>.json` | One role with its full text and facts |
+
+Build it yourself with `careeros site --feed feed --out site`.
+
+## Auto-apply
+
+The dashboard has an **Auto-apply** switch. Fill in your application details and upload your resume on the dashboard, then a scheduled task in the Claude desktop app applies from your computer's browser, where you sign in to job sites yourself:
+
+- roles you press **Auto-apply** on go first, then, with the switch on, roles whose must-have requirements your resume or Career Brain can back up;
+- newest and remote-worldwide roles first, up to your daily cap;
+- every field comes from your saved details; short "why us" answers use one real proof point; a tailored resume once your Career Brain is built;
+- it stops and lists the role under **Auto-apply needs you** with the exact reason for a sign-in, captcha, one-time code, assessment or any answer it would have to guess.
+
+It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri or Indeed. The run's instructions: [prompts/scheduled-apply.md](prompts/scheduled-apply.md).
 
 ## What it does
 
 | Stage | What happens | How |
 |---|---|---|
 | Brain | Interviews you and turns your career into claims with evidence | `career-brain` skill, `careeros brain-check` |
-| Discover | Scans ~1,000 career pages and 9 remote boards every 3 hours; the agent covers the rest of the 96 platforms | `careeros discover`, `scan`, `filter-feed`, `job-scout` skill |
+| Discover | Scans ~1,400 career pages and 9 remote boards every hour; the agent covers the rest of the 96 platforms | `careeros discover`, `scan`, `filter-feed`, `job-scout` skill |
 | Gate | Role, seniority, experience, freshness, open, location, pay, dealbreakers, company; each with a quote | `careeros/gates.py` |
 | Research | Company brief, the three problems the team needs solved, fit by dimension, decision A–F | `company-research` skill |
 | Tailor | Resume where every bullet cites the brain, cover note, screening answers | `tailor` skill, `careeros claims-check` |
@@ -54,7 +77,7 @@ git clone https://github.com/VishStack01/careeros.git && cd careeros
 pip install -e ".[browser,dev]" && python -m playwright install chromium
 careeros init                    # creates your private config files
 careeros scout                   # poll your watchlist, gate every role
-careeros discover && careeros scan   # or: build the 1,000-company India feed
+careeros discover && careeros scan   # or: build the 1,400-company India feed
 careeros serve                   # dashboard at http://127.0.0.1:8765
 ```
 
@@ -71,7 +94,7 @@ careeros evaluate --company "Demo Co" --title "Junior AI Engineer" --location "R
 
 ```mermaid
 flowchart LR
-  ATS["1,000 career pages<br/>+ remote boards"] --> Scan["scan<br/>(GitHub Actions)"] --> Feed[("feed")] --> Gates["gates + quotes"] --> Store[("store")]
+  ATS["1,400 career pages<br/>+ remote boards"] --> Scan["scan<br/>(GitHub Actions)"] --> Feed[("feed")] --> Gates["gates + quotes"] --> Store[("store")]
   Boards["96 platforms"] --> Agent["job-scout skill"] --> Gates
   Brain[("Career Brain")] --> Tailor["tailor"]
   Store --> Research["research"] --> Tailor --> Claims["claims-check"] --> Review["reviewer<br/>(second model)"]
@@ -97,6 +120,7 @@ careeros/            Python package (standard library only; Playwright optional)
   claims.py          resume truth gate
   apply/answers.py   form-answer resolver with confidence
   apply/runner.py    Playwright form filler
+  site.py, tags.py   the public job board and its tags
   server.py, cli.py  local dashboard API and command line
 .claude/skills/      agent skills: career-brain, job-scout, company-research, tailor,
                      reviewer, apply, outreach, tracker, coach, weekly-review
@@ -107,13 +131,13 @@ config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume and an application package
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               74 tests, including real browser form fills
+tests/               90 tests, including real browser form fills
 ```
 
 ## Docs
 
 - [How it works, step by step](docs/how-it-works.md)
-- [The India feed: 1,000 career pages](docs/feed.md)
+- [The India feed: 1,400 career pages](docs/feed.md)
 - [Job platforms](docs/platforms.md)
 - [Architecture](docs/architecture.md)
 - [What makes it accurate](docs/accuracy.md)
