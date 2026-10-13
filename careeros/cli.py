@@ -335,8 +335,51 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--root", default="dashboard")
     sp.set_defaults(fn=cmd_serve)
 
+    sp = sub.add_parser("cloud", help="The multi-user service: migrate, serve, worker, ingest")
+    sp.add_argument("action", choices=["migrate", "serve", "worker", "ingest", "match-all", "check"])
+    sp.add_argument("--host", default="127.0.0.1")
+    sp.add_argument("--port", type=int, default=8000)
+    sp.add_argument("--force", action="store_true", help="ingest: accept a feed even if it shrank sharply")
+    sp.set_defaults(fn=cmd_cloud)
+
     a = p.parse_args(argv)
     a.fn(a)
+
+
+def cmd_cloud(a) -> None:
+    try:
+        from .cloud.config import Config
+        from .cloud.db import Database
+    except ImportError as e:  # pragma: no cover
+        raise SystemExit(f"The cloud service needs its extras: pip install \"careeros[cloud]\" ({e})")
+    cfg = Config.from_env()
+    if a.action == "check":
+        problems = cfg.check()
+        print("\n".join(problems) if problems else f"Configuration looks safe for {cfg.app_env}.")
+        raise SystemExit(1 if problems else 0)
+    if a.action == "serve":
+        import uvicorn
+
+        from .cloud.app import create_app
+        uvicorn.run(create_app(cfg), host=a.host, port=a.port, proxy_headers=cfg.trust_proxy, forwarded_allow_ips="*" if cfg.trust_proxy else None)
+        return
+    if a.action == "worker":
+        from .cloud.worker import main as worker_main
+        worker_main(cfg)
+        return
+    db = Database(cfg.database_url, cfg.db_pool_min, cfg.db_pool_max)
+    try:
+        if a.action == "migrate":
+            applied = db.migrate()
+            print(f"{len(applied)} migration(s) applied." if applied else "Database is up to date.")
+        elif a.action == "ingest":
+            from .cloud.ingest import ingest
+            print(ingest(db, cfg.feed_url, force=a.force))
+        elif a.action == "match-all":
+            from .cloud.worker import Worker
+            print(f"queued {Worker(cfg, db).queue_matches()} match task(s)")
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":

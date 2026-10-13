@@ -21,3 +21,16 @@ html = (
 )
 (root / "index.html").write_text(html, encoding="utf-8")
 print(f"wrote {root / 'index.html'} ({len(html):,} bytes)")
+
+# The same dashboard for CareerOS Cloud, without demo data: it finds the cloud API at boot.
+cloud = (
+    "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
+    "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
+    "<meta name=\"description\" content=\"CareerOS: fresh roles from company career pages, checked against your filters.\">\n"
+    "<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>\n"
+    + head.replace("<title>VishStack CareerOS</title>", "<title>CareerOS</title>") + "</style>\n</head>\n<body>\n"
+    + body.strip() + "\n</body>\n</html>\n"
+)
+target = root.parent / "careeros" / "cloud" / "static" / "dashboard.html"
+target.write_text(cloud, encoding="utf-8")
+print(f"wrote {target} ({len(cloud):,} bytes)")

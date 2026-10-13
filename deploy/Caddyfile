@@ -1,0 +1,10 @@
+# HTTPS in front of CareerOS Cloud. Caddy gets and renews the certificate for $DOMAIN.
+{$DOMAIN} {
+	encode zstd gzip
+	request_body {
+		max_size 8MB
+	}
+	reverse_proxy web:8000 {
+		header_up X-Forwarded-For {remote_host}
+	}
+}

@@ -69,3 +69,11 @@ in the hosted setup it is the `brain/brain` document, readable only by you. See
 | `packages/<job-id>/` | `resume.json`, `resume.pdf`, `package.json`, `review.json`, `interview.md` |
 | `receipts/<time>-<job-id>/` | `filled.png`, `after-submit.png`, `result.json` |
 | `data/careeros.db` | SQLite: `docs`, `job_keys`, `applications`, `events`, `flags` |
+
+## CareerOS Cloud
+The multi-user service keeps the same documents per account in a `docs` table
+keyed by `(user_id, collection, id)`, next to `users`, `sessions`, `api_tokens`
+(computer keys), `one_time_tokens`, `assets`, `applications` (the submit state
+machine per user), the shared `jobs` inventory, `tasks` (the worker queue) and
+`audit_events`. The schema is `careeros/cloud/migrations/0001_init.sql`; see
+[cloud.md](cloud.md).

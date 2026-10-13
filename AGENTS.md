@@ -30,6 +30,8 @@ careeros discover                    # find job boards for config/companies/comp
 careeros scan                        # read every board + remote feeds -> feed/india.jsonl.gz
 careeros filter-feed --feed URL --settings-json S.json --known DIR --out DIR
 careeros platforms --json            # platforms for the agent to visit this run
+careeros site --feed feed --out site # build the public job board
+careeros cloud migrate|serve|worker|ingest|check   # the multi-user service (pip install -e ".[cloud]"), see docs/cloud.md
 python -m pytest -q                  # all tests must pass before a commit
 python scripts/build_dashboard.py    # after editing dashboard/app.html
 ```

@@ -1,0 +1,16 @@
+.git
+.github
+data
+feed
+site
+dashboard
+docs
+examples
+tests
+scripts
+brain
+packages
+receipts
+**/__pycache__
+*.db
+.env

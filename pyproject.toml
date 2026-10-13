@@ -20,7 +20,8 @@ dependencies = []
 
 [project.optional-dependencies]
 browser = ["playwright>=1.44"]
-dev = ["pytest>=8"]
+cloud = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "psycopg[binary,pool]>=3.1", "pypdf>=4.0"]
+dev = ["pytest>=8", "httpx>=0.27"]
 
 [project.scripts]
 careeros = "careeros.cli:main"
@@ -29,7 +30,7 @@ careeros = "careeros.cli:main"
 include = ["careeros*"]
 
 [tool.setuptools.package-data]
-careeros = ["site_app.html"]
+careeros = ["site_app.html", "cloud/static/*.html", "cloud/migrations/*.sql", "cloud/prompts/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

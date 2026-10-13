@@ -10,6 +10,9 @@ reports/
 data/
 *.db
 *.db-journal
+*.db-wal
+*.db-shm
+.env
 
 # Python
 __pycache__/

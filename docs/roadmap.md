@@ -13,8 +13,10 @@ Status of the build order from the CareerOS blueprint.
 | 6. Interview | Interview pack, mock interviews, negotiation brief | **Skill** done |
 | 7. Autonomous operations | Scheduled search and apply prompts, caps, timing | **Done** (hosted and cron) |
 | 8. Public job board | Static board on GitHub Pages from the hourly scan: search, faceted filters, role and company pages, JSON API and RSS | **Done** |
+| 9. Multi-user service | Accounts, per-user pipelines on PostgreSQL, hourly matching worker, agent API with computer keys, Docker and Render deploys | **Done** as a beta; see the release checklist for what a public launch still needs |
 
 ## Next
+- Cloud: two-factor sign-in or OIDC, uploads in object storage with a malware scan, an evaluation set run in CI.
 - Resume PDF renderer from `resume.json` with a multi-parser round-trip test.
 - Workday scout (its public job-search endpoint differs per company).
 - Readers for Darwinbox, Keka and Zoho Recruit career pages, so unmapped companies join the scan.

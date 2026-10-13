@@ -1,0 +1,81 @@
+# CareerOS Cloud on one machine: PostgreSQL, a migration step, the web app and the worker.
+#
+#   cp .env.example .env        # set POSTGRES_PASSWORD at least
+#   docker compose up --build -d
+#   open http://127.0.0.1:8000
+#
+# For a real deployment on a server, set the production values in .env and add HTTPS:
+#   DOMAIN=jobs.example.com docker compose --profile https up -d
+# See docs/cloud.md.
+x-app: &app
+  build: .
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql://careeros:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/careeros
+  restart: unless-stopped
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: careeros
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: careeros
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U careeros -d careeros"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    # No ports: the database is reachable only from the app containers.
+
+  migrate:
+    <<: *app
+    command: ["careeros", "cloud", "migrate"]
+    healthcheck:
+      disable: true
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  web:
+    <<: *app
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:8000:8000"  # loopback only; put HTTPS (the caddy profile) in front for the internet
+    volumes:
+      - uploads:/data
+
+  worker:
+    <<: *app
+    command: ["careeros", "cloud", "worker"]
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  caddy:
+    image: caddy:2
+    profiles: ["https"]
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:

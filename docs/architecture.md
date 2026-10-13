@@ -52,7 +52,7 @@ flowchart LR
 | Control plane | Dashboard (approvals, skip log, checks with quotes) | `dashboard/app.html`, `careeros serve` |
 | Scheduling | Claude scheduled tasks, cron or CI | `prompts/`, `docs/build-your-own.md` |
 
-## Two deployments, one data model
+## Three deployments, one data model
 
 The dashboard reads documents (`jobs/*`, `runs/*`, `settings/profile`,
 `brain/status`). The same shapes live in:
@@ -63,9 +63,15 @@ The dashboard reads documents (`jobs/*`, `runs/*`, `settings/profile`,
 - **Local**: `data/careeros.db` (SQLite). `careeros serve` exposes it to the
   dashboard on `127.0.0.1`; cron runs `careeros scout`.
 
+- **Cloud (multi-user)**: CareerOS Cloud, a FastAPI service on PostgreSQL. One shared
+  job inventory read from the hourly feed, private documents per account, a worker
+  that matches every account every hour, and each user's own apply agent talking to
+  it with a computer key. See [cloud.md](cloud.md).
+
 The dashboard file detects where it is running: inside Claude it uses the
-artifact database; served by `careeros serve` it uses the local API; anywhere
-else (GitHub Pages) it shows fictional demo data.
+artifact database; served by CareerOS Cloud it signs the user in and uses their
+account; served by `careeros serve` it uses the local API; anywhere else (GitHub
+Pages) it shows fictional demo data.
 
 ## Role lifecycle
 

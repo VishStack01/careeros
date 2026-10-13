@@ -1,0 +1,64 @@
+# One-click deploy on Render: a PostgreSQL database, the web app and the worker.
+# After the first deploy, set PUBLIC_URL (your https://...onrender.com or custom domain),
+# SMTP_URL, MAIL_FROM and BOOTSTRAP_ADMIN_EMAIL in the dashboard, then redeploy.
+# Check plan names and prices on render.com before you deploy.
+databases:
+  - name: careeros-db
+    databaseName: careeros
+    user: careeros
+
+services:
+  - type: web
+    name: careeros-web
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    preDeployCommand: careeros cloud migrate
+    disk:
+      name: uploads
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: careeros-db
+          property: connectionString
+      - key: APP_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1"
+      - key: PUBLIC_URL
+        sync: false
+      - key: SMTP_URL
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: SIGNUP_MODE
+        value: open
+
+  - type: worker
+    name: careeros-worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerCommand: careeros cloud worker
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: careeros-db
+          property: connectionString
+      - key: APP_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1"
+      - key: PUBLIC_URL
+        sync: false
+      - key: SMTP_URL
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: SIGNUP_MODE
+        value: open

@@ -54,6 +54,22 @@ The dashboard has an **Auto-apply** switch. Fill in your application details and
 
 It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri or Indeed. The run's instructions: [prompts/scheduled-apply.md](prompts/scheduled-apply.md).
 
+## CareerOS Cloud: for many job seekers
+
+The same product as a multi-user service: people sign up with their email, set their filters, upload their resume and get matched against the shared hourly inventory, each with a private pipeline. Auto-apply still runs on each person's own computer, in the Claude desktop app, with a computer key that can only read their pipeline and report results; the server never fills employer forms or holds job-site logins.
+
+- Accounts with email verification, password reset, sign-out everywhere, export and self-service deletion
+- PostgreSQL with versioned migrations, a worker with a durable task queue, fail-closed feed ingestion
+- Deploy with Docker Compose (HTTPS through Caddy) or the Render blueprint
+
+```bash
+pip install -e ".[cloud]"
+careeros cloud serve      # http://127.0.0.1:8000, SQLite, emails printed to the terminal
+careeros cloud worker     # ingests the feed and matches every account
+```
+
+Architecture, deployment and operations: **[docs/cloud.md](docs/cloud.md)**. Before inviting anyone: **[the release checklist](docs/cloud-release-checklist.md)**.
+
 ## What it does
 
 | Stage | What happens | How |
@@ -121,6 +137,7 @@ careeros/            Python package (standard library only; Playwright optional)
   apply/answers.py   form-answer resolver with confidence
   apply/runner.py    Playwright form filler
   site.py, tags.py   the public job board and its tags
+  cloud/             the multi-user service: API, worker, migrations, sign-in pages
   server.py, cli.py  local dashboard API and command line
 .claude/skills/      agent skills: career-brain, job-scout, company-research, tailor,
                      reviewer, apply, outreach, tracker, coach, weekly-review
@@ -131,7 +148,7 @@ config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume and an application package
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               90 tests, including real browser form fills
+tests/               165 tests, including real browser form fills and the cloud service on SQLite and PostgreSQL
 ```
 
 ## Docs
@@ -143,6 +160,7 @@ tests/               90 tests, including real browser form fills
 - [What makes it accurate](docs/accuracy.md)
 - [The apply agent](docs/apply-agent.md)
 - [Data model](docs/data-model.md)
+- [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
 - [Build your own](docs/build-your-own.md)
 - [Responsible use](docs/responsible-use.md)
 - [Roadmap](docs/roadmap.md)

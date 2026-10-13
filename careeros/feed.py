@@ -128,7 +128,7 @@ def stale(known: list[tuple[str, dict]], feed_urls: set[str], summary: dict | No
     for doc_id, d in known:
         if d.get("stage") not in ("found", None, ""):
             continue
-        posted = d.get("postedAt") or ""
+        posted = "" if d.get("autoApply") == "queued" or d.get("needsYou") else (d.get("postedAt") or "")
         try:
             dt = datetime.fromisoformat(posted.replace("Z", "+00:00"))
             dt = dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
@@ -149,21 +149,28 @@ def _about(summary: str) -> str:
     return m.group(1) if m else s[:240]
 
 
-def run(feed_src: str, settings: Settings, known_path: str | None, out_dir: str | Path,
-        max_skips: int = 60, max_kept: int = 400, now: datetime | None = None, summary: dict | None = None) -> dict:
+def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]], summary: dict | None = None,
+          now: datetime | None = None, max_kept: int = 400, max_skips: int = 60) -> dict:
+    """The decision core, in memory: which feed records are new kept roles, which
+    are near-misses worth showing as skipped, and which known roles closed or aged out.
+
+    known: (doc id, dashboard document) pairs already in the user's pipeline.
+    Returns {"kept": [(id, doc)], "skipped": [(id, doc)], "gone": [...], "expired": [...],
+             "feedRecords", "alreadyKnown", "duplicates", "byRegion"}."""
     now = now or datetime.now(timezone.utc)
-    records = load_feed(feed_src)
-    summary = summary if summary is not None else load_summary(feed_src)
-    ids, urls, fps = load_known(known_path)
-    out = Path(out_dir)
-    (out / "kept").mkdir(parents=True, exist_ok=True)
-    (out / "skipped").mkdir(parents=True, exist_ok=True)
-    kept, skipped, known, dupes = [], [], 0, 0
+    ids, urls, fps = set(), set(), set()
+    for doc_id, d in known:
+        ids.add(doc_id)
+        if d.get("url"):
+            urls.add(canonical_url(d["url"]))
+        if d.get("company") and d.get("title"):
+            fps.add(fingerprint(d["company"], d["title"]))
+    kept, skipped, n_known, dupes = [], [], 0, 0
     seen_fp: set[str] = set()
     for r in records:
         fp = fingerprint(r["company"], r["title"])
         if r["id"] in ids or canonical_url(r["url"]) in urls or fp in fps:
-            known += 1
+            n_known += 1
             continue
         if fp in seen_fp:  # the same role listed once per city: one card is enough
             dupes += 1
@@ -195,14 +202,32 @@ def run(feed_src: str, settings: Settings, known_path: str | None, out_dir: str 
             }.get(failed[0], "")
             skipped.append((r["id"], doc))
     order = {"remote-global": 0, "remote-india": 1, "south-india": 2}
-    kept.sort(key=lambda x: (order.get(x[1].get("region", ""), 9), -(datetime.fromisoformat(x[1]["postedAt"].replace("Z", "+00:00")).timestamp() if x[1].get("postedAt") else 0)))
+
+    def posted_ts(doc):
+        try:
+            return datetime.fromisoformat(doc["postedAt"].replace("Z", "+00:00")).timestamp() if doc.get("postedAt") else 0
+        except ValueError:
+            return 0
+    kept.sort(key=lambda x: (order.get(x[1].get("region", ""), 9), -posted_ts(x[1])))
     kept, skipped = kept[:max_kept], skipped[:max_skips]
-    for sub, items in (("kept", kept), ("skipped", skipped)):
-        for doc_id, doc in items:
+    out = {"feedRecords": len(records), "alreadyKnown": n_known, "duplicates": dupes, "kept": kept, "skipped": skipped,
+           "byRegion": {k: sum(1 for _, d in kept if d.get("region") == k) for k in order}}
+    out.update(stale(known, {canonical_url(r["url"]) for r in records}, summary, settings, now))
+    return out
+
+
+def run(feed_src: str, settings: Settings, known_path: str | None, out_dir: str | Path,
+        max_skips: int = 60, max_kept: int = 400, now: datetime | None = None, summary: dict | None = None) -> dict:
+    records = load_feed(feed_src)
+    summary = summary if summary is not None else load_summary(feed_src)
+    res = match(records, settings, _known_docs(known_path), summary, now, max_kept=max_kept, max_skips=max_skips)
+    out = Path(out_dir)
+    (out / "kept").mkdir(parents=True, exist_ok=True)
+    (out / "skipped").mkdir(parents=True, exist_ok=True)
+    for sub in ("kept", "skipped"):
+        for doc_id, doc in res[sub]:
             (out / sub / f"{doc_id}.json").write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
-    index = {"feedRecords": len(records), "alreadyKnown": known, "duplicates": dupes, "kept": [i for i, _ in kept], "skipped": [i for i, _ in skipped],
-             "byRegion": {k: sum(1 for _, d in kept if d.get("region") == k) for k in order}}
-    index.update(stale(_known_docs(known_path), {canonical_url(r["url"]) for r in records}, summary, settings, now))
+    index = dict(res, kept=[i for i, _ in res["kept"]], skipped=[i for i, _ in res["skipped"]])
     if summary:
         index["feed"] = {k: summary.get(k) for k in ("generatedAt", "companies", "boards", "openings", "remoteBoards")}
     (out / "index.json").write_text(json.dumps(index, indent=2), encoding="utf-8")

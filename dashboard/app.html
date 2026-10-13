@@ -236,6 +236,21 @@ table.grid{width:100%;border-collapse:separate;border-spacing:0 2px;min-width:72
 .pill.queued{background:var(--violet-tint);color:#4A2FB0}
 .pill.queued::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .pill.needs{background:var(--gold);color:#000}
+.acct{display:grid;gap:16px}
+.acct .who{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.acct .av{width:40px;height:40px;border-radius:50%;background:var(--violet-tint);color:#4A2FB0;display:grid;place-items:center;font-weight:700}
+.acct .btns{display:flex;gap:8px;flex-wrap:wrap}
+.acct details{background:var(--field);border-radius:var(--r-md);padding:12px 16px}
+.acct summary{cursor:pointer;font-weight:600;font-size:14.5px}
+.acct details form{display:grid;gap:10px;margin-top:12px;max-width:420px}
+.acct input[type=password],.acct input[type=text].plain{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--page);color:var(--ink)}
+.keybox{display:grid;gap:12px;background:color-mix(in srgb,var(--gold) 20%,transparent);border-radius:var(--r-md);padding:14px 16px}
+.keybox ol{margin:0;padding-left:20px;display:grid;gap:10px;font-size:14.5px}
+.keyrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;background:var(--field);padding:12px 16px;font-size:14px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:var(--panel-2);padding:1px 5px;border-radius:5px}
+.prompt .copytext{max-height:180px;overflow:auto;font-size:13px}
+.acctmsg{font-size:14px;color:var(--good)}
+.acctmsg.err{color:var(--bad)}
 .linkish{all:unset;cursor:pointer;font:inherit;color:inherit;text-align:left}
 .linkish:hover{text-decoration:underline}
 .linkish:focus-visible{outline:2px solid var(--violet,#6A4CE0);outline-offset:2px;border-radius:4px}
@@ -521,8 +536,10 @@ const state = {
   loaded: {jobs:false}, tab: 'today', win: 'week', filter: 'active', q: '', openId: null, formDirty: false,
   selected: new Set(), seenReady: new Set(), enter: true, counted: false,
   freshLimit: 24, region: 'all',
-  applicant: null, runner: null, assets: null, uploading: false
+  applicant: null, runner: null, assets: null, uploading: false,
+  me: null, keys: null, newKey: null, prompts: {}, acctMsg: ''
 };
+const cloud = () => state.status === 'cloud';
 const FRESH_PAGE = 24;
 
 /* ---------- derived ---------- */
@@ -646,8 +663,8 @@ function renderAutoApply(){
   const steps = [
     [detailsOk, 'Your application details', detailsOk ? 'Name, contact, experience, notice period and pay expectations are saved.' : 'Still needed: ' + listJoin(miss.map(lc1)) + '.', `<button class="btn sm${detailsOk ? '' : ' solid'}" data-act="go-details">${detailsOk ? 'Edit' : 'Fill in'}</button>`],
     [resumeOk, 'Resume', resumeOk ? `${esc(res.name || 'resume.pdf')}, added ${esc(when(res.uploadedAt))}.` : 'A PDF of your current resume. Claude also builds your Career Brain from it.', (resumeOk ? `<a class="btn sm ghost" href="/_blob/${esc(res.id)}" target="_blank" rel="noopener">View</a>` : '') + upload],
-    [brainOk, 'Career Brain', brainOk ? 'Ready. Every tailored resume line traces back to it.' : resumeOk ? 'Claude builds it from your resume. Say "build my Career Brain" in the chat.' : 'Built from your resume, so every line on a tailored resume is true.', ''],
-    [pcOk, 'Your computer', pcOk ? `Linked. Last check-in ${esc(when(r.lastSeenAt))}${r.device ? ' from ' + esc(r.device) : ''}.` : (r.lastError ? esc(r.lastError) + ' ' : '') + 'Applications go out from the Claude desktop app on your computer, where you sign in to job sites yourself. In the app, open the "CareerOS auto-apply" scheduled task and turn on "Require this computer".', '']
+    [brainOk, 'Career Brain', brainOk ? 'Ready. Every tailored resume line traces back to it.' : cloud() ? 'Paste the Career Brain prompt into the Claude desktop app; it reads your resume and interviews you.' : resumeOk ? 'Claude builds it from your resume. Say "build my Career Brain" in the chat.' : 'Built from your resume, so every line on a tailored resume is true.', cloud() && !brainOk ? '<button class="btn sm" data-act="go-computer">Get the prompt</button>' : ''],
+    [pcOk, 'Your computer', pcOk ? `Linked. Last check-in ${esc(when(r.lastSeenAt))}${r.device ? ' from ' + esc(r.device) : ''}.` : (r.lastError ? esc(r.lastError) + ' ' : '') + (cloud() ? 'Create a computer key, save it on your computer, and add the auto-apply prompt as a scheduled task in the Claude desktop app.' : 'Applications go out from the Claude desktop app on your computer, where you sign in to job sites yourself. In the app, open the "CareerOS auto-apply" scheduled task and turn on "Require this computer".'), cloud() && !pcOk ? '<button class="btn sm solid" data-act="go-computer">Set up</button>' : '']
   ].map(([ok, t, sub, act], i) => `<div class="step${ok ? ' done' : ''}">${num(ok, i + 1)}<div class="tx"><b>${t}</b><small>${sub}</small></div>${act ? `<div class="ract">${act}</div>` : ''}</div>`).join('');
   const q = queuedJobs().length, today = appliedToday(), waits = waitingJobs();
   const waitHtml = waits.length ? `<div class="waits"><h3>Auto-apply needs you (${waits.length})</h3>${waits.slice(0, 8).map(j => `<div class="wait"><div class="tx"><b><button class="linkish" data-act="open" data-id="${esc(j.id)}">${esc(j.company)} · ${esc(j.title)}</button></b><small>${esc(j.needsYou)}</small></div><div class="ract">${waitActions(j, ro)}</div></div>`).join('')}${waits.length > 8 ? `<p class="muted" style="font-size:13.5px">${waits.length - 8} more in the pipeline.</p>` : ''}</div>` : '';
@@ -709,7 +726,7 @@ async function uploadResume(file){
     const path = 'profile/applicant';
     await enqueue(path, () => state.applicant ? state.db.doc(path).update({resume, updatedAt: nowIso()}) : state.db.doc(path).set({resume, updatedAt: nowIso()}));
     if (old && old !== up.id){ try { await state.assets.delete(old); } catch(e){} }
-    toast('Resume saved. Ask Claude in the chat to build your Career Brain from it.');
+    toast(cloud() ? 'Resume saved. Next, build your Career Brain with the prompt under Your computer.' : 'Resume saved. Ask Claude in the chat to build your Career Brain from it.');
   } catch(e){
     const c = e && e.code;
     toast(c === 'too_large' ? 'That file is too large.' : c === 'unsupported_type' ? 'Only PDF files can be used.' : c === 'rate_limited' ? 'Too many uploads. Try again in a minute.' : 'Upload failed. Try again.');
@@ -875,6 +892,59 @@ function renderSkipped(){
 }
 
 /* ---------- Setup ---------- */
+/* ---------- Cloud: account, computer keys and the prompts for the Claude desktop app ---------- */
+function loadCloudExtras(){
+  if (!cloud() || state.loadingExtras) return;
+  if (state.keys !== null && state.prompts.apply) return;
+  state.loadingExtras = true;
+  Promise.all([api('api/tokens').then(r => r.json()), api('api/prompts/apply').then(r => r.json()), api('api/prompts/brain').then(r => r.json())])
+    .then(([k, a, b]) => { state.keys = arr(k.keys); state.prompts = {apply: a.text, brain: b.text}; })
+    .catch(() => { state.keys = state.keys || []; })
+    .finally(() => { state.loadingExtras = false; render(); });
+}
+function renderCloud(){
+  if (!cloud()) return '';
+  loadCloudExtras();
+  const me = obj(state.me), keys = state.keys, nk = state.newKey;
+  const copy = (text, label) => `<div class="copyblock prompt">${label ? `<div class="q">${esc(label)}</div>` : ''}<div class="copytext">${esc(text)}</div><button class="btn sm" data-act="copy" type="button">Copy</button></div>`;
+  const keyRows = keys === null ? '<p class="small">Loading…</p>' : keys.length ? `<div class="rows">${keys.map(k => `<div class="keyrow"><span><b>${esc(k.name)}</b> <span class="muted">${esc(k.prefix)}…</span><br><span class="small">Added ${esc(when(k.createdAt))} · ${k.lastUsedAt ? 'last used ' + esc(when(k.lastUsedAt)) : 'not used yet'}</span></span><button class="btn sm ghost" data-act="key-revoke" data-id="${esc(k.id)}">Remove</button></div>`).join('')}</div>` : '<p class="small">No computer keys yet. Create one to link the Claude desktop app on your computer.</p>';
+  const fresh = nk ? `<div class="keybox"><b>Copy your key now. It's shown only once.</b>${copy(nk)}
+    <ol>
+      <li>Save it on your computer. macOS or Linux, in Terminal:${copy(`mkdir -p ~/.careeros && printf '%s' '${nk}' > ~/.careeros/key && chmod 600 ~/.careeros/key`)}Windows, in PowerShell:${copy(`New-Item -ItemType Directory -Force $HOME\\.careeros | Out-Null; Set-Content -NoNewline -Path $HOME\\.careeros\\key -Value '${nk}'`)}</li>
+      <li>In the Claude desktop app on that computer, create a scheduled task (every 3 hours during the day works well), paste the auto-apply prompt below, and make sure it runs on this computer.</li>
+    </ol><button class="btn sm" data-act="key-hide">Done</button></div>` : '';
+  const prompts = state.prompts.apply ? `<details><summary>Auto-apply prompt for the scheduled task</summary>${copy(state.prompts.apply)}</details>
+    <details><summary>Prompt to build your Career Brain (paste into a chat in the Claude desktop app)</summary>${copy(state.prompts.brain)}</details>` : '';
+  const say = where => state.acctMsg && (state.acctMsgWhere || 'account') === where ? `<p class="acctmsg${state.acctMsgErr ? ' err' : ''}" role="status">${esc(state.acctMsg)}</p>` : '';
+  const msg = say('account');
+  return `<div id="computer"><div class="sh"><h2 style="font-size:24px">Your computer</h2><p>Auto-apply runs in the Claude desktop app on your computer, with a key that can only read your pipeline and report applications.</p></div>
+    <div class="panel acct">${say('key')}${fresh}${keyRows}
+      <form id="key-form" class="btns" novalidate><input type="text" class="plain" name="name" placeholder="Name, e.g. Work laptop" maxlength="60" style="max-width:240px" aria-label="Key name"><button class="btn sm solid" type="submit">Create computer key</button></form>
+      ${prompts}</div></div>
+  <div id="account"><div class="sh"><h2 style="font-size:24px">Account</h2></div>
+    <div class="panel acct">
+      <div class="who"><span class="av" aria-hidden="true">${esc((me.name || me.email || '?').trim().charAt(0).toUpperCase())}</span><div><b>${esc(me.name || 'Your account')}</b><div class="small">${esc(me.email || '')}</div></div></div>
+      ${msg}
+      <div class="btns"><a class="btn sm" href="api/me/export" download>Export my data</a><button class="btn sm" data-act="signout">Sign out</button><button class="btn sm ghost" data-act="signout-all">Sign out everywhere</button></div>
+      <details><summary>Change password</summary><form id="pw-form" class="acct-form" novalidate>
+        <input type="password" name="current" autocomplete="current-password" placeholder="Current password" aria-label="Current password" required>
+        <input type="password" name="new" autocomplete="new-password" placeholder="New password, at least 10 characters" aria-label="New password" minlength="10" required>
+        <div><button class="btn sm solid" type="submit">Change password</button></div></form></details>
+      <details><summary>Delete account</summary><form id="del-form" class="acct-form" novalidate>
+        <p class="small">This deletes your account, pipeline, application details, resumes and keys at once. It can't be undone. Export your data first if you want a copy.</p>
+        <input type="password" name="password" autocomplete="current-password" placeholder="Your password" aria-label="Your password" required>
+        <input type="text" class="plain" name="confirm" placeholder="Type DELETE" aria-label="Type DELETE to confirm" autocomplete="off" required>
+        <div><button class="btn sm" style="border-color:var(--bad);color:var(--bad)" type="submit">Delete my account</button></div></form></details>
+    </div></div>`;
+}
+async function cloudPost(url, body){
+  const r = await api(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body || {})});
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw data;
+  return data;
+}
+function acctSay(text, bad, where){ state.acctMsg = text; state.acctMsgErr = !!bad; state.acctMsgWhere = where || 'account'; state.acctDirty = false; render(); }
+
 function renderSetup(){
   const s = settings(), b = obj(state.brain), ready = b.state === 'ready';
   const counts = obj(b.counts), missing = arr(b.missing);
@@ -901,6 +971,7 @@ function renderSetup(){
   <div class="setup">
     <div style="display:grid;gap:34px;min-width:0;padding-top:20px">${renderApplicantForm()}${brain}<div><div class="sh"><h2 style="font-size:24px">Preferences</h2><p>The daily run reads these.</p></div><div class="panel">${form}</div></div></div>
     <div style="display:grid;gap:34px;min-width:0;padding-top:20px">
+      ${renderCloud()}
       <div><div class="sh"><h2 style="font-size:24px">Ground rules</h2></div><div class="panel"><ul class="checklist">
         <li>${ck}<span>Nothing goes on a resume unless your brain has evidence for it.</span></li>
         <li>${ck}<span>No ATS percentages. Fit is rated per dimension, each with its reason.</span></li>
@@ -921,7 +992,7 @@ function renderFoot(){
   return `<div><h4>Where it looks</h4><ul><li>${cov.companies ? n(cov.companies) + ' company career pages' : 'Company career pages'}</li><li>${cov.platforms ? n(cov.platforms) + ' job platforms' : 'Remote and Indian job boards'}</li><li>VC portfolio boards</li><li>Searches for new career pages</li></ul></div>
     <div><h4>Your filters</h4><ul><li>${esc(f.exp.charAt(0).toUpperCase() + f.exp.slice(1))}</li><li>Posted in the last ${esc(f.days)} days</li><li>${esc(f.locs)}</li><li>${settings().salaryFloorLpa !== '' ? 'Pay floor ' + esc(settings().salaryFloorLpa) + ' LPA' : 'No pay floor'}</li><li>Up to ${esc(settings().dailyCap)} prepared a day</li></ul></div>
     <div><h4>What it never does</h4><ul><li>Invent experience or numbers</li><li>Send LinkedIn messages</li><li>${autoMode() ? 'Guess an answer your profile can\'t back up' : 'Submit without your approval'}</li><li>Apply twice to one company in 6 months</li></ul></div>
-    <div><h4>Privacy</h4><ul><li>Only you can read this pipeline, even if you share the link</li><li>Credentials never stored here</li></ul></div>`;
+    <div><h4>Privacy</h4><ul><li>Only you can read this pipeline, even if you share the link</li><li>Credentials never stored here</li>${cloud() ? '<li><a href="privacy">Privacy notice</a> · <a href="terms">Terms</a></li>' : ''}</ul></div>`;
 }
 
 /* ---------- Drawer ---------- */
@@ -1032,7 +1103,7 @@ function renderNow(){
   $('#c-skipped').textContent = all.filter(j => j.stage === 'skipped').length;
   $('#cta-batch').textContent = ready ? `Review batch (${ready})` : 'Review batch';
   const f = filterSummary();
-  $('#notice-text').innerHTML = state.status === 'nodb' ? 'Open this page as its owner, signed in to Claude, to see your pipeline.' : state.status === 'demo' ? 'Demo with fictional companies. Run <b>careeros serve</b> to see your own pipeline.' : `Every 3 hours: <b>${esc(f.exp)}</b> AI roles<span class="long"> ${esc(f.locs)}</span>, posted in the last ${esc(f.days)} ${f.days === 1 ? 'day' : 'days'}.`;
+  $('#notice-text').innerHTML = state.status === 'nodb' ? 'Open this page as its owner, signed in to Claude, to see your pipeline.' : state.status === 'demo' ? 'Demo with fictional companies. Run <b>careeros serve</b> to see your own pipeline.' : cloud() ? `Every hour: <b>${esc(f.exp)}</b> roles<span class="long"> ${esc(f.locs)}</span>, from ${esc(Number(obj(state.me && state.me.feed).companies || 1400).toLocaleString('en-IN'))} company career pages, posted in the last ${esc(f.days)} days.` : `Every 3 hours: <b>${esc(f.exp)}</b> AI roles<span class="long"> ${esc(f.locs)}</span>, posted in the last ${esc(f.days)} ${f.days === 1 ? 'day' : 'days'}.`;
   document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === state.tab)));
   const seg = $('#seg'); seg.dataset.v = state.win; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.w === state.win)));
   const ae = document.activeElement;
@@ -1044,7 +1115,7 @@ function renderNow(){
     if (k === 'pipeline'){ const had = ae && ae.id === 'pipe-q'; const pos = had ? ae.selectionStart : 0; p.innerHTML = renderPipeline(); if (had){ const q = $('#pipe-q'); q.focus(); try { q.setSelectionRange(pos, pos); } catch(e){} } }
     if (k === 'outreach') p.innerHTML = renderOutreach();
     if (k === 'skipped') p.innerHTML = renderSkipped();
-    if (k === 'setup' && !state.formDirty && !state.apDirty) p.innerHTML = renderSetup();
+    if (k === 'setup' && !state.formDirty && !state.apDirty && !state.acctDirty) p.innerHTML = renderSetup();
     if (state.enter && k !== 'today') p.classList.add('fade');
   });
   $('#foot').innerHTML = renderFoot();
@@ -1091,6 +1162,12 @@ function setTab(t){ if (state.tab === t) return; state.tab = t; state.enter = tr
 
 function autoReadyMsg(){ const m = []; if (apMissing().length) m.push('your details'); if (!obj(applicant().resume).id) m.push('your resume'); if (!runnerLinked()) m.push('your computer'); return m.length ? `Queued. It goes out once ${listJoin(m)} ${m.length === 1 ? 'is' : 'are'} set up.` : 'Queued. It goes out on the next auto-apply run.'; }
 
+function retryJob(id){
+  const go = () => { const j = state.jobs.get(id), t = nowIso(); patchJob(id, Object.assign({autoApply: 'queued', queuedAt: t, needsYou: ''}, (!j || !j.stage || j.stage === 'found') ? {stage: 'approved', approvedAt: t} : {}), 'Sent back to auto-apply by you', 'Back in the queue for the next auto-apply run.'); };
+  // In the cloud, an uncertain submission blocks retries until you say it didn't go through. Pressing Try again says so.
+  if (cloud()) api('api/applications/' + encodeURIComponent(id) + '/reset', {method: 'POST'}).catch(() => {}).finally(go); else go();
+}
+
 /* ---------- events ---------- */
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
@@ -1124,7 +1201,12 @@ document.addEventListener('click', e => {
   else if (act === 'li-sent') patchJob(id, {outreach:{linkedin:{status:'sent', sentAt: nowIso()}}}, 'LinkedIn note sent', 'Marked sent.');
   else if (act === 'queue'){ const t = nowIso(); patchJob(id, {stage: 'approved', approvedAt: t, autoApply: 'queued', queuedAt: t}, 'Queued for auto-apply by you', autoReadyMsg()); }
   else if (act === 'unqueue'){ patchJob(id, {stage: 'found', autoApply: 'off', needsYou: ''}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
-  else if (act === 'retry'){ const j = state.jobs.get(id), t = nowIso(); patchJob(id, Object.assign({autoApply: 'queued', queuedAt: t, needsYou: ''}, (!j || !j.stage || j.stage === 'found') ? {stage: 'approved', approvedAt: t} : {}), 'Sent back to auto-apply by you', 'Back in the queue for the next auto-apply run.'); }
+  else if (act === 'retry') retryJob(id);
+  else if (act === 'signout'){ api('api/auth/logout', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
+  else if (act === 'signout-all'){ api('api/me/logout-all', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
+  else if (act === 'key-hide'){ state.newKey = null; render(); }
+  else if (act === 'key-revoke'){ if (!confirm('Remove this key? Auto-apply on that computer stops until you add a new one.')) return; api('api/tokens/' + encodeURIComponent(id), {method: 'DELETE'}).then(() => { state.keys = (state.keys || []).filter(k => k.id !== id); acctSay('Key removed.', false, 'key'); }).catch(() => acctSay('Could not remove the key. Try again.', true, 'key')); }
+  else if (act === 'go-computer'){ if (state.tab !== 'setup'){ state.tab = 'setup'; state.enter = true; renderNow(); } setTimeout(() => { const d = $('#computer'); if (d) d.scrollIntoView({behavior:'smooth', block:'start'}); }, 60); }
   else if (act === 'go-details'){ if (state.tab !== 'setup'){ state.tab = 'setup'; state.enter = true; try { history.replaceState(null, '', '#setup'); } catch(e){} renderNow(); } setTimeout(() => { const d = $('#apply-details'); if (d) d.scrollIntoView({behavior:'smooth', block:'start'}); const f = $('#ap-fullName'); if (f && !f.value) f.focus({preventScroll:true}); }, 60); }
   else if (act === 'auto-toggle'){
     if (!state.db) return;
@@ -1158,8 +1240,28 @@ document.addEventListener('input', e => {
   if (e.target.id === 'pipe-q'){ state.q = e.target.value; render(); }
   else if (e.target.closest && e.target.closest('#settings-form')) state.formDirty = true;
   else if (e.target.closest && e.target.closest('#applicant-form')) state.apDirty = true;
+  else if (e.target.closest && e.target.closest('.acct-form, #key-form')) state.acctDirty = true;
 });
 document.addEventListener('submit', e => {
+  if (e.target.id === 'key-form'){
+    e.preventDefault(); const name = e.target.name.value.trim() || 'My computer';
+    cloudPost('api/tokens', {name}).then(k => { state.newKey = k.key; state.keys = (state.keys || []).concat([{id: k.id, name: k.name, prefix: k.prefix, createdAt: k.createdAt}]); acctSay('', false, 'key'); })
+      .catch(d => acctSay(d.error || 'Could not create a key.', true, 'key'));
+    return;
+  }
+  if (e.target.id === 'pw-form'){
+    e.preventDefault(); const f = e.target;
+    cloudPost('api/me/password', {current: f.current.value, new: f.new.value}).then(() => { f.reset(); acctSay('Password changed. Other devices were signed out.'); })
+      .catch(d => acctSay(d.error || 'Could not change your password.', true));
+    return;
+  }
+  if (e.target.id === 'del-form'){
+    e.preventDefault(); const f = e.target;
+    if (f.confirm.value !== 'DELETE'){ acctSay('Type DELETE to confirm.', true); return; }
+    cloudPost('api/me/delete', {password: f.password.value, confirm: f.confirm.value}).then(() => { location.href = 'login'; })
+      .catch(d => acctSay(d.error || 'Could not delete your account.', true));
+    return;
+  }
   if (e.target.id === 'applicant-form'){
     e.preventDefault(); if (!state.db) return;
     const f = e.target, data = {};
@@ -1213,11 +1315,36 @@ function shapeList(list, opts){
   if (opts.order){ const [f, dir] = opts.order; out.sort((a, b) => { const x = a.data[f], y = b.data[f]; return (x > y ? 1 : x < y ? -1 : 0) * (dir === 'desc' ? -1 : 1); }); }
   return opts.limit ? out.slice(0, opts.limit) : out;
 }
-function makeLocalDB(){
-  const ticks = new Set();
-  const refresh = () => ticks.forEach(t => t());
-  const call = async (url, init) => { const r = await fetch(url, Object.assign({cache: 'no-store'}, init || {})); if (r.status === 404) return null; if (!r.ok) throw {code: r.status === 400 ? 'invalid_argument' : 'unavailable'}; return r.json(); };
-  const watch = fn => { let alive = true; const tick = () => { if (alive) fn().catch(() => {}); }; ticks.add(tick); tick(); const iv = setInterval(tick, 4000); return () => { alive = false; ticks.delete(tick); clearInterval(iv); }; };
+function toLogin(){ location.href = 'login?next=' + encodeURIComponent(location.pathname + location.hash); }
+async function api(url, init){
+  init = Object.assign({cache: 'no-store', credentials: 'same-origin'}, init || {});
+  const method = (init.method || 'GET').toUpperCase();
+  init.headers = Object.assign(method === 'GET' ? {} : {'X-CareerOS-CSRF': '1'}, init.headers || {});
+  const r = await fetch(url, init);
+  if (r.status === 401){ toLogin(); throw {code: 'unauthenticated'}; }
+  return r;
+}
+function makeLocalDB(opts){
+  opts = opts || {};
+  const ticks = new Set(), etags = new Map();
+  const refresh = () => ticks.forEach(t => t(true));
+  const call = async (url, init) => {
+    const get = !init || !init.method;
+    const headers = Object.assign({}, (init && init.headers) || {});
+    const prior = get ? etags.get(url) : null;
+    if (prior) headers['If-None-Match'] = prior.tag;
+    const r = await api(url, Object.assign({}, init || {}, {headers}));
+    if (r.status === 304 && prior) return prior.body;
+    if (r.status === 404) return null;
+    if (!r.ok){ let code = 'unavailable'; try { code = ((await r.json()).code) || code; } catch(e){} throw {code: r.status === 400 ? 'invalid_argument' : r.status === 413 ? 'quota_exceeded' : code}; }
+    const body = await r.json();
+    const tag = r.headers.get('ETag');
+    if (get && tag) etags.set(url, {tag, body});
+    return body;
+  };
+  const every = opts.cloud ? 15000 : 4000;
+  const watch = fn => { let alive = true; const tick = force => { if (alive && (force || !document.hidden)) fn().catch(() => {}); }; ticks.add(tick); tick(true); const iv = setInterval(() => tick(false), every); return () => { alive = false; ticks.delete(tick); clearInterval(iv); }; };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   const query = (name, opts) => ({
     limit: n => query(name, Object.assign({}, opts, {limit: n})),
     orderBy: (f, dir) => query(name, Object.assign({}, opts, {order: [f, dir || 'asc']})),
@@ -1279,9 +1406,28 @@ function subscribe(db, onErr){
   db.collection('runs').orderBy('startedAt', 'desc').limit(12).onSnapshot(snap => { state.runs = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); render(); }, onErr);
 }
 
+function makeCloudAssets(){
+  return {
+    upload: async (file) => {
+      const r = await api('api/assets?name=' + encodeURIComponent(file.name || 'resume.pdf'), {method: 'POST', headers: {'Content-Type': 'application/pdf'}, body: file});
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) throw {code: r.status === 413 ? 'too_large' : r.status === 415 ? 'unsupported_type' : r.status === 429 ? 'rate_limited' : (body.code || 'unavailable')};
+      return body;
+    },
+    delete: async (id) => { await api('api/assets/' + encodeURIComponent(id), {method: 'DELETE'}); },
+    list: async () => (await api('api/assets')).json()
+  };
+}
 async function bootStandalone(){
-  let db = null;
-  try { const r = await fetch('api/health', {cache: 'no-store'}); if (r.ok && (await r.json()).ok){ db = makeLocalDB(); state.status = 'local'; } } catch(e){}
+  let db = null, health = null;
+  try { const r = await fetch('api/health', {cache: 'no-store'}); if (r.ok) health = await r.json(); } catch(e){}
+  if (health && health.ok && health.mode === 'cloud'){
+    const r = await fetch('api/me', {cache: 'no-store', credentials: 'same-origin'});
+    if (!r.ok){ toLogin(); return; }
+    state.me = await r.json();
+    db = makeLocalDB({cloud: true}); state.status = 'cloud'; state.assets = makeCloudAssets();
+    document.body.classList.add('is-cloud');
+  } else if (health && health.ok){ db = makeLocalDB(); state.status = 'local'; }
   if (!db){
     const el = document.getElementById('demo-data');
     let seed = {}; try { seed = el ? JSON.parse(el.textContent) : {}; } catch(e){}
