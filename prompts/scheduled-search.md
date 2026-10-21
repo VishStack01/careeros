@@ -115,6 +115,13 @@ def decide(r):
           "remote-india": "Remote, India", "south": "South India", "india": r.get("location", ""), "unknown": "Location not stated. Check before applying.",
           "remote-excluded": "Remote, but not open to people in India.", "abroad": "On-site or hybrid abroad."}.get(lc, lc)
     c.append(("Location", lok, lv if lok else (lv if lc in ("remote-excluded", "abroad") else "Outside your locations."), lq))
+    wa = f.get("workAuth") or {}
+    wk = wa.get("kind", "")
+    blk = (wk in ("citizenship", "clearance", "local") and wa.get("country") != "India" and lc not in ("remote-india", "south", "india")) or (wk == "no-sponsorship" and lc == "abroad")
+    what = {"citizenship": f"{wa.get('country') or 'local'} citizenship", "clearance": "a security clearance", "local": f"authorization to work in {wa.get('country') or 'another country'}",
+            "no-sponsorship": "local work authorization (no visa sponsorship)"}.get(wk, "")
+    c.append(("Work authorization", not blk, f"Requires {what}." if blk else "No visa sponsorship, which remote work from India doesn't need." if wk == "no-sponsorship"
+              else f"Needs authorization to work in {wa.get('country')}." if wk else "No restriction stated", wa.get("quote", "")))
     hi = f.get("salaryHigh")
     c.append(("Pay", not (floor and hi is not None and hi < floor), "Not stated" if hi is None else f"{f.get('salaryLow', hi):g}–{hi:g} LPA", f.get("salaryQuote") or ""))
     m = next((re.search(re.escape(w), r.get("summary") or "", re.I) for w in deal if re.search(re.escape(w), r.get("summary") or "", re.I)), None)
@@ -141,6 +148,10 @@ for line in gzip.open(feed_p, "rt", encoding="utf-8"):
            "brief": {"about": (re.match(r"(.{40,260}?[.!?])\s", (r.get("summary") or "") + " ") or [None, (r.get("summary") or "")[:240]])[1],
                      "sources": [{"title": (r["source"] + " listing") if board else (r["company"] + " careers page"), "url": r["url"]}]}}
     if (r.get("facts") or {}).get("applicants"): doc["applicants"] = r["facts"]["applicants"]
+    if (r.get("facts") or {}).get("legit"): doc["legitimacy"] = r["facts"]["legit"]
+    if (r.get("facts") or {}).get("reposts", {}).get("count"): doc["reposts"] = r["facts"]["reposts"]
+    if (r.get("tags") or {}).get("archetype"): doc["archetype"] = r["tags"]["archetype"]
+    if (r.get("tags") or {}).get("skills"): doc["skills"] = r["tags"]["skills"]
     if failed:
         g = failed[0]; v = next(x for x in checks if x[0] == g)
         doc["skip"] = {"gate": g, "reason": v[2] + (f' The posting says: "{v[3][:200]}"' if v[3] else ""),

@@ -10,7 +10,7 @@
   --page:#FFFFFF; --ink:#000000; --ink-2:#34322F; --muted:#6B6762; --panel:#F7F6F3; --panel-2:#EEECE7; --line:#E4E1DB; --field:#FFFFFF;
   --blue:#3859F9; --blue-tint:#CAD4FF; --green:#02693E; --green-tint:#93E2B2; --magenta:#CC089E; --magenta-tint:#F8B8E6; --violet:#7F62DB; --violet-tint:#DCD1FF;
   --on-color:#FFFFFF; --plum:#45012E; --plum-text:#FCD6EF; --gold:#F5B83D;
-  --good:#02693E; --good-soft:#DDF3E5; --bad:#C2341D; --bad-soft:#FBE3DE;
+  --good:#02693E; --good-soft:#DDF3E5; --bad:#C2341D; --bad-soft:#FBE3DE; --warn-ink:#8A5A00;
   --btn:#000000; --btn-ink:#FFFFFF; --btn-soft:#EEECE7;
   --scrim:rgba(0,0,0,.34); --lift:0 18px 40px -22px rgba(0,0,0,.35);
   --f:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
@@ -21,7 +21,7 @@
   :root:not([data-theme="light"]){
     --page:#0E0D0C; --ink:#F6F4F0; --ink-2:#D9D5CE; --muted:#A49F97; --panel:#181715; --panel-2:#22201D; --line:#2F2C28; --field:#121110;
     --blue:#4A69FF; --green:#0A8452; --magenta:#D51BA9; --violet:#8C70E8;
-    --plum:#3B0127; --good:#55C78A; --good-soft:#143322; --bad:#F27A63; --bad-soft:#3B1B15;
+    --plum:#3B0127; --good:#55C78A; --good-soft:#143322; --bad:#F27A63; --bad-soft:#3B1B15; --warn-ink:#E8B04A;
     --btn:#F6F4F0; --btn-ink:#000000; --btn-soft:#2A2825;
     --scrim:rgba(0,0,0,.6); --lift:0 18px 40px -22px rgba(0,0,0,.8);
     color-scheme:dark;
@@ -30,7 +30,7 @@
 :root[data-theme="dark"]{
   --page:#0E0D0C; --ink:#F6F4F0; --ink-2:#D9D5CE; --muted:#A49F97; --panel:#181715; --panel-2:#22201D; --line:#2F2C28; --field:#121110;
   --blue:#4A69FF; --green:#0A8452; --magenta:#D51BA9; --violet:#8C70E8;
-  --plum:#3B0127; --good:#55C78A; --good-soft:#143322; --bad:#F27A63; --bad-soft:#3B1B15;
+  --plum:#3B0127; --good:#55C78A; --good-soft:#143322; --bad:#F27A63; --bad-soft:#3B1B15; --warn-ink:#E8B04A;
   --btn:#F6F4F0; --btn-ink:#000000; --btn-soft:#2A2825;
   --scrim:rgba(0,0,0,.6); --lift:0 18px 40px -22px rgba(0,0,0,.8);
   color-scheme:dark;
@@ -345,6 +345,25 @@ textarea{resize:vertical;min-height:84px}
 .ev .rq{font-weight:600}
 .ev .src{grid-column:2;font-size:12.5px;color:var(--muted)}
 .gaps{margin:0;padding-left:18px;color:var(--bad);font-size:14px}
+.jdarch summary{cursor:pointer;font-weight:600;font-size:14.5px}
+.pill.weak{background:var(--bad-soft);color:var(--bad)}
+.evhead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+.evscore{min-width:64px;height:56px;border-radius:12px;display:flex;align-items:baseline;justify-content:center;gap:2px;padding:10px 8px 0;background:var(--panel-2)}
+.evscore b{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.evscore span{font-size:13px;color:var(--muted)}
+.evscore.strong,.evscore.apply{background:var(--good-soft);color:var(--good)}
+.evscore.consider{background:var(--blue-tint);color:#2340D8}
+.evscore.skip{background:var(--bad-soft);color:var(--bad)}
+.evhead p{margin:4px 0 0;font-size:14.5px}
+.rqrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;background:var(--panel);padding:11px 14px;font-size:14px}
+.rqrow .rq{font-weight:600}
+.rqrow .im{font-size:12.5px;color:var(--muted);text-align:right}
+.rqrow .mt{font-weight:600;font-size:13px}
+.rqrow .mt.strong{color:var(--good)} .rqrow .mt.partial{color:var(--warn-ink)} .rqrow .mt.missing{color:var(--bad)}
+.rqrow .full{grid-column:1/-1;color:var(--ink-2);overflow-wrap:anywhere}
+.rqrow blockquote{grid-column:1/-1;margin:0;padding-left:10px;border-left:2px solid var(--line);color:var(--muted);font-size:13.5px}
+.gapcard{display:grid;gap:4px;font-size:14px;padding:10px 14px;background:var(--panel);border-radius:var(--r-md)}
+.gapcard .k{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
 .gaps li span{color:var(--ink)}
 .copyblock{position:relative;background:var(--panel);border-radius:var(--r-md);padding:14px 16px;display:grid;gap:6px}
 .copyblock .q{font-weight:600;font-size:14px;padding-right:70px}
@@ -518,7 +537,9 @@ const DECISIONS = {
   E: {label:'Your call', hint:'Ambiguous or consequential, so it needs your judgement.'},
   F: {label:'Skip', hint:'Low fit or poor return.'}
 };
-const FIT = {strong:'Strong fit', good:'Good fit', stretch:'Stretch', pending:'Not scored yet'};
+const FIT = {strong:'Strong fit', good:'Good fit', stretch:'Stretch', weak:'Weak fit', pending:'Not scored yet'};
+const APPLY_LINE = 4.0;
+const DIM_LABEL = {cvMatch:'Match with your experience', northStar:'Fits the roles you want', comp:'Pay', culture:'Company and culture', redFlags:'Red flags (5 = none)'};
 const LOCATIONS = ['South India (any work mode)','Rest of India (remote only)','Remote worldwide (first priority)'];
 const LOC_SHORT = {'South India (any work mode)':'anywhere in south India','Rest of India (remote only)':'remote across India','Remote worldwide (first priority)':'remote worldwide','Bengaluru (onsite/hybrid)':'Bengaluru','Remote (India)':'remote in India','Remote (global)':'remote worldwide'};
 const REGION = {'remote-global':[0,'Remote worldwide','pill world'],'remote-india':[1,'Remote, India','pill india'],'south-india':[2,'','']};
@@ -576,6 +597,81 @@ function outreachTodos(){
   return items;
 }
 
+/* ---------- follow-ups: day 7 and 14 after applying, then stop; thank-yous the day after an interview ---------- */
+const FU_NOTE = 'Add something new: a relevant commit, a short teardown of their product, or a result. Never "just checking in".';
+function addDays(d, n){ return new Date(d.getTime() + n * 864e5).toISOString(); }
+function seedFollowUps(j, appliedAt){
+  const cur = arr(j.followUps).slice(), have = new Set(cur.map(f => obj(f).kind)), base = toDate(appliedAt) || new Date();
+  [[1, 'First follow-up', 7], [2, 'Second follow-up', 14]].forEach(([n, label, d]) => { if (!have.has('applied-' + n)) cur.push({kind: 'applied-' + n, label, due: addDays(base, d), note: FU_NOTE, done: false}); });
+  return cur;
+}
+function movedOnFollowUps(j, stage){
+  const cur = arr(j.followUps).map(f => String(obj(f).kind || '').startsWith('applied-') && !f.done ? Object.assign({}, f, {done: true, skipped: true, doneAt: nowIso(), note: 'Not needed: the role moved on.'}) : f);
+  if (stage === 'screen' && !cur.some(f => obj(f).kind === 'responded')) cur.push({kind: 'responded', label: 'Reply to the recruiter', due: addDays(new Date(), 1), note: 'Confirm interest, availability and anything they asked for.', done: false});
+  if (stage === 'interview' && toDate(j.interviewAt)){ const k = 'thankyou-' + String(j.interviewAt).slice(0, 10); if (!cur.some(f => obj(f).kind === k)) cur.push({kind: k, label: 'Thank-you note', due: addDays(toDate(j.interviewAt), 1), note: 'Thank them and follow up on one thing you discussed.', done: false}); }
+  return cur;
+}
+
+/* ---------- warm intros from LinkedIn's Connections.csv (parsed here; kept in your private dashboard) ---------- */
+const CO_NOISE = /\b(private|pvt|limited|ltd|llp|inc|incorporated|corp|corporation|co|company|technologies|technology|labs?|solutions|software|systems|ai|india|the)\b/g;
+const CO_GENERIC = new Set(['the','india','technologies','technology','tech','labs','software','solutions','systems','services','group','global','digital','ai','data','consulting','private','limited','company','co','inc','and']);
+function coKey(s){ const n = String(s || '').toLowerCase().replace(/[^a-z0-9+#.]+/g, ' ').replace(/\s+/g, ' ').trim(); const k = n.replace(CO_NOISE, ' ').replace(/\s+/g, ' ').trim(); return k || n; }
+function coWords(k){ return k.split(' ').filter(w => !CO_GENERIC.has(w) && w.length > 1); }
+function coTier(a, b){
+  const ka = coKey(a), kb = coKey(b); if (!ka || !kb) return '';
+  const wa = coWords(ka), wb = coWords(kb);
+  if (ka === kb || (wa.length && wa.join(' ') === wb.join(' '))) return 'exact';
+  const [sh, lo] = ka.length <= kb.length ? [ka, kb] : [kb, ka];
+  if (sh.length >= 4 && (' ' + lo + ' ').includes(' ' + sh + ' ')) return 'strong';
+  if (wa.length && wb.length && wa[0] === wb[0] && wa[0].length >= 4) return 'weak';
+  return '';
+}
+const TIER_LABEL = {exact: 'Works there', strong: 'Very likely there', weak: 'Check: similar name'};
+function warmFor(company, limit){
+  const rows = arr(obj(state.connections).rows); if (!rows.length || !company) return [];
+  const senior = /\b(head|director|vp|vice president|chief|cto|ceo|founder|principal|staff|lead|manager)\b/i, rank = {exact: 0, strong: 1, weak: 2};
+  const out = [];
+  for (const r of rows){ const t = coTier(company, r[1]); if (t) out.push({name: r[0], company: r[1], position: r[2] || '', url: r[3] || '', tier: t}); }
+  out.sort((a, b) => rank[a.tier] - rank[b.tier] || (senior.test(a.position) ? 0 : 1) - (senior.test(b.position) ? 0 : 1) || a.name.localeCompare(b.name));
+  return out.slice(0, limit || 6);
+}
+function parseCsv(text){
+  const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){ if (c === '"'){ if (text[i + 1] === '"'){ f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ','){ row.push(f); f = ''; }
+    else if (c === '\n' || c === '\r'){ if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+    else f += c;
+  }
+  if (f || row.length){ row.push(f); rows.push(row); }
+  return rows;
+}
+function parseConnections(text){
+  const rows = parseCsv(String(text || '').replace(/^\ufeff/, ''));
+  const h = rows.findIndex(r => /^first name$/i.test(String(r[0] || '').trim())); if (h < 0) return null;
+  const head = rows[h].map(x => String(x).trim().toLowerCase()), ix = n => head.indexOf(n), cell = (r, n) => ix(n) < 0 ? '' : String(r[ix(n)] || '').trim();
+  const out = [];
+  for (const r of rows.slice(h + 1)){ const name = [cell(r, 'first name'), cell(r, 'last name')].filter(Boolean).join(' '), co = cell(r, 'company'); if (name && co) out.push([name, co, cell(r, 'position'), cell(r, 'url')]); }
+  return out.slice(0, 4000);
+}
+function uploadConnections(file){
+  if (!file || !state.db) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let rows = parseConnections(rd.result);
+    if (!rows){ toast("That doesn't look like LinkedIn's Connections.csv."); return; }
+    while (rows.length && JSON.stringify(rows).length > 440000) rows = rows.slice(0, Math.floor(rows.length * 0.9));
+    const doc = {rows, count: rows.length, uploadedAt: nowIso(), source: 'LinkedIn Connections.csv'};
+    enqueue('profile/connections', () => state.db.doc('profile/connections').set(doc)).then(() => { state.connections = doc; toast(rows.length.toLocaleString() + ' connections loaded. Matches show on each role.'); render(); }).catch(() => toast('Could not save your connections. Try again.'));
+  };
+  rd.readAsText(file);
+}
+function warmList(people){
+  return people.map(m => `<div class="todo"><span class="ic">${I.check.replace('<svg', '<svg class="i"')}</span><div class="tx"><b>${safeUrl(m.url) ? `<a href="${esc(safeUrl(m.url))}" target="_blank" rel="noopener">${esc(m.name)}</a>` : esc(m.name)}</b>${m.position ? ', ' + esc(m.position) : ''}<small>${esc(TIER_LABEL[m.tier])}${m.tier !== 'exact' ? ' (listed at ' + esc(m.company) + ')' : ''}</small></div></div>`).join('');
+}
+
 /* ---------- small renderers ---------- */
 function freshPill(j){ const t = postedText(j.postedAt); if (!t) return ''; const h = age(j); return `<span class="pill${h < 72 ? ' fresh' : ''}">${esc(t)}</span>`; }
 function regionPill(j){ const r = REGION[j.region]; return r && r[1] ? `<span class="${r[2]}">${esc(r[1])}</span>` : ''; }
@@ -584,7 +680,32 @@ function decBadge(j){
   return d ? `<span class="dec ${esc(j.decision)}" title="${esc(d.label + ': ' + d.hint)}" aria-label="Decision ${esc(j.decision)}: ${esc(d.label)}">${esc(j.decision)}</span>`
            : `<span class="dec none" title="Not scored yet" aria-label="Not scored yet"></span>`;
 }
-function fitPill(j){ const f = FIT[j.fitBand] ? j.fitBand : 'pending'; return `<span class="pill ${f}">${esc(FIT[f])}</span>`; }
+function scoreOf(j){ const s = Number(obj(j.evaluation).score); return isFinite(s) && s >= 1 ? s : null; }
+function belowLine(j){ const s = scoreOf(j); return s !== null && s < APPLY_LINE && !j.scoreOverride; }
+function fitPill(j){ const f = FIT[j.fitBand] ? j.fitBand : 'pending'; const s = scoreOf(j); const v = obj(obj(j.evaluation).verdict); return `<span class="pill ${f}"${v.label ? ` title="${esc(v.label)}"` : ''}>${s !== null ? esc(s.toFixed(1)) + ' · ' : ''}${esc(FIT[f])}</span>`; }
+function evalHtml(j){
+  const ev = obj(j.evaluation), s = scoreOf(j); if (s === null) return '';
+  const v = obj(ev.verdict), dims = obj(ev.dimensions);
+  const conf = {high:'High', medium:'Medium', low:'Low'}[ev.confidence] || '';
+  let h = `<div class="evhead"><div class="evscore ${esc(v.band || '')}"><b>${esc(s.toFixed(1))}</b><span>/5</span></div><div><b>${esc(v.label || '')}</b>${ev.summary ? `<p>${esc(ev.summary)}</p>` : ''}${conf ? `<p class="muted" style="font-size:13.5px">Confidence in the evidence: ${conf}.${arr(ev.confidenceGaps).length ? ' What could change it: ' + arr(ev.confidenceGaps).map(esc).join('; ') + '.' : ''}</p>` : ''}${s < APPLY_LINE ? `<p class="muted" style="font-size:13.5px">Under the ${APPLY_LINE.toFixed(1)} apply line, so auto-apply leaves it for you${j.scoreOverride ? ', and you chose to apply anyway' : ''}.</p>` : ''}</div></div>`;
+  const dk = Object.keys(DIM_LABEL).filter(k => obj(dims[k]).score);
+  if (dk.length) h += `<div class="dims">${dk.map(k => { const d = obj(dims[k]), n = Math.max(0, Math.min(5, Number(d.score) || 0)); return `<div class="dim"><span class="nm">${esc(DIM_LABEL[k])}</span><span class="meter${n <= 2 ? ' gap' : ''}" aria-label="${n} of 5">${[1,2,3,4,5].map(i => `<i class="${i <= n ? 'on' : ''}"></i>`).join('')}</span><span class="rs">${esc(d.note || '')}${d.status && d.status !== 'supported' ? ` <i>(${esc(d.status === 'partial' ? 'partly checked' : 'not checked')})</i>` : ''}</span></div>`; }).join('')}</div>`;
+  const reqs = arr(ev.requirements);
+  if (reqs.length) h += `<div style="display:grid;gap:8px"><b style="font-size:14.5px">What the posting asks for</b><div class="dims">${reqs.map(r => { const m = {strong:'Strong', partial:'Partial', missing:'Missing', na:'N/A'}[r.match] || ''; return `<div class="rqrow"><span class="rq">${esc(r.requirement)}</span><span class="im">${esc(String(r.importance || '').replace('_', ' '))}${r.tier ? ' · ' + esc(r.tier) : ''}</span><span class="mt ${esc(r.match || '')}">${m}</span>${r.tier === 'stated' && r.jdSignal ? `<blockquote>${esc(r.jdSignal)}</blockquote>` : ''}${r.evidence ? `<span class="full">${esc(r.evidence)}</span>` : ''}</div>`; }).join('')}</div>${ev.droppedRequirements ? `<p class="muted" style="font-size:13px">+${esc(ev.droppedRequirements)} lower-importance requirements not listed.</p>` : ''}</div>`;
+  const gaps = arr(ev.gaps).filter(g => obj(g).requirement);
+  if (gaps.length) h += `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Gaps, with how to handle them</b>${gaps.map(g => `<div class="gapcard"><b>${esc(g.requirement)}${g.blocker ? ' (hard blocker)' : ''}</b>${g.risk ? `<span><span class="k">Interview risk</span><br>${esc(g.risk)}</span>` : ''}${g.mitigation ? `<span><span class="k">What to do</span><br>${esc(g.mitigation)}</span>` : ''}</div>`).join('')}</div>`;
+  const lv = obj(ev.level), co = obj(ev.company), comp = obj(ev.comp), kv = [];
+  if (lv.detected) kv.push(['Level asked', esc(lv.detected)]);
+  if (lv.pitch) kv.push(['How to pitch it', esc(lv.pitch)]);
+  if (lv.ifDownleveled) kv.push(['If they level you lower', esc(lv.ifDownleveled)]);
+  if (co.type) kv.push(['Company type', esc(co.type) + (co.compReliability ? ` <span class="muted">(pay data ${esc(co.compReliability)} reliability)</span>` : '')]);
+  if (comp.advertised || comp.market) kv.push(['Pay', esc(comp.advertised || 'Not stated') + (comp.market ? `<br><span class="muted">${esc(comp.market)}</span>` : '')]);
+  if (kv.length) h += `<dl class="kv">${kv.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+  if (arr(ev.customization).length) h += `<div style="display:grid;gap:6px"><b style="font-size:14.5px">Resume changes for this role</b><ol class="problems">${arr(ev.customization).map(c => `<li><b>${esc(obj(c).section || '')}</b>: ${esc(obj(c).change || '')}${obj(c).why ? ` <span class="muted">${esc(c.why)}</span>` : ''}</li>`).join('')}</ol></div>`;
+  if (arr(ev.interviewPlan).length) h += `<div style="display:grid;gap:6px"><b style="font-size:14.5px">Stories to prepare</b><ol class="problems">${arr(ev.interviewPlan).map(x => `<li>${esc(obj(x).story || '')}${obj(x).requirement ? ` <span class="muted">for ${esc(x.requirement)}</span>` : ''}</li>`).join('')}</ol></div>`;
+  if (arr(ev.answers).length) h += `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Draft application answers</b>${arr(ev.answers).map(a => `<div class="copyblock"><div class="q">${esc(obj(a).q || '')}</div><div class="copytext">${esc(obj(a).a || '')}</div><button class="btn sm" data-act="copy" type="button">Copy</button></div>`).join('')}</div>`;
+  return h;
+}
 function stageTag(s){ s = s || 'found'; return `<span class="stage ${esc(s)}">${esc(STAGE_LABEL[s] || s)}</span>`; }
 function metaLine(j){
   const bits = [];
@@ -629,7 +750,7 @@ function renderTiers(){
       [[I.clock, (autoMode() ? 'Up to ' : 'Daily batch, cap ') + settings().dailyCap + (autoMode() ? ' a day' : '')], [I.check.replace('<svg', '<svg class="i"'), autoMode() ? 'Auto-applies when answers are clear' : 'You approve every submission']], 'In the batch', readyOnly.slice(0, 3).map(label),
       `<button class="btn block solid" data-act="go-batch">Review batch</button>`),
     tierCard('t-magenta', 2, I.send, 'Applied', 'Submitted applications and what happened next.', '', applied.length, applied.length === 1 ? 'application' : 'applications',
-      `Screen rate: ${sc}`, [[I.mail, outreachTodos().length + ' outreach ' + (outreachTodos().length === 1 ? 'item' : 'items') + ' to send'], [I.loop, 'Follow-ups on day 3, 7 and 14']], 'Latest', applied.slice(0, 3).map(label),
+      `Screen rate: ${sc}`, [[I.mail, outreachTodos().length + ' outreach ' + (outreachTodos().length === 1 ? 'item' : 'items') + ' to send'], [I.loop, 'Follow-ups on day 7 and 14']], 'Latest', applied.slice(0, 3).map(label),
       `<button class="btn block" data-act="station" data-stage="applied">See applications</button>`),
     tierCard('t-violet', 3, I.talk, 'Interviews', 'Screens, interviews and offers in motion.', '', talks.length, 'active',
       `${offers} ${offers === 1 ? 'offer' : 'offers'} so far`, [[I.user, 'Prep pack per company'], [I.spark, 'Stories from your brain']], 'In progress', talks.slice(0, 3).map(label),
@@ -650,6 +771,7 @@ function queuedJobs(){ return jobsArr().filter(j => j.autoApply === 'queued' && 
 function waitingJobs(){ return jobsArr().filter(j => j.needsYou && !isApplied(j) && j.stage !== 'skipped').sort((a, b) => (toDate(b.needsYouAt) || 0) - (toDate(a.needsYouAt) || 0)); }
 function waitActions(j, ro){
   const u = safeUrl(j.applyUrl) || safeUrl(j.url);
+  if (j.needsYouKind === 'score') return `<button class="btn sm ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Don't apply</button><button class="btn sm solid" data-act="apply-anyway" data-id="${esc(j.id)}"${ro}>Apply anyway</button>`;
   return (u ? `<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">Open the form</a>` : '')
     + `<button class="btn sm ghost" data-act="retry" data-id="${esc(j.id)}"${ro}>Try again</button><button class="btn sm solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>`;
 }
@@ -880,7 +1002,27 @@ function renderOutreach(){
   sent.sort((a, b) => (toDate(b.at) || 0) - (toDate(a.at) || 0));
   return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Messages to hiring managers and recruiters. Claude drafts them; you send them.</p></div></div>` +
     groups.map(([k, title, sub]) => { const items = todos.filter(t => t.kind === k); return `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">${title}</h2><p>${items.length ? items.length + ' to send' : sub}</p></div>${items.length ? `<div class="panel"><div class="rows">${items.map(todoRow).join('')}</div></div>` : ''}</div>`; }).join('') +
+    renderWarm() +
     `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">Sent</h2><p>${sent.length ? sent.length + ' sent' : 'Nothing sent yet.'}</p></div>${sent.length ? `<div class="panel"><div class="rows">${sent.slice(0, 40).map(s => `<div class="todo"><span class="ic">${I.check.replace('<svg', '<svg class="i"')}</span><div class="tx">${esc(s.ch)} to ${s.c.name ? esc(s.c.name) : 'contact'} at <b>${esc(s.j.company)}</b><small>${esc(when(s.at)) || 'Sent'}</small></div><div class="ract"><button class="btn sm ghost" data-act="open" data-id="${esc(s.j.id)}">Open</button></div></div>`).join('')}</div></div>` : ''}</div>`;
+}
+
+function renderWarm(){
+  const cn = obj(state.connections), n = arr(cn.rows).length, ro = wr();
+  const up = state.canWrite ? `<label class="btn sm filebtn">${n ? 'Replace file' : 'Upload Connections.csv'}<input type="file" class="conn-file" accept=".csv,text/csv" aria-label="Upload LinkedIn's Connections.csv"></label>` : '';
+  const head = `<div class="sh"><h2 style="font-size:24px">Warm intros</h2><p>${n ? `${n.toLocaleString()} connections from LinkedIn, loaded ${esc(when(cn.uploadedAt))}. A referral beats a cold application; ask before you apply. Claude drafts the note, you send it.` : 'Upload the Connections.csv LinkedIn gives you (Settings, Data privacy, Get a copy of your data, Connections) to see who you know at each company. It stays in your private dashboard.'}</p></div>`;
+  let body = '';
+  if (n){
+    const seen = new Set(), groups = [];
+    for (const j of jobsArr()){
+      if (['skipped', 'rejected', 'withdrawn'].includes(j.stage) || seen.has(coKey(j.company))) continue;
+      seen.add(coKey(j.company));
+      const m = warmFor(j.company, 4); if (m.length) groups.push({j, m});
+      if (groups.length >= 30) break;
+    }
+    body = groups.length ? `<div class="panel"><div class="rows">${groups.map(g => `<div class="todo"><span class="ic fu">${I.loop}</span><div class="tx"><b>${esc(g.j.company)}</b><small>${esc(g.j.title)}</small></div><div class="ract"><button class="btn sm ghost" data-act="open" data-id="${esc(g.j.id)}">Open</button></div></div>${warmList(g.m)}`).join('')}</div></div>`
+      : `<p class="muted">Nobody you know at the companies in your pipeline yet.</p>`;
+  }
+  return `<div class="section" style="padding-top:28px">${head}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">${up}${n && state.canWrite ? `<button class="btn sm ghost" data-act="conn-remove"${ro}>Remove</button>` : ''}</div>${body}</div>`;
 }
 
 /* ---------- Skipped ---------- */
@@ -1036,13 +1178,15 @@ function renderDrawer(){
     + kos
     + (arr(j.screening).length ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Screening answers</b>${arr(j.screening).map(x => copy(x.a, x.q)).join('')}</div>` : '');
   const liUrl = safeUrl(li.url) || safeUrl(c.url);
-  const outreach = (c.name || c.role ? `<div class="contact"><b>${esc(c.name || 'Hiring contact')}</b>${c.role ? `<span class="muted">${esc(c.role)}</span>` : ''}${safeUrl(c.url) ? `<a href="${esc(safeUrl(c.url))}" target="_blank" rel="noopener">Profile</a>` : ''}</div>` : '')
+  const warm = warmFor(j.company, 4);
+  const outreach = (warm.length ? `<div style="display:grid;gap:6px"><b style="font-size:14.5px">People you know here</b><div class="rows">${warmList(warm)}</div><p class="muted" style="font-size:13px">Ask one of them for a referral before applying. Check anyone marked "similar name" first.</p></div>` : '') + (c.name || c.role ? `<div class="contact"><b>${esc(c.name || 'Hiring contact')}</b>${c.role ? `<span class="muted">${esc(c.role)}</span>` : ''}${safeUrl(c.url) ? `<a href="${esc(safeUrl(c.url))}" target="_blank" rel="noopener">Profile</a>` : ''}</div>` : '')
     + (em.body ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">Email</b><span class="pill${em.status === 'sent' ? ' strong' : ''}">${em.status === 'sent' ? 'Sent' : 'In your Gmail drafts'}</span>${em.to ? `<span class="muted" style="font-size:13px">to ${esc(em.to)}</span>` : ''}</div>${em.subject ? `<span class="muted" style="font-size:14px">Subject: ${esc(em.subject)}</span>` : ''}${copy(em.body)}${em.status !== 'sent' ? `<div><button class="btn sm" data-act="email-sent" data-id="${esc(j.id)}"${ro}>Mark email sent</button></div>` : ''}</div>` : '')
     + (li.note ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">LinkedIn note</b><span class="pill${li.status === 'sent' ? ' strong' : ''}">${li.status === 'sent' ? 'Sent' : 'You send this'}</span></div>${copy(li.note)}${li.status !== 'sent' ? `<div class="ract" style="justify-content:flex-start">${liUrl ? `<a class="btn sm" href="${esc(liUrl)}" target="_blank" rel="noopener">Open profile</a>` : ''}<button class="btn sm" data-act="li-sent" data-id="${esc(j.id)}"${ro}>Mark note sent</button></div>` : ''}</div>` : '')
     + (o.recruiterNote ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Recruiter note</b>${copy(o.recruiterNote)}</div>` : '');
   const tl = arr(j.timeline).slice(-30).reverse();
   const timeline = tl.length ? `<ul class="timeline">${tl.map(t => `<li><span class="when">${esc(when(t.at))}</span><span>${esc(t.event)}</span></li>`).join('')}</ul>` : '';
-  const interview = j.interviewPack ? (safeUrl(j.interviewPack) ? `<a class="btn" href="${esc(safeUrl(j.interviewPack))}" target="_blank" rel="noopener">Open interview pack</a>` : `<div class="copytext">${esc(j.interviewPack)}</div>`) : '';
+  const rounds = arr(j.interviews).filter(r => obj(r).round).map(r => `<div class="gapcard"><b>${esc(r.round)}${toDate(r.at) ? ' · ' + esc(when(r.at)) : ''}</b>${arr(r.questions).length ? `<span>${arr(r.questions).slice(0, 6).map(q => esc(obj(q).q || q)).join('<br>')}</span>` : ''}${r.nextSteps ? `<span class="muted">Next: ${esc(r.nextSteps)}</span>` : ''}</div>`).join('');
+  const interview = rounds + (j.interviewPack ? (safeUrl(j.interviewPack) ? `<a class="btn" href="${esc(safeUrl(j.interviewPack))}" target="_blank" rel="noopener">Open interview pack</a>` : `<div class="copytext">${esc(j.interviewPack)}</div>`) : '');
   const stageOpts = FLOW.concat(CLOSED, ['skipped']).map(s => `<option value="${s}"${(j.stage || 'found') === s ? ' selected' : ''}>${STAGE_LABEL[s]}</option>`).join('');
   let actions = '';
   if (j.stage === 'ready') actions = `<button class="btn ghost" data-act="skip" data-id="${esc(j.id)}"${ro}>Skip</button><button class="btn solid" data-act="approve" data-id="${esc(j.id)}"${ro}>Approve</button>`;
@@ -1051,7 +1195,7 @@ function renderDrawer(){
   else if (j.stage === 'found' || !j.stage){
     const q = j.autoApply === 'queued';
     actions = (url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open posting</a>` : '')
-      + (j.needsYou ? `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>` : q ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : `<button class="btn solid" data-act="queue" data-id="${esc(j.id)}"${ro}>Auto-apply</button>`);
+      + (j.needsYou ? `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>` : q ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : belowLine(j) ? `<button class="btn" data-act="apply-anyway" data-id="${esc(j.id)}"${ro} title="Scored under the 4.0 apply line">Auto-apply anyway</button>` : `<button class="btn solid" data-act="queue" data-id="${esc(j.id)}"${ro}>Auto-apply</button>`);
   }
   dr.innerHTML = `
     <div class="dhead ${esc(j.stage || 'found')}">
@@ -1061,13 +1205,15 @@ function renderDrawer(){
     <div class="dbody">
       ${needBox ? `<div class="dsec">${needBox}</div>` : ''}
       ${sec('Decision', skipBox + decision)}
+      ${sec('Score', evalHtml(j))}
       ${sec('Checks against your filters', checksHtml)}
-      ${sec('Fit by dimension', dims)}
+      ${sec('Fit by dimension', scoreOf(j) === null ? dims : '')}
       ${sec('Company and role brief', briefHtml)}
-      ${sec('Evidence map', evid + gaps)}
+      ${sec('Evidence map', scoreOf(j) === null ? evid + gaps : '')}
       ${sec('Application package', pkg)}
       ${sec('Outreach', outreach)}
       ${sec('Interview', interview)}
+      ${sec('The posting, as you applied to it', j.jd ? `<details class="jdarch"><summary>Show the full text${j.jdArchivedAt ? ' (saved ' + esc(when(j.jdArchivedAt)) + ')' : ''}</summary><div class="copytext" style="white-space:pre-wrap;max-height:420px;overflow:auto;margin-top:10px">${esc(j.jd)}</div></details><p class="muted" style="font-size:13px">Saved because postings often disappear before the interview.</p>` : '')}
       <div class="dsec"><h3>Your notes</h3><textarea id="notes-${esc(j.id)}" data-act="notes" data-id="${esc(j.id)}" rows="3" placeholder="Anything to remember about this one"${ro}>${esc(j.notes || '')}</textarea></div>
       ${sec('Timeline', timeline)}
     </div>
@@ -1163,7 +1309,7 @@ function setTab(t){ if (state.tab === t) return; state.tab = t; state.enter = tr
 function autoReadyMsg(){ const m = []; if (apMissing().length) m.push('your details'); if (!obj(applicant().resume).id) m.push('your resume'); if (!runnerLinked()) m.push('your computer'); return m.length ? `Queued. It goes out once ${listJoin(m)} ${m.length === 1 ? 'is' : 'are'} set up.` : 'Queued. It goes out on the next auto-apply run.'; }
 
 function retryJob(id){
-  const go = () => { const j = state.jobs.get(id), t = nowIso(); patchJob(id, Object.assign({autoApply: 'queued', queuedAt: t, needsYou: ''}, (!j || !j.stage || j.stage === 'found') ? {stage: 'approved', approvedAt: t} : {}), 'Sent back to auto-apply by you', 'Back in the queue for the next auto-apply run.'); };
+  const go = () => { const j = state.jobs.get(id), t = nowIso(); patchJob(id, Object.assign({autoApply: 'queued', queuedAt: t, needsYou: '', needsYouKind: ''}, (!j || !j.stage || j.stage === 'found') ? {stage: 'approved', approvedAt: t} : {}), 'Sent back to auto-apply by you', 'Back in the queue for the next auto-apply run.'); };
   // In the cloud, an uncertain submission blocks retries until you say it didn't go through. Pressing Try again says so.
   if (cloud()) api('api/applications/' + encodeURIComponent(id) + '/reset', {method: 'POST'}).catch(() => {}).finally(go); else go();
 }
@@ -1195,13 +1341,15 @@ document.addEventListener('click', e => {
   }
   else if (act === 'approve'){ state.selected.delete(id); patchJob(id, {stage:'approved', approvedAt: nowIso()}, 'Approved by you', 'Approved and queued for submission.'); }
   else if (act === 'skip'){ state.selected.delete(id); leave(id).then(() => patchJob(id, {stage:'skipped', skip:{gate:'Your call', reason:'Skipped by you from the batch'}}, 'Skipped by you', 'Skipped. It is in the skip log if you change your mind.')); }
-  else if (act === 'applied') patchJob(id, {stage:'applied', appliedAt: nowIso(), appliedVia:'you', needsYou: ''}, 'Marked as applied by you', 'Marked as applied.');
+  else if (act === 'applied'){ const j = state.jobs.get(id), t = nowIso(); patchJob(id, {stage:'applied', appliedAt: t, appliedVia:'you', needsYou: '', needsYouKind: '', followUps: j ? seedFollowUps(j, t) : []}, 'Marked as applied by you', 'Marked as applied. Follow-ups are set for day 7 and 14.'); }
   else if (act === 'override') patchJob(id, {stage:'found', override:true}, 'Override: prepare on the next run', 'It will be prepared on the next run.');
   else if (act === 'email-sent') patchJob(id, {outreach:{email:{status:'sent', sentAt: nowIso()}}}, 'Email to hiring contact sent', 'Marked sent. Follow-ups are scheduled from today.');
   else if (act === 'li-sent') patchJob(id, {outreach:{linkedin:{status:'sent', sentAt: nowIso()}}}, 'LinkedIn note sent', 'Marked sent.');
   else if (act === 'queue'){ const t = nowIso(); patchJob(id, {stage: 'approved', approvedAt: t, autoApply: 'queued', queuedAt: t}, 'Queued for auto-apply by you', autoReadyMsg()); }
-  else if (act === 'unqueue'){ patchJob(id, {stage: 'found', autoApply: 'off', needsYou: ''}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
+  else if (act === 'apply-anyway'){ const t = nowIso(); patchJob(id, {stage: 'approved', approvedAt: t, autoApply: 'queued', queuedAt: t, scoreOverride: true, needsYou: '', needsYouKind: ''}, 'Apply anyway: you chose to send it below the 4.0 apply line', autoReadyMsg()); }
+  else if (act === 'unqueue'){ patchJob(id, {stage: 'found', autoApply: 'off', needsYou: '', needsYouKind: ''}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
   else if (act === 'retry') retryJob(id);
+  else if (act === 'conn-remove'){ const doc = {rows: [], count: 0, removedAt: nowIso()}; enqueue('profile/connections', () => state.db.doc('profile/connections').set(doc)).then(() => { state.connections = doc; toast('Connections removed from your dashboard.'); render(); }).catch(() => {}); }
   else if (act === 'signout'){ api('api/auth/logout', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
   else if (act === 'signout-all'){ api('api/me/logout-all', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
   else if (act === 'key-hide'){ state.newKey = null; render(); }
@@ -1225,12 +1373,15 @@ document.addEventListener('change', e => {
   if (el.closest && el.closest('#settings-form')) state.formDirty = true;
   if (el.closest && el.closest('#applicant-form')) state.apDirty = true;
   if (el.classList && el.classList.contains('resume-file')){ const f = el.files && el.files[0]; el.value = ''; uploadResume(f); return; }
+  if (el.classList && el.classList.contains('conn-file')){ const f = el.files && el.files[0]; el.value = ''; uploadConnections(f); return; }
   if (el.dataset && el.dataset.act === 'sel'){ if (el.checked) state.selected.add(el.dataset.id); else state.selected.delete(el.dataset.id); render(); }
   else if (el.dataset && el.dataset.act === 'stage'){
     const id = el.dataset.id, s = el.value, j = state.jobs.get(id); if (!j || s === j.stage) return;
     const patch = {stage: s};
     if (s === 'applied' && !j.appliedAt){ patch.appliedAt = nowIso(); patch.appliedVia = 'you'; }
+    if (s === 'applied') patch.followUps = seedFollowUps(j, patch.appliedAt || j.appliedAt);
     if (s === 'screen' && !j.screenAt) patch.screenAt = nowIso();
+    if (['screen', 'interview', 'offer', 'rejected', 'withdrawn'].includes(s)) patch.followUps = movedOnFollowUps(j, s);
     if (s === 'approved' && !j.approvedAt) patch.approvedAt = nowIso();
     patchJob(id, patch, 'Moved to ' + (STAGE_LABEL[s] || s) + ' by you', 'Moved to ' + (STAGE_LABEL[s] || s) + '.');
   }
@@ -1402,6 +1553,7 @@ function subscribe(db, onErr){
   db.doc('settings/profile').onSnapshot(s => { state.settings = s.exists ? s.data() : null; render(); }, onErr);
   db.doc('brain/status').onSnapshot(s => { state.brain = s.exists ? s.data() : null; render(); }, onErr);
   db.doc('profile/applicant').onSnapshot(s => { state.applicant = s.exists ? s.data() : null; render(); }, onErr);
+  db.doc('profile/connections').onSnapshot(s => { state.connections = s.exists ? s.data() : null; render(); }, onErr);
   db.doc('settings/applyRunner').onSnapshot(s => { state.runner = s.exists ? s.data() : null; render(); }, onErr);
   db.collection('runs').orderBy('startedAt', 'desc').limit(12).onSnapshot(snap => { state.runs = snap.docs.filter(d => d.exists).map(d => Object.assign({id: d.id}, d.data())); render(); }, onErr);
 }

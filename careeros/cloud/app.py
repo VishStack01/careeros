@@ -31,6 +31,8 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .. import __version__
+from .. import evaluation as evaluation_mod
+from .. import followups
 from ..dedupe import canonical_url, company_key
 from . import mailer as mail
 from . import repo, security
@@ -672,12 +674,15 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 ck = company_key(j["data"].get("company", ""))
                 if ck in companies or (g != "queued" and ck in recent):
                     continue
+                if evaluation_mod.apply_gate(j["data"], chosen_by_user=g != "auto")[1].startswith("Scored"):
+                    continue  # under the apply line and the user hasn't said "apply anyway"
                 companies.add(ck)
                 picked.append({"id": j["id"], "version": j["version"], "group": g, **{k: j["data"].get(k) for k in (
-                    "company", "title", "url", "region", "postedAt", "location", "workMode", "stage", "checks", "brief", "evidence", "gaps")}})
+                    "company", "title", "url", "region", "postedAt", "location", "workMode", "stage", "checks", "brief", "evidence", "gaps", "score", "scoreOverride")},
+                    "needsScore": g == "auto" and not (j["data"].get("evaluation") or {}).get("score")})
         n = min(left, max(0, min(int(limit), 25)))
         res = (applicant or {"data": {}})["data"].get("resume") or {}
-        return {"dailyCap": cap, "appliedToday": done_today, "left": left, "approvalMode": settings.get("approvalMode"),
+        return {"dailyCap": cap, "appliedToday": done_today, "left": left, "approvalMode": settings.get("approvalMode"), "applyLine": evaluation_mod.APPLY_LINE,
                 "paused": settings.get("approvalMode") == "paused", "roles": picked[:n],
                 "applicantReady": bool(applicant), "resume": {"id": res.get("id"), "name": res.get("name")} if res.get("id") else None}
 
@@ -723,18 +728,50 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
 
     @app.post("/api/agent/jobs/{jid}/fit")
     def agent_fit(jid: str, body: dict = Body(default={}), p: Principal = Depends(principal)):
+        """Record the fit check. With "evaluation" (the scored 1-5 evaluation), it is
+        checked first: quotes against "jd" (the posting's text, archived on the role),
+        claim ids against the brain. A role the user chose that scores under the apply
+        line waits for them; it is never submitted on the agent's say-so."""
         allowed = {k: body[k] for k in ("decision", "fitBand", "decisionReason", "evidence", "gaps") if k in body}
+        ev = body.get("evaluation")
+        if ev is not None and len(json.dumps(ev)) > 96 * 1024:
+            raise err(413, "That evaluation is too large.", "too_large")
+        jd = str(body.get("jd") or "")[:60000] or None
         with db.tx() as c:
-            _job(c, p.uid, jid)
+            d = _job(c, p.uid, jid)["data"]
+            if ev is not None:
+                brain = (repo.get_doc(c, p.uid, "brain", "brain") or {}).get("data")
+                errors, warnings = evaluation_mod.validate(ev, jd=jd or d.get("jd"), brain=brain or None)
+                if errors:
+                    raise HTTPException(422, detail={"error": "The evaluation didn't pass its checks.", "code": "invalid_evaluation", "problems": errors[:20]})
+                norm = evaluation_mod.normalize(ev)
+                allowed = evaluation_mod.job_patch(norm, ev.get("decision"))
+                if jd and not d.get("jd"):
+                    allowed["jd"], allowed["jdArchivedAt"] = jd, now_iso()
+                event = f"Scored {norm['score']:.1f}/5: {norm['verdict']['label']}"
+                if norm["score"] < evaluation_mod.APPLY_LINE and d.get("stage") == "approved" and not d.get("scoreOverride") and not d.get("appliedAt"):
+                    allowed.update({"needsYou": f"Scored {norm['score']:.1f}, under the {evaluation_mod.APPLY_LINE} apply line. {norm.get('summary', '')}".strip()[:400],
+                                    "needsYouKind": "score", "needsYouAt": now_iso()})
+                allowed["timeline"] = repo.append_timeline(d, event)
+                version = repo.update_doc(c, p.uid, "jobs", jid, allowed)
+                return {"version": version, "score": norm["score"], "verdict": norm["verdict"], "confidence": norm["confidence"],
+                        "apply": evaluation_mod.apply_gate(dict(d, **allowed), chosen_by_user=d.get("stage") == "approved")[0], "warnings": warnings}
             return {"version": repo.update_doc(c, p.uid, "jobs", jid, allowed)}
 
     @app.post("/api/agent/jobs/{jid}/begin")
-    def agent_begin(jid: str, p: Principal = Depends(principal)):
-        """Call right before pressing Submit. Refuses a second submission, ever."""
+    def agent_begin(jid: str, body: dict = Body(default={}), p: Principal = Depends(principal)):
+        """Call right before pressing Submit. Refuses a second submission, ever.
+        Send {"jd": "<the posting's full text>"} to archive it if /fit didn't."""
         with db.tx() as c:
             d = _job(c, p.uid, jid)["data"]
+            jd = str((body or {}).get("jd") or "")[:60000]
+            if jd and not d.get("jd"):
+                repo.update_doc(c, p.uid, "jobs", jid, {"jd": jd, "jdArchivedAt": now_iso()})
             if d.get("appliedAt"):
                 raise err(409, "Already applied to this role.", "already_submitted")
+            ok, why = evaluation_mod.apply_gate(d, chosen_by_user=d.get("stage") == "approved")
+            if not ok:
+                raise err(409, why, "below_apply_line" if why.startswith("Scored") else "needs_evaluation")
             key, now = _app_key(d), now_iso()
             row = c.one("SELECT state FROM applications WHERE user_id = ? AND key = ?", (p.uid, key))
             if row and row["state"] == "submitted":
@@ -761,13 +798,14 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 receipt = {"confirmation": str(body.get("confirmation", ""))[:500], "form": host, "at": now_iso()}
                 c.execute("UPDATE applications SET state = 'submitted', receipt = ?, updated_at = ? WHERE user_id = ? AND key = ?",
                           (json.dumps(receipt), now_iso(), p.uid, key))
-                patch = {"stage": "applied", "appliedAt": now_iso()[:19] + "Z", "appliedVia": "careeros", "autoApply": "done", "needsYou": "",
+                patch = {"stage": "applied", "appliedAt": now_iso()[:19] + "Z", "appliedVia": "careeros", "autoApply": "done", "needsYou": "", "needsYouKind": "",
                          "application": receipt, "timeline": repo.append_timeline(d, f"Applied automatically on {host or 'the company site'}")}
                 if body.get("resumeAsset"):
                     patch["resume"] = {"asset": str(body["resumeAsset"])[:40], "label": "Resume sent", "version": str(body.get("resumeVersion", "original"))[:20]}
                 for k in ("screening", "coverNote"):
                     if k in body:
                         patch[k] = body[k]
+                patch["followUps"] = followups.seed(dict(d, **patch))
             else:
                 reason = "Submitted, but no confirmation appeared. Check the site or your email before trying again."
                 patch = {"needsYou": reason, "needsYouAt": now_iso(), "autoApply": "done", "applyUrl": str(body.get("applyUrl", d.get("url", "")))[:2000],

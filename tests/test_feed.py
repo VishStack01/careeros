@@ -321,6 +321,10 @@ def test_scan_writes_feed(boards, tmp_path):
     assert summary["remoteBoards"] == {"remotive": 2}
     rows = list(csv.reader((out / "unmapped.csv").open()))
     assert rows[1][0] == "Custom Site Co"
+    # Every record carries a legitimacy rating and re-listing history; the history file persists between scans.
+    assert ai["facts"]["legit"]["tier"] in ("high", "caution", "suspicious") and ai["facts"]["reposts"]["count"] == 0
+    assert ai["tags"]["archetype"] and (out / "history.json.gz").exists()
+    assert sum(summary["legitimacy"].values()) == len(recs) and summary["relisted"] == 0
 
 
 def test_filter_feed_keeps_skips_and_dedupes(boards, tmp_path):

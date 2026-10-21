@@ -98,3 +98,46 @@ def check(resume: dict, brain: dict) -> Report:
     if bullets and rep.metric_density < 0.6:
         rep.warnings.append(f"Only {rep.metric_density:.0%} of bullets contain a number; aim for 60% or more.")
     return rep
+
+
+def _flat(obj) -> str:
+    if isinstance(obj, dict):
+        return " ".join(_flat(v) for v in obj.values())
+    if isinstance(obj, list):
+        return " ".join(_flat(v) for v in obj)
+    return str(obj if obj is not None else "")
+
+
+def _squash(text: str) -> str:
+    text = (text or "").replace("­", "").replace("ﬁ", "fi").replace("ﬂ", "fl")
+    text = re.sub(r"-\s*\n\s*", "-", text)  # a hyphenated word split across lines
+    text = re.sub(r"[‐‑‒–—]", "-", text).replace("’", "'").replace("“", '"').replace("”", '"')
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def check_pdf(pdf_text: str, resume: dict, brain: dict, profile: dict | None = None) -> Report:
+    """The PDF that will be sent must say what the checked resume.json says, and nothing more.
+
+    Blocks when a bullet from resume.json is missing from the PDF (it was rendered from
+    something else), when the PDF carries a number found in neither the brain, the
+    resume nor your profile (an edit after the claims check), or when your name is absent."""
+    rep = Report()
+    text = _squash(pdf_text)
+    if not text:
+        rep.blocking.append("The PDF has no extractable text. An applicant-tracking system would read it as empty (is it an image?).")
+        return rep
+    name = (profile or {}).get("fullName") or (brain.get("identity") or {}).get("name", "")
+    if name and _squash(name) not in text:
+        rep.blocking.append(f"Your name ({name}) isn't in the PDF's text.")
+    for i, b in enumerate(resume.get("bullets", []), 1):
+        if _squash(b.get("text", "")) not in text:
+            rep.blocking.append(f"Bullet {i} (\"{b.get('text', '')[:60]}\") isn't in the PDF. Render the PDF from the checked resume.json.")
+    allowed = _numbers(_flat(brain)) | _numbers(_flat(resume)) | _numbers(_flat(profile or {}))
+    stray = sorted(_numbers(pdf_text) - allowed, key=lambda n: (len(n), n))
+    if stray:
+        rep.blocking.append(f"The PDF has number(s) {', '.join(stray[:12])} that aren't in your brain, resume or profile.")
+    banned = [w.lower() for w in (brain.get("voice", {}).get("banned_words") or _DEFAULT_BANNED)]
+    for w in banned:
+        if re.search(r"\b" + re.escape(w) + r"(?:s|d|ed|ing)?\b", text, re.I):
+            rep.warnings.append(f"The PDF uses '{w}', which is on your banned-words list.")
+    return rep

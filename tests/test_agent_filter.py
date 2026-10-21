@@ -21,7 +21,9 @@ PLACES = [("Bengaluru, India", ""), ("Hyderabad", "hybrid"), ("Pune, India", "on
           ("", ""), ("Chennai; Remote", "remote"), ("London, UK", "hybrid")]
 TEXTS = ["Build agents in Python. 0-1 years of experience.", "You have 2+ years of experience shipping ML.", "Freshers welcome to apply.",
          "5+ years building distributed systems. Remote within the US only.", "We build tools for developers.",
-         "1+ year with React. Open to candidates anywhere in the world.", "This position has been filled.", "Not a fresher role."]
+         "1+ year with React. Open to candidates anywhere in the world.", "This position has been filled.", "Not a fresher role.",
+         "Python and LLMs. Applicants must be authorized to work in the United States.", "Remote anywhere. US citizens only.",
+         "Agents in Python, open to anyone worldwide. We do not offer visa sponsorship.", "Must be eligible to work in India. 0-1 years."]
 PAY = ["", "₹5-6 LPA", "₹10-15 LPA", "$100k-$150k"]
 
 

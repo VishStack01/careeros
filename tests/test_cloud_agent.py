@@ -120,3 +120,47 @@ def test_applicant_resume_text_and_brain(cloud):
     assert r.status_code == 200
     assert c.get("/api/d/brain/status").json()["data"]["state"] == "ready"
     assert k.get("/api/agent/applicant").json()["brain"]["claims"][0]["id"] == "c1"
+
+
+def test_scored_evaluation_and_the_apply_line(cloud):
+    import copy
+    import json
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    ev = json.loads((root / "examples" / "evaluation.example.json").read_text(encoding="utf-8"))
+    jd = (root / "examples" / "jd.example.txt").read_text(encoding="utf-8")
+    c = cloud.user()
+    k = _agent(cloud, c)
+    c.patch("/api/d/settings/profile", json={"approvalMode": "auto-when-clear"})
+    _job(c, "good", "Acme")
+    _job(c, "low", "Beta", stage="approved", autoApply="queued")
+    _job(c, "unscored", "Gamma")
+    # An auto role can't be submitted before it is scored.
+    assert k.post("/api/agent/jobs/unscored/begin").json()["code"] == "needs_evaluation"
+    roles = {r["id"]: r for r in k.get("/api/agent/next").json()["roles"]}
+    assert roles["unscored"]["needsScore"] and not roles["low"]["needsScore"]
+    # Bad evaluations are refused with the reasons.
+    bad = copy.deepcopy(ev)
+    bad["requirements"][0]["jdSignal"] = "Must have 5+ years of Python."
+    r = k.post("/api/agent/jobs/good/fit", json={"evaluation": bad, "jd": jd})
+    assert r.status_code == 422 and any("verbatim" in x for x in r.json()["problems"])
+    r = k.post("/api/agent/jobs/good/fit", json={"evaluation": ev, "jd": jd}).json()
+    assert r["score"] == 4.2 and r["apply"] and r["confidence"] == "medium"
+    d = c.get("/api/d/jobs/good").json()["data"]
+    assert d["decision"] == "A" and d["fitBand"] == "good" and d["evaluation"]["verdict"]["band"] == "apply" and d["jd"].startswith("AI Engineer")
+    assert d["timeline"][-1]["event"].startswith("Scored 4.2/5")
+    assert k.post("/api/agent/jobs/good/begin").status_code == 200
+    # A role the user queued that scores under 4.0 waits for them, and is never submitted on the agent's say-so.
+    low = copy.deepcopy(ev)
+    low.update(score=3.6, answers=[])
+    low["dimensions"]["cvMatch"]["score"] = 3
+    r = k.post("/api/agent/jobs/low/fit", json={"evaluation": low}).json()
+    assert r["apply"] is False
+    d = c.get("/api/d/jobs/low").json()["data"]
+    assert d["needsYouKind"] == "score" and "under the 4.0 apply line" in d["needsYou"] and d["decision"] == "B"
+    assert k.post("/api/agent/jobs/low/begin").json()["code"] == "below_apply_line"
+    # The agent can't set the override; only the user's session can.
+    assert k.patch("/api/d/jobs/low", json={"scoreOverride": True}).status_code in (401, 403)
+    c.patch("/api/d/jobs/low", json={"scoreOverride": True, "needsYou": "", "needsYouKind": ""})
+    assert "low" in [r["id"] for r in k.get("/api/agent/next").json()["roles"]]
+    assert k.post("/api/agent/jobs/low/begin").status_code == 200

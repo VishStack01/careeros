@@ -13,6 +13,10 @@ below holds, and otherwise leaves the job in the batch with the exact reason.
 - The job is at stage `ready` with `review.json` verdict `pass` (or `approved` by the user).
 - Today's submissions are under the daily cap in `config/settings.toml`.
 - The company has no application in the last 180 days (the store enforces this).
+- The role is scored (`evaluate` skill) at 4.0 or more, or the user pressed
+  "Apply anyway" (`scoreOverride`). `careeros apply --submit` refuses otherwise.
+  A role the user chose that scores under 4.0 gets needsYou "Scored X, under the
+  4.0 apply line" with needsYouKind "score", never a quiet skip.
 
 ## Greenhouse, Lever, Ashby (and simple forms)
 Dry run first, then submit if it comes back clean:

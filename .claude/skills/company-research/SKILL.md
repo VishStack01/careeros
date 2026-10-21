@@ -26,7 +26,13 @@ a gap with a guess.
 Never output an ATS percentage or "shortlist probability". Nobody outside the
 company can measure it.
 
-## Decision (write `decision`, `decisionReason`, `fitBand`)
+## Score and decision
+Score the role with the `evaluate` skill: it writes `evaluation` (1-5, apply
+line 4.0) and sets `decision`, `fitBand`, `decisionReason`, `evidence` and
+`gaps` from it. Decision A is never given under 4.0. Without a brain yet, use
+the letters below on their own.
+
+### Decision letters (`decision`, `decisionReason`, `fitBand`)
 - **A** Apply now: strong evidence for every must-have, good ROI.
 - **B** Tailor further: promising, but the proof needs strengthening first.
 - **C** Network first: high value and a warm path exists.

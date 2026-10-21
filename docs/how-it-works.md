@@ -65,7 +65,8 @@ logins and passwords always go to you.
 
 ## 7. Outreach, tracking, learning
 The `outreach` skill drafts the hiring-manager note, the recruiter note, a
-LinkedIn note and day 3/7/14 follow-ups; you send them. The `tracker` reads
+LinkedIn note, referral asks to people you already know (from LinkedIn's
+Connections.csv) and follow-ups on day 7 and 14; you send them. The `tracker` reads
 your inbox and moves roles to screen, interview or rejected. The
 `weekly-review` skill reports the funnel, mines skip reasons, builds the gap map
 and runs one experiment a week.

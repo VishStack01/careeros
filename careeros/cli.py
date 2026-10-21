@@ -10,6 +10,24 @@
   careeros claims-check RESUME.json     block resume lines the brain can't back up
   careeros apply URL --job-id ID --package PKG.json [--submit]
                                         fill an application form; submit only if safe
+  careeros eval-check EVAL.json [--job-id ID] [--jd JD.txt] [--md REPORT.md] [--save]
+                                        check a scored evaluation (1-5, apply line 4.0) and write its report
+  careeros liveness URL [URL ...]       is a posting still open?
+  careeros archive-jd URL [--job-id ID] save the posting's full text verbatim
+  careeros render resume.json --out resume.pdf [--profile P.json]
+                                        ATS-safe PDF from a checked resume (then checks the PDF)
+  careeros pdf-check resume.pdf --resume resume.json
+  careeros keywords --jd jd.txt --resume resume.json
+                                        which posting terms the resume uses (never an "ATS score")
+  careeros writing-check note.txt       clichés and filler in a cover note or message
+  careeros stats | calibrate | gaps     the funnel, score calibration and the skills gap
+  careeros followups                    follow-ups due (day 7 and 14 after applying, thank-yous)
+  careeros classify-reply email.txt     confirmation, rejection, assessment, interview or offer?
+  careeros warm-intros --connections Connections.csv
+                                        people you know at the companies you're applying to
+  careeros salary-gap --job-id ID       pay side by side: advertised, floor, ask, what you said, the offer
+  careeros funded [--add "A,B"]         companies that just raised money (review first)
+  careeros doctor [--online]            is this install ready, and is your private data private?
   careeros pause | resume               kill switch for all submissions
   careeros serve [--port 8765]          open the dashboard locally
 
@@ -153,6 +171,11 @@ def cmd_apply(a):
     store = Store(a.db)
     job = (store.get("jobs", a.job_id) or {}).get("data", {}) if a.job_id else {}
     package = json.loads(Path(a.package).read_text(encoding="utf-8")) if a.package else {}
+    if a.submit and job:
+        from .evaluation import apply_gate
+        ok, why = apply_gate(job, chosen_by_user=True)
+        if not ok and not a.below_line:
+            sys.exit(f"Not submitting: {why} (or pass --below-line).")
     ctx = Context.load(a.profile, a.brain, package, job | {"url": a.url})
     res = runner.run(a.url, ctx, submit=a.submit, store=store, job_id=a.job_id or "", receipts_dir=a.receipts, headed=a.headed)
     print(f"Status: {res.status}   Receipt: {res.receipt_dir}")
@@ -168,8 +191,11 @@ def cmd_apply(a):
     if res.status == "applied" and a.job_id and store.get("jobs", a.job_id):
         stamp = iso(datetime.now(timezone.utc))
         cur = store.get("jobs", a.job_id)["data"]
-        store.update("jobs", a.job_id, {"stage": "applied", "appliedAt": stamp, "appliedVia": "careeros",
-                                        "timeline": cur.get("timeline", []) + [{"at": stamp, "event": "Applied; confirmation captured"}]})
+        from . import followups
+        patch = {"stage": "applied", "appliedAt": stamp, "appliedVia": "careeros",
+                 "timeline": cur.get("timeline", []) + [{"at": stamp, "event": "Applied; confirmation captured"}]}
+        patch["followUps"] = followups.seed(dict(cur, **patch))
+        store.update("jobs", a.job_id, patch)
 
 
 def cmd_pause(a):
@@ -284,6 +310,7 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--receipts", default="receipts")
     sp.add_argument("--submit", action="store_true", help="Actually submit when every required answer is covered")
     sp.add_argument("--headed", action="store_true", help="Show the browser window")
+    sp.add_argument("--below-line", action="store_true", help="Submit even though the role scored under 4.0")
     sp.set_defaults(fn=cmd_apply)
 
     sub.add_parser("pause").set_defaults(fn=cmd_pause)
@@ -335,6 +362,104 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--root", default="dashboard")
     sp.set_defaults(fn=cmd_serve)
 
+    sp = sub.add_parser("liveness", help="Is a posting still open? (hiring-system API first, then the page)")
+    sp.add_argument("urls", nargs="+")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_liveness)
+
+    sp = sub.add_parser("eval-check", help="Check a scored evaluation (1-5) and write its report")
+    sp.add_argument("evaluation", help="Evaluation JSON written by the evaluate skill")
+    sp.add_argument("--job", help="The job's JSON document (for the report header and posting checks)")
+    sp.add_argument("--job-id", help="Or: the role's id in the local database")
+    sp.add_argument("--jd", help="The posting's text: quotes are checked against it and it is archived in the report")
+    sp.add_argument("--brain", default="brain/brain.json", help="Claim ids are checked against it when the file exists")
+    sp.add_argument("--md", help="Write the report here")
+    sp.add_argument("--save", action="store_true", help="Store the evaluation on the role (needs --job-id)")
+    sp.add_argument("--patch-out", help="Write the job fields to set (evaluation, score, decision, fit, evidence, gaps, archived posting) as JSON")
+    sp.set_defaults(fn=cmd_eval_check)
+
+    sp = sub.add_parser("render", help="Render a checked resume.json or a cover note to an ATS-safe PDF")
+    sp.add_argument("resume", nargs="?", help="resume.json (already passed claims-check)")
+    sp.add_argument("--cover", help="A cover note (text file) to render instead")
+    sp.add_argument("--company", default="")
+    sp.add_argument("--brain", default="brain/brain.json")
+    sp.add_argument("--profile", help="Applicant details JSON (fullName, email, phone, city, links)")
+    sp.add_argument("--out", required=True, help="PDF path")
+    sp.add_argument("--html", help="Also write the HTML here")
+    sp.set_defaults(fn=cmd_render)
+
+    sp = sub.add_parser("pdf-check", help="Check a resume PDF says what the checked resume.json says, and nothing more")
+    sp.add_argument("pdf")
+    sp.add_argument("--resume", required=True)
+    sp.add_argument("--brain", default="brain/brain.json")
+    sp.add_argument("--profile")
+    sp.set_defaults(fn=cmd_pdf_check)
+
+    sp = sub.add_parser("keywords", help="Which of the posting's terms the resume uses (never an 'ATS score')")
+    sp.add_argument("--jd", required=True, help="The posting's text")
+    sp.add_argument("--resume", required=True, help="resume.json, or a PDF")
+    sp.add_argument("--terms", help="Comma-separated terms (default: found in the posting)")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_keywords)
+
+    sp = sub.add_parser("writing-check", help="Flag clichés and filler in a cover note, answer or message")
+    sp.add_argument("file")
+    sp.add_argument("--brain", default="brain/brain.json", help="Your banned words come from its voice profile")
+    sp.set_defaults(fn=cmd_writing_check)
+
+    sp = sub.add_parser("archive-jd", help="Save a posting's full text verbatim before applying")
+    sp.add_argument("url")
+    sp.add_argument("--company", default="")
+    sp.add_argument("--job-id", help="Also store the text on this role in the local database")
+    sp.add_argument("--out", default="jds")
+    sp.set_defaults(fn=cmd_archive_jd)
+
+    for name, fn, hlp in (("stats", "cmd_stats", "The funnel, response rates and speed"),
+                          ("calibrate", "cmd_calibrate", "Do higher scores get more replies?"),
+                          ("gaps", "cmd_gaps", "Skills your kept roles ask for that the brain can't prove yet"),
+                          ("followups", "cmd_followups", "Follow-ups due now (day 7 and 14 after applying, thank-yous)")):
+        sp = sub.add_parser(name, help=hlp)
+        sp.add_argument("--jobs", help="A folder of job JSON documents (default: the local database)")
+        sp.add_argument("--json", action="store_true")
+        if name == "stats":
+            sp.add_argument("--days", type=int, default=30)
+        if name == "gaps":
+            sp.add_argument("--brain", default="brain/brain.json")
+        sp.set_defaults(fn=globals()[fn])
+
+    sp = sub.add_parser("classify-reply", help="Sort an email from a company: confirmation, rejection, interview...")
+    sp.add_argument("file", help="The email as text (subject on the first line)")
+    sp.set_defaults(fn=cmd_classify_reply)
+
+    sp = sub.add_parser("warm-intros", help="People you know at the companies in your pipeline (LinkedIn's Connections.csv)")
+    sp.add_argument("--connections", required=True)
+    sp.add_argument("--company", help="One company instead of the whole pipeline")
+    sp.add_argument("--jobs")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_warm_intros)
+
+    sp = sub.add_parser("doctor", help="Is this install ready, and is your private data private?")
+    sp.add_argument("--online", action="store_true", help="Also check the network")
+    sp.set_defaults(fn=lambda a: sys.exit(__import__("careeros.doctor", fromlist=["run"]).run(Path.cwd(), a.db, a.online)))
+
+    sp = sub.add_parser("salary-gap", help="Pay side by side: advertised, your floor and ask, what you said, the offer")
+    sp.add_argument("--job-id")
+    sp.add_argument("--jobs")
+    sp.add_argument("--advertised")
+    sp.add_argument("--ask")
+    sp.add_argument("--floor")
+    sp.add_argument("--offer")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_salary_gap)
+
+    sp = sub.add_parser("funded", help="Companies that just raised money (review first, then --add)")
+    sp.add_argument("--days", type=int, default=30)
+    sp.add_argument("--feeds", help="Comma-separated RSS feed URLs or files (default: Inc42, Entrackr, TechCrunch India)")
+    sp.add_argument("--companies", default="config/companies/companies.csv")
+    sp.add_argument("--add", help="Comma-separated company names from the list to add to companies.csv")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_funded)
+
     sp = sub.add_parser("cloud", help="The multi-user service: migrate, serve, worker, ingest")
     sp.add_argument("action", choices=["migrate", "serve", "worker", "ingest", "match-all", "check"])
     sp.add_argument("--host", default="127.0.0.1")
@@ -344,6 +469,289 @@ def main(argv: list[str] | None = None) -> None:
 
     a = p.parse_args(argv)
     a.fn(a)
+
+
+def cmd_eval_check(a) -> None:
+    from . import evaluation
+    ev = json.loads(Path(a.evaluation).read_text(encoding="utf-8"))
+    store = Store(a.db) if a.job_id else None
+    job = json.loads(Path(a.job).read_text(encoding="utf-8")) if a.job else ((store.get("jobs", a.job_id) or {}).get("data", {}) if store else {})
+    job = job.get("data", job)
+    jd = Path(a.jd).read_text(encoding="utf-8") if a.jd else (job.get("description") or None)
+    br = brain.load(a.brain) if a.brain and Path(a.brain).exists() else None
+    errors, warnings = evaluation.validate(ev, jd=jd, brain=br)
+    for e in errors:
+        print(f"ERROR  {e}")
+    for w in warnings:
+        print(f"WARN   {w}")
+    if errors:
+        sys.exit(f"\n{len(errors)} problem(s): fix them and run eval-check again.")
+    norm = evaluation.normalize(ev)
+    v = norm["verdict"]
+    print(f"Score {norm['score']:.1f}/5: {v['label']} Confidence: {norm['confidence']}.")
+    if a.md:
+        Path(a.md).parent.mkdir(parents=True, exist_ok=True)
+        Path(a.md).write_text(evaluation.report_md(norm, job, jd), encoding="utf-8")
+        print(f"Report: {a.md}")
+    patch = evaluation.job_patch(norm, ev.get("decision"))
+    if a.jd:
+        patch.update(jd=jd, jdArchivedAt=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    if a.patch_out:
+        Path(a.patch_out).write_text(json.dumps(patch, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"Job fields: {a.patch_out}")
+    if a.save:
+        if not (store and store.get("jobs", a.job_id)):
+            sys.exit("--save needs --job-id of a role in the local database.")
+        store.update("jobs", a.job_id, patch)
+        print(f"Saved on {a.job_id}.")
+
+
+def _json_or_none(path):
+    return json.loads(Path(path).read_text(encoding="utf-8")) if path else None
+
+
+def cmd_render(a) -> None:
+    from . import render
+    br = brain.load(a.brain)
+    prof = _json_or_none(a.profile)
+    if a.cover:
+        page = render.cover_html(Path(a.cover).read_text(encoding="utf-8"), br, prof, a.company)
+    elif a.resume:
+        res = json.loads(Path(a.resume).read_text(encoding="utf-8"))
+        rep = claims.check(res, br)
+        if not rep.ok:
+            for b in rep.blocking:
+                print(f"BLOCK  {b}")
+            sys.exit("Not rendering: resume.json fails the claims check.")
+        page = render.resume_html(res, br, prof)
+    else:
+        sys.exit("Give a resume.json or --cover.")
+    if a.html:
+        Path(a.html).write_text(page, encoding="utf-8")
+    out = render.to_pdf(page, a.out)
+    print(f"Wrote {out}")
+    if a.resume and not a.cover:
+        rep = claims.check_pdf(render.pdf_text(out), res, br, prof)
+        for b in rep.blocking:
+            print(f"BLOCK  {b}")
+        print("PDF check: " + ("OK, the PDF says what resume.json says." if rep.ok else "blocked."))
+        sys.exit(0 if rep.ok else 1)
+
+
+def cmd_pdf_check(a) -> None:
+    from . import render
+    res = json.loads(Path(a.resume).read_text(encoding="utf-8"))
+    rep = claims.check_pdf(render.pdf_text(a.pdf), res, brain.load(a.brain), _json_or_none(a.profile))
+    for b in rep.blocking:
+        print(f"BLOCK  {b}")
+    for w in rep.warnings:
+        print(f"WARN   {w}")
+    print("OK to send." if rep.ok else "Blocked: fix the lines above.")
+    sys.exit(0 if rep.ok else 1)
+
+
+def cmd_keywords(a) -> None:
+    from . import keywords
+    jd = Path(a.jd).read_text(encoding="utf-8")
+    if a.resume.lower().endswith(".pdf"):
+        from . import render
+        res = render.pdf_text(a.resume)
+    else:
+        res = json.loads(Path(a.resume).read_text(encoding="utf-8"))
+    terms = [t for t in (a.terms or "").split(",") if t.strip()] or keywords.extract(jd)
+    cov = keywords.coverage(terms, res)
+    if a.json:
+        print(json.dumps(cov, indent=2))
+        return
+    print(cov["summary"])
+    for k, label in (("present", "In a bullet or summary"), ("thin", "Only in the skills list"), ("missing", "Missing (add only with a brain claim)")):
+        if cov[k]:
+            print(f"  {label}: {', '.join(cov[k])}")
+
+
+def cmd_writing_check(a) -> None:
+    from . import writing
+    text = Path(a.file).read_text(encoding="utf-8")
+    banned = (brain.load(a.brain).get("voice") or {}).get("banned_words") if a.brain and Path(a.brain).exists() else None
+    found = writing.check(text, banned)
+    for f in found:
+        print(f"{'line ' + str(f.line) if f.line else 'note':>8}  \"{f.phrase}\": {f.why}. Instead: {f.instead}.")
+    if not writing.specific(text):
+        print("    note  No number or named piece of work: add one real proof point.")
+    print(f"{len(found)} thing(s) to rewrite." if found else "Reads cleanly.")
+
+
+def cmd_archive_jd(a) -> None:
+    from . import jd
+    got = jd.fetch(a.url)
+    path = jd.save(got, a.out, a.company, a.job_id or "")
+    print(f"Archived {len(got['text']):,} characters via {got['via']}: {path}")
+    if a.job_id:
+        store = Store(a.db)
+        if store.get("jobs", a.job_id):
+            store.update("jobs", a.job_id, {"jd": got["text"], "jdArchivedAt": iso(datetime.now(timezone.utc)), "jdPath": str(path)})
+            print(f"Stored on {a.job_id}.")
+
+
+def _jobs(a) -> list[dict]:
+    if getattr(a, "jobs", None):
+        from .feed import _known_docs
+        return [dict(d, id=i) for i, d in _known_docs(a.jobs)]
+    return [dict(d["data"], id=d["id"]) for d in Store(a.db).list("jobs")]
+
+
+def cmd_stats(a) -> None:
+    from . import analytics
+    st = analytics.stats(_jobs(a), days=a.days)
+    if a.json:
+        print(json.dumps(st, indent=2))
+        return
+    f = st["funnel"]
+    print(f"Last {st['days']} days: {st['roles']} roles")
+    print("  " + " -> ".join(f"{k} {f[k]}" for k in ("found", "applied", "screen", "interview", "offer")))
+    print(f"  Replies: {st['responseRate']}" + ("  (small sample)" if st["smallSample"] else "") + f", rejections {st['rejected']}")
+    if st["medianDaysToResponse"] is not None:
+        print(f"  Median wait for a reply: {st['medianDaysToResponse']} days")
+    if st["medianHoursPostToApply"] is not None:
+        print(f"  Median time from posting to applying: {st['medianHoursPostToApply']} hours")
+    for k, label in (("byRegion", "By region"), ("byArchetype", "By role family"), ("bySource", "By source")):
+        rows = [f"{name} {v['rate']}{'*' if v['small'] else ''}" for name, v in list(st[k].items())[:6]]
+        if rows:
+            print(f"  {label}: " + "; ".join(rows))
+    if st["skipsByGate"]:
+        print("  Skipped most by: " + ", ".join(f"{g} {n}" for g, n in st["skipsByGate"].items()))
+    print("  * fewer than 10 applications")
+
+
+def cmd_calibrate(a) -> None:
+    from . import analytics
+    c = analytics.calibrate(_jobs(a))
+    if a.json:
+        print(json.dumps(c, indent=2))
+        return
+    print(f"{'Score':<10} {'Applied':>8} {'Replies':>12} {'Interviews':>11}")
+    for r in c["bands"]:
+        print(f"{r['band']:<10} {r['applied']:>8} {r['responseRate']:>12} {r['interviews']:>11}{'  small sample' if r['small'] and r['applied'] else ''}")
+    if c["unscored"]:
+        print(f"{c['unscored']} application(s) weren't scored.")
+    if c["note"]:
+        print(c["note"])
+
+
+def cmd_gaps(a) -> None:
+    from . import analytics
+    br = brain.load(a.brain) if a.brain and Path(a.brain).exists() else None
+    rows = analytics.gaps(_jobs(a), br)
+    if a.json:
+        print(json.dumps(rows, indent=2))
+        return
+    if not rows:
+        print("No gaps found in the roles you kept.")
+    for r in rows:
+        print(f"{r['roles']:>3} roles  {r['skill']}" + (f"  (partly there in {r['partly']})" if r["partly"] else "") + f"  e.g. {'; '.join(r['examples'])}")
+
+
+def cmd_followups(a) -> None:
+    from . import followups
+    items = followups.due(_jobs(a))
+    if a.json:
+        print(json.dumps([{"job": j.get("id"), "company": j.get("company"), **f} for j, f in items], indent=2))
+        return
+    for j, f in items:
+        print(f"{f.get('due', '')[:10]}  {f.get('label', 'Follow-up'):<24} {j.get('title', '')} at {j.get('company', '')}")
+    print(f"{len(items)} follow-up(s) due." if items else "Nothing due.")
+
+
+def cmd_classify_reply(a) -> None:
+    from . import replies
+    text = Path(a.file).read_text(encoding="utf-8")
+    subject, _, body = text.partition("\n")
+    print(json.dumps(replies.classify(subject, body), indent=2, ensure_ascii=False))
+
+
+def cmd_warm_intros(a) -> None:
+    from . import connections
+    rows = connections.parse(Path(a.connections).read_text(encoding="utf-8-sig"))
+    companies = [a.company] if a.company else sorted({j.get("company", "") for j in _jobs(a) if j.get("stage") not in ("skipped", "rejected", "withdrawn")})
+    out = {c: connections.matches(c, rows) for c in companies if c}
+    out = {c: m for c, m in out.items() if m}
+    if a.json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+        return
+    print(f"{len(rows)} connections read.")
+    for c, ms in out.items():
+        print(f"\n{c}")
+        for m in ms:
+            print(f"  [{m['tier']:<6}] {m['name']}, {m['position'] or 'no title'} at {m['company']}")
+    if not out:
+        print("Nobody you know at these companies yet.")
+
+
+def cmd_salary_gap(a) -> None:
+    from . import salary_gap
+    if a.job_id:
+        jobs = {j.get("id"): j for j in _jobs(a)}
+        if a.job_id not in jobs:
+            sys.exit(f"No role with id {a.job_id}")
+        s = Settings.load("config/settings.toml") if Path("config/settings.toml").exists() else Settings()
+        res = salary_gap.for_job(jobs[a.job_id], {"salaryFloorLpa": s.salary_floor_lpa}, None)
+        if a.ask or a.offer:
+            res = salary_gap.compare(a.advertised or jobs[a.job_id].get("salary"), a.ask, a.floor or s.salary_floor_lpa, a.offer or (jobs[a.job_id].get("offer") or {}).get("ctc"),
+                                     jobs[a.job_id].get("salaryStated"))
+    else:
+        res = salary_gap.compare(a.advertised, a.ask, a.floor, a.offer)
+    if a.json:
+        print(json.dumps(res, indent=2, ensure_ascii=False))
+        return
+    for r in res["rows"]:
+        print(f"  {r['what']:<20} {r['lpa']}")
+    for f in res["findings"]:
+        print(f"- {f}")
+    print("Facts, not advice: the `coach` skill turns these into a negotiation brief.")
+
+
+def cmd_funded(a) -> None:
+    from . import funded
+    if a.feeds:
+        items = []
+        for src in a.feeds.split(","):
+            src = src.strip()
+            if src.startswith("http"):
+                got, errs = funded.fetch([src])
+                items += got
+                for e in errs:
+                    print(f"WARN   {e}", file=sys.stderr)
+            elif src:
+                items += funded.parse_feed(Path(src).read_bytes())
+    else:
+        items, errs = funded.fetch()
+        for e in errs:
+            print(f"WARN   {e}", file=sys.stderr)
+    found = funded.candidates(items, funded.known_keys(a.companies), days=a.days)
+    if a.add:
+        added = funded.add([n for n in a.add.split(",") if n.strip()], found, a.companies)
+        print(f"Added {len(added)} to {a.companies}: {', '.join(added) or 'none (already listed?)'}. Run `careeros discover` to find their job boards.")
+        return
+    if a.json:
+        print(json.dumps(found, indent=2, ensure_ascii=False))
+        return
+    new = [c for c in found if not c["tracked"]]
+    for c in new:
+        print(f"{c['date']}  {c['company']:<28} {c['amount']:<12} {c['round']:<10} {c['source']}")
+    print(f"\n{len(new)} new, {len(found) - len(new)} already tracked. Add the ones you want: careeros funded --add \"Name One,Name Two\"")
+
+
+def cmd_liveness(a) -> None:
+    from . import liveness
+    results = []
+    for u in a.urls:
+        r = liveness.check(u)
+        results.append(dict(r.to_dict(), url=u))
+        if not a.json:
+            mark = {"open": "OPEN  ", "closed": "CLOSED", "uncertain": "??    "}[r.status]
+            print(f"{mark} {u}\n       {r.reason}" + (f"\n       \"{r.evidence}\"" if r.evidence else ""))
+    if a.json:
+        print(json.dumps(results, indent=2))
 
 
 def cmd_cloud(a) -> None:

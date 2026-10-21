@@ -393,6 +393,13 @@ def facts(text: str, header: str = "", location: str = "", salary_text: str = ""
         "scope": scope.scope, "scopeEligible": scope.india_eligible, "scopeQuote": scope.quote,
         "closedQuote": closed_signal(text), "applicants": applicants(text),
     }
+    from . import signals  # local import: signals uses tags, which is light, but keep extract importable alone
+    wa = signals.work_authorization(text)
+    if wa:
+        out["workAuth"] = wa
+    ag = signals.agency(text)
+    if ag:
+        out["agencyQuote"] = ag
     if sal:
         out.update({"salaryLow": round(sal.low_lpa, 2), "salaryHigh": round(sal.high_lpa, 2), "salaryQuote": sal.quote})
     return out

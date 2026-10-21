@@ -17,6 +17,7 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 - **Interviews, not application count.** A daily cap, freshness priority, referral-first decisions and honest skips.
 - **Evidence, not keywords.** Every resume line cites a claim in your Career Brain. A code gate blocks numbers, tools or projects the brain can't back up.
 - **It shows its work.** Every keep or skip records the exact sentence from the posting that decided it.
+- **It scores before it applies.** Each role gets a 1–5 score against your Career Brain, requirement by requirement, with the gaps and how to handle them. Under 4.0, auto-apply waits for you.
 - **It applies only when it can answer everything.** Each form answer has a confidence. Sensitive fields, essays nobody wrote, captchas and logins go to you.
 - **One submit per role, ever.** An idempotent state machine, receipts with screenshots, and a kill switch.
 - **Platform-safe.** No LinkedIn or Indeed automation, no account creation, no captcha solving. Outreach is drafted; you send it.
@@ -77,12 +78,15 @@ Architecture, deployment and operations: **[docs/cloud.md](docs/cloud.md)**. Bef
 | Brain | Interviews you and turns your career into claims with evidence | `career-brain` skill, `careeros brain-check` |
 | Discover | Scans ~1,400 career pages and 9 remote boards every hour; the agent covers the rest of the 96 platforms | `careeros discover`, `scan`, `filter-feed`, `job-scout` skill |
 | Gate | Role, seniority, experience, freshness, open, location, pay, dealbreakers, company; each with a quote | `careeros/gates.py` |
-| Research | Company brief, the three problems the team needs solved, fit by dimension, decision A–F | `company-research` skill |
-| Tailor | Resume where every bullet cites the brain, cover note, screening answers | `tailor` skill, `careeros claims-check` |
+| Check | Still open? A real opening? Re-listed? Work authorization you can meet? | `careeros liveness`, `careeros/signals.py` |
+| Research | Company brief, the three problems the team needs solved | `company-research` skill |
+| Score | 1–5 against your brain with evidence per requirement, gaps, confidence and a verdict; 4.0 is the apply line | `evaluate` skill, `careeros eval-check` |
+| Tailor | Resume where every bullet cites the brain, an ATS-safe PDF checked line by line, cover note, screening answers, keyword coverage, cliché check | `tailor` skill, `careeros claims-check`, `render`, `keywords`, `writing-check` |
 | Review | Independent model checks claims, defensibility, 6-second scan, objections | `reviewer` skill |
 | Apply | Fills the company's form, submits only when every required answer is covered | `careeros apply`, `apply` skill |
-| Outreach | Hiring-manager, recruiter, LinkedIn and follow-up drafts | `outreach` skill |
-| Track & learn | Inbox sync, funnel, skip mining, gap map, weekly experiment | `tracker`, `weekly-review` skills |
+| Outreach | Referral asks to people you already know, hiring-manager, recruiter and LinkedIn notes, follow-ups on day 7 and 14 | `outreach` skill, `careeros warm-intros`, `followups` |
+| Track & learn | Inbox sync, funnel, score calibration, skills gap, weekly experiment | `tracker`, `weekly-review` skills, `careeros stats`, `calibrate`, `gaps` |
+| Interview & offer | Prep plan, practice, debriefs, red flags, offer-letter walk-through, negotiation brief | `coach` skill, `careeros salary-gap` |
 
 ![A role's package with its checks](docs/assets/dashboard-package.png)
 
@@ -133,22 +137,28 @@ careeros/            Python package (standard library only; Playwright optional)
   extract.py         experience, work mode, remote scope, pay, dates
   gates.py           the gatekeeper
   store.py           SQLite docs, dedupe keys, submit state machine, audit log
-  claims.py          resume truth gate
+  claims.py          resume truth gate, and the same check on the PDF
+  signals.py, liveness.py  real-opening signals, re-listing, work authorization, still open?
+  evaluation.py      the 1-5 score and its rules
+  render.py, jd.py   ATS-safe PDFs; posting archive
+  keywords.py, writing.py  keyword coverage; cliché check
+  followups.py, replies.py, analytics.py, connections.py  tracking and warm intros
+  salary_gap.py, funded.py, doctor.py
   apply/answers.py   form-answer resolver with confidence
   apply/runner.py    Playwright form filler
   site.py, tags.py   the public job board and its tags
   cloud/             the multi-user service: API, worker, migrations, sign-in pages
   server.py, cli.py  local dashboard API and command line
-.claude/skills/      agent skills: career-brain, job-scout, company-research, tailor,
-                     reviewer, apply, outreach, tracker, coach, weekly-review
+.claude/skills/      agent skills: career-brain, job-scout, company-research, evaluate,
+                     tailor, reviewer, apply, outreach, tracker, coach, weekly-review
 dashboard/           app.html (single source), demo data, built index.html
 prompts/             scheduled search and apply prompts
 config/companies/    the company list (curated + moreThanFAANGM + YC), 1,396 companies
 config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
-examples/            a tailored resume and an application package
+examples/            a tailored resume, an application package, a posting and its evaluation
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               165 tests, including real browser form fills and the cloud service on SQLite and PostgreSQL
+tests/               209 tests, including real browser form fills and the cloud service on SQLite and PostgreSQL
 ```
 
 ## Docs
@@ -158,6 +168,7 @@ tests/               165 tests, including real browser form fills and the cloud 
 - [Job platforms](docs/platforms.md)
 - [Architecture](docs/architecture.md)
 - [What makes it accurate](docs/accuracy.md)
+- [Scoring, documents, tracking and interviews](docs/features.md) (ideas from career-ops)
 - [The apply agent](docs/apply-agent.md)
 - [Data model](docs/data-model.md)
 - [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
@@ -176,4 +187,4 @@ It never invents experience or fakes a shortlist percentage, never automates Lin
 
 ## License
 
-MIT. Built by [VishStack](https://github.com/VishStack01) with Claude.
+MIT. Built by [VishStack](https://github.com/VishStack01) with Claude. The scoring, posting checks, follow-up cadence and interview modes adapt ideas from [career-ops](https://github.com/career-ops-hq/career-ops) (MIT); see [docs/features.md](docs/features.md).

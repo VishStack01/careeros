@@ -66,6 +66,12 @@ jobs:
           set -o pipefail
           careeros scan --boards feed/boards.json --out feed 2>&1 | tee feed/scan.log
 
+      - name: Newly funded companies, for you to review
+        # Funding headlines from Inc42, Entrackr and TechCrunch India. Nothing is
+        # added to the company list until you run `careeros funded --add`.
+        continue-on-error: true
+        run: careeros funded --json --days 30 > feed/funded.json
+
       - name: Package the filter tool next to the feed
         # One-file copy of careeros (python3 careeros.pyz ...) for agents that
         # can download files but can't clone repositories.

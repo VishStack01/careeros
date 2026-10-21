@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
-from . import extract, geo
+from . import extract, geo, signals
 from .models import Check, Job, iso
 from .settings import Settings
 
@@ -182,6 +182,27 @@ def gate_pay(job: Job, s: Settings) -> tuple[Check, extract.Salary | None]:
     return Check("Pay", True, sal.describe(), sal.quote), sal
 
 
+_REGION_LOC = {"remote-global": "remote-open", "remote-india": "remote-india", "south-india": "india"}
+
+
+def gate_work_auth(job: Job, region: str) -> Check:
+    """Citizenship, security clearance or local work authorization for a country other than India
+    rules a role out for someone applying from India, however well it fits."""
+    f = _facts(job)
+    wa = (f.get("workAuth") or {}) if f is not None and "loc" in f else signals.work_authorization(job.description)
+    loc = (f or {}).get("loc") or _REGION_LOC.get(region, "abroad")
+    if signals.work_auth_blocks(wa, loc):
+        what = {"citizenship": f"{wa.get('country') or 'local'} citizenship", "clearance": "a security clearance",
+                "local": f"authorization to work in {wa.get('country') or 'another country'}",
+                "no-sponsorship": "local work authorization (no visa sponsorship)"}[wa["kind"]]
+        return Check("Work authorization", False, f"Requires {what}.", wa.get("quote", ""))
+    if wa.get("kind") == "no-sponsorship":
+        return Check("Work authorization", True, "No visa sponsorship, which remote work from India doesn't need.", wa.get("quote", ""))
+    if wa:
+        return Check("Work authorization", True, f"Needs authorization to work in {wa.get('country')}.", wa.get("quote", ""))
+    return Check("Work authorization", True, "No restriction stated")
+
+
 def gate_dealbreakers(job: Job, s: Settings) -> Check:
     for word in s.dealbreakers:
         m = re.search(re.escape(word), job.description or "", re.I)
@@ -198,7 +219,7 @@ def evaluate(job: Job, s: Settings, now: datetime | None = None) -> Decision:
     checks += [fresh, gate_open(job, now.date())]
     loc, region = gate_location(job, s)
     pay, sal = gate_pay(job, s)
-    checks += [loc, pay, gate_dealbreakers(job, s)]
+    checks += [loc, gate_work_auth(job, region), pay, gate_dealbreakers(job, s)]
     if sal and not job.salary_text:
         job.salary_text = sal.describe()
     kept = all(c.passed for c in checks)

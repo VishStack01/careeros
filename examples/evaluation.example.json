@@ -1,0 +1,34 @@
+{
+  "score": 4.2,
+  "archetype": "Agentic & automation",
+  "summary": "Your ticket-router and RAG work match the core of the role; Kubernetes is the only real gap and the posting lists it as nice to have.",
+  "dimensions": {
+    "cvMatch": {"score": 4, "status": "supported", "note": "Agent, RAG and eval work all have shipped proof.", "source": "brain: proj-triage, ach-rag"},
+    "northStar": {"score": 5, "status": "supported", "note": "Agentic support automation is your first target archetype.", "source": "brain: targets"},
+    "comp": {"score": 4, "status": "partial", "note": "₹18-24 LPA is above your floor; no public band to compare yet.", "source": "posting"},
+    "culture": {"score": 4, "status": "partial", "note": "Remote within India and customer-facing; team size unknown.", "source": "posting"},
+    "redFlags": {"score": 4, "status": "supported", "note": "Pay shown, employer named, posted this week.", "source": "posting checks"}
+  },
+  "confidenceGaps": ["Team size and who the role reports to"],
+  "requirements": [
+    {"requirement": "Python in production, 1+ years", "importance": "critical", "tier": "stated", "match": "strong",
+     "jdSignal": "Must have 1+ years of Python in production.", "evidence": "Shipped a RAG assistant in Python with FastAPI.", "source": "brain", "claimId": "ach-rag"},
+    {"requirement": "LLM agents for support tickets", "importance": "critical", "tier": "structural", "match": "strong",
+     "jdSignal": "What you'll do, first line", "evidence": "TicketRouter tags, prioritises and drafts replies for tickets.", "source": "brain", "claimId": "proj-triage"},
+    {"requirement": "Evaluation sets and regression tracking", "importance": "high", "tier": "structural", "match": "partial",
+     "jdSignal": "What you'll do, second line", "evidence": "An eval set of 120 real questions for the RAG assistant.", "source": "brain", "claimId": "ach-rag"},
+    {"requirement": "Kubernetes", "importance": "preferred", "tier": "structural", "match": "missing", "jdSignal": "Nice to have"}
+  ],
+  "gaps": [
+    {"requirement": "Evaluation sets and regression tracking", "blocker": false,
+     "risk": "They may ask how you caught a regression before release, and you have one eval set but no release gate.",
+     "mitigation": "Describe the 120-question set honestly, then explain how you would wire it into CI as a release check."}
+  ],
+  "level": {"detected": "Engineer, 1+ years", "yours": "Early-career AI engineer", "pitch": "Lead with the shipped ticket router; it is the job's first responsibility."},
+  "company": {"type": "Growth-stage startup", "compReliability": "medium", "note": "Series A, per the posting."},
+  "comp": {"advertised": "₹18-24 LPA + ESOPs", "market": "Not researched yet."},
+  "customization": [{"section": "Summary", "change": "Open with support-ticket automation", "why": "It is the role's first responsibility."}],
+  "interviewPlan": [{"requirement": "LLM agents for support tickets", "story": "How TicketRouter decides when to escalate", "claimId": "proj-triage"}],
+  "answers": [{"q": "Why this role?", "a": "I built TicketRouter, an open-source router that tags and drafts replies for support tickets. Your team is building the same thing for SaaS support, at scale."}],
+  "keywords": ["Python", "FastAPI", "RAG", "LLM agents", "evaluation", "support automation"]
+}

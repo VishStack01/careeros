@@ -93,5 +93,6 @@ def perks(text: str) -> list[str]:
 
 
 def tag(title: str, text: str, facts: dict) -> dict:
+    from .signals import archetype  # signals imports this module
     return {"level": level(title, facts), "type": job_type(title, text), "categories": categories(title),
-            "skills": skills(title, text), "perks": perks(text)}
+            "skills": skills(title, text), "perks": perks(text), "archetype": archetype(title, text)}

@@ -26,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import extract, geo, tags
+from . import extract, geo, signals, tags
 from .dedupe import canonical_url, fingerprint, job_id
 from .models import Job, iso
 from .sources import SCOUTS, FetchError, smartrecruiters
@@ -208,6 +208,16 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
         fps.add(fp)
         unique.append(r)
     unique.sort(key=lambda r: -_ts(r.get("postedAt")))
+    # Remember every listing so a role that is taken down and listed again is noticed, then rate
+    # each posting's legitimacy (age, re-listing, closure banner, vague or contradictory asks).
+    history = signals.RepostHistory(out_dir / "history.json.gz")
+    history.observe(unique)
+    for r in unique:
+        rp = history.reposts(r["company"], r["title"], r["url"])
+        r["facts"]["reposts"] = rp
+        r["facts"]["legit"] = signals.legitimacy(r["title"], r.get("text", ""), r["facts"], r.get("postedAt", ""), rp)
+    history.prune()
+    history.save()
     with gzip.open(out_dir / "india.jsonl.gz", "wt", encoding="utf-8") as f, \
             gzip.open(out_dir / "full.jsonl.gz", "wt", encoding="utf-8") as full:
         for r in unique:
@@ -222,6 +232,8 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
                 w.writerow([n, e.get("category", ""), e.get("city", ""), e.get("website", "")])
     summary = {
         "generatedAt": iso(datetime.now(timezone.utc)),
+        "legitimacy": {t: sum(1 for r in unique if r["facts"]["legit"]["tier"] == t) for t in ("high", "caution", "suspicious")},
+        "relisted": sum(1 for r in unique if r["facts"]["reposts"].get("count")),
         "companies": len(companies), "boards": len(mapped), "openings": len(unique),
         "remoteBoards": board_counts, "byAts": {}, "byGeo": {}, "errors": len(errors), "errorSamples": errors[:20],
         "erroredCompanies": sorted(n for n, e in companies.items() if e.get("stale")),

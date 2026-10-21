@@ -1,0 +1,20 @@
+AI Engineer (Agents) - Remote, India
+
+We are a Series A startup building support automation for mid-size SaaS teams.
+
+What you'll do
+- Build and ship LLM agents that triage and answer support tickets.
+- Own evaluation: build eval sets and track regressions before each release.
+- Work with customers to turn messy workflows into reliable automations.
+
+Requirements
+- Must have 1+ years of Python in production.
+- Experience with FastAPI or a similar web framework.
+- Hands-on experience building RAG or agent systems.
+- Strong written English.
+
+Nice to have
+- Kubernetes.
+- Experience with n8n or other workflow tools.
+
+Compensation: ₹18-24 LPA + ESOPs. Remote within India.

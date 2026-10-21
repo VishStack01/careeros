@@ -67,6 +67,7 @@ def compact(r: dict) -> dict:
         "m": r.get("workMode", ""), "w": WHERE.get(f.get("loc", ""), "u" if "loc" not in f else ""), "p": r.get("postedAt", ""),
         "sal": _salary(r), "e": f.get("expMin"), "lv": t.get("level", ""), "ty": t.get("type", ""),
         "cat": t.get("categories", []), "sk": t.get("skills", []), "pk": t.get("perks", []),
+        "ar": t.get("archetype", ""), "lg": (f.get("legit") or {}).get("tier", ""), "rp": (f.get("reposts") or {}).get("count", 0),
         "src": r.get("source", ""), "via": r.get("via", ""), "u": r["url"],
     }
 
@@ -88,6 +89,15 @@ def detail(r: dict, text: str) -> dict:
         facts.append({"k": "Status", "v": "The posting says it's closed", "q": f["closedQuote"]})
     if f.get("applicants"):
         facts.append({"k": "Applicants", "v": str(f["applicants"]), "q": ""})
+    wa = f.get("workAuth") or {}
+    if wa:
+        need = {"citizenship": f"{wa.get('country') or 'Local'} citizenship required", "clearance": "Security clearance required",
+                "local": f"Must be authorized to work in {wa.get('country')}", "no-sponsorship": "No visa sponsorship"}.get(wa.get("kind"), "")
+        facts.append({"k": "Work authorization", "v": need, "q": wa.get("quote", "")})
+    lg = f.get("legit") or {}
+    if lg:
+        notes = [x["note"] for x in lg.get("signals", []) if x.get("status") in ("concern", "mixed")]
+        facts.append({"k": "Real opening?", "v": lg.get("label", "") + (": " + " ".join(notes[:3]) if notes else ""), "q": ""})
     return compact(r) | {"text": text, "facts": facts, "hq": r.get("hq", ""), "category": r.get("category", "")}
 
 
@@ -96,7 +106,8 @@ def api_item(r: dict, text: str) -> dict:
     return {"slug": r["id"], "company_name": r["company"], "title": r["title"], "description": text,
             "remote": c["m"] == "remote", "url": r["url"], "tags": c["cat"] + c["sk"], "job_types": [c["ty"]] if c["ty"] else [],
             "level": c["lv"], "location": r.get("location", ""), "where": c["w"], "salary": c["sal"],
-            "experience_min_years": c["e"], "source": r.get("source", ""), "created_at": r.get("postedAt", "")}
+            "experience_min_years": c["e"], "source": r.get("source", ""), "created_at": r.get("postedAt", ""),
+            "archetype": c["ar"], "legitimacy": c["lg"], "relisted": c["rp"]}
 
 
 def _rss(jobs: list[dict], base_url: str, now: datetime) -> str:

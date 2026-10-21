@@ -210,7 +210,143 @@
      "atHoursAgo": 2,
      "event": "Package prepared and passed the claims check"
     }
-   ]
+   ],
+   "evaluation": {
+    "score": 4.6,
+    "archetype": "Agentic & automation",
+    "summary": "Your support-ticket router solves the exact problem their agent team is hiring for, and the role welcomes new grads.",
+    "dimensions": {
+     "cvMatch": {
+      "score": 5,
+      "status": "supported",
+      "note": "Shipped LLM routing with evals; public repo with usage numbers.",
+      "source": "brain: proj-triage, ach-rag"
+     },
+     "northStar": {
+      "score": 5,
+      "status": "supported",
+      "note": "Agent routing and evals is your first target role family.",
+      "source": "brain: targets"
+     },
+     "comp": {
+      "score": 4,
+      "status": "partial",
+      "note": "$30–40K a year is above your floor; no public band to compare.",
+      "source": "posting"
+     },
+     "culture": {
+      "score": 4,
+      "status": "partial",
+      "note": "Remote worldwide with India allowed; moving from demo to paying customers.",
+      "source": "posting"
+     },
+     "redFlags": {
+      "score": 5,
+      "status": "supported",
+      "note": "Pay shown, employer named, posted this week.",
+      "source": "posting checks"
+     }
+    },
+    "confidenceGaps": [
+     "Who the role reports to"
+    ],
+    "requirements": [
+     {
+      "requirement": "Built LLM features in production",
+      "importance": "critical",
+      "tier": "stated",
+      "match": "strong",
+      "jdSignal": "You have shipped LLM features to real users.",
+      "evidence": "TicketRouter routes 1,500 tickets a week at 94% tag accuracy.",
+      "source": "brain",
+      "claimId": "proj-triage"
+     },
+     {
+      "requirement": "0–1 years of experience",
+      "importance": "critical",
+      "tier": "stated",
+      "match": "na",
+      "jdSignal": "New grads welcome."
+     },
+     {
+      "requirement": "Evaluation mindset",
+      "importance": "high",
+      "tier": "structural",
+      "match": "strong",
+      "jdSignal": "Responsibilities, second line",
+      "evidence": "120-question eval set for the RAG assistant; 87% accuracy.",
+      "source": "brain",
+      "claimId": "ach-rag"
+     },
+     {
+      "requirement": "Postgres in production",
+      "importance": "meaningful",
+      "tier": "structural",
+      "match": "partial",
+      "jdSignal": "Stack section",
+      "evidence": "Used Postgres behind FastAPI services; no tuning work yet.",
+      "source": "brain"
+     }
+    ],
+    "gaps": [],
+    "level": {
+     "detected": "New grad to 1 year",
+     "yours": "Early-career AI engineer",
+     "pitch": "Lead with TicketRouter's numbers; it is their roadmap."
+    },
+    "company": {
+     "type": "Early-stage startup",
+     "compReliability": "low",
+     "note": "Fictional demo company."
+    },
+    "comp": {
+     "advertised": "$30–40K a year",
+     "market": "Not researched yet."
+    },
+    "customization": [
+     {
+      "section": "Summary",
+      "change": "Open with ticket routing and evals",
+      "why": "Their first two problems."
+     }
+    ],
+    "interviewPlan": [
+     {
+      "requirement": "Built LLM features in production",
+      "story": "How TicketRouter decides when to hand off to a human",
+      "claimId": "proj-triage"
+     },
+     {
+      "requirement": "Evaluation mindset",
+      "story": "Building the 120-question eval set from real questions",
+      "claimId": "ach-rag"
+     }
+    ],
+    "answers": [
+     {
+      "q": "Why Northwind?",
+      "a": "I built TicketRouter, which tags and routes 1,500 support tickets a week. Your agents team is solving routing and evaluation for paying customers, which is the work I want to do next."
+     }
+    ],
+    "keywords": [
+     "LLM",
+     "agents",
+     "routing",
+     "evals",
+     "Python",
+     "FastAPI",
+     "Postgres"
+    ],
+    "evaluatedAt": "2026-10-13T08:40:00Z",
+    "confidence": "medium",
+    "verdict": {
+     "band": "strong",
+     "call": "Apply",
+     "label": "Strong match. Apply now."
+    },
+    "applyLine": 4.0
+   },
+   "score": 4.6
   },
   "kestrel-ai-automation": {
    "company": "Kestrel AI",
@@ -225,7 +361,7 @@
    "experience": "1 year",
    "stage": "ready",
    "decision": "C",
-   "fitBand": "good",
+   "fitBand": "stretch",
    "decisionReason": "Good fit, and a former teammate works there. Ask for a referral before applying.",
    "checks": [
     {
@@ -265,7 +401,99 @@
      "atHoursAgo": 29,
      "event": "Found on Wellfound"
     }
-   ]
+   ],
+   "evaluation": {
+    "score": 3.8,
+    "archetype": "Agentic & automation",
+    "summary": "Good overlap on n8n automation, but the role wants client-facing delivery you haven't shown yet; a warm intro would help.",
+    "dimensions": {
+     "cvMatch": {
+      "score": 4,
+      "status": "supported",
+      "note": "n8n invoice flow with an LLM matches their automation work.",
+      "source": "brain: ach-invoices"
+     },
+     "northStar": {
+      "score": 4,
+      "status": "supported",
+      "note": "Automation is a target family.",
+      "source": "brain: targets"
+     },
+     "comp": {
+      "score": 3,
+      "status": "partial",
+      "note": "9–12 LPA is at your floor.",
+      "source": "posting"
+     },
+     "culture": {
+      "score": 4,
+      "status": "partial",
+      "note": "Small team, hybrid in Bengaluru.",
+      "source": "posting"
+     },
+     "redFlags": {
+      "score": 4,
+      "status": "supported",
+      "note": "Nothing concerning.",
+      "source": "posting checks"
+     }
+    },
+    "confidenceGaps": [
+     "How much of the week is client calls"
+    ],
+    "requirements": [
+     {
+      "requirement": "Workflow automation with n8n or Zapier",
+      "importance": "critical",
+      "tier": "stated",
+      "match": "strong",
+      "jdSignal": "Hands-on with n8n or Zapier.",
+      "evidence": "Built an n8n flow that reads invoices with an LLM and posts them to the ERP.",
+      "source": "brain",
+      "claimId": "ach-invoices"
+     },
+     {
+      "requirement": "Client-facing delivery",
+      "importance": "high",
+      "tier": "structural",
+      "match": "partial",
+      "jdSignal": "Repeated across responsibilities",
+      "evidence": "Demoed the invoice flow to the finance team.",
+      "source": "brain"
+     }
+    ],
+    "gaps": [
+     {
+      "requirement": "Client-facing delivery",
+      "blocker": false,
+      "risk": "They will ask about a time you handled a difficult client requirement.",
+      "mitigation": "Use the finance-team rollout honestly, and ask the referral about the client mix."
+     }
+    ],
+    "company": {
+     "type": "Agency / outsourcing / consulting",
+     "compReliability": "medium"
+    },
+    "comp": {
+     "advertised": "9–12 LPA",
+     "market": "Not researched yet."
+    },
+    "keywords": [
+     "n8n",
+     "Zapier",
+     "LLM",
+     "automation"
+    ],
+    "evaluatedAt": "2026-10-13T08:40:00Z",
+    "confidence": "medium",
+    "verdict": {
+     "band": "consider",
+     "call": "Consider",
+     "label": "Decent, not ideal. Apply only for a specific reason."
+    },
+    "applyLine": 4.0
+   },
+   "score": 3.8
   },
   "orbit-junior-ai": {
    "company": "Orbit Systems",

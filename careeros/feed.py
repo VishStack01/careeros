@@ -193,6 +193,14 @@ def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]]
         doc["foundVia"] = "remote-board" if board else "careers-feed"
         if r.get("facts", {}).get("applicants"):
             doc["applicants"] = r["facts"]["applicants"]
+        if r.get("facts", {}).get("legit"):
+            doc["legitimacy"] = r["facts"]["legit"]
+        if r.get("facts", {}).get("reposts", {}).get("count"):
+            doc["reposts"] = r["facts"]["reposts"]
+        if (r.get("tags") or {}).get("archetype"):
+            doc["archetype"] = r["tags"]["archetype"]
+        if (r.get("tags") or {}).get("skills"):
+            doc["skills"] = r["tags"]["skills"]
         if d.kept:
             kept.append((r["id"], doc))
         else:
