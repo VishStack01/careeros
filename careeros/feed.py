@@ -45,6 +45,7 @@ def settings_from_dashboard(doc: dict) -> Settings:
         s.max_posting_age_days = int(doc["maxPostingAgeDays"])
     floor = doc.get("salaryFloorLpa")
     s.salary_floor_lpa = float(floor) if floor not in (None, "", 0) else None
+    s.require_stated_pay = bool(doc.get("requireStatedPay"))
     if doc.get("targetRoles"):
         s.role_keywords = [r.lower() for r in doc["targetRoles"]] + s.role_keywords
     if doc.get("titleExclude"):
@@ -210,6 +211,8 @@ def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]]
                 "Experience": "Raising your experience limit.", "Posted": "A wider posting window.",
                 "Location": "Allowing this location or work mode.", "Pay": "A lower pay floor.", "Seniority": "Allowing senior titles.",
             }.get(failed[0], "")
+            if failed[0] == "Pay" and settings.require_stated_pay and not (r.get("facts") or {}).get("salaryHigh"):
+                doc["skip"]["wouldChange"] = "Allowing roles that don't state pay."
             skipped.append((r["id"], doc))
     order = {"remote-global": 0, "remote-india": 1, "south-india": 2}
 

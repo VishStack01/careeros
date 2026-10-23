@@ -8,6 +8,9 @@ from ..textutil import html_to_text
 from .http import get_json
 
 API = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
+# Pay ranges live only on the single-job endpoint, behind pay_transparency=true.
+PAY_API = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs/{job_id}?pay_transparency=true"
+_SYM = {"INR": "₹", "USD": "$"}
 
 
 def normalize(item: dict, company: str) -> Job:
@@ -34,3 +37,34 @@ def normalize(item: dict, company: str) -> Job:
 def fetch(token: str, company: str | None = None) -> list[Job]:
     data = get_json(API.format(token=token))
     return [normalize(j, company or token) for j in data.get("jobs", [])]
+
+
+def pay_text(ranges: list[dict], india: bool) -> str:
+    """A salary line from Greenhouse pay_input_ranges, or "" when none applies.
+
+    Rupee ranges always apply. Dollar ranges usually describe US hiring, so they
+    are used only for roles that aren't based in India (remote roles). Other
+    currencies are left out rather than converted at a guessed rate."""
+    best = None
+    for r in ranges or []:
+        cur = str(r.get("currency_type") or "").upper()
+        lo, hi = r.get("min_cents"), r.get("max_cents")
+        if cur not in _SYM or not isinstance(hi, (int, float)) or hi <= 0:
+            continue
+        if cur == "USD" and india:
+            continue
+        lo = lo if isinstance(lo, (int, float)) and lo > 0 else hi
+        rank = (cur == "INR", "india" in str(r.get("title") or "").lower(), hi)
+        if best is None or rank > best[0]:
+            best = (rank, cur, int(lo) // 100, int(hi) // 100)
+    if not best:
+        return ""
+    _, cur, lo, hi = best
+    sym = _SYM[cur]
+    return f"{sym}{lo:,} - {sym}{hi:,} /year"
+
+
+def pay(token: str, job_id: str | int, india: bool) -> str:
+    """The posted pay range for one job ("" when the company publishes none)."""
+    data = get_json(PAY_API.format(token=token, job_id=job_id), timeout=15, retries=1)
+    return pay_text(data.get("pay_input_ranges") or [], india)

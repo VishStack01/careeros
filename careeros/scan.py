@@ -29,7 +29,7 @@ from pathlib import Path
 from . import extract, geo, signals, tags
 from .dedupe import canonical_url, fingerprint, job_id
 from .models import Job, iso
-from .sources import SCOUTS, FetchError, smartrecruiters
+from .sources import SCOUTS, FetchError, greenhouse, smartrecruiters
 from .sources.aggregators import AGGREGATORS, MIN_HOURS
 
 TECH = re.compile(
@@ -106,7 +106,26 @@ def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
     }
 
 
-def scan_board(name: str, entry: dict, detail_budget: list[int]) -> tuple[list[dict], str | None]:
+def greenhouse_pay(job: Job, token: str, cache: dict, budget: list[int]) -> None:
+    """Fill job.salary_text from the board's pay_transparency ranges (cached per job, once)."""
+    jid = job.raw.get("id")
+    if job.salary_text or not jid:
+        return
+    key = f"{token}:{jid}"
+    if key not in cache:
+        if budget[0] <= 0 or extract.parse_salary(job.description, structured=False):
+            return
+        budget[0] -= 1
+        try:
+            cache[key] = greenhouse.pay(token, jid, geo.classify(job.location)["india"])
+        except Exception:
+            return
+    job.salary_text = cache[key]
+    cache.setdefault("_seen", set()).add(key)
+
+
+def scan_board(name: str, entry: dict, detail_budget: list[int], pay_cache: dict | None = None,
+               pay_budget: list[int] | None = None) -> tuple[list[dict], str | None]:
     scout = SCOUTS.get(entry.get("ats", ""))
     if not scout:
         return [], f"{name}: unknown ATS {entry.get('ats')}"
@@ -126,6 +145,8 @@ def scan_board(name: str, entry: dict, detail_budget: list[int]) -> tuple[list[d
                     smartrecruiters.describe(j)
                 except Exception:
                     pass
+            if entry.get("ats") == "greenhouse" and pay_cache is not None:
+                greenhouse_pay(j, entry["token"], pay_cache, pay_budget or [0])
             out.append(to_feed(j, entry))
         except Exception:
             continue  # skip one malformed posting, keep the rest of the board
@@ -163,8 +184,23 @@ def scan_aggregator(name: str, cache_dir: Path, now: datetime) -> tuple[list[dic
     return recs, None, True
 
 
+def _load_pay_cache(path: Path) -> dict:
+    try:
+        with gzip.open(path, "rt", encoding="utf-8") as f:
+            return {k: v for k, v in json.load(f).items() if isinstance(v, str)}
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_pay_cache(path: Path, cache: dict) -> None:
+    seen = cache.pop("_seen", set())
+    keep = {k: v for k, v in cache.items() if k in seen}  # only jobs still listed
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        json.dump(keep, f)
+
+
 def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_cap: int = 400,
-        aggregators: bool = True, log=print) -> dict:
+        aggregators: bool = True, log=print, pay_cap: int = 600) -> dict:
     boards = json.loads(Path(boards_path).read_text())
     companies = boards.get("companies", {})
     mapped = {n: e for n, e in companies.items() if e.get("status") == "mapped"}
@@ -173,9 +209,13 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
     records: list[dict] = []
     errors: list[str] = []
     budget = [detail_cap]
+    # Greenhouse publishes pay ranges only per job; look each up once and remember it.
+    pay_path = out_dir / "greenhouse-pay.json.gz"
+    pay_cache, pay_budget = _load_pay_cache(pay_path), [pay_cap]
+    pay_cache["_seen"] = set()
     log(f"Scanning {len(mapped)} company boards…")
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futs = {pool.submit(scan_board, n, e, budget): n for n, e in mapped.items()}
+        futs = {pool.submit(scan_board, n, e, budget, pay_cache, pay_budget): n for n, e in mapped.items()}
         for fut in as_completed(futs):
             try:
                 recs, err = fut.result()
@@ -187,6 +227,9 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
                 companies[futs[fut]]["stale"] = True  # re-discover next time
             else:
                 companies[futs[fut]].pop("stale", None)
+    looked_up = pay_cap - pay_budget[0]
+    stated = sum(1 for k in pay_cache["_seen"] if pay_cache.get(k))
+    _save_pay_cache(pay_path, pay_cache)
     board_counts: dict[str, int] = {}
     if aggregators and AGGREGATORS:
         now = datetime.now(timezone.utc)
@@ -228,13 +271,17 @@ def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_
         w = csv.writer(f)
         w.writerow(["name", "category", "city", "website"])
         for n, e in sorted(companies.items()):
-            if e.get("status") != "mapped":
+            if e.get("status") != "mapped" and e.get("category") != "deep":  # swept boards with no India roles aren't leads
                 w.writerow([n, e.get("category", ""), e.get("city", ""), e.get("website", "")])
     summary = {
         "generatedAt": iso(datetime.now(timezone.utc)),
         "legitimacy": {t: sum(1 for r in unique if r["facts"]["legit"]["tier"] == t) for t in ("high", "caution", "suspicious")},
         "relisted": sum(1 for r in unique if r["facts"]["reposts"].get("count")),
-        "companies": len(companies), "boards": len(mapped), "openings": len(unique),
+        "companies": sum(1 for e in companies.values() if e.get("category") != "deep" or e.get("status") == "mapped"),
+        "boards": len(mapped), "openings": len(unique),
+        "deepSweep": {"checked": sum(1 for e in companies.values() if e.get("category") == "deep" and e.get("checkedAt")),
+                      "kept": sum(1 for e in companies.values() if e.get("category") == "deep" and e.get("status") == "mapped")},
+        "greenhousePay": {"lookedUp": looked_up, "withPay": stated},
         "remoteBoards": board_counts, "byAts": {}, "byGeo": {}, "errors": len(errors), "errorSamples": errors[:20],
         "erroredCompanies": sorted(n for n, e in companies.items() if e.get("stale")),
     }

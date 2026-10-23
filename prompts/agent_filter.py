@@ -23,6 +23,7 @@ ROLE, EXCL = kw(roles), kw(excl)
 max_y = float(S.get("maxRequiredYears", 1) if S.get("maxRequiredYears") is not None else 1)
 days = int(S.get("maxPostingAgeDays") or 25)
 floor = S.get("salaryFloorLpa"); floor = float(floor) if floor not in (None, "", 0) else None
+stated = bool(S.get("requireStatedPay")) and floor is not None  # only roles that state pay at or above the floor
 locs = " ".join(S.get("locations") or []).lower()
 south = "any" if ("south india (any" in locs or not locs) else ("remote" if "south india (remote" in locs else "never")
 rest = "any" if "rest of india (any" in locs else ("remote" if ("rest of india (remote" in locs or not locs) else "never")
@@ -78,7 +79,8 @@ def decide(r):
     c.append(("Work authorization", not blk, f"Requires {what}." if blk else "No visa sponsorship, which remote work from India doesn't need." if wk == "no-sponsorship"
               else f"Needs authorization to work in {wa.get('country')}." if wk else "No restriction stated", wa.get("quote", "")))
     hi = f.get("salaryHigh")
-    c.append(("Pay", not (floor and hi is not None and hi < floor), "Not stated" if hi is None else f"{f.get('salaryLow', hi):g}–{hi:g} LPA", f.get("salaryQuote") or ""))
+    c.append(("Pay", not (floor and hi is not None and hi < floor) and not (stated and hi is None),
+              (f"Pay not stated; you only want roles that state {floor:g} LPA or more." if stated else "Not stated") if hi is None else f"{f.get('salaryLow', hi):g}–{hi:g} LPA", f.get("salaryQuote") or ""))
     m = next((re.search(re.escape(w), r.get("summary") or "", re.I) for w in deal if re.search(re.escape(w), r.get("summary") or "", re.I)), None)
     c.append(("Dealbreaker", m is None, "None found" if m is None else f"Mentions '{m.group(0)}'.", ""))
     return c, region if lok else "", age
@@ -112,7 +114,8 @@ for line in gzip.open(feed_p, "rt", encoding="utf-8"):
         g = failed[0]; v = next(x for x in checks if x[0] == g)
         doc["skip"] = {"gate": g, "reason": v[2] + (f' The posting says: "{v[3][:200]}"' if v[3] else ""),
                        "wouldChange": {"Experience": "Raising your experience limit.", "Posted": "A wider posting window.", "Location": "Allowing this location or work mode.",
-                                       "Pay": "A lower pay floor.", "Seniority": "Allowing senior titles."}[g]}
+                                       "Pay": "Allowing roles that don't state pay." if stated and (r.get("facts") or {}).get("salaryHigh") is None else "A lower pay floor.",
+                                       "Seniority": "Allowing senior titles."}[g]}
         skipped.append((r["id"], doc))
     else:
         kept.append((r["id"], doc))

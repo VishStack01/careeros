@@ -5,9 +5,9 @@
 
 sites = ["indeed", "naukri"]        # "linkedin" and "glassdoor" also work but block cloud IPs quickly
 terms = [
-  "software engineer", "AI engineer", "machine learning engineer", "generative AI",
-  "product designer", "frontend developer", "backend developer", "full stack developer",
-  "data analyst", "graduate engineer trainee",
+  "software engineer", "SDE", "AI engineer", "machine learning engineer", "generative AI engineer",
+  "LLM engineer", "forward deployed engineer", "full stack developer", "backend developer",
+  "frontend developer", "DevOps engineer", "data engineer",
 ]
 locations = ["Bengaluru", "Hyderabad", "Chennai"]
 remote = true                       # also search remote roles open in India

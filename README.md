@@ -76,7 +76,7 @@ Architecture, deployment and operations: **[docs/cloud.md](docs/cloud.md)**. Bef
 | Stage | What happens | How |
 |---|---|---|
 | Brain | Interviews you and turns your career into claims with evidence | `career-brain` skill, `careeros brain-check` |
-| Discover | Scans ~1,400 career pages and 9 remote boards every hour, adds companies the hiring radar sees on Indeed and Naukri (via JobSpy), and tags roles that state 20 LPA+; the agent covers the rest of the 96 platforms | `careeros discover`, `radar`, `scan`, `filter-feed`, `job-scout` skill |
+| Discover | Scans ~2,000 career pages and 9 remote boards every hour, sweeps ~20,000 more startup boards (open ats-scrapers inventory) for developer roles open to India, adds companies the hiring radar sees on Indeed and Naukri (via JobSpy), reads published pay ranges (Ashby, Lever, Greenhouse) and tags roles that state 20 LPA+; the agent covers the rest of the 96 platforms | `careeros discover`, `deep`, `radar`, `scan`, `filter-feed`, `job-scout` skill |
 | Gate | Role, seniority, experience, freshness, open, location, pay, dealbreakers, company; each with a quote | `careeros/gates.py` |
 | Check | Still open? A real opening? Re-listed? Work authorization you can meet? | `careeros liveness`, `careeros/signals.py` |
 | Research | Company brief, the three problems the team needs solved | `company-research` skill |

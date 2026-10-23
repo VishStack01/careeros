@@ -30,6 +30,7 @@ class Settings:
     ghost_after_days: int = 60
     priority_within_hours: int = 48
     salary_floor_lpa: float | None = 7.0
+    require_stated_pay: bool = False  # True: a role must state pay at or above the floor
     usd_inr: float = 88.0
     role_keywords: list[str] = field(default_factory=lambda: list(DEFAULT_ROLE_KEYWORDS))
     title_exclude: list[str] = field(default_factory=list)
@@ -50,7 +51,7 @@ class Settings:
         for key in (
             "max_required_years", "max_posting_age_days", "ghost_after_days", "priority_within_hours",
             "salary_floor_lpa", "usd_inr", "role_keywords", "title_exclude", "dealbreakers",
-            "company_blocklist", "allow_internships", "daily_cap", "reapply_cooldown_days",
+            "company_blocklist", "allow_internships", "daily_cap", "reapply_cooldown_days", "require_stated_pay",
         ):
             if key in search:
                 setattr(s, key, search[key])

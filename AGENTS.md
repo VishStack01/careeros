@@ -41,6 +41,7 @@ careeros pause | careeros resume     # kill switch
 careeros serve                       # dashboard at http://127.0.0.1:8765
 careeros discover                    # find job boards for config/companies/companies.csv
 careeros radar                       # companies hiring on Indeed/Naukri (JobSpy) -> their own boards (pip install -e ".[radar]")
+careeros deep                        # ~20,000 boards from the open ats-scrapers inventory, for discover to check
 careeros scan                        # read every board + remote feeds -> feed/india.jsonl.gz
 careeros filter-feed --feed URL --settings-json S.json --known DIR --out DIR
 careeros platforms --json            # platforms for the agent to visit this run

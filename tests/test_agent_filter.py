@@ -57,6 +57,8 @@ def test_agent_filter_matches_careeros(tmp_path):
          "locations": ["South India (any work mode)", "Rest of India (remote only)", "Remote worldwide (first priority)"]},
         {"maxRequiredYears": 2, "maxPostingAgeDays": 15, "salaryFloorLpa": "", "targetRoles": ["Engineer", "Developer", "Product designer", "Data analyst"],
          "titleExclude": ["Sales"], "locations": ["South India (any work mode)", "Rest of India (remote only)"]},
+        {"maxRequiredYears": 1, "maxPostingAgeDays": 30, "salaryFloorLpa": 15, "requireStatedPay": True, "targetRoles": ["Engineer", "Developer"],
+         "titleExclude": ["Designer", "Analyst"], "locations": ["South India (any work mode)", "Rest of India (remote only)", "Remote worldwide (first priority)"]},
     ):
         sj = tmp_path / "settings.json"
         sj.write_text(json.dumps({"id": "profile", "data": settings}))
@@ -66,9 +68,12 @@ def test_agent_filter_matches_careeros(tmp_path):
         ka, kb = docs(a / "kept"), docs(b / "kept")
         assert ka.keys() == kb.keys(), (sorted(ka.keys() - kb.keys())[:5], sorted(kb.keys() - ka.keys())[:5])
         assert {k: d["region"] for k, d in ka.items()} == {k: d["region"] for k, d in kb.items()}
-        assert len(ka) > 5  # the generator produces real matches
+        assert len(ka) > (0 if settings.get("requireStatedPay") else 5)  # the generator produces real matches
+        if settings.get("requireStatedPay"):
+            assert all(d["checks"][-2]["value"].endswith("LPA") for d in kb.values())  # every kept role states its pay
         sa, sb = docs(a / "skipped"), docs(b / "skipped")
         assert {k: d["skip"]["gate"] for k, d in sa.items()} == {k: d["skip"]["gate"] for k, d in sb.items()}
+        assert {k: d["skip"]["wouldChange"] for k, d in sa.items()} == {k: d["skip"]["wouldChange"] for k, d in sb.items()}
         for d in kb.values():
             assert d["stage"] == "found" and all(c["passed"] for c in d["checks"])
         for d in (a, b):

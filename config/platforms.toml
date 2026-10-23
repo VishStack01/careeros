@@ -11,6 +11,8 @@
 # competition   rough applicants per role: low (<50), medium, high (500+)
 # every_run     the agent checks it every 3-hour run; others rotate (about a third per run)
 # verify        the URL pattern hasn't been checked yet; the first run confirms or fixes it
+# states_pay    listings show a salary; when you only want roles that state pay, the agent
+#               visits these first
 #
 # Why ~90 and not 500: past about a hundred, "job sites" are mostly clones and
 # scrapers re-posting the same listings (often stale), or sites that only show
@@ -119,7 +121,8 @@ kind = "remote-board"
 access = "fetch"
 competition = "low"
 every_run = true
-notes = "Pulls from company ATS pages; filter by 'India' or 'Worldwide' and entry/junior level."
+states_pay = true
+notes = "Pulls from company ATS pages and shows pay where the ATS publishes it; filter 'India' or 'Worldwide' and entry/junior level."
 
 [[platform]]
 name = "Hiring Cafe"
@@ -129,7 +132,8 @@ kind = "aggregator"
 access = "fetch"
 competition = "low"
 every_run = true
-notes = "Indexes company career pages directly (no reposts). Filter India + remote + 0-2 years."
+states_pay = true
+notes = "Indexes company career pages directly (no reposts) and filters by pay. Filter India + remote + 0-2 years, pay 15 LPA+."
 
 [[platform]]
 name = "EchoJobs"
@@ -157,7 +161,8 @@ region = "global-remote"
 kind = "talent-marketplace"
 access = "login"
 competition = "medium"
-notes = "Remote roles open to India; profile vetting first."
+states_pay = true
+notes = "Remote roles open to India with salary ranges; profile vetting first."
 
 [[platform]]
 name = "DailyRemote"
@@ -269,24 +274,27 @@ notes = "Filter remote + India."
 
 [[platform]]
 name = "Levels.fyi jobs"
-url = "https://www.levels.fyi/jobs"
+url = "https://www.levels.fyi/jobs/title/software-engineer/location/greater-bengaluru"
 region = "global"
 kind = "aggregator"
 access = "fetch"
 competition = "medium"
-notes = "Shows pay bands; filter Bengaluru/Hyderabad/Chennai and remote."
+every_run = true
+states_pay = true
+notes = "Shows pay bands next to roles. Also try /location/hyderabad and remote; sort by pay."
 
 # ------------------------------------------------------------ startup and community boards
 
 [[platform]]
 name = "Y Combinator jobs"
-url = "https://www.ycombinator.com/jobs"
+url = "https://www.ycombinator.com/jobs/role/software-engineer/india"
 region = "global"
 kind = "vc-portfolio"
 access = "fetch"
 competition = "medium"
 every_run = true
-notes = "Public listings; filter 'India' and 'Remote'. Applying goes through Work at a Startup."
+states_pay = true
+notes = "Most listings state pay: rupee ranges for India roles (often 18-40 LPA), dollar ranges for remote. Also read /jobs/location/india for AI and FDE roles. Applying goes through Work at a Startup."
 
 [[platform]]
 name = "Work at a Startup (YC)"
@@ -304,7 +312,8 @@ region = "global"
 kind = "india-board"
 access = "login"
 competition = "high"
-notes = "Strong India startup coverage. Blocks automated access; the agent links roles, you apply."
+states_pay = true
+notes = "Strong India startup coverage; every listing shows a salary range. Blocks automated access; the agent links roles, you apply."
 
 [[platform]]
 name = "Peerlist"
@@ -342,6 +351,7 @@ kind = "india-board"
 access = "fetch"
 competition = "low"
 every_run = true
+states_pay = true
 notes = "Indian startup roles with salary bands; many not posted elsewhere."
 
 [[platform]]
@@ -351,7 +361,8 @@ region = "india"
 kind = "india-board"
 access = "login"
 competition = "medium"
-notes = "Tech startup roles; AI matching. Public pages show role details."
+states_pay = true
+notes = "Tech startup roles with salary ranges on the listing. Public pages show role details."
 
 [[platform]]
 name = "Instahyre"
@@ -377,7 +388,8 @@ region = "india"
 kind = "talent-marketplace"
 access = "login"
 competition = "medium"
-notes = "Remote roles at global companies for Indian engineers; vetting first."
+states_pay = true
+notes = "Remote roles at global companies for Indian engineers, with rupee pay stated; vetting first."
 
 [[platform]]
 name = "Turing"
@@ -427,12 +439,13 @@ notes = "Fresher jobs and hiring competitions."
 
 [[platform]]
 name = "Internshala jobs"
-url = "https://internshala.com/jobs/"
+url = "https://internshala.com/fresher-jobs/"
 region = "india"
 kind = "fresher"
 access = "login"
 competition = "high"
-notes = "Fresher jobs (filter 7 LPA+) and internships."
+states_pay = true
+notes = "Fresher jobs always state the CTC; keep only 15 LPA+ (few, but real). Internships too."
 
 [[platform]]
 name = "Cuvette"
@@ -468,7 +481,8 @@ region = "global-remote"
 kind = "ai-contract"
 access = "login"
 competition = "medium"
-notes = "AI-lab contract roles (evaluation, data, engineering); AI interview once, then many roles."
+states_pay = true
+notes = "AI-lab contract roles (evaluation, data, engineering) with hourly pay stated; AI interview once, then many roles."
 
 [[platform]]
 name = "micro1"
@@ -477,6 +491,8 @@ region = "global-remote"
 kind = "ai-contract"
 access = "login"
 competition = "medium"
+states_pay = true
+notes = "AI engineering contract roles with pay stated."
 
 # ------------------------------------------------------------ VC portfolio job boards (India)
 # Most run on Getro or Consider. Roles here are often posted nowhere else.

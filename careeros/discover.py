@@ -63,23 +63,27 @@ def probe(ats: str, slug: str) -> dict | None:
                 name = _get(f"https://boards-api.greenhouse.io/v1/boards/{slug}").get("name", "")
             except http.FetchError:
                 name = ""
-            return {"board_name": name, "locations": [(j.get("location") or {}).get("name", "") for j in jobs]}
+            return {"board_name": name, "locations": [(j.get("location") or {}).get("name", "") for j in jobs],
+                    "titles": [j.get("title", "") for j in jobs]}
         if ats == "lever":
             data = _get(f"https://api.lever.co/v0/postings/{slug}?mode=json")
             if not isinstance(data, list):
                 return None
-            return {"board_name": "", "locations": [((j.get("categories") or {}).get("location") or "") + (" remote" if j.get("workplaceType") == "remote" else "") for j in data]}
+            return {"board_name": "", "locations": [((j.get("categories") or {}).get("location") or "") + (" remote" if j.get("workplaceType") == "remote" else "") for j in data],
+                    "titles": [j.get("text", "") for j in data]}
         if ats == "ashby":
             data = _get(f"https://api.ashbyhq.com/posting-api/job-board/{slug}")
             if "jobs" not in data:
                 return None
-            return {"board_name": "", "locations": [(j.get("location") or "") + (" remote" if j.get("isRemote") else "") for j in data["jobs"]]}
+            return {"board_name": "", "locations": [(j.get("location") or "") + (" remote" if j.get("isRemote") else "") for j in data["jobs"]],
+                    "titles": [j.get("title", "") for j in data["jobs"]],
+                    "extra": [", ".join(x.get("location", "") for x in (j.get("secondaryLocations") or []) if isinstance(x, dict)) for j in data["jobs"]]}
         if ats == "workable":
             data = _get(f"https://apply.workable.com/api/v1/widget/accounts/{slug}")
             if "jobs" not in data:
                 return None
             locs = [", ".join(x for x in (j.get("city"), j.get("country")) if x) + (" remote" if j.get("telecommuting") else "") for j in data["jobs"]]
-            return {"board_name": data.get("name", ""), "locations": locs}
+            return {"board_name": data.get("name", ""), "locations": locs, "titles": [j.get("title", "") for j in data["jobs"]]}
         if ats == "smartrecruiters":
             data = _get(f"https://api.smartrecruiters.com/v1/companies/{slug}/postings?limit=100")
             content = data.get("content", [])
@@ -87,23 +91,26 @@ def probe(ats: str, slug: str) -> dict | None:
                 return None  # unknown ids also answer 200 with nothing in them
             name = (content[0].get("company") or {}).get("name", "")
             locs = [((j.get("location") or {}).get("fullLocation") or (j.get("location") or {}).get("country", "")) + (" remote" if (j.get("location") or {}).get("remote") else "") for j in content]
-            return {"board_name": name, "locations": locs}
+            return {"board_name": name, "locations": locs, "titles": [j.get("name", "") for j in content]}
         if ats == "recruitee":
             data = _get(f"https://{slug}.recruitee.com/api/offers/")
             if "offers" not in data:
                 return None
-            return {"board_name": "", "locations": [(o.get("location") or o.get("country") or "") + (" remote" if o.get("remote") else "") for o in data["offers"]]}
+            return {"board_name": "", "locations": [(o.get("location") or o.get("country") or "") + (" remote" if o.get("remote") else "") for o in data["offers"]],
+                    "titles": [o.get("title", "") for o in data["offers"]]}
         if ats == "breezy":
             data = _get(f"https://{slug}.breezy.hr/json")
             if not isinstance(data, list):
                 return None
-            return {"board_name": "", "locations": [((j.get("location") or {}).get("name") or "") + (" remote" if (j.get("location") or {}).get("is_remote") else "") for j in data]}
+            return {"board_name": "", "locations": [((j.get("location") or {}).get("name") or "") + (" remote" if (j.get("location") or {}).get("is_remote") else "") for j in data],
+                    "titles": [j.get("name", "") for j in data]}
         if ats == "personio":
             text = http.get_text(f"https://{slug}.jobs.personio.de/xml", timeout=10, retries=1, min_interval=PROBE_INTERVAL)
             if "<workzag-jobs" not in text:
                 return None
             root = ET.fromstring(text)
-            return {"board_name": "", "locations": [(p.findtext("office") or "") for p in root.findall("position")]}
+            return {"board_name": "", "locations": [(p.findtext("office") or "") for p in root.findall("position")],
+                    "titles": [(p.findtext("name") or "") for p in root.findall("position")]}
     except (http.FetchError, ET.ParseError, ValueError, AttributeError):
         return None
     return None
@@ -111,6 +118,26 @@ def probe(ats: str, slug: str) -> dict | None:
 
 def _india_or_remote(loc: str) -> bool:
     return geo.classify(loc)["india"] or bool(re.search(r"remote|anywhere|worldwide|apac", loc or "", re.I))
+
+
+# Deep sweep: boards from the open ATS company inventories are kept only when they
+# list a developer-side role in India or open to it. A bare "Remote" usually means
+# remote in the company's own country, so it doesn't count on its own.
+DEV_TITLE = re.compile(r"engineer|developer|\bsde\b|\bswe\b|machine learning|\bml\b|\bai\b|data scientist|devops|\bsre\b|"
+                       r"full[ -]?stack|back[ -]?end|front[ -]?end|mobile|android|\bios\b|forward deployed|programmer", re.I)
+_OPEN_TO_INDIA = re.compile(r"\b(india|anywhere|worldwide|global|apac|asia)\b", re.I)
+
+
+def deep_fit(found: dict) -> int:
+    """How many developer-side roles on this board are in India or open to it."""
+    locs, titles = found.get("locations", []), found.get("titles", [])
+    extra = found.get("extra") or [""] * len(locs)
+    n = 0
+    for i, title in enumerate(titles):
+        loc = (locs[i] if i < len(locs) else "") + " " + (extra[i] if i < len(extra) else "")
+        if DEV_TITLE.search(title or "") and (geo.classify(loc)["india"] or _OPEN_TO_INDIA.search(loc)):
+            n += 1
+    return n
 
 
 def accept(company: dict, found: dict) -> tuple[bool, str]:
@@ -121,6 +148,10 @@ def accept(company: dict, found: dict) -> tuple[bool, str]:
     nothing. Those companies are re-checked after a few days instead."""
     if not found.get("locations"):
         return False, "empty"
+    if company.get("category") == "deep":
+        # The inventory gives the exact board, so the board's own name may be a brand name.
+        n = deep_fit(found)
+        return (True, f"deep:{n}") if n else (False, "no-india-dev-roles")
     if found.get("board_name"):
         if not names_match(company["name"], found["board_name"]):
             return False, "name-mismatch"
@@ -163,6 +194,8 @@ def discover_one(company: dict) -> dict | None:
     out = {"status": "unmapped", "checkedAt": now, "probes": tried}
     if empty:
         out["retryDays"] = 3  # an empty board may be real and start hiring soon
+    if company.get("category") == "deep":
+        out["retryDays"] = 21  # hiring changes; look at the board again in three weeks
     return out
 
 

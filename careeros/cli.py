@@ -334,6 +334,12 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--out", default="feed/radar-companies.csv")
     sp.set_defaults(fn=cmd_radar)
 
+    sp = sub.add_parser("deep", help="List thousands of company boards from the open ATS inventory for discover to check")
+    sp.add_argument("--boards", default="feed/boards.json")
+    sp.add_argument("--out", default="feed/deep-companies.csv")
+    sp.add_argument("--ats", action="append", help="Only this hiring system (repeatable)")
+    sp.set_defaults(fn=cmd_deep)
+
     sp = sub.add_parser("scan", help="Read every mapped board and write the India feed")
     sp.add_argument("--boards", default="feed/boards.json")
     sp.add_argument("--out", default="feed")
@@ -763,6 +769,21 @@ def cmd_radar(a) -> None:
     cache_path.write_text(json.dumps(cache, indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"Radar: {len(rows)} listings read, {len(found['boards'])} employer boards and {len(found['companies'])} companies seen; "
           f"{res['boardsAdded']} boards added to the scan, {res['companiesAdded']} companies queued for discovery.")
+
+
+def cmd_deep(a) -> None:
+    from . import deep
+    cache_path = Path(a.boards)
+    cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {"companies": {}}
+    rows = deep.fetch(a.ats or deep.ATS)
+    todo = deep.build(rows, cache)
+    if not rows and Path(a.out).exists():
+        print("Deep sweep: inventory unavailable; keeping the last list.")
+        return
+    deep.write(todo, a.out)
+    st = deep.stats(cache)
+    print(f"Deep sweep: {len(rows)} boards in the open inventory, {len(todo)} on the list for discover; "
+          f"{st['checked']} checked so far, {st['mapped']} kept for listing developer roles in India or open to it.")
 
 
 def cmd_liveness(a) -> None:

@@ -452,7 +452,7 @@ textarea{resize:vertical;min-height:84px}
     <div class="hero">
       <div>
         <h1 id="hero-h">Fresh roles, checked against your filters</h1>
-        <p class="sub" id="hero-sub">Fresher and 1+ year AI roles in south India and remote. Anything posted more than 25 days ago, or already closed, is skipped.</p>
+        <p class="sub" id="hero-sub">Fresher and 1+ year tech and AI roles in south India and remote. Anything posted more than 25 days ago, or already closed, is skipped.</p>
       </div>
       <div class="seg" id="seg" data-v="week" role="group" aria-label="How fresh">
         <span class="thumb"></span>
@@ -582,7 +582,9 @@ function filterSummary(){
   const s = settings();
   const exp = arr(s.experienceLevels).length ? listJoin(arr(s.experienceLevels).map(x => x === 'Fresher' ? 'fresher' : x)) : 'any experience';
   const locs = arr(s.locations).map(l => LOC_SHORT[l] || l);
-  return {exp, locs: listJoin(locs) || 'any location', days: s.maxPostingAgeDays};
+  const floor = Number(s.salaryFloorLpa) || 0;
+  const pay = floor ? ` paying ${floor} LPA or more${s.requireStatedPay ? ' (stated on the posting)' : ''}` : '';
+  return {exp, locs: listJoin(locs) || 'any location', days: s.maxPostingAgeDays, pay};
 }
 
 function outreachTodos(){
@@ -962,7 +964,7 @@ function renderTodayDynamic(){
   const nDay = found.filter(j => inWindow(j, 'day')).length, nWeek = found.filter(j => inWindow(j, 'week')).length;
   const n = state.win === 'day' ? nDay : nWeek;
   $('#hero-h').textContent = state.loaded.jobs ? (n ? `${n} fresh ${n === 1 ? 'role' : 'roles'} that fit your filters` : 'No fresh roles yet') : 'Fresh roles, checked against your filters';
-  $('#hero-sub').textContent = `${f.exp.charAt(0).toUpperCase() + f.exp.slice(1)} AI roles ${f.locs}. Anything posted more than ${f.days} ${f.days === 1 ? 'day' : 'days'} ago, or already closed, is skipped.`;
+  $('#hero-sub').textContent = `${f.exp.charAt(0).toUpperCase() + f.exp.slice(1)} tech and AI roles${f.pay} ${f.locs}. Anything posted more than ${f.days} ${f.days === 1 ? 'day' : 'days'} ago, or already closed, is skipped.`;
   $('#n-day').textContent = nDay ? nDay : ''; $('#n-week').textContent = nWeek ? nWeek : '';
   const wk = document.querySelector('[data-w="week"]'); if (wk) wk.firstChild.textContent = `Last ${f.days} ${f.days === 1 ? 'day' : 'days'} `;
   const src = renderSources(); if (src) $('#sources').innerHTML = src;
@@ -1109,6 +1111,7 @@ function renderSetup(){
     <label class="f full" for="s-roles">Target roles <small>Comma-separated. Leave empty to target every role your verified skills support.</small><input type="text" id="s-roles" value="${esc(arr(s.targetRoles).join(', '))}" placeholder="Filled in from your resume"${ro}></label>
     <label class="f" for="s-fit">Lowest fit to prepare<select id="s-fit"${ro}><option value="strong"${s.minFit === 'strong' ? ' selected' : ''}>Strong fit only</option><option value="good"${s.minFit === 'good' ? ' selected' : ''}>Good fit and above</option><option value="stretch"${s.minFit === 'stretch' ? ' selected' : ''}>Include stretch roles</option></select></label>
     <label class="f" for="s-sal">Salary floor <small>LPA, fixed CTC</small><input type="number" id="s-sal" min="0" step="0.5" value="${esc(s.salaryFloorLpa)}" placeholder="e.g. 4"${ro}></label>
+    <label class="f" for="s-stated" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="s-stated" style="width:auto;margin-top:4px"${s.requireStatedPay ? ' checked' : ''}${ro}><span>Only roles that state their pay <small>Skip roles that don't publish a salary. Most Indian postings don't, so this shows far fewer roles; skipped ones stay in the skip log.</small></span></label>
     <label class="f full" for="s-deal">Dealbreakers <small>Anything that should make the search skip a role</small><textarea id="s-deal" rows="3" placeholder="e.g. bond clauses, unpaid probation, night shifts"${ro}>${esc(s.dealbreakers)}</textarea></label>
     <div class="full"><button class="btn solid" type="submit"${ro}>Save preferences</button></div>
   </form>`;
@@ -1137,7 +1140,7 @@ function renderFoot(){
   const f = filterSummary();
   const cov = obj(settings().coverage), n = x => Number(x).toLocaleString('en-IN');
   return `<div><h4>Where it looks</h4><ul><li>${cov.companies ? n(cov.companies) + ' company career pages' : 'Company career pages'}</li><li>${cov.platforms ? n(cov.platforms) + ' job platforms' : 'Remote and Indian job boards'}</li><li>VC portfolio boards</li><li>Searches for new career pages</li></ul></div>
-    <div><h4>Your filters</h4><ul><li>${esc(f.exp.charAt(0).toUpperCase() + f.exp.slice(1))}</li><li>Posted in the last ${esc(f.days)} days</li><li>${esc(f.locs)}</li><li>${settings().salaryFloorLpa !== '' ? 'Pay floor ' + esc(settings().salaryFloorLpa) + ' LPA' : 'No pay floor'}</li><li>Up to ${esc(settings().dailyCap)} prepared a day</li></ul></div>
+    <div><h4>Your filters</h4><ul><li>${esc(f.exp.charAt(0).toUpperCase() + f.exp.slice(1))}</li><li>Posted in the last ${esc(f.days)} days</li><li>${esc(f.locs)}</li><li>${settings().salaryFloorLpa !== '' ? 'Pay floor ' + esc(settings().salaryFloorLpa) + ' LPA' + (settings().requireStatedPay ? ', stated in the posting' : '') : 'No pay floor'}</li><li>Up to ${esc(settings().dailyCap)} prepared a day</li></ul></div>
     <div><h4>What it never does</h4><ul><li>Invent experience or numbers</li><li>Send LinkedIn messages</li><li>${autoMode() ? 'Guess an answer your profile can\'t back up' : 'Submit without your approval'}</li><li>Apply twice to one company in 6 months</li></ul></div>
     <div><h4>Privacy</h4><ul><li>Only you can read this pipeline, even if you share the link</li><li>Credentials never stored here</li>${cloud() ? '<li><a href="privacy">Privacy notice</a> · <a href="terms">Terms</a></li>' : ''}</ul></div>`;
 }
@@ -1254,7 +1257,7 @@ function renderNow(){
   $('#c-skipped').textContent = all.filter(j => j.stage === 'skipped').length;
   $('#cta-batch').textContent = ready ? `Review batch (${ready})` : 'Review batch';
   const f = filterSummary();
-  $('#notice-text').innerHTML = state.status === 'nodb' ? 'Open this page as its owner, signed in to Claude, to see your pipeline.' : state.status === 'demo' ? 'Demo with fictional companies. Run <b>careeros serve</b> to see your own pipeline.' : cloud() ? `Every hour: <b>${esc(f.exp)}</b> roles<span class="long"> ${esc(f.locs)}</span>, from ${esc(Number(obj(state.me && state.me.feed).companies || 1400).toLocaleString('en-IN'))} company career pages, posted in the last ${esc(f.days)} days.` : `Every 3 hours: <b>${esc(f.exp)}</b> AI roles<span class="long"> ${esc(f.locs)}</span>, posted in the last ${esc(f.days)} ${f.days === 1 ? 'day' : 'days'}.`;
+  $('#notice-text').innerHTML = state.status === 'nodb' ? 'Open this page as its owner, signed in to Claude, to see your pipeline.' : state.status === 'demo' ? 'Demo with fictional companies. Run <b>careeros serve</b> to see your own pipeline.' : cloud() ? `Every hour: <b>${esc(f.exp)}</b> roles<span class="long"> ${esc(f.locs)}</span>, from ${esc(Number(obj(state.me && state.me.feed).companies || 1400).toLocaleString('en-IN'))} company career pages, posted in the last ${esc(f.days)} days.` : `Every 3 hours: <b>${esc(f.exp)}</b> tech and AI roles<span class="long">${esc(f.pay)} ${esc(f.locs)}</span>, posted in the last ${esc(f.days)} ${f.days === 1 ? 'day' : 'days'}.`;
   document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === state.tab)));
   const seg = $('#seg'); seg.dataset.v = state.win; seg.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.w === state.win)));
   const ae = document.activeElement;
@@ -1449,7 +1452,7 @@ document.addEventListener('submit', e => {
   const next = Object.assign({}, settings(), {
     experienceLevels: exp.map(x => x[0]), maxRequiredYears: exp.length ? Math.max.apply(null, exp.map(x => x[1])) : 99,
     maxPostingAgeDays: Number($('#s-age').value) || 25, approvalMode: $('#s-mode').value, targetRoles: roles, locations: locs, dailyCap: cap, minFit: $('#s-fit').value,
-    salaryFloorLpa: sal === '' ? '' : Number(sal), dealbreakers: $('#s-deal').value.trim(), updatedAt: nowIso()
+    salaryFloorLpa: sal === '' ? '' : Number(sal), requireStatedPay: !!($('#s-stated') && $('#s-stated').checked), dealbreakers: $('#s-deal').value.trim(), updatedAt: nowIso()
   });
   if (document.activeElement) document.activeElement.blur();
   enqueue('settings/profile', () => state.db.doc('settings/profile').set(next)).then(() => { state.formDirty = false; toast('Preferences saved. The next run uses them.'); render(); }).catch(() => {});
