@@ -861,7 +861,7 @@ region = "india"
 kind = "aggregator"
 access = "planned"
 competition = "medium"
-notes = "Free app_id/app_key. Set ADZUNA_APP_ID and ADZUNA_APP_KEY as GitHub secrets to include it in the scan (planned)."
+notes = "Its terms don't allow redistributing results without written consent, so it stays out of the public feed. Usable privately with your own free key."
 
 [[platform]]
 name = "Jooble API"

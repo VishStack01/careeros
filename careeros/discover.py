@@ -176,8 +176,15 @@ def load_companies(path: str | Path) -> list[dict]:
 
 
 def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 14, workers: int = 32,
-        limit: int | None = None, max_minutes: float | None = None, log=print) -> dict:
+        limit: int | None = None, max_minutes: float | None = None, log=print, extra: list[str | Path] | None = None) -> dict:
     companies = load_companies(companies_csv)
+    seen = {c["name"] for c in companies}
+    for path in extra or []:  # e.g. feed/radar-companies.csv: companies the hiring radar saw hiring
+        if Path(path).exists():
+            for c in load_companies(path):
+                if c["name"] not in seen:
+                    companies.append(c)
+                    seen.add(c["name"])
     cache_path = Path(cache_path)
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {"companies": {}}
     known = cache.setdefault("companies", {})

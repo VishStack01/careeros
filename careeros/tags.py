@@ -92,7 +92,16 @@ def perks(text: str) -> list[str]:
     return out
 
 
+def pay_tier(facts: dict) -> str:
+    """From the pay the posting states (never estimated): "20+" (20 LPA or more at the top
+    of the range), "10-20", "under-10", or "" when no pay is stated."""
+    hi = facts.get("salaryHigh")
+    if hi is None:
+        return ""
+    return "20+" if hi >= 20 else "10-20" if hi >= 10 else "under-10"
+
+
 def tag(title: str, text: str, facts: dict) -> dict:
     from .signals import archetype  # signals imports this module
     return {"level": level(title, facts), "type": job_type(title, text), "categories": categories(title),
-            "skills": skills(title, text), "perks": perks(text), "archetype": archetype(title, text)}
+            "skills": skills(title, text), "perks": perks(text), "archetype": archetype(title, text), "payTier": pay_tier(facts)}

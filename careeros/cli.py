@@ -33,6 +33,7 @@
 
 India feed (runs on GitHub Actions; see .github/workflows/scan.yml):
   careeros discover                     find each company's public job board
+  careeros radar                        companies hiring on Indeed/Naukri (via JobSpy) -> their own boards
   careeros scan                         read every mapped board, write feed/india.jsonl.gz
   careeros filter-feed --feed URL --settings-json S.json --known DIR --out DIR
                                         apply your filters to the feed (agent use)
@@ -210,7 +211,8 @@ def cmd_resume(a):
 
 def cmd_discover(a):
     from . import discover
-    discover.run(a.companies, a.cache, refresh_days=a.refresh_days, workers=a.workers, limit=a.limit, max_minutes=a.max_minutes)
+    discover.run(a.companies, a.cache, refresh_days=a.refresh_days, workers=a.workers, limit=a.limit, max_minutes=a.max_minutes,
+                 extra=a.extra or [])
 
 
 def cmd_scan(a):
@@ -323,7 +325,14 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--workers", type=int, default=32)
     sp.add_argument("--limit", type=int)
     sp.add_argument("--max-minutes", type=float, help="Stop starting new companies after this long")
+    sp.add_argument("--extra", action="append", help="Another company list to include (e.g. feed/radar-companies.csv)")
     sp.set_defaults(fn=cmd_discover)
+
+    sp = sub.add_parser("radar", help="Learn which companies are hiring from Indeed/Naukri (via JobSpy), then map their own boards")
+    sp.add_argument("--config", default="config/radar.toml")
+    sp.add_argument("--boards", default="feed/boards.json")
+    sp.add_argument("--out", default="feed/radar-companies.csv")
+    sp.set_defaults(fn=cmd_radar)
 
     sp = sub.add_parser("scan", help="Read every mapped board and write the India feed")
     sp.add_argument("--boards", default="feed/boards.json")
@@ -739,6 +748,21 @@ def cmd_funded(a) -> None:
     for c in new:
         print(f"{c['date']}  {c['company']:<28} {c['amount']:<12} {c['round']:<10} {c['source']}")
     print(f"\n{len(new)} new, {len(found) - len(new)} already tracked. Add the ones you want: careeros funded --add \"Name One,Name Two\"")
+
+
+def cmd_radar(a) -> None:
+    from . import discover
+    from .sources import radar
+    cfg = radar.load_config(a.config)
+    rows = radar.search(cfg)
+    found = radar.harvest(rows)
+    cache_path = Path(a.boards)
+    cache = json.loads(cache_path.read_text(encoding="utf-8")) if cache_path.exists() else {"companies": {}}
+    res = radar.merge(found, cache, a.out, discover.probe, discover.accept)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_path.write_text(json.dumps(cache, indent=1, ensure_ascii=False), encoding="utf-8")
+    print(f"Radar: {len(rows)} listings read, {len(found['boards'])} employer boards and {len(found['companies'])} companies seen; "
+          f"{res['boardsAdded']} boards added to the scan, {res['companiesAdded']} companies queued for discovery.")
 
 
 def cmd_liveness(a) -> None:

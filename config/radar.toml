@@ -1,0 +1,16 @@
+# Hiring radar (careeros radar): which companies are hiring, from the big job boards.
+# JobSpy (MIT, github.com/speedyapply/JobSpy) runs these searches; CareerOS keeps only the
+# employer's own job-board link or the company name, then reads that company's board itself.
+# No Indeed, Naukri or LinkedIn listing is published, and nothing is ever applied to there.
+
+sites = ["indeed", "naukri"]        # "linkedin" and "glassdoor" also work but block cloud IPs quickly
+terms = [
+  "software engineer", "AI engineer", "machine learning engineer", "generative AI",
+  "product designer", "frontend developer", "backend developer", "full stack developer",
+  "data analyst", "graduate engineer trainee",
+]
+locations = ["Bengaluru", "Hyderabad", "Chennai"]
+remote = true                       # also search remote roles open in India
+hours_old = 72
+results_per_query = 40
+max_minutes = 8

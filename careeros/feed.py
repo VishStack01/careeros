@@ -201,6 +201,8 @@ def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]]
             doc["archetype"] = r["tags"]["archetype"]
         if (r.get("tags") or {}).get("skills"):
             doc["skills"] = r["tags"]["skills"]
+        if (r.get("tags") or {}).get("payTier"):
+            doc["payTier"] = r["tags"]["payTier"]
         if d.kept:
             kept.append((r["id"], doc))
         else:
@@ -216,7 +218,7 @@ def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]]
             return datetime.fromisoformat(doc["postedAt"].replace("Z", "+00:00")).timestamp() if doc.get("postedAt") else 0
         except ValueError:
             return 0
-    kept.sort(key=lambda x: (order.get(x[1].get("region", ""), 9), -posted_ts(x[1])))
+    kept.sort(key=lambda x: (order.get(x[1].get("region", ""), 9), 0 if x[1].get("payTier") == "20+" else 1, -posted_ts(x[1])))
     kept, skipped = kept[:max_kept], skipped[:max_skips]
     out = {"feedRecords": len(records), "alreadyKnown": n_known, "duplicates": dupes, "kept": kept, "skipped": skipped,
            "byRegion": {k: sum(1 for _, d in kept if d.get("region") == k) for k in order}}

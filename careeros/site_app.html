@@ -101,6 +101,7 @@ button,input,select{font:inherit;color:inherit}
 .tag.w-rx,.tag.w-a{background:var(--magenta-soft);color:var(--magenta)}
 .tag.lv{border:1px solid var(--line);background:transparent}
 .tag.perk{background:var(--gold-soft);color:var(--ink)}
+.tag.pay{background:color-mix(in srgb,#0A8452 16%,transparent);color:var(--ink);font-weight:600}
 .tag.warn{background:#C2341D;color:#fff}
 .tag.warn.soft{background:color-mix(in srgb,#C2341D 14%,transparent);color:var(--ink)}
 .jr{text-align:right;display:grid;gap:4px;justify-items:end}
@@ -203,7 +204,7 @@ footer .wrap{display:grid;gap:6px}
       <div class="rhead">
         <h2 id="count" aria-live="polite">Loading roles</h2>
         <button class="btn only-mobile" id="openf" type="button">Filters</button>
-        <select id="sort" aria-label="Sort"><option value="new">Newest first</option><option value="rel">Best match</option></select>
+        <select id="sort" aria-label="Sort"><option value="new">Newest first</option><option value="rel">Best match</option><option value="pay">Highest stated pay</option></select>
       </div>
       <div class="list" id="list"></div>
       <div class="more" id="more"></div>
@@ -251,9 +252,10 @@ const WHERE_SETS = {any:['ww','ro','ri','ru','s','i','u'], remote:['ww','ro','ri
 const LEVELS = ['Fresher','Entry','Internship','Mid','Senior','Not stated'];
 const POSTED = [['', 'Any time'], ['1', 'Last 24 hours'], ['3', 'Last 3 days'], ['7', 'Last 7 days'], ['25', 'Last 25 days']];
 const TYPES = ['Full-time','Internship','Contract','Part-time'];
-const QUICK = [['AI & ML','cat'],['Fresher','lv'],['Entry','lv'],['Internship','ty'],['Backend','cat'],['Frontend','cat'],['Full stack','cat'],['Data','cat'],['Design','cat'],['DevOps & Cloud','cat'],['Python','sk'],['React','sk'],['Visa sponsorship','pk']];
+const QLABEL = {'20+': '20 LPA+'};
+const QUICK = [['20+','pt'],['AI & ML','cat'],['Fresher','lv'],['Entry','lv'],['Internship','ty'],['Backend','cat'],['Frontend','cat'],['Full stack','cat'],['Data','cat'],['Design','cat'],['DevOps & Cloud','cat'],['Python','sk'],['React','sk'],['Visa sponsorship','pk']];
 let ALL = [], META = {}, COMPANIES = [], shown = 40;
-let F = {q:'', where:'any', lv:new Set(), posted:'', ty:new Set(), cat:new Set(), sk:new Set(), pk:new Set(), ar:new Set(), lg:new Set(), all:false, company:'', sort:'new'};
+let F = {q:'', where:'any', lv:new Set(), posted:'', ty:new Set(), cat:new Set(), sk:new Set(), pk:new Set(), ar:new Set(), lg:new Set(), pt:new Set(), all:false, company:'', sort:'new'};
 
 const PALETTE = ['#3859F9','#02693E','#CC089E','#7F62DB','#C2410C','#0E7490','#9333EA','#B45309','#15803D','#BE123C'];
 function logo(name){ let h = 0; for (const ch of name || '') h = (h * 31 + ch.charCodeAt(0)) >>> 0; const c = PALETTE[h % PALETTE.length]; const ini = (name || '?').replace(/[^A-Za-z0-9]/g, '').slice(0, 1).toUpperCase() || '?'; return `<span class="logo" style="background:${c}" aria-hidden="true">${esc(ini)}</span>`; }
@@ -263,14 +265,14 @@ function ago(p){ const h = hoursAgo(p); if (h == null) return ''; if (h < 1) ret
 /* ---- URL state ---- */
 function readState(){
   const u = new URLSearchParams(location.search);
-  F.q = u.get('q') || ''; F.where = WHERE_SETS[u.get('where')] ? u.get('where') : 'any'; F.posted = u.get('posted') || ''; F.sort = u.get('sort') === 'rel' ? 'rel' : 'new';
-  for (const k of ['lv','ty','cat','sk','pk','ar','lg']) F[k] = new Set((u.get(k) || '').split('|').filter(Boolean));
+  F.q = u.get('q') || ''; F.where = WHERE_SETS[u.get('where')] ? u.get('where') : 'any'; F.posted = u.get('posted') || ''; F.sort = ['rel', 'pay'].includes(u.get('sort')) ? u.get('sort') : 'new';
+  for (const k of ['lv','ty','cat','sk','pk','ar','lg','pt']) F[k] = new Set((u.get(k) || '').split('|').filter(Boolean));
   F.all = u.get('all') === '1';
 }
 function writeState(){
   const u = new URLSearchParams();
   if (F.q) u.set('q', F.q); if (F.where !== 'any') u.set('where', F.where); if (F.posted) u.set('posted', F.posted); if (F.sort !== 'new') u.set('sort', F.sort);
-  for (const k of ['lv','ty','cat','sk','pk','ar','lg']) if (F[k].size) u.set(k, [...F[k]].join('|'));
+  for (const k of ['lv','ty','cat','sk','pk','ar','lg','pt']) if (F[k].size) u.set(k, [...F[k]].join('|'));
   if (F.all) u.set('all', '1');
   const qs = u.toString();
   history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
@@ -289,6 +291,7 @@ function pass(j, skip){
   if (skip !== 'pk' && F.pk.size && !j.pk.some(c => F.pk.has(c))) return false;
   if (skip !== 'ar' && F.ar.size && !F.ar.has(j.ar)) return false;
   if (skip !== 'lg' && F.lg.size && !F.lg.has(j.lg)) return false;
+  if (skip !== 'pt' && F.pt.size && !F.pt.has(j.pt)) return false;
   if (skip !== 'posted' && F.posted){ const h = hoursAgo(j.p); if (h == null || h > Number(F.posted) * 24) return false; }
   const ts = terms(); if (ts.length){ const h = hay(j); if (!ts.every(t => h.includes(t))) return false; }
   return true;
@@ -301,6 +304,7 @@ function tagsFor(j, max){
   if (WHERE_LABEL[j.w]) out.push(`<span class="tag w-${j.w}">${esc(WHERE_LABEL[j.w])}</span>`);
   if (j.lv && j.lv !== 'Not stated') out.push(`<span class="tag lv">${esc(j.lv === 'Entry' ? 'Entry (0–2 yrs)' : j.lv)}</span>`);
   if (j.ty && j.ty !== 'Full-time' && j.ty !== 'Internship') out.push(`<span class="tag">${esc(j.ty)}</span>`);
+  if (j.pt === '20+') out.push('<span class="tag pay">20 LPA+</span>');
   j.pk.forEach(p => out.push(`<span class="tag perk">${esc(p)}</span>`));
   if (j.lg === 'suspicious') out.push('<span class="tag warn">Suspicious</span>');
   else if (j.lg === 'caution') out.push('<span class="tag warn soft">Check first</span>');
@@ -331,7 +335,7 @@ function renderFilters(){
   const skCount = {}; ALL.forEach(j => j.sk.forEach(s => skCount[s] = (skCount[s] || 0) + 1));
   const skVals = Object.entries(skCount).sort((a, b) => b[1] - a[1]).slice(0, 14).map(x => x[0]);
   const arVals = [...new Set(ALL.map(j => j.ar).filter(Boolean))].sort();
-  const any = F.where !== 'any' || F.posted || F.lv.size || F.ty.size || F.cat.size || F.sk.size || F.pk.size || F.ar.size || F.lg.size || F.all;
+  const any = F.where !== 'any' || F.posted || F.lv.size || F.ty.size || F.cat.size || F.sk.size || F.pk.size || F.ar.size || F.lg.size || F.pt.size || F.all;
   $('#filters').innerHTML = `
     ${any ? '<button class="fclear" type="button" data-act="clear">Clear filters</button>' : ''}
     <div class="fgroup"><h3>Where</h3>${whereOpts}<label class="opt"><input type="checkbox" data-f="all" ${F.all ? 'checked' : ''}><span>Also show roles not open to India</span></label></div>
@@ -343,18 +347,20 @@ function renderFilters(){
     ${facet('Perks', 'pk', ['Visa sponsorship', 'Relocation'])}
     ${arVals.length ? facet('AI role family', 'ar', arVals) : ''}
     ${facet('Real opening?', 'lg', ['high', 'caution', 'suspicious'], v => ({high: 'Looks real', caution: 'Check before applying', suspicious: 'Suspicious'})[v])}
+    ${facet('Pay the posting states', 'pt', ['20+', '10-20'], v => ({'20+': '20 LPA or more', '10-20': '10–20 LPA'})[v])}
     <button class="btn only-mobile" type="button" data-act="closef">Show results</button>`;
 }
 function renderList(){
   let list = ALL.filter(j => pass(j));
   if (F.sort === 'rel' && F.q) list = list.map(j => [score(j), j]).sort((a, b) => b[0] - a[0] || (b[1].p || '').localeCompare(a[1].p || '')).map(x => x[1]);
+  else if (F.sort === 'pay') list = list.slice().sort((a, b) => (b.ph ?? -1) - (a.ph ?? -1) || (b.p || '').localeCompare(a.p || ''));
   const co = F.company ? COMPANIES.find(c => c.slug === F.company) : null;
   $('#count').textContent = `${fmt(list.length)} ${list.length === 1 ? 'role' : 'roles'}${co ? ' at ' + co.name : ''}`;
   $('#list').innerHTML = list.length ? list.slice(0, shown).map(row).join('') : `<div class="empty">No role matches all of these filters. Remove one, or search for something broader.</div>`;
   $('#more').innerHTML = list.length > shown ? `<button class="btn" type="button" data-act="more">Show more roles (${fmt(list.length - shown)} left)</button>` : '';
 }
 function renderQuick(){
-  $('#quick').innerHTML = QUICK.map(([v, k]) => `<button class="chip" type="button" data-q="${k}" data-v="${esc(v)}" aria-pressed="${F[k].has(v)}">${esc(v)}</button>`).join('');
+  $('#quick').innerHTML = QUICK.map(([v, k]) => `<button class="chip" type="button" data-q="${k}" data-v="${esc(v)}" aria-pressed="${F[k].has(v)}">${esc(QLABEL[v] || v)}</button>`).join('');
 }
 function renderBoard(){ $('#q').value = F.q; $('#where').value = F.where; $('#sort').value = F.sort; renderQuick(); renderFilters(); renderList(); writeState(); }
 
@@ -438,7 +444,7 @@ document.addEventListener('click', e => {
   if (t.dataset.q){ const k = t.dataset.q, v = t.dataset.v; F[k].has(v) ? F[k].delete(v) : F[k].add(v); shown = 40; renderBoard(); return; }
   const a = t.dataset.act;
   if (a === 'more'){ shown += 40; renderList(); }
-  else if (a === 'clear'){ F = Object.assign(F, {where:'any', posted:'', lv:new Set(), ty:new Set(), cat:new Set(), sk:new Set(), pk:new Set(), ar:new Set(), lg:new Set(), all:false}); shown = 40; renderBoard(); }
+  else if (a === 'clear'){ F = Object.assign(F, {where:'any', posted:'', lv:new Set(), ty:new Set(), cat:new Set(), sk:new Set(), pk:new Set(), ar:new Set(), lg:new Set(), pt:new Set(), all:false}); shown = 40; renderBoard(); }
   else if (a === 'close'){ history.length > 1 && /^#\/job\//.test(location.hash) ? history.back() : (location.hash = F.company ? '#/company/' + F.company : '#/'); }
   else if (a === 'copy'){ navigator.clipboard?.writeText(location.href).then(() => { t.textContent = 'Copied'; }, () => { t.textContent = 'Copy failed'; }); }
   else if (a === 'closef'){ $('#filters').classList.remove('on'); }

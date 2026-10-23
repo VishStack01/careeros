@@ -76,7 +76,7 @@ Architecture, deployment and operations: **[docs/cloud.md](docs/cloud.md)**. Bef
 | Stage | What happens | How |
 |---|---|---|
 | Brain | Interviews you and turns your career into claims with evidence | `career-brain` skill, `careeros brain-check` |
-| Discover | Scans ~1,400 career pages and 9 remote boards every hour; the agent covers the rest of the 96 platforms | `careeros discover`, `scan`, `filter-feed`, `job-scout` skill |
+| Discover | Scans ~1,400 career pages and 9 remote boards every hour, adds companies the hiring radar sees on Indeed and Naukri (via JobSpy), and tags roles that state 20 LPA+; the agent covers the rest of the 96 platforms | `careeros discover`, `radar`, `scan`, `filter-feed`, `job-scout` skill |
 | Gate | Role, seniority, experience, freshness, open, location, pay, dealbreakers, company; each with a quote | `careeros/gates.py` |
 | Check | Still open? A real opening? Re-listed? Work authorization you can meet? | `careeros liveness`, `careeros/signals.py` |
 | Research | Company brief, the three problems the team needs solved | `company-research` skill |
@@ -169,6 +169,7 @@ tests/               209 tests, including real browser form fills and the cloud 
 - [Architecture](docs/architecture.md)
 - [What makes it accurate](docs/accuracy.md)
 - [Scoring, documents, tracking and interviews](docs/features.md) (ideas from career-ops)
+- [Where the jobs come from, and the open-source projects we evaluated](docs/sources.md)
 - [The apply agent](docs/apply-agent.md)
 - [Data model](docs/data-model.md)
 - [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)

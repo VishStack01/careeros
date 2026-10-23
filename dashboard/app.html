@@ -674,6 +674,8 @@ function warmList(people){
 
 /* ---------- small renderers ---------- */
 function freshPill(j){ const t = postedText(j.postedAt); if (!t) return ''; const h = age(j); return `<span class="pill${h < 72 ? ' fresh' : ''}">${esc(t)}</span>`; }
+function pay20(j){ if (j.payTier) return j.payTier === '20+'; const c = arr(j.checks).find(x => obj(x).gate === 'Pay'); const n = String(obj(c).value || '').match(/[\d.]+(?=\s*LPA)/g); return !!n && Number(n[n.length - 1]) >= 20; }
+function payPill(j){ return pay20(j) ? '<span class="pill strong" title="The posting states pay of 20 LPA or more">20 LPA+</span>' : ''; }
 function regionPill(j){ const r = REGION[j.region]; return r && r[1] ? `<span class="${r[2]}">${esc(r[1])}</span>` : ''; }
 function decBadge(j){
   const d = DECISIONS[j.decision];
@@ -791,8 +793,9 @@ function renderAutoApply(){
   const q = queuedJobs().length, today = appliedToday(), waits = waitingJobs();
   const waitHtml = waits.length ? `<div class="waits"><h3>Auto-apply needs you (${waits.length})</h3>${waits.slice(0, 8).map(j => `<div class="wait"><div class="tx"><b><button class="linkish" data-act="open" data-id="${esc(j.id)}">${esc(j.company)} · ${esc(j.title)}</button></b><small>${esc(j.needsYou)}</small></div><div class="ract">${waitActions(j, ro)}</div></div>`).join('')}${waits.length > 8 ? `<p class="muted" style="font-size:13.5px">${waits.length - 8} more in the pipeline.</p>` : ''}</div>` : '';
   const status = autoOn() ? (allOk ? '<span class="pill strong">On</span>' : '<span class="pill" style="background:var(--gold);color:#000">On, finishing setup</span>') : '<span class="pill">Off</span>';
+  const blocked = !pcOk && !cloud() && (r.lastTriedAt || r.lastRunAt) ? `<div class="needbox" style="margin-bottom:14px"><b>Nothing has been sent yet: auto-apply can't reach your computer</b><span>Each run starts in the cloud and needs the Claude desktop app's browser on your computer, where you're signed in to job sites. In the desktop app, open the scheduled task "CareerOS auto-apply" and turn on "Require this computer". Then keep the computer on with the app open around ${esc(r.schedule || 'the run times')}.${q ? ` ${q} ${q === 1 ? 'role is' : 'roles are'} waiting.` : ''}</span></div>` : '';
   return `<div class="sh" id="auto"><h2>Auto-apply</h2><p>Applies on each company's own application page, newest and remote-worldwide roles first, with your details and a resume tailored to the role. ${status}</p></div>
-    <div class="panel auto">
+    ${blocked}<div class="panel auto">
       <div class="steps">${steps}</div>
       <div class="autoside">
         <div class="switch"><span>Auto-apply</span><button type="button" role="switch" aria-checked="${autoOn()}" aria-label="Auto-apply" data-act="auto-toggle"${ro}></button></div>
@@ -872,7 +875,7 @@ function renderBatch(){
         <input type="checkbox" id="sel-${esc(j.id)}" data-act="sel" data-id="${esc(j.id)}" ${state.selected.has(j.id) ? 'checked' : ''} aria-label="Include ${esc(j.company)} in today's approval"${wr()}>
         ${decBadge(j)}
         <div class="rmain"><div class="rtitle">${esc(j.title)} <span class="co">at ${esc(j.company)}</span></div>${metaLine(j)}${j.decisionReason ? `<p class="why">${esc(j.decisionReason)}</p>` : ''}</div>
-        <div class="ract">${regionPill(j)}${freshPill(j)}${fitPill(j)}<button class="btn sm" data-act="open" data-id="${esc(j.id)}">Review package</button><button class="btn sm ghost" data-act="skip" data-id="${esc(j.id)}"${wr()}>Skip</button></div>
+        <div class="ract">${regionPill(j)}${payPill(j)}${freshPill(j)}${fitPill(j)}<button class="btn sm" data-act="open" data-id="${esc(j.id)}">Review package</button><button class="btn sm ghost" data-act="skip" data-id="${esc(j.id)}"${wr()}>Skip</button></div>
       </div>`).join('')}</div>`;
   }
   const n = state.selected.size;
@@ -908,7 +911,7 @@ function renderFresh(){
       <div class="jtop"><span class="eyebrow">${esc(j.company)}</span><span class="sq" aria-hidden="true">${I.arrow}</span></div>
       <h3>${esc(j.title)}</h3>
       ${metaLine(j)}
-      <div class="pills">${j.needsYou ? '<span class="pill needs">Needs you</span>' : j.autoApply === 'queued' ? '<span class="pill queued">Auto-apply queued</span>' : ''}${regionPill(j)}${freshPill(j)}${fitPill(j)}</div>
+      <div class="pills">${j.needsYou ? '<span class="pill needs">Needs you</span>' : j.autoApply === 'queued' ? '<span class="pill queued">Auto-apply queued</span>' : ''}${regionPill(j)}${payPill(j)}${freshPill(j)}${fitPill(j)}</div>
     </button>`).join('');
   const none = state.loaded.jobs ? empty(state.win === 'day' ? 'Nothing new in the last 24 hours' : 'No fresh roles yet', state.win === 'day' ? 'Switch to Last 7 days to see the rest of the week.' : `The next run looks again. Roles that fail a filter go to Skipped with the reason.`) : empty('Loading roles', 'Reading your pipeline.');
   return `<div class="sh"><h2>${esc(title)}</h2><p>Remote worldwide roles first, then remote in India, then south India. ${brainReady() ? 'Scored on the next run.' : 'Fit ratings appear once your Career Brain is built.'}</p></div>${chips}<div class="panel">${cards ? `<div class="cards">${cards}</div>${more}` : none}</div>`;
@@ -982,10 +985,12 @@ function renderPipeline(){
   else list = list.filter(j => (j.stage || 'found') === state.filter);
   const q = state.q.trim().toLowerCase();
   if (q) list = list.filter(j => [j.company, j.title, j.location, j.source].join(' ').toLowerCase().includes(q));
+  const n20 = list.filter(pay20).length;
+  if (state.pay20) list = list.filter(pay20);
   list.sort((a, b) => rankOf(b.stage) - rankOf(a.stage) || byFresh(a, b));
-  const rows = list.map((j, i) => `<tr class="click${enterCls(i)}" data-act="open" data-id="${esc(j.id)}" tabindex="0"><td class="role"><b>${esc(j.title)}</b><span>${esc(j.company)}</span></td><td>${stageTag(j.stage)}</td><td>${esc(j.location || '')}</td><td>${esc(j.experience || '')}</td><td>${esc((postedText(j.postedAt) || '').replace('Posted ', ''))}</td><td>${fitPill(j)}</td></tr>`).join('');
+  const rows = list.map((j, i) => `<tr class="click${enterCls(i)}" data-act="open" data-id="${esc(j.id)}" tabindex="0"><td class="role"><b>${esc(j.title)}</b><span>${esc(j.company)}${pay20(j) ? ' · <b style="font-weight:600">20 LPA+</b>' : ''}</span></td><td>${stageTag(j.stage)}</td><td>${esc(j.location || '')}</td><td>${esc(j.experience || '')}</td><td>${esc((postedText(j.postedAt) || '').replace('Posted ', ''))}</td><td>${fitPill(j)}</td></tr>`).join('');
   return `<div class="hero" style="padding-bottom:10px"><div><h1>Pipeline</h1><p class="sub">Every role the search kept, from found to offer. Open any row for its brief and package.</p></div></div>
-    <div class="filters">${chips}<input type="search" id="pipe-q" class="search" placeholder="Search company or role" value="${esc(state.q)}" aria-label="Search company or role"></div>
+    <div class="filters">${chips}<button class="fchip" data-act="pay20" aria-pressed="${!!state.pay20}" title="Roles whose posting states 20 LPA or more">20 LPA+ <span class="c">${n20}</span></button><input type="search" id="pipe-q" class="search" placeholder="Search company or role" value="${esc(state.q)}" aria-label="Search company or role"></div>
     <div class="panel">${rows ? `<div class="tablewrap"><table class="grid"><thead><tr><th>Role</th><th>Stage</th><th>Location</th><th>Experience</th><th>Posted</th><th>Fit</th></tr></thead><tbody>${rows}</tbody></table></div>` : empty(state.loaded.jobs ? 'No roles here yet' : 'Loading', state.loaded.jobs ? 'The daily run adds roles as it finds them. Roles it turns down go to Skipped, with the reason.' : 'Reading your pipeline.')}</div>`;
 }
 
@@ -1349,6 +1354,7 @@ document.addEventListener('click', e => {
   else if (act === 'apply-anyway'){ const t = nowIso(); patchJob(id, {stage: 'approved', approvedAt: t, autoApply: 'queued', queuedAt: t, scoreOverride: true, needsYou: '', needsYouKind: ''}, 'Apply anyway: you chose to send it below the 4.0 apply line', autoReadyMsg()); }
   else if (act === 'unqueue'){ patchJob(id, {stage: 'found', autoApply: 'off', needsYou: '', needsYouKind: ''}, 'Removed from auto-apply by you', 'Removed from the auto-apply queue.'); }
   else if (act === 'retry') retryJob(id);
+  else if (act === 'pay20'){ state.pay20 = !state.pay20; render(); }
   else if (act === 'conn-remove'){ const doc = {rows: [], count: 0, removedAt: nowIso()}; enqueue('profile/connections', () => state.db.doc('profile/connections').set(doc)).then(() => { state.connections = doc; toast('Connections removed from your dashboard.'); render(); }).catch(() => {}); }
   else if (act === 'signout'){ api('api/auth/logout', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
   else if (act === 'signout-all'){ api('api/me/logout-all', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }

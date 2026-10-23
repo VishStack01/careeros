@@ -68,6 +68,7 @@ def compact(r: dict) -> dict:
         "sal": _salary(r), "e": f.get("expMin"), "lv": t.get("level", ""), "ty": t.get("type", ""),
         "cat": t.get("categories", []), "sk": t.get("skills", []), "pk": t.get("perks", []),
         "ar": t.get("archetype", ""), "lg": (f.get("legit") or {}).get("tier", ""), "rp": (f.get("reposts") or {}).get("count", 0),
+        "pt": t.get("payTier", tagger.pay_tier(f)), "ph": f.get("salaryHigh"),
         "src": r.get("source", ""), "via": r.get("via", ""), "u": r["url"],
     }
 
@@ -107,7 +108,7 @@ def api_item(r: dict, text: str) -> dict:
             "remote": c["m"] == "remote", "url": r["url"], "tags": c["cat"] + c["sk"], "job_types": [c["ty"]] if c["ty"] else [],
             "level": c["lv"], "location": r.get("location", ""), "where": c["w"], "salary": c["sal"],
             "experience_min_years": c["e"], "source": r.get("source", ""), "created_at": r.get("postedAt", ""),
-            "archetype": c["ar"], "legitimacy": c["lg"], "relisted": c["rp"]}
+            "archetype": c["ar"], "legitimacy": c["lg"], "relisted": c["rp"], "pay_tier": c["pt"], "salary_max_lpa": c["ph"]}
 
 
 def _rss(jobs: list[dict], base_url: str, now: datetime) -> str:

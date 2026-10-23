@@ -107,6 +107,7 @@ for line in gzip.open(feed_p, "rt", encoding="utf-8"):
     if (r.get("facts") or {}).get("reposts", {}).get("count"): doc["reposts"] = r["facts"]["reposts"]
     if (r.get("tags") or {}).get("archetype"): doc["archetype"] = r["tags"]["archetype"]
     if (r.get("tags") or {}).get("skills"): doc["skills"] = r["tags"]["skills"]
+    if (r.get("tags") or {}).get("payTier"): doc["payTier"] = r["tags"]["payTier"]
     if failed:
         g = failed[0]; v = next(x for x in checks if x[0] == g)
         doc["skip"] = {"gate": g, "reason": v[2] + (f' The posting says: "{v[3][:200]}"' if v[3] else ""),
@@ -119,7 +120,7 @@ order = {"remote-global": 0, "remote-india": 1, "south-india": 2}
 def ts(s):
     try: d = datetime.fromisoformat((s or "").replace("Z", "+00:00")); return (d if d.tzinfo else d.replace(tzinfo=timezone.utc)).timestamp()
     except ValueError: return 0
-kept.sort(key=lambda x: (order.get(x[1]["region"], 9), -ts(x[1]["postedAt"])))
+kept.sort(key=lambda x: (order.get(x[1]["region"], 9), 0 if x[1].get("payTier") == "20+" else 1, -ts(x[1]["postedAt"])))
 for sub, items in (("kept", kept[:max_kept]), ("skipped", skipped[:max_skips])):
     os.makedirs(os.path.join(out_p, sub), exist_ok=True)
     for i, d in items: json.dump(d, open(os.path.join(out_p, sub, i[:150] + ".json"), "w"), ensure_ascii=False)
