@@ -33,6 +33,12 @@ RSS = b"""<?xml version="1.0"?><rss version="2.0"><channel>
 </channel></rss>"""
 
 
+def test_funding_headline_prefixes():
+    assert funded.headline("[Update] TravClan Raises $5 Mn In Series A")["company"] == "TravClan"
+    assert funded.headline("Y Combinator-Backed Firstwork Raises $15 Mn")["company"] == "Firstwork"
+    assert funded.headline("Peak XV-Backed Acme Bags INR 40 Cr")["company"] == "Acme"
+
+
 def test_funded(tmp_path):
     items = funded.parse_feed(RSS)
     assert len(items) == 6 and items[0]["link"] == "https://inc42.example/quillo"

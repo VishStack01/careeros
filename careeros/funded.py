@@ -48,6 +48,8 @@ def headline(title: str) -> dict | None:
     if not _AMOUNT.search(rest) and not re.search(r"\b(funding|round|investment)\b", rest, re.I):
         return None
     name = m.group(1).strip(" '\"‘’“”")
+    name = re.sub(r"^\[[^\]]{1,20}\]\s*", "", name)  # "[Update] Acme"
+    name = re.sub(r"^(?:[\w&.]+[\s-]){1,3}(?:backed|funded|led)\s+", "", name, flags=re.I)  # "Y Combinator-Backed Acme"
     for _ in range(3):
         name = _PREFIX.sub("", name).strip()
         name = _DESCRIPTOR.sub("", name).strip()
