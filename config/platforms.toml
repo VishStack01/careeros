@@ -816,6 +816,49 @@ access = "fetch"
 competition = "low"
 notes = "Read-only via search results. The agent never logs into LinkedIn; it drafts the reply for you to send."
 
+# ------------------------------------------------------------ high-pay routes most people miss
+
+[[platform]]
+name = "Hiring challenges with stated CTC"
+url = "search:(site:unstop.com OR site:hackerearth.com) hiring challenge (\"software engineer\" OR SDE OR \"AI engineer\") (CTC OR LPA) 2026"
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "medium"
+every_run = true
+states_pay = true
+notes = "Coding or hiring challenges that lead straight to interviews, skipping the resume screen; most state the CTC (often 15-40 LPA). Record the deadline as applyBy."
+
+[[platform]]
+name = "2026-batch off-campus drives"
+url = "search:\"2026 batch\" OR \"2026 graduates\" off campus (\"software engineer\" OR SDE OR \"AI engineer\") (CTC OR LPA) India apply"
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "high"
+every_run = true
+states_pay = true
+notes = "New-grad programs at product companies, banks and quant firms. Verify on the company's own careers page; ignore paid 'training' or 'placement' offers."
+
+[[platform]]
+name = "X-ray: Ashby and Lever boards stating rupee pay"
+url = "search:(site:jobs.ashbyhq.com OR site:jobs.lever.co) (\"₹\" OR INR OR LPA) (\"software engineer\" OR \"AI engineer\" OR SDE) India"
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "low"
+states_pay = true
+notes = "Startup postings that publish rupee pay, straight from the company's own board."
+
+[[platform]]
+name = "X-ray: quant and trading firms hiring new grads in India"
+url = "search:(\"Tower Research\" OR \"Graviton\" OR \"Quadeye\" OR \"NK Securities\" OR \"AlphaGrep\" OR \"Optiver\" OR \"IMC Trading\" OR \"Squarepoint\" OR \"Hudson River Trading\") (\"software engineer\" OR \"SDE\") (\"new grad\" OR \"2026\" OR graduate) India"
+region = "india"
+kind = "xray"
+access = "fetch"
+competition = "high"
+notes = "The highest fresher pay in India (often 50 LPA to 1 Cr+) and the hardest screens. Several post only on their own sites."
+
 # ------------------------------------------------------------ big boards: email alerts only (no automation)
 
 [[platform]]

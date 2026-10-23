@@ -35,6 +35,7 @@ from .. import evaluation as evaluation_mod
 from .. import followups
 from ..dedupe import canonical_url, company_key
 from . import mailer as mail
+from . import linkedin as li_auth
 from . import repo, security
 from .config import Config
 from .db import Database, now_iso
@@ -347,6 +348,68 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             repo.audit(c, user["id"], "login", ip)
         set_session_cookie(response, token)
         return {"ok": True, "user": repo.public_user(user)}
+
+    # ------------------------------------------------------------ Sign in with LinkedIn (OpenID Connect)
+    LI_STATE = "careeros_li_state"
+
+    def li_redirect_uri() -> str:
+        return f"{cfg.public_url}/api/auth/linkedin/callback"
+
+    @app.get("/api/auth/providers")
+    def auth_providers():
+        return {"linkedin": cfg.linkedin_enabled}
+
+    @app.get("/api/auth/linkedin/start")
+    def linkedin_start():
+        if not cfg.linkedin_enabled:
+            raise err(404, "Sign in with LinkedIn isn't set up on this server.", "not_configured")
+        state = secrets.token_urlsafe(24)
+        resp = RedirectResponse(li_auth.authorize_url(cfg.linkedin_client_id, li_redirect_uri(), state), status_code=303)
+        resp.set_cookie(LI_STATE, state, max_age=600, httponly=True, secure=cfg.secure_cookies, samesite="lax", path="/api/auth/linkedin")
+        return resp
+
+    @app.get("/api/auth/linkedin/callback")
+    def linkedin_callback(request: Request, code: str = "", state: str = "", error: str = ""):
+        def back(msg: str):
+            resp = RedirectResponse(f"/login#error={msg}", status_code=303)
+            resp.delete_cookie(LI_STATE, path="/api/auth/linkedin")
+            return resp
+        if not cfg.linkedin_enabled:
+            raise err(404, "Sign in with LinkedIn isn't set up on this server.", "not_configured")
+        expected = request.cookies.get(LI_STATE, "")
+        if error or not code or not expected or not secrets.compare_digest(expected, state):
+            return back("linkedin_cancelled" if error else "linkedin_state")
+        ip = client_ip(request)
+        with db.tx() as c:
+            limited(c, "linkedin:" + security.ip_key(ip), 30, 3600)
+        try:
+            info = li_auth.userinfo(li_auth.exchange(code, li_redirect_uri(), cfg.linkedin_client_id, cfg.linkedin_client_secret))
+        except Exception:  # noqa: BLE001  a refused or expired code
+            return back("linkedin_failed")
+        email = security.normalize_email(str(info.get("email") or ""))
+        if not security.valid_email(email) or info.get("email_verified") is False:
+            return back("linkedin_no_email")
+        name = str(info.get("name") or "").strip()[:80]
+        with db.tx() as c:
+            user = repo.user_by_email(c, email)
+            if user and user["disabled_at"]:
+                return back("disabled")
+            if not user:
+                if not cfg.signup_allowed(email):
+                    return back("closed")
+                # No password: this account signs in with LinkedIn (or sets one through "Forgot password").
+                uid = repo.create_user(c, email, name, "!linkedin", is_admin=bool(cfg.bootstrap_admin_email) and email == cfg.bootstrap_admin_email)
+                repo.enqueue(c, "match_user", user_id=uid, dedupe_key=f"match:{uid}", max_attempts=3)
+                repo.audit(c, uid, "signup-linkedin", ip)
+            else:
+                uid = user["id"]
+            c.execute("UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?), updated_at = ? WHERE id = ?", (now_iso(), now_iso(), uid))
+            token = repo.create_session(c, uid, cfg.session_ttl_days, ip, request.headers.get("user-agent", ""))
+            repo.audit(c, uid, "login-linkedin", ip)
+        resp = RedirectResponse("/app", status_code=303)
+        resp.delete_cookie(LI_STATE, path="/api/auth/linkedin")
+        set_session_cookie(resp, token)
+        return resp
 
     @app.post("/api/auth/resend", status_code=202, dependencies=[Depends(csrf)])
     def resend(request: Request, body: dict = Body(default={})):

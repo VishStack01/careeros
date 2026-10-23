@@ -45,6 +45,8 @@ class Config:
     trust_proxy: bool = False
     max_docs_per_user: int = 5000
     max_doc_kb: int = 512
+    linkedin_client_id: str = ""  # "Sign in with LinkedIn using OpenID Connect": name, email, photo only
+    linkedin_client_secret: str = ""
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -72,7 +74,13 @@ class Config:
             trust_proxy=e("TRUST_PROXY", "0") in ("1", "true", "yes"),
             max_docs_per_user=_int("MAX_DOCS_PER_USER", 5000),
             max_doc_kb=_int("MAX_DOC_KB", 512),
+            linkedin_client_id=e("LINKEDIN_CLIENT_ID", "").strip(),
+            linkedin_client_secret=e("LINKEDIN_CLIENT_SECRET", "").strip(),
         )
+
+    @property
+    def linkedin_enabled(self) -> bool:
+        return bool(self.linkedin_client_id and self.linkedin_client_secret)
 
     @property
     def secure_cookies(self) -> bool:

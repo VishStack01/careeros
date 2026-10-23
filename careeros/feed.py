@@ -58,7 +58,7 @@ def settings_from_dashboard(doc: dict) -> Settings:
     if locs:
         s.location = LocationPolicy(
             south_india="any" if "south india (any" in locs or "bengaluru" in locs or "hyderabad" in locs else ("remote" if "south india (remote" in locs else "never"),
-            rest_of_india="remote" if "rest of india (remote" in locs or "remote (india)" in locs else ("any" if "rest of india (any" in locs else "never"),
+            rest_of_india="any" if "rest of india (any" in locs else ("remote" if "rest of india (remote" in locs or "remote (india)" in locs else "never"),
             abroad="remote" if "worldwide" in locs or "global" in locs else "never",
         )
     return s
@@ -204,6 +204,8 @@ def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]]
             doc["skills"] = r["tags"]["skills"]
         if (r.get("tags") or {}).get("payTier"):
             doc["payTier"] = r["tags"]["payTier"]
+        if (r.get("facts") or {}).get("payBand"):
+            doc["payBand"] = r["facts"]["payBand"]
         if d.kept:
             kept.append((r["id"], doc))
         else:
@@ -221,7 +223,9 @@ def match(records: list[dict], settings: Settings, known: list[tuple[str, dict]]
             return datetime.fromisoformat(doc["postedAt"].replace("Z", "+00:00")).timestamp() if doc.get("postedAt") else 0
         except ValueError:
             return 0
-    kept.sort(key=lambda x: (order.get(x[1].get("region", ""), 9), 0 if x[1].get("payTier") == "20+" else 1, -posted_ts(x[1])))
+    def top_pay(doc):  # stated 20 LPA+, or public data says freshers get 20 LPA+ at the low end
+        return doc.get("payTier") == "20+" or (not doc.get("payTier") and (doc.get("payBand") or {}).get("low", 0) >= 20)
+    kept.sort(key=lambda x: (order.get(x[1].get("region", ""), 9), 0 if top_pay(x[1]) else 1, -posted_ts(x[1])))
     kept, skipped = kept[:max_kept], skipped[:max_skips]
     out = {"feedRecords": len(records), "alreadyKnown": n_known, "duplicates": dupes, "kept": kept, "skipped": skipped,
            "byRegion": {k: sum(1 for _, d in kept if d.get("region") == k) for k in order}}

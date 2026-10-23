@@ -62,6 +62,7 @@ with the posting archived at the end.
 | `careeros calibrate` | Do roles scored 4.5+ get more replies than 4.0–4.4 ones? If not, the scoring needs a look. |
 | `careeros gaps` | Skills your kept roles keep asking for that your brain can't prove yet. |
 | Warm intros | Upload LinkedIn's own Connections.csv on the Outreach tab (or `careeros warm-intros`). Matches are tiered: works there, very likely, or a similar name to check. It stays in your private dashboard. |
+| Referral finder | Each role's card ranks who to ask: people you know there first, then alumni of your college, engineers on a similar team, engineering managers and recruiters (`careeros referrals`, or the outreach skill with public web search). The card has LinkedIn search links that open in your own signed-in browser, and a connection note under 300 characters drafted from your profile. You send it; CareerOS never signs in to LinkedIn or sends anything there. |
 
 ## Interviews and offers
 
@@ -78,6 +79,19 @@ number you've stated, and the offer.
 - `careeros funded` reads funding news (Inc42, Entrackr, TechCrunch India) and
   lists newly funded companies; nothing is added until you run `--add`. The
   hourly scan also writes `feed/funded.json` for review.
+- **High-pay reach.** Public pay data for freshers (`config/pay/entry-pay.csv`,
+  sourced) lets roles that don't state pay pass your floor as a marked estimate.
+  Workday (NVIDIA, Salesforce, Adobe, PayPal, Qualcomm, Visa, Walmart and more)
+  and Amazon's job site are read directly; quant firms (Hudson River Trading,
+  Jane Street, Optiver, IMC, Squarepoint) through their Greenhouse boards.
+  Companies with their own career sites (Google, Microsoft, Flipkart and others)
+  are marked so they are never matched to a look-alike board, and the agent
+  reads them instead. The agent also searches hiring challenges and 2026-batch
+  off-campus drives that state CTC.
+- **Sign in with LinkedIn** (CareerOS Cloud): set `LINKEDIN_CLIENT_ID` and
+  `LINKEDIN_CLIENT_SECRET` from a LinkedIn app with "Sign in with LinkedIn using
+  OpenID Connect". It shares name, email and photo only; LinkedIn doesn't let
+  apps read connections or send messages, so referrals work from your export.
 - `careeros doctor` checks Python, your config, the brain, Playwright, the
   database and the kill switch, and fails if any private file is tracked by git.
 

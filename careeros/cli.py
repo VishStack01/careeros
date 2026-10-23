@@ -334,6 +334,16 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--out", default="feed/radar-companies.csv")
     sp.set_defaults(fn=cmd_radar)
 
+    sp = sub.add_parser("referrals", help="Who to ask for a referral at a company, and drafted notes you send")
+    sp.add_argument("--company", required=True)
+    sp.add_argument("--title", required=True)
+    sp.add_argument("--url", help="The job posting, quoted in the referral ask")
+    sp.add_argument("--connections", help="LinkedIn's Connections.csv export")
+    sp.add_argument("--people", help="JSON list of public profiles found by web search: {name, headline, url, location, degree}")
+    sp.add_argument("--applicant", help="Your applicant profile JSON (name, college, city, current role)")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_referrals)
+
     sp = sub.add_parser("deep", help="List thousands of company boards from the open ATS inventory for discover to check")
     sp.add_argument("--boards", default="feed/boards.json")
     sp.add_argument("--out", default="feed/deep-companies.csv")
@@ -784,6 +794,27 @@ def cmd_deep(a) -> None:
     st = deep.stats(cache)
     print(f"Deep sweep: {len(rows)} boards in the open inventory, {len(todo)} on the list for discover; "
           f"{st['checked']} checked so far, {st['mapped']} kept for listing developer roles in India or open to it.")
+
+
+def cmd_referrals(a) -> None:
+    from . import connections, referrals
+    rows = connections.parse(Path(a.connections).read_text(encoding="utf-8", errors="replace")) if a.connections else []
+    people = json.loads(Path(a.people).read_text(encoding="utf-8")) if a.people else []
+    appl = json.loads(Path(a.applicant).read_text(encoding="utf-8")) if a.applicant else {}
+    appl = appl.get("data", appl) if isinstance(appl, dict) else {}
+    out = referrals.plan(a.company, a.title, appl, rows, people, a.url or "")
+    if a.json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+        return
+    print(f"Referral plan: {a.title} at {a.company}\n")
+    for i, p in enumerate(out["people"], 1):
+        print(f"{i}. {p['name']} ({p['score']}) {p['headline']}\n   {'; '.join(p['why'])}\n   {p['url']}")
+    if not out["people"]:
+        print("Nobody found yet. Open these searches in your browser (signed in to LinkedIn):")
+    for l in out["searchLinks"]:
+        print(f"  - {l['label']}: {l['url']}")
+    print(f"\nConnection note ({len(out['drafts']['connectionNote'])} characters):\n{out['drafts']['connectionNote']}")
+    print(f"\nReferral ask:\n{out['drafts']['referralAsk']}")
 
 
 def cmd_liveness(a) -> None:

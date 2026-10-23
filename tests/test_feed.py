@@ -193,7 +193,10 @@ def test_accept_rules():
     assert discover.accept(india, {"board_name": "", "locations": ["Remote", "London"]})[0]
     assert discover.accept(india, {"board_name": "Acme", "locations": ["Austin, TX"]}) == (True, "name")
     glob = {"name": "Acme", "category": "remote-first-global"}
-    assert discover.accept(glob, {"board_name": "", "locations": ["Berlin"]})[0]
+    assert discover.accept(glob, {"board_name": "", "locations": ["Remote", "Berlin"]})[0]
+    # A bare slug guess (no board name to compare) with no India or remote roles is somebody else's board.
+    assert discover.accept(glob, {"board_name": "", "locations": ["Berlin"]}) == (False, "no-india-roles")
+    assert discover.accept(glob, {"board_name": "Acme", "locations": ["Berlin"]})[0]
     # Some systems answer for any name with an empty board: never proof.
     assert discover.accept(india, {"board_name": "Acme", "locations": []}) == (False, "empty")
     assert discover.accept(glob, {"board_name": "", "locations": []}) == (False, "empty")

@@ -176,8 +176,14 @@ def gate_pay(job: Job, s: Settings) -> tuple[Check, extract.Salary | None]:
     if not sal and f is None:
         sal = extract.parse_salary(job.description, s.usd_inr, structured=False)
     if not sal:
-        if s.require_stated_pay and s.salary_floor_lpa is not None:
-            return Check("Pay", False, f"Pay not stated; you only want roles that state {s.salary_floor_lpa:g} LPA or more."), None
+        from . import paydata
+        band = (f or {}).get("payBand") if f is not None else paydata.band(job.company)
+        floor = s.salary_floor_lpa
+        if band and (floor is None or band["low"] >= floor):
+            return Check("Pay", True, f"Not stated; public data: {paydata.describe(band)}", band.get("url", "")), None
+        if s.require_stated_pay and floor is not None:
+            why = f" Public data for freshers here: {paydata.describe(band)}." if band else ""
+            return Check("Pay", False, f"Pay not stated; you only want roles that state {floor:g} LPA or more.{why}"), None
         return Check("Pay", True, "Not stated"), None
     if s.salary_floor_lpa is not None and sal.high_lpa < s.salary_floor_lpa:
         return Check("Pay", False, f"Pays {sal.describe()}, below your {s.salary_floor_lpa:g} LPA floor.", sal.quote), sal

@@ -1253,15 +1253,15 @@ const DECISIONS = {
 const FIT = {strong:'Strong fit', good:'Good fit', stretch:'Stretch', weak:'Weak fit', pending:'Not scored yet'};
 const APPLY_LINE = 4.0;
 const DIM_LABEL = {cvMatch:'Match with your experience', northStar:'Fits the roles you want', comp:'Pay', culture:'Company and culture', redFlags:'Red flags (5 = none)'};
-const LOCATIONS = ['South India (any work mode)','Rest of India (remote only)','Remote worldwide (first priority)'];
-const LOC_SHORT = {'South India (any work mode)':'anywhere in south India','Rest of India (remote only)':'remote across India','Remote worldwide (first priority)':'remote worldwide','Bengaluru (onsite/hybrid)':'Bengaluru','Remote (India)':'remote in India','Remote (global)':'remote worldwide'};
+const LOCATIONS = ['South India (any work mode)','Rest of India (remote only)','Rest of India (any work mode)','Remote worldwide (first priority)'];
+const LOC_SHORT = {'South India (any work mode)':'anywhere in south India','Rest of India (remote only)':'remote across India','Rest of India (any work mode)':'anywhere in India','Remote worldwide (first priority)':'remote worldwide','Bengaluru (onsite/hybrid)':'Bengaluru','Remote (India)':'remote in India','Remote (global)':'remote worldwide'};
 const REGION = {'remote-global':[0,'Remote worldwide','pill world'],'remote-india':[1,'Remote, India','pill india'],'south-india':[2,'','']};
 const regionRank = j => (REGION[j.region] || [3])[0];
 const byPriority = (a, b) => regionRank(a) - regionRank(b) || byFresh(a, b);
 const autoMode = () => settings().approvalMode === 'auto-when-clear';
 const EXPERIENCE = [['Fresher',0],['1+ years',1],['2+ years',2],['3+ years',3]];
 const AGES = [[1,'24 hours'],[3,'3 days'],[7,'7 days'],[14,'14 days'],[25,'25 days, if still open'],[30,'30 days, if still open']];
-const DEFAULTS = {targetRoles: [], locations: LOCATIONS.slice(), dailyCap: 8, minFit: 'good', salaryFloorLpa: '', noticeDays: '', dealbreakers: '', approvalMode: 'auto-when-clear', schedule: '', experienceLevels: ['Fresher','1+ years'], maxRequiredYears: 1, maxPostingAgeDays: 25};
+const DEFAULTS = {targetRoles: [], locations: ['South India (any work mode)','Rest of India (remote only)','Remote worldwide (first priority)'], dailyCap: 8, minFit: 'good', salaryFloorLpa: '', noticeDays: '', dealbreakers: '', approvalMode: 'auto-when-clear', schedule: '', experienceLevels: ['Fresher','1+ years'], maxRequiredYears: 1, maxPostingAgeDays: 25};
 
 /* ---------- state ---------- */
 const state = {
@@ -1389,8 +1389,43 @@ function warmList(people){
 
 /* ---------- small renderers ---------- */
 function freshPill(j){ const t = postedText(j.postedAt); if (!t) return ''; const h = age(j); return `<span class="pill${h < 72 ? ' fresh' : ''}">${esc(t)}</span>`; }
-function pay20(j){ if (j.payTier) return j.payTier === '20+'; const c = arr(j.checks).find(x => obj(x).gate === 'Pay'); const n = String(obj(c).value || '').match(/[\d.]+(?=\s*LPA)/g); return !!n && Number(n[n.length - 1]) >= 20; }
-function payPill(j){ return pay20(j) ? '<span class="pill strong" title="The posting states pay of 20 LPA or more">20 LPA+</span>' : ''; }
+function pay20(j){ if (j.payTier) return j.payTier === '20+'; const v = String(obj(arr(j.checks).find(x => obj(x).gate === 'Pay')).value || ''); if (/^Not stated/i.test(v)) return false; const n = v.match(/[\d.]+(?=\s*LPA)/g); return !!n && Number(n[n.length - 1]) >= 20; }
+/* Referral finder: people-search links the user opens in their own signed-in browser, and a drafted note.
+   Mirrors careeros/referrals.py; CareerOS never signs in to LinkedIn or sends anything there. */
+function collegeWords(c){ return String(c || '').toLowerCase().replace(/\b(university|institute|of|technology|college|engineering|the|and|deemed|to|be)\b/g, ' ').match(/[a-z]{3,}/g)?.slice(0, 2) || []; }
+function refLinks(j){
+  const a = applicant(), co = j.company || '', college = collegeWords(a.college).join(' '), city = a.city || '';
+  const role = /\b(ml|machine learning|ai|data)\b/i.test(j.title || '') ? 'machine learning engineer' : 'software engineer';
+  const li = q => 'https://www.linkedin.com/search/results/people/?' + new URLSearchParams(q).toString();
+  const out = [];
+  if (college) out.push([`${college.replace(/\b\w/g, c => c.toUpperCase())} alumni at ${co}`, li({keywords: `"${co}" ${college}`, origin: 'GLOBAL_SEARCH_HEADER'})]);
+  out.push([`Engineers at ${co}${city ? ' in ' + city : ''}`, li({keywords: `"${co}" ${role} ${city}`.trim(), origin: 'GLOBAL_SEARCH_HEADER'})]);
+  out.push([`2nd-degree at ${co}`, li({keywords: `"${co}"`, network: '["S"]', origin: 'FACETED_SEARCH'})]);
+  out.push([`Engineering managers`, li({keywords: `"${co}" engineering manager`, origin: 'GLOBAL_SEARCH_HEADER'})]);
+  out.push([`Recruiters`, li({keywords: `"${co}" technical recruiter India`, origin: 'GLOBAL_SEARCH_HEADER'})]);
+  return out;
+}
+function refNote(j, person){
+  const a = applicant(), me = String(a.fullName || '').split(' ')[0] || 'I', them = String(obj(person).name || '').split(' ')[0] || 'there';
+  const now = [a.currentTitle, a.currentCompany ? 'at ' + a.currentCompany : ''].filter(Boolean).join(' ');
+  const alum = arr(obj(person).why).some(w => /alumni/i.test(w)) && a.college ? `Fellow ${a.college} grad here. ` : '';
+  let n = `Hi ${them}, ${alum}I'm ${me}, ${now ? now + ', ' : ''}applying for the ${j.title} role at ${j.company}. Would you be open to a quick chat about the team, or referring me if I seem a fit? Thanks!`;
+  if (n.length > 300) n = `Hi ${them}, ${alum}I'm ${me}, applying for ${j.title} at ${j.company}. Open to a quick chat or a referral if I fit? Thanks!`;
+  return n.slice(0, 300);
+}
+function referralHtml(j, copy){
+  const people = arr(obj(j.outreach).referrers).slice(0, 5);
+  const list = people.length ? `<div class="rows">${people.map(p => `<div class="todo"><div class="tx"><b>${esc(p.name)}</b><small>${esc(p.headline || '')}${arr(p.why).length ? ' · ' + esc(arr(p.why).join('; ')) : ''}</small></div><div class="ract">${safeUrl(p.url) ? `<a class="btn sm" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">Open profile</a>` : ''}</div></div>`).join('')}</div>` : '';
+  const links = refLinks(j).map(([label, url]) => `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`).join('');
+  return `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Find a referral</b>${list}<div style="display:flex;gap:6px;flex-wrap:wrap">${links}</div><p class="muted" style="font-size:13px">These open LinkedIn's own search in your browser, signed in as you. Alumni and engineers on a similar team answer most often. You send the note; nothing is sent for you.</p>${copy(refNote(j, people[0]), 'Connection note (under 300 characters)')}</div>`;
+}
+function payEst(j){ const b = obj(j.payBand); return !pay20(j) && !j.payTier && b.low ? b : null; }
+function payPill(j){
+  if (pay20(j)) return '<span class="pill strong" title="The posting states pay of 20 LPA or more">20 LPA+</span>';
+  const b = payEst(j); if (!b) return '';
+  const r = b.low === b.high ? `${b.low}` : `${b.low}–${b.high}`;
+  return `<span class="pill" title="Not stated on the posting. Public pay data for freshers at this company: ${esc(r)} LPA (${esc(b.basis || '')}, ${esc(b.source || '')}). An estimate.">~${esc(r)} LPA est.</span>`;
+}
 function regionPill(j){ const r = REGION[j.region]; return r && r[1] ? `<span class="${r[2]}">${esc(r[1])}</span>` : ''; }
 function decBadge(j){
   const d = DECISIONS[j.decision];
@@ -1824,7 +1859,7 @@ function renderSetup(){
     <label class="f full" for="s-roles">Target roles <small>Comma-separated. Leave empty to target every role your verified skills support.</small><input type="text" id="s-roles" value="${esc(arr(s.targetRoles).join(', '))}" placeholder="Filled in from your resume"${ro}></label>
     <label class="f" for="s-fit">Lowest fit to prepare<select id="s-fit"${ro}><option value="strong"${s.minFit === 'strong' ? ' selected' : ''}>Strong fit only</option><option value="good"${s.minFit === 'good' ? ' selected' : ''}>Good fit and above</option><option value="stretch"${s.minFit === 'stretch' ? ' selected' : ''}>Include stretch roles</option></select></label>
     <label class="f" for="s-sal">Salary floor <small>LPA, fixed CTC</small><input type="number" id="s-sal" min="0" step="0.5" value="${esc(s.salaryFloorLpa)}" placeholder="e.g. 4"${ro}></label>
-    <label class="f" for="s-stated" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="s-stated" style="width:auto;margin-top:4px"${s.requireStatedPay ? ' checked' : ''}${ro}><span>Only roles that state their pay <small>Skip roles that don't publish a salary. Most Indian postings don't, so this shows far fewer roles; skipped ones stay in the skip log.</small></span></label>
+    <label class="f" for="s-stated" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="s-stated" style="width:auto;margin-top:4px"${s.requireStatedPay ? ' checked' : ''}${ro}><span>Only roles with pay evidence <small>Keep a role only when its posting states pay at or above your floor, or public pay data for freshers at that company does (marked as an estimate). Other roles stay in the skip log.</small></span></label>
     <label class="f full" for="s-deal">Dealbreakers <small>Anything that should make the search skip a role</small><textarea id="s-deal" rows="3" placeholder="e.g. bond clauses, unpaid probation, night shifts"${ro}>${esc(s.dealbreakers)}</textarea></label>
     <div class="full"><button class="btn solid" type="submit"${ro}>Save preferences</button></div>
   </form>`;
@@ -1900,7 +1935,8 @@ function renderDrawer(){
     + (arr(j.screening).length ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Screening answers</b>${arr(j.screening).map(x => copy(x.a, x.q)).join('')}</div>` : '');
   const liUrl = safeUrl(li.url) || safeUrl(c.url);
   const warm = warmFor(j.company, 4);
-  const outreach = (warm.length ? `<div style="display:grid;gap:6px"><b style="font-size:14.5px">People you know here</b><div class="rows">${warmList(warm)}</div><p class="muted" style="font-size:13px">Ask one of them for a referral before applying. Check anyone marked "similar name" first.</p></div>` : '') + (c.name || c.role ? `<div class="contact"><b>${esc(c.name || 'Hiring contact')}</b>${c.role ? `<span class="muted">${esc(c.role)}</span>` : ''}${safeUrl(c.url) ? `<a href="${esc(safeUrl(c.url))}" target="_blank" rel="noopener">Profile</a>` : ''}</div>` : '')
+  const outreach = (warm.length ? `<div style="display:grid;gap:6px"><b style="font-size:14.5px">People you know here</b><div class="rows">${warmList(warm)}</div><p class="muted" style="font-size:13px">Ask one of them for a referral before applying. Check anyone marked "similar name" first.</p></div>` : '')
+    + (j.stage !== 'skipped' ? referralHtml(j, copy) : '') + (c.name || c.role ? `<div class="contact"><b>${esc(c.name || 'Hiring contact')}</b>${c.role ? `<span class="muted">${esc(c.role)}</span>` : ''}${safeUrl(c.url) ? `<a href="${esc(safeUrl(c.url))}" target="_blank" rel="noopener">Profile</a>` : ''}</div>` : '')
     + (em.body ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">Email</b><span class="pill${em.status === 'sent' ? ' strong' : ''}">${em.status === 'sent' ? 'Sent' : 'In your Gmail drafts'}</span>${em.to ? `<span class="muted" style="font-size:13px">to ${esc(em.to)}</span>` : ''}</div>${em.subject ? `<span class="muted" style="font-size:14px">Subject: ${esc(em.subject)}</span>` : ''}${copy(em.body)}${em.status !== 'sent' ? `<div><button class="btn sm" data-act="email-sent" data-id="${esc(j.id)}"${ro}>Mark email sent</button></div>` : ''}</div>` : '')
     + (li.note ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">LinkedIn note</b><span class="pill${li.status === 'sent' ? ' strong' : ''}">${li.status === 'sent' ? 'Sent' : 'You send this'}</span></div>${copy(li.note)}${li.status !== 'sent' ? `<div class="ract" style="justify-content:flex-start">${liUrl ? `<a class="btn sm" href="${esc(liUrl)}" target="_blank" rel="noopener">Open profile</a>` : ''}<button class="btn sm" data-act="li-sent" data-id="${esc(j.id)}"${ro}>Mark note sent</button></div>` : ''}</div>` : '')
     + (o.recruiterNote ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Recruiter note</b>${copy(o.recruiterNote)}</div>` : '');

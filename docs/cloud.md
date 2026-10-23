@@ -118,6 +118,10 @@ in, from the dashboard's *Brain & setup → Your computer* panel (`/api/prompts/
    before each deploy.
 3. Set `PUBLIC_URL` (your `https://` address), `SMTP_URL`, `MAIL_FROM` and
    `BOOTSTRAP_ADMIN_EMAIL`, then redeploy. Sign up with the admin email first.
+   Optional: `LINKEDIN_CLIENT_ID` and `LINKEDIN_CLIENT_SECRET` add "Continue with
+   LinkedIn" to the sign-in page (create an app at developer.linkedin.com, add the
+   "Sign in with LinkedIn using OpenID Connect" product, and register
+   `https://your.domain/api/auth/linkedin/callback` as the redirect URL).
 
 A web service with a disk runs as one instance. To run more, move uploads to object
 storage first (replace `LocalStorage` in `careeros/cloud/storage.py`).

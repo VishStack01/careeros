@@ -26,7 +26,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import extract, geo, signals, tags
+from . import extract, geo, paydata, signals, tags
 from .dedupe import canonical_url, fingerprint, job_id
 from .models import Job, iso
 from .sources import SCOUTS, FetchError, greenhouse, smartrecruiters
@@ -90,6 +90,9 @@ def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
     f = extract.facts(job.description, str(job.raw.get("experience_header", "")), job.location, job.salary_text)
     f["senior"] = extract.title_seniority(job.title) == "senior"
     f["loc"], f["locQuote"] = loc_class(job, f)
+    band = paydata.band(job.company)
+    if band:
+        f["payBand"] = band  # public entry-level pay for this company; an estimate, used only when the posting states none
     summary = re.sub(r"\s+", " ", job.description or "").strip()[:1500]
     text = re.sub(r"\n{3,}", "\n\n", (job.description or "").strip())[:20000]
     where = geo.classify(job.location)
@@ -200,7 +203,7 @@ def _save_pay_cache(path: Path, cache: dict) -> None:
 
 
 def run(boards_path: str | Path, out_dir: str | Path, workers: int = 16, detail_cap: int = 400,
-        aggregators: bool = True, log=print, pay_cap: int = 600) -> dict:
+        aggregators: bool = True, log=print, pay_cap: int = 200) -> dict:
     boards = json.loads(Path(boards_path).read_text())
     companies = boards.get("companies", {})
     mapped = {n: e for n, e in companies.items() if e.get("status") == "mapped"}

@@ -123,9 +123,12 @@ def decide(r):
             "no-sponsorship": "local work authorization (no visa sponsorship)"}.get(wk, "")
     c.append(("Work authorization", not blk, f"Requires {what}." if blk else "No visa sponsorship, which remote work from India doesn't need." if wk == "no-sponsorship"
               else f"Needs authorization to work in {wa.get('country')}." if wk else "No restriction stated", wa.get("quote", "")))
-    hi = f.get("salaryHigh")
-    c.append(("Pay", not (floor and hi is not None and hi < floor) and not (stated and hi is None),
-              (f"Pay not stated; you only want roles that state {floor:g} LPA or more." if stated else "Not stated") if hi is None else f"{f.get('salaryLow', hi):g}–{hi:g} LPA", f.get("salaryQuote") or ""))
+    hi, pb = f.get("salaryHigh"), f.get("payBand")
+    pbd = (f"{pb['low']:g}" if pb["low"] == pb["high"] else f"{pb['low']:g}–{pb['high']:g}") + f" LPA for freshers ({pb['basis']}, {pb['source']})" if pb else ""
+    pbok = bool(pb) and (floor is None or pb["low"] >= floor)
+    c.append(("Pay", not (floor and hi is not None and hi < floor) and not (stated and hi is None and not pbok),
+              (f"Not stated; public data: {pbd}" if pbok else (f"Pay not stated; you only want roles that state {floor:g} LPA or more." + (f" Public data for freshers here: {pbd}." if pb else "")) if stated else "Not stated")
+              if hi is None else f"{f.get('salaryLow', hi):g}–{hi:g} LPA", (pb.get("url", "") if pbok else "") if hi is None else f.get("salaryQuote") or ""))
     m = next((re.search(re.escape(w), r.get("summary") or "", re.I) for w in deal if re.search(re.escape(w), r.get("summary") or "", re.I)), None)
     c.append(("Dealbreaker", m is None, "None found" if m is None else f"Mentions '{m.group(0)}'.", ""))
     return c, region if lok else "", age
@@ -155,6 +158,7 @@ for line in gzip.open(feed_p, "rt", encoding="utf-8"):
     if (r.get("tags") or {}).get("archetype"): doc["archetype"] = r["tags"]["archetype"]
     if (r.get("tags") or {}).get("skills"): doc["skills"] = r["tags"]["skills"]
     if (r.get("tags") or {}).get("payTier"): doc["payTier"] = r["tags"]["payTier"]
+    if (r.get("facts") or {}).get("payBand"): doc["payBand"] = r["facts"]["payBand"]
     if failed:
         g = failed[0]; v = next(x for x in checks if x[0] == g)
         doc["skip"] = {"gate": g, "reason": v[2] + (f' The posting says: "{v[3][:200]}"' if v[3] else ""),
@@ -168,7 +172,8 @@ order = {"remote-global": 0, "remote-india": 1, "south-india": 2}
 def ts(s):
     try: d = datetime.fromisoformat((s or "").replace("Z", "+00:00")); return (d if d.tzinfo else d.replace(tzinfo=timezone.utc)).timestamp()
     except ValueError: return 0
-kept.sort(key=lambda x: (order.get(x[1]["region"], 9), 0 if x[1].get("payTier") == "20+" else 1, -ts(x[1]["postedAt"])))
+top = lambda d: d.get("payTier") == "20+" or (not d.get("payTier") and (d.get("payBand") or {}).get("low", 0) >= 20)
+kept.sort(key=lambda x: (order.get(x[1]["region"], 9), 0 if top(x[1]) else 1, -ts(x[1]["postedAt"])))
 for sub, items in (("kept", kept[:max_kept]), ("skipped", skipped[:max_skips])):
     os.makedirs(os.path.join(out_p, sub), exist_ok=True)
     for i, d in items: json.dump(d, open(os.path.join(out_p, sub, i[:150] + ".json"), "w"), ensure_ascii=False)

@@ -83,3 +83,11 @@ def get_json(url: str, timeout: float = 20.0, retries: int = 2, min_interval: fl
 
 def get_text(url: str, timeout: float = 20.0, retries: int = 2, min_interval: float | None = None) -> str:
     return get_bytes(url, timeout, retries, min_interval, accept="*/*").decode("utf-8", "replace")
+
+
+def post_json(url: str, body: dict, timeout: float = 20.0, retries: int = 2, min_interval: float | None = None):
+    raw = get_bytes(url, timeout, retries, min_interval, data=json.dumps(body).encode("utf-8"))
+    try:
+        return json.loads(raw.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise FetchError(f"{url}: not JSON ({e})")

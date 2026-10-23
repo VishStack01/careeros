@@ -75,12 +75,12 @@ jobs:
 
       - name: Discover job boards
         # New companies, boards that errored last scan, and unmapped companies
-        # every 14 days (swept boards every 21). At most 800 per run, curated and
-        # radar companies first, so the first deep pass takes about a day and
-        # stays gentle on each hiring system.
+        # every 14 days (swept boards every 21). At most 800 per run and 18 minutes,
+        # curated and radar companies first, so the first deep pass takes a day or
+        # two and stays gentle on each hiring system.
         run: |
           set -o pipefail
-          careeros discover --companies config/companies/companies.csv --extra feed/radar-companies.csv --extra feed/deep-companies.csv --cache feed/boards.json --refresh-days 14 --limit 800 --max-minutes 25 2>&1 | tee feed/discover.log
+          careeros discover --companies config/companies/companies.csv --extra feed/radar-companies.csv --extra feed/deep-companies.csv --cache feed/boards.json --refresh-days 14 --limit 800 --max-minutes 18 2>&1 | tee feed/discover.log
 
       - name: Scan boards
         run: |

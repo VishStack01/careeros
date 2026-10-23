@@ -72,6 +72,10 @@ def board_from_url(url: str) -> tuple[str, str] | None:
         return "smartrecruiters", parts[0]
     if host == "apply.workable.com" and parts and parts[0] not in ("j", "api"):
         return "workable", parts[0].lower()
+    if host.endswith(".myworkdayjobs.com"):
+        from .workday import token_from_url
+        tok = token_from_url(url.strip())
+        return ("workday", tok) if tok else None
     m = re.match(r"^([a-z0-9-]+)\.(recruitee\.com|breezy\.hr|jobs\.personio\.(?:de|com))$", host)
     if m and m.group(1) not in ("www", "app", "api"):
         kind = {"recruitee.com": "recruitee", "breezy.hr": "breezy"}.get(m.group(2), "personio")

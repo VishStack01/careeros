@@ -66,5 +66,5 @@ def pay_text(ranges: list[dict], india: bool) -> str:
 
 def pay(token: str, job_id: str | int, india: bool) -> str:
     """The posted pay range for one job ("" when the company publishes none)."""
-    data = get_json(PAY_API.format(token=token, job_id=job_id), timeout=15, retries=1)
+    data = get_json(PAY_API.format(token=token, job_id=job_id), timeout=15, retries=1, min_interval=0.5)
     return pay_text(data.get("pay_input_ranges") or [], india)

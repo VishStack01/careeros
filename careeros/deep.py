@@ -4,8 +4,8 @@
 
 Most job seekers only see what reaches LinkedIn, Naukri and Indeed. Thousands
 of startups post only on their own Greenhouse, Lever, Ashby, Workable,
-SmartRecruiters or Recruitee board. The open-source ats-scrapers project
-(MIT, github.com/kalil0321/ats-scrapers) keeps an inventory of about 20,000
+SmartRecruiters or Recruitee board, and most large employers on Workday. The open-source ats-scrapers project
+(MIT, github.com/kalil0321/ats-scrapers) keeps an inventory of about 24,000
 such boards. This command downloads that inventory, drops the boards CareerOS
 already knows, and writes the rest as a company list for `careeros discover`.
 
@@ -29,15 +29,21 @@ from .sources import http
 
 INVENTORY = "https://raw.githubusercontent.com/kalil0321/ats-scrapers/main/ats-companies/{ats}.csv"
 # Startups that publish pay most often first: Ashby and Lever carry structured pay fields.
-ATS = ["ashby", "lever", "greenhouse", "workable", "smartrecruiters", "recruitee"]
+ATS = ["ashby", "lever", "greenhouse", "workday", "workable", "smartrecruiters", "recruitee"]
 FIELDS = ["name", "category", "city", "website", "slugs", "ats", "token", "source"]
 
 
 def parse(ats: str, text: str) -> list[dict]:
+    from .sources.workday import token_from_url
     rows = []
     for r in csv.DictReader(io.StringIO(text)):
         name, slug = (r.get("name") or "").strip(), (r.get("slug") or "").strip()
-        if name and slug and len(slug) <= 80 and "/" not in slug:
+        if ats == "workday":  # the token needs the wdN host from the URL
+            slug = token_from_url(r.get("url") or "") or ""
+            ok = bool(slug)
+        else:
+            ok = bool(slug) and "/" not in slug
+        if name and ok and len(slug) <= 120:
             rows.append({"name": name, "ats": ats, "token": slug})
     return rows
 

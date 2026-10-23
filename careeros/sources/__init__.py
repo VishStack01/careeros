@@ -9,7 +9,7 @@ agent skill, not by this package.
 
 from __future__ import annotations
 
-from . import ashby, breezy, greenhouse, lever, personio, recruitee, smartrecruiters, workable
+from . import amazon, ashby, breezy, greenhouse, lever, personio, recruitee, smartrecruiters, workable, workday
 from .http import FetchError
 
 SCOUTS = {
@@ -21,6 +21,8 @@ SCOUTS = {
     "recruitee": recruitee.fetch,
     "breezy": breezy.fetch,
     "personio": personio.fetch,
+    "workday": workday.fetch,
+    "amazon": amazon.fetch,
 }
 
 __all__ = ["SCOUTS", "FetchError"]

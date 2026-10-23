@@ -1,0 +1,17 @@
+# Public pay data for freshers
+
+`entry-pay.csv` lists what companies are publicly reported to pay software
+engineers at entry level in India, so a role that doesn't state its pay can
+still be judged against your pay floor. It is an estimate, and the dashboard
+says so: the posting's own figure always wins when there is one.
+
+A role passes your floor on this data only when the **low** end of the range
+meets it. Campus CTC figures (mostly from top-college placements) run higher
+than off-campus offers, which is why the low end is used.
+
+Sources (`sources` column):
+
+- `250cl`: [250CompanyList](https://github.com/KushalVijay/250CompanyList), companies paying 15 LPA+ for tech roles in India, campus CTC, updated Aug 2025.
+- `jobrise`: [25 Highest Paying Companies in India for Freshers in 2026](https://jobrise.io/en/blog/top-paying-companies-india-2026/), total compensation, early 2026.
+
+Add a row when you find better data; keep the source.

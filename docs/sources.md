@@ -5,7 +5,8 @@
 | Source | How | Runs |
 |---|---|---|
 | ~1,400 company career pages (curated list, MoreThanFAANGM, YC India and remote companies) | Each company's own Greenhouse, Lever, Ashby, SmartRecruiters, Recruitee, Breezy, Personio or Workable board, through its public API | Hourly scan on GitHub Actions |
-| **Deep sweep** (new): about 20,000 company boards on Ashby, Lever, Greenhouse, Workable, SmartRecruiters and Recruitee, from the open [ats-scrapers](https://github.com/kalil0321/ats-scrapers) inventory (MIT) | `careeros deep` lists the boards CareerOS doesn't know yet; `discover` checks about 800 an hour and keeps a board only when it lists a developer role in India or open to India (a bare "Remote" doesn't count). The rest are checked again after three weeks | List refreshed daily, checked hourly |
+| **Deep sweep** (new): about 20,000 company boards on Ashby, Lever, Greenhouse, Workable, SmartRecruiters and Recruitee, from the open [ats-scrapers](https://github.com/kalil0321/ats-scrapers) inventory (MIT) | `careeros deep` lists the boards CareerOS doesn't know yet; `discover` checks up to 800 an hour and keeps a board only when it lists a developer role in India or open to India (a bare "Remote" doesn't count). The rest are checked again after three weeks | List refreshed daily, checked hourly |
+| **High payers' own sites**: Workday (NVIDIA, Salesforce, Adobe, PayPal, Qualcomm, Visa, Walmart Global Tech, Intel, Cisco, Mastercard, Sprinklr and more) and amazon.jobs | Their public job APIs, narrowed to India; Workday through each site's own country filter | Hourly scan |
 | **Hiring radar**: companies hiring on Indeed India and Naukri | [JobSpy](https://github.com/speedyapply/JobSpy) (MIT) searches the boards; CareerOS keeps only the employer's own board link or the company name, adds that board to the scan, and reads the roles there | Every third hourly scan |
 | 9 remote boards with public feeds: Remote OK, Remotive, Himalayas, Jobicy, Working Nomads, We Work Remotely, Arbeitnow, HN jobs, HN Who is hiring | Their published JSON or RSS, within each board's polling limits | Hourly scan |
 | 96 job platforms without an open feed (Wellfound, Cutshort, Instahyre, Hirist, Uplers, VC portfolio boards and more) | The search agent visits a rotating set each run, public pages only | Every 3 hours |
@@ -22,7 +23,7 @@ Pay comes from the posting itself, never from a guess:
   range when the company sets one; the scan reads both.
 - **Greenhouse** keeps pay ranges off the job list and serves them per job
   (`pay_transparency=true`). The scan asks once for each developer role in
-  India or remote that doesn't state pay in its text (up to 600 new lookups an
+  India or remote that doesn't state pay in its text (up to 200 new lookups an
   hour) and remembers the answer. Rupee ranges always count; a dollar range
   counts only for a remote role, since it usually describes US hiring.
 - Otherwise the posting text is read for a stated salary or CTC.
@@ -32,7 +33,14 @@ range is 20 LPA or more (dollar pay is converted at ₹88 per $). The board can
 filter by it and sort by the highest stated pay, and the search puts these roles
 first within each region.
 
-**Only roles that state their pay** (Preferences) keeps a role only when its
+**Public pay data for freshers.** Most well-paying employers never print a
+salary. `config/pay/entry-pay.csv` lists what about 45 of them are publicly
+reported to pay at entry level in India (quant firms, big tech, top product
+companies), with sources. A role that doesn't state pay passes your floor on
+this data only when the **low** end of the range meets it, and the dashboard
+marks it "est.". The posting's own figure always wins.
+
+**Only roles with pay evidence** (Preferences) keeps a role only when its
 posting states pay at or above your floor. Most Indian postings don't state pay,
 so this shows far fewer roles; the rest stay in the skip log, where *Prepare
 anyway* brings one back. With it on, the search agent visits the platforms whose
@@ -57,4 +65,9 @@ Rocketship, Internshala and others).
 | [job-board-aggregator](https://github.com/Feashliaa/job-board-aggregator) | 1M+ roles from ~95,000 company boards found through Common Crawl | **No.** Its company lists are CC BY-NC, which doesn't fit an MIT project. The ats-scrapers inventory covers the same boards that matter here. |
 | [LastRound AI ATS directory](https://datahub.io/lastroundai-hiring-data/lastroundai-hiring-data) (CC BY 4.0) | ~9,900 companies mapped to their ATS board, plus pay-transparency statistics | **Not yet.** Largely overlaps the ats-scrapers inventory; its statistics confirm that rupee pay is rarely published. |
 | [job-radar](https://github.com/ChaitanyaKhanna14/job-radar) | Daily fresher roles in India from ~80 companies that pay 8 LPA+ | **No code used** (no license). It was used only as a check on coverage, which is how the 23 missing employers above were found. |
+| [Autofill-Jobs](https://github.com/andrewmillercode/Autofill-Jobs) (MIT) | Browser extension that fills Greenhouse, Lever and Workday forms | **Not needed.** CareerOS fills forms itself in the Claude desktop app's browser, from your profile, and it's unmaintained. Fine to use alongside for manual applications. |
+| [Resume-Matcher](https://github.com/srbhr/Resume-Matcher), [resume-lm](https://github.com/olyaiy/resume-lm) | Resume tailoring and keyword match | **Covered** by the `tailor` skill, `careeros keywords` and the claims checker, which refuses invented claims. |
+| [250CompanyList](https://github.com/KushalVijay/250CompanyList) | 250 companies paying 15 LPA+ for tech roles in India, with campus CTC | **Used as a pay source** in `config/pay/entry-pay.csv` (cited per row). |
+| levels.fyi leaderboards | Highest-paying companies by level and country | **Read by the agent** (Levels.fyi jobs in the platform list); its data isn't redistributed. |
+| LinkedIn connections API | Would list a member's connections | **Not available.** LinkedIn restricts it to approved partners; sign-in apps get name, email and photo only. Referrals use your own Connections.csv export and searches you open yourself. |
 | Adzuna API | Job search with salary filters, India included | **No, for now.** Its terms don't allow redistributing results without Adzuna's written consent, and the CareerOS feed is public. It could run privately on your own computer later. |

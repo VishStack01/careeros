@@ -34,7 +34,7 @@ def make_feed(path: Path, n: int = 400, seed: int = 7) -> None:
         for i in range(n):
             loc, mode = rnd.choice(PLACES)
             text = rnd.choice(TEXTS)
-            job = Job(company=f"Co{i % 97}", title=rnd.choice(TITLES), url=f"https://jobs.example.com/{i}", source=rnd.choice(["Greenhouse", "Remotive"]),
+            job = Job(company=["Tower Research Capital", "JPMorgan Chase", "Razorpay"][i % 3] if i % 7 == 0 else f"Co{i % 97}", title=rnd.choice(TITLES), url=f"https://jobs.example.com/{i}", source=rnd.choice(["Greenhouse", "Remotive"]),
                       location=loc, work_mode=extract.work_mode(structured=mode, location=loc, text=text), description=text,
                       posted_at=iso(now - timedelta(days=rnd.choice([0.5, 3, 12, 24, 30, 75]))), salary_text=rnd.choice(PAY))
             rec = scan.to_feed(job, {"category": ""}, via=rnd.choice(["careers", "board"]))

@@ -104,6 +104,23 @@ def probe(ats: str, slug: str) -> dict | None:
                 return None
             return {"board_name": "", "locations": [((j.get("location") or {}).get("name") or "") + (" remote" if (j.get("location") or {}).get("is_remote") else "") for j in data],
                     "titles": [j.get("name", "") for j in data]}
+        if ats == "workday":
+            from .sources import workday
+            first = http.post_json(workday.api(slug) + "/jobs", {"appliedFacets": {}, "limit": 20, "offset": 0, "searchText": ""},
+                                   timeout=10, retries=1, min_interval=PROBE_INTERVAL)
+            if "jobPostings" not in first:
+                return None
+            hit = workday.india_facet(first.get("facets") or [])
+            page = http.post_json(workday.api(slug) + "/jobs", {"appliedFacets": {hit[0]: [hit[1]]} if hit else {}, "limit": 20, "offset": 0,
+                                  "searchText": "" if hit else "India"}, timeout=10, retries=1, min_interval=PROBE_INTERVAL)
+            posts = page.get("jobPostings") or []
+            return {"board_name": "", "locations": [(j.get("locationsText") or "") + (" India" if hit else "") for j in posts],
+                    "titles": [j.get("title", "") for j in posts]}
+        if ats == "amazon":
+            data = _get(f"https://www.amazon.jobs/en/search.json?result_limit=20&normalized_country_code[]={slug or 'IND'}")
+            jobs = data.get("jobs") or []
+            return {"board_name": "Amazon", "locations": [j.get("normalized_location") or j.get("location") or "" for j in jobs],
+                    "titles": [j.get("title", "") for j in jobs]}
         if ats == "personio":
             text = http.get_text(f"https://{slug}.jobs.personio.de/xml", timeout=10, retries=1, min_interval=PROBE_INTERVAL)
             if "<workzag-jobs" not in text:
@@ -148,6 +165,9 @@ def accept(company: dict, found: dict) -> tuple[bool, str]:
     nothing. Those companies are re-checked after a few days instead."""
     if not found.get("locations"):
         return False, "empty"
+    if found.get("explicit"):
+        # Our own list names this exact board (big employers on Workday or their own site).
+        return (True, "listed") if any(_india_or_remote(l) for l in found.get("locations", [])) else (False, "no-india-roles")
     if company.get("category") == "deep":
         # The inventory gives the exact board, so the board's own name may be a brand name.
         n = deep_fit(found)
@@ -159,7 +179,9 @@ def accept(company: dict, found: dict) -> tuple[bool, str]:
     else:
         conf = "slug"
     locs = found.get("locations", [])
-    if company.get("category") in GLOBAL_CATEGORIES:
+    if company.get("category") in GLOBAL_CATEGORIES and (conf == "name" or any(_india_or_remote(l) for l in locs)):
+        # A slug guess without a board name to compare must at least list roles in India or remote;
+        # "google" on Recruitee or "linkedin" on Lever are other companies' (or test) boards.
         return True, conf
     if any(_india_or_remote(l) for l in locs):
         return True, conf + "+india"
@@ -172,8 +194,12 @@ def discover_one(company: dict) -> dict | None:
     now = iso(datetime.now(timezone.utc))
     tried = 0
     pairs: list[tuple[str, str]] = []
-    if company.get("ats") and company.get("token"):
-        pairs.append((company["ats"], company["token"]))
+    if company.get("ats") == "custom":
+        # Own career site (Google, Microsoft, Flipkart...): the agent reads it; never guess slugs.
+        return {"status": "unmapped", "checkedAt": now, "probes": 0, "custom": True}
+    explicit = (company.get("ats"), company.get("token")) if company.get("ats") and company.get("token") else None
+    if explicit:
+        pairs.append(explicit)
     slugs = [s for s in company.get("slugs", []) if s][:4]
     for ats in ATS_ORDER:
         for slug in slugs[: SLUGS_PER_ATS.get(ats, len(slugs))]:
@@ -186,6 +212,8 @@ def discover_one(company: dict) -> dict | None:
         found = probe(ats, slug)
         if not found:
             continue
+        if (ats, slug) == explicit and company.get("category") != "deep":
+            found = dict(found, explicit=True)
         ok, conf = accept(company, found)
         if ok:
             return {"status": "mapped", "ats": ats, "token": slug, "confidence": conf,
@@ -227,6 +255,10 @@ def run(companies_csv: str | Path, cache_path: str | Path, refresh_days: int = 1
         e = known.get(c["name"])
         if not e:
             return True
+        if c.get("ats") == "custom":
+            return e.get("status") == "mapped" or not e.get("custom")  # drop an old slug guess
+        if c.get("ats") and c.get("token") and e.get("status") == "mapped" and (e.get("ats"), str(e.get("token"))) != (c["ats"], c["token"]):
+            return True  # the list now names a different board
         if e.get("status") == "mapped":
             # Re-check boards that errored, and boards accepted while empty by older versions.
             return bool(e.get("stale")) or str(e.get("confidence", "")).endswith("-empty")

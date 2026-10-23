@@ -168,7 +168,7 @@ Icertis,saas,Pune,,icertis,,,curated
 HighRadius,saas,Hyderabad,,highradius,,,curated
 Druva,saas,Pune,,druva,,,curated
 Innovaccer,saas,Noida,,innovaccer,,,curated
-Sprinklr,saas,Gurugram,,sprinklr,,,curated
+Sprinklr,saas,Gurugram,,,workday,sprinklr/wd1/careers,curated
 Spotdraft,saas,Bengaluru,,spotdraft,,,curated
 Leegality,saas,Gurugram,,leegality,,,curated
 Recruit CRM,saas,Remote,,recruitcrm recruit-crm,,,curated
@@ -216,7 +216,7 @@ Wizikey,saas,Gurugram,,wizikey,,,curated
 Clootrack,saas,Bengaluru,,clootrack,,,curated
 Uolo,saas,Gurugram,,uolo,,,curated
 Zoko,saas,Bengaluru,,zoko,,,curated
-Razorpay,fintech,Bengaluru,,razorpay,,,curated
+Razorpay,fintech,Bengaluru,,,greenhouse,razorpaysoftwareprivatelimited,curated
 Cashfree Payments,fintech,Bengaluru,,cashfreepayments cashfree-payments cashfree,,,curated
 PayU India,fintech,Gurugram,,payuindia payu-india payu,,,curated
 Pine Labs,fintech,Noida,,pinelabs pine-labs,,,curated
@@ -233,11 +233,11 @@ Smallcase,fintech,Bengaluru,,smallcase,,,curated
 INDmoney,fintech,Gurugram,,indmoney,,,curated
 Upstox,fintech,Mumbai,,upstox,,,curated
 Groww,fintech,Bengaluru,,groww,,,curated
-Zerodha,fintech,Bengaluru,,zerodha,,,curated
+Zerodha,fintech,Bengaluru,,,custom,,curated
 Dhan,fintech,Mumbai,,dhan raisefinancial,,,curated
 Angel One,fintech,Mumbai,,angelone angel-one,,,curated
 Paytm,fintech,Noida,,paytm,,,curated
-PhonePe,fintech,Bengaluru,,phonepe,,,curated
+PhonePe,fintech,Bengaluru,,,greenhouse,phonepe,curated
 MobiKwik,fintech,Gurugram,,mobikwik,,,curated
 CRED,fintech,Bengaluru,,cred dreamplug,,,curated
 Khatabook,fintech,Bengaluru,,khatabook,,,curated
@@ -295,11 +295,11 @@ Ezetap,fintech,Bengaluru,,ezetap,,,curated
 Innoviti,fintech,Bengaluru,,innoviti,,,curated
 Mswipe,fintech,Mumbai,,mswipe,,,curated
 Spice Money,fintech,Delhi,,spicemoney spice-money,,,curated
-Flipkart,consumer,Bengaluru,,flipkart,,,curated
+Flipkart,consumer,Bengaluru,,,custom,,curated
 Myntra,consumer,Bengaluru,,myntra,,,curated
 Meesho,consumer,Bengaluru,,meesho,,,curated
 Swiggy,consumer,Bengaluru,,swiggy bundltechnologies,,,curated
-Zomato,consumer,Gurugram,,zomato eternal,,,curated
+Zomato,consumer,Gurugram,,,custom,,curated
 Blinkit,consumer,Gurugram,,blinkit,,,curated
 Zepto,consumer,Mumbai,,zepto zeptonow,,,curated
 Dunzo,consumer,Bengaluru,,dunzo,,,curated
@@ -336,7 +336,7 @@ Cult.fit,consumer,Bengaluru,,cultfit cult-fit curefit,,,curated
 Pristyn Care,consumer,Gurugram,,pristyncare pristyn-care,,,curated
 MediBuddy,consumer,Bengaluru,,medibuddy,,,curated
 Practo,consumer,Bengaluru,,practo,,,curated
-ShareChat,consumer,Bengaluru,,sharechat mohallatech,,,curated
+ShareChat,consumer,Bengaluru,,,custom,,curated
 VerSe Innovation,consumer,Bengaluru,,verseinnovation verse-innovation dailyhunt,,,curated
 Glance,consumer,Bengaluru,,glance glanceinmobi,,,curated
 InMobi,consumer,Bengaluru,,inmobi,,,curated
@@ -496,37 +496,37 @@ Stellapps,mobility-industrial-climate-space,Bengaluru,,stellapps,,,curated
 Blue Energy Motors,mobility-industrial-climate-space,Pune,,blueenergymotors blue-energy-motors,,,curated
 Zeno Motors,mobility-industrial-climate-space,Bengaluru,,zenomotors zeno-motors,,,curated
 Altor,mobility-industrial-climate-space,Bengaluru,,altor,,,curated
-Google,global-india-engineering,Bengaluru,,google,,,curated
-Microsoft,global-india-engineering,Hyderabad,,microsoft,,,curated
-Amazon,global-india-engineering,Bengaluru,,amazon,,,curated
-Apple,global-india-engineering,Hyderabad,,apple,,,curated
-Meta,global-india-engineering,Bengaluru,,meta,,,curated
-Adobe,global-india-engineering,Noida,,adobe,,,curated
-Salesforce,global-india-engineering,Hyderabad,,salesforce,,,curated
+Google,global-india-engineering,Bengaluru,,,custom,,curated
+Microsoft,global-india-engineering,Hyderabad,,,custom,,curated
+Amazon,global-india-engineering,Bengaluru,,,amazon,IND,curated
+Apple,global-india-engineering,Hyderabad,,,custom,,curated
+Meta,global-india-engineering,Bengaluru,,,custom,,curated
+Adobe,global-india-engineering,Noida,,,workday,adobe/wd5/external_experienced,curated
+Salesforce,global-india-engineering,Hyderabad,,,workday,salesforce/wd12/external_career_site,curated
 Oracle,global-india-engineering,Bengaluru,,oracle,,,curated
 SAP Labs India,global-india-engineering,Bengaluru,,saplabsindia sap-labs-india sap,,,curated
 Intuit,global-india-engineering,Bengaluru,,intuit,,,curated
-Atlassian,global-india-engineering,Bengaluru,,atlassian,,,curated
-Uber,global-india-engineering,Bengaluru,,uber,,,curated
-LinkedIn,global-india-engineering,Bengaluru,,linkedin,,,curated
-Walmart Global Tech,global-india-engineering,Bengaluru,,walmartglobaltech walmart-global-tech walmart,,,curated
-Target,global-india-engineering,Bengaluru,,target,,,curated
-PayPal,global-india-engineering,Chennai,,paypal,,,curated
-Visa,global-india-engineering,Bengaluru,,visa,,,curated
-Mastercard,global-india-engineering,Pune,,mastercard,,,curated
+Atlassian,global-india-engineering,Bengaluru,,,custom,,curated
+Uber,global-india-engineering,Bengaluru,,,custom,,curated
+LinkedIn,global-india-engineering,Bengaluru,,,custom,,curated
+Walmart Global Tech,global-india-engineering,Bengaluru,,,workday,walmart/wd5/walmartexternal,curated
+Target,global-india-engineering,Bengaluru,,,workday,target/wd5/targetcareers,curated
+PayPal,global-india-engineering,Chennai,,,workday,paypal/wd1/jobs,curated
+Visa,global-india-engineering,Bengaluru,,,workday,visa/wd5/visa,curated
+Mastercard,global-india-engineering,Pune,,,workday,mastercard/wd1/corporatecareers,curated
 American Express,global-india-engineering,Gurugram,,americanexpress american-express,,,curated
-Goldman Sachs,global-india-engineering,Bengaluru,,goldmansachs goldman-sachs,,,curated
-JPMorgan Chase,global-india-engineering,Bengaluru,,jpmorganchase jpmorgan-chase,,,curated
+Goldman Sachs,global-india-engineering,Bengaluru,,,custom,,curated
+JPMorgan Chase,global-india-engineering,Bengaluru,,,custom,,curated
 Morgan Stanley,global-india-engineering,Mumbai,,morganstanley morgan-stanley,,,curated
-Cisco,global-india-engineering,Bengaluru,,cisco,,,curated
-Broadcom,global-india-engineering,Bengaluru,,broadcom vmware,,,curated
+Cisco,global-india-engineering,Bengaluru,,,workday,cisco/wd5/cisco_careers,curated
+Broadcom,global-india-engineering,Bengaluru,,,workday,broadcom/wd1/external_career,curated
 NetApp,global-india-engineering,Bengaluru,,netapp,,,curated
 Nutanix,global-india-engineering,Bengaluru,,nutanix,,,curated
 Hewlett Packard Enterprise,global-india-engineering,Bengaluru,,hewlettpackardenterprise hewlett-packard-enterprise hpe juniper,,,curated
 Arista Networks,global-india-engineering,Bengaluru,,aristanetworks arista-networks arista,,,curated
-Qualcomm,global-india-engineering,Hyderabad,,qualcomm,,,curated
-NVIDIA,global-india-engineering,Bengaluru,,nvidia,,,curated
-Intel,global-india-engineering,Bengaluru,,intel,,,curated
+Qualcomm,global-india-engineering,Hyderabad,,,workday,qualcomm/wd12/external,curated
+NVIDIA,global-india-engineering,Bengaluru,,,workday,nvidia/wd5/nvidiaexternalcareersite,curated
+Intel,global-india-engineering,Bengaluru,,,workday,intel/wd1/external,curated
 AMD,global-india-engineering,Hyderabad,,amd,,,curated
 Texas Instruments,global-india-engineering,Bengaluru,,texasinstruments texas-instruments,,,curated
 Synopsys,global-india-engineering,Bengaluru,,synopsys,,,curated
@@ -544,7 +544,7 @@ Mercedes-Benz R&D India,global-india-engineering,Bengaluru,,mercedesbenzranddind
 Harman,global-india-engineering,Bengaluru,,harman,,,curated
 Honeywell,global-india-engineering,Bengaluru,,honeywell,,,curated
 ServiceNow,global-india-engineering,Hyderabad,,servicenow,,,curated
-Workday,global-india-engineering,Pune,,workday,,,curated
+Workday,global-india-engineering,Pune,,,workday,workday/wd5/workday,curated
 Zendesk,global-india-engineering,Pune,,zendesk,,,curated
 HubSpot,global-india-engineering,Remote,,hubspot,,,curated
 Okta,global-india-engineering,Bengaluru,,okta,,,curated
@@ -564,7 +564,7 @@ Stripe,global-india-engineering,Bengaluru,,stripe,,,curated
 Airbnb,global-india-engineering,Bengaluru,,airbnb,,,curated
 Expedia Group,global-india-engineering,Gurugram,,expediagroup expedia-group expedia,,,curated
 Twilio,global-india-engineering,Bengaluru,,twilio,,,curated
-Autodesk,global-india-engineering,Pune,,autodesk,,,curated
+Autodesk,global-india-engineering,Pune,,,workday,autodesk/wd1/ext,curated
 PTC,global-india-engineering,Pune,,ptc,,,curated
 Dassault Systemes,global-india-engineering,Pune,,dassaultsystemes dassault-systemes 3ds,,,curated
 MathWorks,global-india-engineering,Hyderabad,,mathworks,,,curated
@@ -767,13 +767,13 @@ Media.net,more-india-product,Mumbai,,medianet media-net,,,curated
 Radix,more-india-product,Mumbai,,radix directi,,,curated
 Rakuten India,more-india-product,Bengaluru,,rakutenindia rakuten-india rakuten,,,curated
 Arcesium,more-india-product,Hyderabad,,arcesium,,,curated
-D. E. Shaw India,more-india-product,Hyderabad,,deshawindia d-e-shaw-india deshaw,,,curated
+D. E. Shaw India,more-india-product,Hyderabad,,,custom,,curated
 Tower Research Capital,more-india-product,Gurugram,,towerresearchcapital tower-research-capital towerresearch,,,curated
 Graviton Research Capital,more-india-product,Gurugram,,gravitonresearchcapital graviton-research-capital graviton,,,curated
-Quadeye,more-india-product,Gurugram,,quadeye,,,curated
-AlphaGrep,more-india-product,Mumbai,,alphagrep,,,curated
+Quadeye,more-india-product,Gurugram,,,custom,,curated
+AlphaGrep,more-india-product,Mumbai,,,custom,,curated
 WorldQuant,more-india-product,Mumbai,,worldquant,,,curated
-BlackRock,more-india-product,Gurugram,,blackrock,,,curated
+BlackRock,more-india-product,Gurugram,,,workday,blackrock/wd1/blackrock_professional,curated
 LSEG,more-india-product,Bengaluru,,lseg,,,curated
 Nasdaq,more-india-product,Bengaluru,,nasdaq,,,curated
 Dodo Payments,more-india-product,Bengaluru,,dodopayments dodo-payments,,,curated
@@ -861,7 +861,7 @@ Bosch,more-than-faang,,https://www.bosch.in/careers/,bosch,,,moreThanFAANGM
 Bottemline Technologies,more-than-faang,,https://www.bottomline.com/apac/about/careers,bottemlinetechnologies bottemline-technologies bottomline,,,moreThanFAANGM
 Brahmastra Aerospace,more-than-faang,,https://www.brahmastraspace.org/career,brahmastraaerospace brahmastra-aerospace brahmastraspace,,,moreThanFAANGM
 BukuWarung,more-than-faang,,https://www.notion.so/BukuWarung-Building-the-digital-infrastructure-for-60-million-MSMEs-in-Indonesia-7e8a4f614acb4c4888659f9d36179579,bukuwarung,,,moreThanFAANGM
-ByteDance,more-than-faang,,https://jobs.bytedance.com/en,bytedance,,,moreThanFAANGM
+ByteDance,more-than-faang,,https://jobs.bytedance.com/en,,custom,,moreThanFAANGM
 Capital One,more-than-faang,,https://www.capitalonecareers.com/,capitalone capital-one capitalonecareers,,,moreThanFAANGM
 Careem,more-than-faang,,https://www.careem.com/en-ae/careers/,careem,,,moreThanFAANGM
 CarWale,more-than-faang,,https://www.carwale.com/career/,carwale,,,moreThanFAANGM
@@ -894,7 +894,7 @@ Dashlane,more-than-faang,,https://www.dashlane.com/about/careers,dashlane,,,more
 Dataminr,more-than-faang,,https://www.dataminr.com/careers,dataminr,,,moreThanFAANGM
 DBS,more-than-faang,,https://www.dbs.com/careers/default.page,dbs,,,moreThanFAANGM
 D. E. Shaw &amp; Co.,more-than-faang,,https://www.deshawindia.com/careers/career-development,deshawandampco d-e-shaw-andamp-co deshawindia,,,moreThanFAANGM
-Dell,more-than-faang,,https://jobs.dell.com/,dell,,,moreThanFAANGM
+Dell,more-than-faang,,https://jobs.dell.com/,,workday,dell/wd1/external,moreThanFAANGM
 Deutsche Bank,more-than-faang,,https://careers.db.com/,deutschebank deutsche-bank db,,,moreThanFAANGM
 Dialpad,more-than-faang,,https://www.dialpad.com/careers/,dialpad,,,moreThanFAANGM
 Directi,more-than-faang,,https://careers.directi.com/,directi,,,moreThanFAANGM
@@ -908,7 +908,7 @@ DoorDash,more-than-faang,,https://careers.doordash.com/,doordash,,,moreThanFAANG
 doximity,more-than-faang,,https://www.doximity.com/careers,doximity,,,moreThanFAANGM
 DP World,more-than-faang,,https://ehpv.fa.em2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions,dpworld dp-world ehpv,,,moreThanFAANGM
 DRDO,more-than-faang,,https://www.drdo.gov.in/careers,drdo,,,moreThanFAANGM
-Dream11,more-than-faang,,https://www.dreamsports.group/careers,dream11 dreamsports,,,moreThanFAANGM
+Dream11,more-than-faang,,https://www.dreamsports.group/careers,,custom,,moreThanFAANGM
 Dropbox,more-than-faang,,https://www.dropbox.com/jobs,dropbox,,,moreThanFAANGM
 duo,more-than-faang,,https://duo.com/careers,duo,,,moreThanFAANGM
 DuPont,more-than-faang,,https://careers.dupont.com/us/en,dupont,,,moreThanFAANGM
@@ -1021,7 +1021,7 @@ National instruments,more-than-faang,,https://www.ni.com/en-in/about-ni/careers.
 NatWest Group,more-than-faang,,https://jobs.natwestgroup.com/search/jobs/in/country/india,natwestgroup natwest-group,,,moreThanFAANGM
 NCR Corporation,more-than-faang,,https://www.ncr.com/careers,ncrcorporation ncr-corporation ncr,,,moreThanFAANGM
 Netcracker,more-than-faang,,https://www.netcracker.com/careers/,netcracker,,,moreThanFAANGM
-Netflix,more-than-faang,,https://jobs.netflix.com/,netflix,,,moreThanFAANGM
+Netflix,more-than-faang,,https://jobs.netflix.com/,,custom,,moreThanFAANGM
 Netmeds,more-than-faang,,https://netmeds.darwinbox.in/ms/candidate/careers,netmeds,,,moreThanFAANGM
 Nokia,more-than-faang,,https://www.nokia.com/about-us/careers/,nokia,,,moreThanFAANGM
 nurture.farm,more-than-faang,,https://nurture.farm/join-us/,nurturefarm nurture-farm nurture,,,moreThanFAANGM
@@ -1395,3 +1395,11 @@ Contrario,yc-remote,Remote,https://contrario.ai,contrario,,,yc:Winter 2025
 Coperniq,yc-remote,Remote,https://coperniq.io,coperniq,,,yc:Winter 2023
 Corgea,yc-remote,Remote,https://www.corgea.com/,corgea,,,yc:Summer 2023
 Coris,yc-remote,Remote,https://coris.ai/,coris,,,yc:Summer 2022
+Hudson River Trading,high-pay,Gurugram,,,greenhouse,wehrtyou,high-pay list (public pay data)
+Jane Street,high-pay,Mumbai,,,greenhouse,janestreet,high-pay list (public pay data)
+Squarepoint Capital,high-pay,Gurugram,,,greenhouse,squarepointcapital,high-pay list (public pay data)
+Optiver,high-pay,Mumbai,,,greenhouse,optiver,high-pay list (public pay data)
+IMC Trading,high-pay,Mumbai,,,greenhouse,imc,high-pay list (public pay data)
+Flow Traders,high-pay,,,,greenhouse,flowtraders,high-pay list (public pay data)
+Da Vinci Trading,high-pay,,,,greenhouse,davinciderivatives,high-pay list (public pay data)
+NK Securities,high-pay,,,,custom,,high-pay list (public pay data)
