@@ -303,7 +303,7 @@ region = "global"
 kind = "vc-portfolio"
 access = "login"
 competition = "medium"
-notes = "One YC profile reaches every YC company; founders message you."
+notes = "Its postings are scanned every 6 hours through their public mirror (YC jobs). Applying needs your own profile: make one, stay signed in on the Claude desktop browser, and apply with the drafted note; founders also message you directly."
 
 [[platform]]
 name = "Wellfound (AngelList Talent)"

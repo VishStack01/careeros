@@ -36,7 +36,7 @@ def test_parse_reads_postings_from_page_data():
     jobs = yc.parse(_page(POSTINGS), now=NOW)
     assert [j.company for j in jobs] == ["Acme", "LiteLLM", "Beta Labs"]
     a, l, b = jobs
-    assert a.url == "https://www.ycombinator.com/companies/acme/jobs/AbC-software-engineer-ai" and a.source == "YC jobs"
+    assert a.url == "https://www.ycombinator.com/companies/acme/jobs/AbC-software-engineer-ai" and a.source == "YC Work at a Startup"
     assert a.salary_text == "₹1.8M - ₹3M INR" and a.raw["experience_header"] == "Any (new grads ok)"
     assert a.posted_at == "2026-10-25T10:00:00Z" and a.description == "Agents for accountants."
     assert l.work_mode == "remote" and l.posted_at == "2026-10-23T12:00:00Z"

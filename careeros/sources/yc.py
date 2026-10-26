@@ -1,4 +1,5 @@
-"""Y Combinator startup jobs (ycombinator.com/jobs), from the public listing pages.
+"""Y Combinator startup jobs: the Work at a Startup postings, read from their public
+mirror at ycombinator.com/jobs (workatastartup.com itself needs a login).
 
 YC's pages carry their data as JSON inside the HTML (an Inertia `data-page`
 attribute). Rather than depend on exact field names, the reader walks that JSON
@@ -104,7 +105,7 @@ def parse(page: str, now: datetime | None = None) -> list[Job]:
             exp = _first(d, "minExperience", "prettyMinExperience", "experience")
             about = _first(d, "description", "companyOneLiner", "oneLiner")
             remote = "remote" if re.search(r"\bremote\b", loc, re.I) else ""
-            jobs.append(Job(company=company, title=title.strip(), url=url, source="YC jobs", location=loc,
+            jobs.append(Job(company=company, title=title.strip(), url=url, source="YC Work at a Startup", location=loc,
                             work_mode=extract.work_mode(structured=remote, location=loc, text=about),
                             description=about, posted_at=_when(_first(d, "createdAt", "lastActive", "updatedAt", "postedAt"), now),
                             salary_text=salary, req_id=str(d.get("id") or ""),
