@@ -151,8 +151,16 @@ def extract_experience(text: str, header: str = "") -> ExperienceReq:
 # ---------------------------------------------------------------- seniority
 
 _SENIOR_TITLE = re.compile(
-    r"\b(senior|sr\.?|staff|principal|lead|head|director|vp|vice president|chief|distinguished|architect)\b", re.I
+    r"\b(senior|sr\.?|staff|principal|lead|leader|head|director|vp|vice president|chief|distinguished|architect)\b", re.I
 )
+# "4-8 Yrs", "5 years to 13Years", "2 to 4 years", "8+ years" in a title (common on Workday boards).
+_TITLE_YEARS = re.compile(r"(?<![\d.])(\d{1,2})\s*(?:\+|(?:-|–|to)\s*\d{1,2})?\s*(?:years?|yrs?)\b", re.I)
+
+
+def title_years(title: str) -> float | None:
+    """The smallest number of years a job title asks for, or None."""
+    nums = [float(m.group(1)) for m in _TITLE_YEARS.finditer(title or "")]
+    return min(nums) if nums else None
 _JUNIOR_TITLE = re.compile(
     r"\b(junior|jr\.?|associate|intern|internship|trainee|graduate|entry[- ]level|fresher|new grad|apprentice)\b", re.I
 )

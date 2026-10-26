@@ -63,6 +63,12 @@ jobs:
             careeros radar --config config/radar.toml --boards feed/boards.json --out feed/radar-companies.csv 2>&1 | tee feed/radar.log
           fi
 
+      - name: Early-career pay from real offers
+        # leetcode-compensation (MIT): median offers at up to 1.5 years, per company, so roles
+        # that don't state pay can be judged on what that company really pays freshers.
+        continue-on-error: true
+        run: careeros payers --out config/pay/offers-pay.csv
+
       - name: Deep sweep list (daily)
         # ~20,000 company boards from the open ats-scrapers inventory (MIT). Only the list is
         # refreshed here; discover checks them a few hundred at a time and keeps the boards

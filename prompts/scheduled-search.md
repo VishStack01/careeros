@@ -93,8 +93,10 @@ def decide(r):
     f, t = r.get("facts") or {}, r["title"]
     c = [("Company", not any(b in r["company"].lower() for b in block), r["company"], "")]  # (gate, passed, value, quote)
     c.append(("Role", bool(ROLE.search(t)) and not EXCL.search(t), "Target role" if ROLE.search(t) and not EXCL.search(t) else "The title isn't one of your target roles.", t))
-    c.append(("Seniority", not (f.get("senior") and max_y < 3), "Senior title" if f.get("senior") else "Not stated in title", t))
-    e = f.get("expMin")
+    sen = f.get("senior") or bool(re.search(r"\b(leader|lead|principal|staff)\b", t, re.I))
+    c.append(("Seniority", not (sen and max_y < 3), "Senior title" if sen else "Not stated in title", t))
+    e = f.get("expMin"); ty = [float(m.group(1)) for m in re.finditer(r"(?<![\d.])(\d{1,2})\s*(?:\+|(?:-|–|to)\s*\d{1,2})?\s*(?:years?|yrs?)\b", t, re.I)]
+    if ty and (e is None or min(ty) > e): e = min(ty); f = dict(f, expQuote=t)
     ev = ("Fresher welcome" if f.get("fresherOk") else "Not stated") if e is None else (f"{e:g}+ years" if e else "Fresher (0 years)")
     eok = not (e is not None and e > max_y) and not (e is None and f.get("fresherOk") is False and max_y < 1)
     c.append(("Experience", eok, ev if eok else f"Asks for {ev}; your limit is {max_y:g} year(s).", f.get("expQuote") or ""))

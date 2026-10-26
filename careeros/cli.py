@@ -344,6 +344,28 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(fn=cmd_referrals)
 
+    sp = sub.add_parser("payers", help="Early-career pay by company from real offers (leetcode-compensation, MIT)")
+    sp.add_argument("--out", default="config/pay/offers-pay.csv")
+    sp.add_argument("--source", help="A local copy of final_data.json instead of downloading it")
+    sp.add_argument("--max-yoe", type=float, default=1.5)
+    sp.add_argument("--min-offers", type=int, default=2)
+    sp.set_defaults(fn=cmd_payers)
+
+    sp = sub.add_parser("ats-check", help="How an applicant-tracking system reads your resume PDF, with fixes")
+    sp.add_argument("pdf")
+    sp.add_argument("--applicant", help="profile/applicant JSON (name, email, experience)")
+    sp.add_argument("--terms", help="market.json from `careeros market --json`, to check keyword coverage")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_ats)
+
+    sp = sub.add_parser("market", help="What the roles that pay your floor ask for, against your resume")
+    sp.add_argument("--feed", default="feed/india.jsonl.gz")
+    sp.add_argument("--settings", help="Dashboard settings JSON (targetRoles, titleExclude, salaryFloorLpa, maxRequiredYears)")
+    sp.add_argument("--resume", help="Your resume PDF or text file")
+    sp.add_argument("--top", type=int, default=20)
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(fn=cmd_market)
+
     sp = sub.add_parser("deep", help="List thousands of company boards from the open ATS inventory for discover to check")
     sp.add_argument("--boards", default="feed/boards.json")
     sp.add_argument("--out", default="feed/deep-companies.csv")
@@ -815,6 +837,62 @@ def cmd_referrals(a) -> None:
         print(f"  - {l['label']}: {l['url']}")
     print(f"\nConnection note ({len(out['drafts']['connectionNote'])} characters):\n{out['drafts']['connectionNote']}")
     print(f"\nReferral ask:\n{out['drafts']['referralAsk']}")
+
+
+def cmd_payers(a) -> None:
+    from . import paydata
+    from .sources import http
+    src = Path(a.source) if a.source else None
+    records = json.loads(src.read_text(encoding="utf-8")) if src else http.get_json(paydata.OFFERS_URL, timeout=60)
+    rows = paydata.offer_bands(records, max_yoe=a.max_yoe, min_n=a.min_offers)
+    paydata.write_offers(rows, Path(a.out))
+    top = ", ".join(f"{r['company']} {r['low_lpa']:g}" for r in rows[:8])
+    print(f"Pay data: {len(records)} offers read; {len(rows)} companies with {a.min_offers}+ offers at up to {a.max_yoe:g} years "
+          f"({sum(r['low_lpa'] >= 15 for r in rows)} with a median base of 15 LPA or more). Top: {top}")
+
+
+def cmd_ats(a) -> None:
+    from . import ats
+    rep = ats.check_file(a.pdf, profile=_load_json(a.applicant), terms=_terms(a.terms))
+    if a.json:
+        print(json.dumps(rep, indent=2, ensure_ascii=False))
+        return
+    print(f"ATS readiness: {rep['score']}/100 ({rep['pages']} page{'s' if rep['pages'] != 1 else ''}, {rep['words']} words)\n")
+    for c in rep["checks"]:
+        print(f"{'PASS' if c['ok'] else 'FIX '}  {c['title']}" + ("" if c["ok"] else f"\n      {c['fix']}"))
+
+
+def cmd_market(a) -> None:
+    import gzip
+    from . import market
+    with gzip.open(a.feed, "rt", encoding="utf-8") as f:
+        records = [json.loads(l) for l in f if l.strip()]
+    settings = _load_json(a.settings)
+    resume = market.resume_text(a.resume) if a.resume else ""
+    out = market.analyze(records, settings, resume, top=a.top)
+    if a.json:
+        print(json.dumps(out, indent=2, ensure_ascii=False))
+        return
+    fn = out["funnel"]
+    print("Market for your filters: " + " -> ".join(f"{k} {v}" for k, v in fn.items()))
+    print("\nSkills most asked for in roles paying your floor (share of those roles):")
+    for s in out["skills"]:
+        print(f"  {s['share']:>4.0%}  {s['skill']:<22} {'on your resume' if s['onResume'] else 'MISSING from your resume'}")
+    print("\nCompanies with the most of these roles: " + ", ".join(f"{c['company']} ({c['roles']})" for c in out["companies"][:12]))
+
+
+def _load_json(path):
+    if not path:
+        return {}
+    d = json.loads(Path(path).read_text(encoding="utf-8"))
+    return d.get("data", d) if isinstance(d, dict) else {}
+
+
+def _terms(path):
+    if not path:
+        return []
+    d = json.loads(Path(path).read_text(encoding="utf-8"))
+    return [s["skill"] if isinstance(s, dict) else str(s) for s in (d.get("skills", d) if isinstance(d, dict) else d)]
 
 
 def cmd_liveness(a) -> None:

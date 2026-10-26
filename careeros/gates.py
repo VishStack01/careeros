@@ -77,6 +77,9 @@ def gate_experience(job: Job, s: Settings) -> Check:
         req = extract.ExperienceReq(f.get("expMin"), f.get("fresherOk"), f.get("expQuote") or "")
     else:
         req = extract.extract_experience(job.description, header=str(job.raw.get("experience_header", "")))
+    ty = extract.title_years(job.title)
+    if ty is not None and (req.min_years is None or ty > req.min_years):
+        req = extract.ExperienceReq(ty, req.fresher_ok, job.title)
     if req.min_years is not None and req.min_years > s.max_required_years:
         return Check(
             "Experience", False,

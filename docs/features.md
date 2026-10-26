@@ -95,6 +95,29 @@ number you've stated, and the offer.
 - `careeros doctor` checks Python, your config, the brain, Playwright, the
   database and the kill switch, and fails if any private file is tracked by git.
 
+## Getting shortlisted
+
+- **`careeros ats-check resume.pdf`** reads the PDF the way an
+  applicant-tracking system does and scores it: a real text layer, contact
+  details and links as text, your name first, standard headings, one page under
+  three years of experience, month-and-year dates on every role, results with
+  numbers, a short summary, a sensible file name and, with `--terms`, how many of
+  the skills well-paid roles ask for appear on it. Each failed check says what to
+  change.
+- **`careeros market`** runs your filters over the live feed and shows the
+  funnel (openings → your roles → your experience → open to you → pay stated,
+  estimated, below or unknown), the pay the postings state, the skills the roles
+  at your floor ask for most and which of them your resume shows, and the
+  companies with the most such roles. A missing skill is something to learn or
+  to prove in a project, never a word to add without the work behind it.
+- **Real early-career pay** (`careeros payers`): median offers by company from
+  LeetCode offer posts (leetcode-compensation, MIT). A role that doesn't state
+  pay passes your floor when that company's median base for up to 1.5 years
+  meets it, and the check says it is an estimate.
+- **Years in titles**: "4-8 Yrs" or "5 years to 13Years" in a title (common on
+  Workday boards) now counts as the experience asked for, and "Technical Leader"
+  as a senior title.
+
 ## What we didn't take, and why
 
 - **A terminal dashboard**: the CareerOS dashboard is a web page that works on

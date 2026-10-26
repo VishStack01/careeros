@@ -89,6 +89,9 @@ def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
     url = canonical_url(job.url)
     f = extract.facts(job.description, str(job.raw.get("experience_header", "")), job.location, job.salary_text)
     f["senior"] = extract.title_seniority(job.title) == "senior"
+    ty = extract.title_years(job.title)
+    if ty is not None and (f.get("expMin") is None or ty > f["expMin"]):
+        f["expMin"], f["expQuote"] = ty, job.title  # the title's own figure, when the text gave none or less
     f["loc"], f["locQuote"] = loc_class(job, f)
     band = paydata.band(job.company)
     if band:
