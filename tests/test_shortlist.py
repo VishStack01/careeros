@@ -107,3 +107,11 @@ def test_years_in_titles_count_as_experience():
     assert extract.title_years("Backend (4-8 Yrs), Bangalore") == 4
     assert extract.title_years("SDE-1") is None and extract.title_years("Engineer, 2026 batch") is None
     assert extract.title_seniority("Software Engineering Technical Leader") == "senior"
+
+
+def test_temporary_work_from_anywhere_is_not_remote():
+    perk = "Hybrid roles have the flexibility to work from anywhere for up to 4 weeks per year."
+    assert extract.work_mode(location="San Francisco, CA", text=perk) != "remote"
+    assert extract.remote_scope("San Francisco, CA", perk).scope == ""
+    assert extract.work_mode(text="You also get 4 weeks of work from anywhere each year.") == ""
+    assert extract.work_mode(location="Remote", text="Work from anywhere in the world.") == "remote"

@@ -186,7 +186,19 @@ _HYBRID = re.compile(r"\bhybrid\b", re.I)
 _ONSITE = re.compile(r"\bon[- ]?site\b|\bin[- ]office\b|\bwork from office\b|\bwfo\b|\bin[- ]person\b", re.I)
 
 
+# "work from anywhere for up to 4 weeks a year" is a perk of an office job, not a remote role.
+_TEMP_REMOTE = re.compile(
+    r"(?:work(?:ing)?|be)\s+(?:from\s+)?(?:anywhere|remotely?)\s+(?:in the world\s+)?(?:for\s+)?(?:up\s+to\s+)?(?:\d+|one|two|three|four|a few)\s+(?:weeks?|days?|months?)"
+    r"|(?:\d+|one|two|three|four)\s+(?:weeks?|days?|months?)\s+(?:a year\s+|per year\s+|each year\s+)?(?:of\s+)?(?:remote work|work(?:ing)? from anywhere|remote)",
+    re.I)
+
+
+def _no_temp_remote(text: str) -> str:
+    return _TEMP_REMOTE.sub(" ", text or "")
+
+
 def work_mode(structured: str = "", location: str = "", text: str = "") -> str:
+    text = _no_temp_remote(text)
     s = (structured or "").lower().replace("-", "").replace("_", "")
     if s in ("remote",):
         return "remote"
@@ -246,6 +258,7 @@ class RemoteScope:
 
 def remote_scope(location: str, text: str) -> RemoteScope:
     """Can someone living in India take this remote role?"""
+    text = _no_temp_remote(text)
     blob = f"{location}\n{text or ''}"
     m = _TZ_RANGE.search(blob)
     if m:
