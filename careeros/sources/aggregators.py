@@ -212,6 +212,11 @@ def arbeitnow(pages: int = 3) -> list[Job]:
     return out
 
 
+def yc_jobs() -> list[Job]:
+    from . import yc
+    return yc.fetch()
+
+
 AGGREGATORS = {
     "remoteok": remoteok,
     "remotive": remotive,
@@ -222,6 +227,7 @@ AGGREGATORS = {
     "hn-jobs": hn_jobs,
     "hn-who-is-hiring": hn_who_is_hiring,
     "arbeitnow": arbeitnow,
+    "yc-jobs": yc_jobs,
 }
 
-MIN_HOURS = {"remotive": 6, "jobicy": 1, "hn-who-is-hiring": 12, "arbeitnow": 6}
+MIN_HOURS = {"remotive": 6, "jobicy": 1, "hn-who-is-hiring": 12, "arbeitnow": 6, "yc-jobs": 6}

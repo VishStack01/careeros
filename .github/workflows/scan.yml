@@ -77,6 +77,7 @@ jobs:
         run: |
           if [ ! -f feed/deep-companies.csv ] || [ $(( 10#$(date -u +%H) )) -eq 4 ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             careeros deep --boards feed/boards.json --out feed/deep-companies.csv 2>&1 | tee feed/deep.log
+            careeros yc-companies --out feed/yc-companies.csv 2>&1 | tee -a feed/deep.log
           fi
 
       - name: Discover job boards
@@ -86,7 +87,7 @@ jobs:
         # two and stays gentle on each hiring system.
         run: |
           set -o pipefail
-          careeros discover --companies config/companies/companies.csv --extra feed/radar-companies.csv --extra feed/deep-companies.csv --cache feed/boards.json --refresh-days 14 --limit 800 --max-minutes 18 2>&1 | tee feed/discover.log
+          careeros discover --companies config/companies/companies.csv --extra feed/radar-companies.csv --extra feed/yc-companies.csv --extra feed/deep-companies.csv --cache feed/boards.json --refresh-days 14 --limit 800 --max-minutes 18 2>&1 | tee feed/discover.log
 
       - name: Scan boards
         run: |

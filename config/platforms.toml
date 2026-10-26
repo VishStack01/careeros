@@ -290,11 +290,11 @@ name = "Y Combinator jobs"
 url = "https://www.ycombinator.com/jobs/role/software-engineer/india"
 region = "global"
 kind = "vc-portfolio"
-access = "fetch"
+access = "feed"
 competition = "medium"
 every_run = true
 states_pay = true
-notes = "Most listings state pay: rupee ranges for India roles (often 18-40 LPA), dollar ranges for remote. Also read /jobs/location/india for AI and FDE roles. Applying goes through Work at a Startup."
+notes = "Scanned every 6 hours (careeros/sources/yc.py): software roles in India, Bengaluru, Hyderabad, Chennai and remote, with the salary band and minimum experience YC shows. YC companies hiring in India or remotely are also mapped to their own boards (careeros yc-companies)."
 
 [[platform]]
 name = "Work at a Startup (YC)"
@@ -716,6 +716,42 @@ region = "global"
 kind = "vc-portfolio"
 access = "fetch"
 competition = "medium"
+verify = true
+
+[[platform]]
+name = "Techstars portfolio jobs"
+url = "https://jobs.techstars.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Kleiner Perkins portfolio jobs"
+url = "https://jobs.kleinerperkins.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "Entrepreneur First portfolio jobs"
+url = "https://jobs.joinef.com/jobs"
+region = "global"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
+verify = true
+
+[[platform]]
+name = "100X.VC portfolio jobs"
+url = "https://jobs.100x.vc/jobs"
+region = "india"
+kind = "vc-portfolio"
+access = "fetch"
+competition = "low"
 verify = true
 
 # ------------------------------------------------------------ X-ray searches (find boards that aren't in the company list)

@@ -344,6 +344,11 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--json", action="store_true")
     sp.set_defaults(fn=cmd_referrals)
 
+    sp = sub.add_parser("yc-companies", help="YC companies hiring in India or remotely (yc-oss dataset), for discover to map")
+    sp.add_argument("--out", default="feed/yc-companies.csv")
+    sp.add_argument("--source", help="A local copy of companies/hiring.json")
+    sp.set_defaults(fn=cmd_yc_companies)
+
     sp = sub.add_parser("payers", help="Early-career pay by company from real offers (leetcode-compensation, MIT)")
     sp.add_argument("--out", default="config/pay/offers-pay.csv")
     sp.add_argument("--source", help="A local copy of final_data.json instead of downloading it")
@@ -837,6 +842,15 @@ def cmd_referrals(a) -> None:
         print(f"  - {l['label']}: {l['url']}")
     print(f"\nConnection note ({len(out['drafts']['connectionNote'])} characters):\n{out['drafts']['connectionNote']}")
     print(f"\nReferral ask:\n{out['drafts']['referralAsk']}")
+
+
+def cmd_yc_companies(a) -> None:
+    from .sources import http, yc
+    data = json.loads(Path(a.source).read_text(encoding="utf-8")) if a.source else http.get_json(yc.COMPANIES, timeout=60)
+    rows = yc.hiring_companies(data)
+    from . import deep
+    deep.write(rows, a.out)
+    print(f"YC: {len(data)} companies hiring; {len(rows)} hiring in India or remotely written to {a.out} for discover.")
 
 
 def cmd_payers(a) -> None:
