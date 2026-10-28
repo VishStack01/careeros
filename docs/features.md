@@ -95,6 +95,19 @@ number you've stated, and the offer.
 - `careeros doctor` checks Python, your config, the brain, Playwright, the
   database and the kill switch, and fails if any private file is tracked by git.
 
+## The workspace (dashboard)
+
+The dashboard is laid out as a personal job-search workspace: a sidebar with Dashboard, Profile, Base resume, Find jobs, Applications, Outreach, Calendar, Skipped and Settings, and a dark mode switch.
+
+- **Dashboard**: a greeting, a funnel from applied to screening, interview and offer (with where the stopped ones are now: waiting, rejected, declined), a week-by-week chart of roles found and applied to, and what is coming up. Last 30 days, 90 days or all time.
+- **Profile**: the only facts tailoring may use. Basics, summary, skills, experience, projects and education, with a strength score and tips. Paste resume text and Claude sorts it into sections (it copies; it never improves), or copy your auto-apply details.
+- **Base resume**: your profile as a resume in four themes (Editorial, Classic, Modern, Compact) and six accent colours. Print to PDF or download.
+- **Applications**: a board (drag a card to change its stage) or the table. Each application opens as a page with Overview (the search's checks, score, brief, package and outreach), Resume, Cover letter, Email, Job posting with "how you match", and Notes.
+- **Tailoring**: one click writes a tailored resume, cover letter (warm, direct or formal) and email from your profile. "Refine with AI" takes requests such as "make the summary shorter"; every change is kept in history with undo. Any number in a draft that isn't in your profile or the posting is flagged before you send. Without Claude (the GitHub Pages demo, `careeros serve`) the same steps run as plain rules over your profile.
+- **New application**: paste a posting you found yourself. The role's details and requirements are read, each requirement is checked against your profile ("+ Add to profile" for a gap you really have), and it joins Applications as "To apply".
+- **Calendar**: interviews, day 7 and 14 follow-ups, apply-by dates and what you sent, with an "Add" link to Google Calendar.
+- **Your data**: export everything as JSON, or import a profile and applications that aren't there yet.
+
 ## Getting shortlisted
 
 - **`careeros ats-check resume.pdf`** reads the PDF the way an

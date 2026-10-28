@@ -535,7 +535,8 @@
      "Postgres"
     ]
    },
-   "autoApply": "queued"
+   "autoApply": "queued",
+   "applyByHoursAgo": -120
   },
   "quill-llm-eval": {
    "company": "Quill Health",
@@ -700,6 +701,158 @@
     "reason": "Pays 3–4.2 LPA, below your 7 LPA floor.",
     "wouldChange": "Lowering your floor to 4 LPA."
    }
+  },
+  "vela-ai-fde": {
+   "location": "Bengaluru",
+   "workMode": "hybrid",
+   "experience": "0-1 years",
+   "source": "Company careers page",
+   "region": "south-india",
+   "company": "Vela AI",
+   "title": "Forward Deployed Engineer",
+   "stage": "interview",
+   "postedAtHoursAgo": 500,
+   "appliedAtHoursAgo": 460,
+   "screenAtHoursAgo": 380,
+   "interviewAtHoursAgo": -50,
+   "salary": "18-24 LPA",
+   "timeline": [
+    {
+     "atHoursAgo": 460,
+     "event": "Applied by auto-apply"
+    }
+   ]
+  },
+  "harbor-ml": {
+   "location": "Hyderabad",
+   "workMode": "hybrid",
+   "experience": "0-1 years",
+   "source": "Company careers page",
+   "region": "south-india",
+   "company": "Harbor Analytics",
+   "title": "ML Engineer I",
+   "stage": "rejected",
+   "closedFrom": "applied",
+   "postedAtHoursAgo": 900,
+   "appliedAtHoursAgo": 850
+  },
+  "ridge-llm": {
+   "location": "Remote (India)",
+   "workMode": "remote",
+   "experience": "0-1 years",
+   "source": "Company careers page",
+   "region": "south-india",
+   "company": "Ridge",
+   "title": "LLM Applications Engineer",
+   "stage": "rejected",
+   "closedFrom": "screen",
+   "postedAtHoursAgo": 700,
+   "appliedAtHoursAgo": 650,
+   "screenAtHoursAgo": 560
+  },
+  "nimbus-sde": {
+   "location": "Bengaluru",
+   "workMode": "hybrid",
+   "experience": "0-1 years",
+   "source": "Company careers page",
+   "region": "south-india",
+   "company": "Nimbus Cloud",
+   "title": "Software Engineer, AI Platform",
+   "stage": "applied",
+   "postedAtHoursAgo": 260,
+   "appliedAtHoursAgo": 200,
+   "followUps": [
+    {
+     "kind": "applied-1",
+     "label": "First follow-up",
+     "dueHoursAgo": -30,
+     "done": false
+    }
+   ]
+  }
+ },
+ "profile": {
+  "resume": {
+   "basics": {
+    "name": "Asha Rao",
+    "headline": "AI Engineer",
+    "email": "asha@example.com",
+    "phone": "+91 90000 00000",
+    "location": "Bengaluru",
+    "links": [
+     "https://github.com/asha-example",
+     "https://linkedin.com/in/asha-example"
+    ]
+   },
+   "summary": "AI engineer who ships retrieval and evaluation systems in Python. Built and ran a RAG service used by 1,200 people, and an evaluation harness that cut review time by 40%. Looking for an early-career AI or forward-deployed engineering role.",
+   "skills": [
+    "Python",
+    "FastAPI",
+    "RAG",
+    "LLM evaluation",
+    "PostgreSQL",
+    "React",
+    "Docker",
+    "AWS",
+    "n8n"
+   ],
+   "experience": [
+    {
+     "title": "AI Engineer",
+     "company": "Acme Labs",
+     "location": "Bengaluru",
+     "start": "Jan 2026",
+     "end": "Present",
+     "bullets": [
+      "Built a retrieval service in Python and FastAPI serving 1,200 users at 300 ms median latency",
+      "Cut evaluation time by 40% with an LLM-as-judge harness and 85 regression tests",
+      "Shipped a React admin console the support team uses daily"
+     ],
+     "skills": [
+      "Python",
+      "FastAPI",
+      "RAG",
+      "React"
+     ]
+    },
+    {
+     "title": "Automation Intern",
+     "company": "Beta Systems",
+     "location": "Remote",
+     "start": "Jun 2025",
+     "end": "Dec 2025",
+     "bullets": [
+      "Wrote n8n workflows that moved leads between the CRM and email tools",
+      "Set up PostgreSQL backups and a Docker image for the internal tools"
+     ],
+     "skills": [
+      "n8n",
+      "PostgreSQL",
+      "Docker"
+     ]
+    }
+   ],
+   "projects": [
+    {
+     "name": "Job radar",
+     "url": "https://github.com/asha-example/radar",
+     "when": "2026",
+     "bullets": [
+      "Scans 3,000 company job boards every hour and keeps roles with quoted checks (built with Claude Code)"
+     ]
+    }
+   ],
+   "education": [
+    {
+     "degree": "B.Tech, Computer Science",
+     "school": "Example Institute of Technology",
+     "start": "2021",
+     "end": "2025",
+     "note": ""
+    }
+   ],
+   "theme": "editorial",
+   "accent": "#8A2C1D"
   }
  }
 }
