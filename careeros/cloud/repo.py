@@ -10,7 +10,7 @@ from ..store import merge
 from .db import Conn, now_iso
 from .security import new_id, new_token, token_hash
 
-COLLECTIONS = {"jobs", "runs", "settings", "brain", "profile"}
+COLLECTIONS = {"jobs", "runs", "settings", "brain", "profile", "inbox"}
 DEFAULT_SETTINGS = {
     "targetRoles": [], "titleExclude": [], "locations": ["South India (any work mode)", "Rest of India (remote only)", "Remote worldwide (first priority)"],
     "experienceLevels": ["Fresher", "1+ years"], "maxRequiredYears": 1, "maxPostingAgeDays": 25, "salaryFloorLpa": "",

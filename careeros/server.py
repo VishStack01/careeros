@@ -20,7 +20,7 @@ from pathlib import Path
 from . import __version__
 from .store import Store
 
-COLLECTIONS = {"jobs", "runs", "settings", "brain"}
+COLLECTIONS = {"jobs", "runs", "settings", "brain", "profile", "inbox"}
 _DOC = re.compile(r"^/api/d/([a-z]+)/([A-Za-z0-9_.:@+~-]{1,200})$")
 _COL = re.compile(r"^/api/c/([a-z]+)$")
 

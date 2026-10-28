@@ -161,6 +161,7 @@ for line in gzip.open(feed_p, "rt", encoding="utf-8"):
     if (r.get("tags") or {}).get("skills"): doc["skills"] = r["tags"]["skills"]
     if (r.get("tags") or {}).get("payTier"): doc["payTier"] = r["tags"]["payTier"]
     if (r.get("facts") or {}).get("payBand"): doc["payBand"] = r["facts"]["payBand"]
+    if r.get("applyTo"): doc["applyTo"] = r["applyTo"]
     if failed:
         g = failed[0]; v = next(x for x in checks if x[0] == g)
         doc["skip"] = {"gate": g, "reason": v[2] + (f' The posting says: "{v[3][:200]}"' if v[3] else ""),

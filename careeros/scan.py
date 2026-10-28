@@ -109,6 +109,7 @@ def to_feed(job: Job, company: dict, via: str = "careers") -> dict:
         "facts": f, "summary": summary, "via": via,
         "tags": tags.tag(job.title, text, f),
         "text": text,  # full posting; kept out of india.jsonl.gz, published for the job board
+        **({"applyTo": job.raw["apply"]} if job.raw.get("apply") else {}),  # where the post says to apply (HN posts)
     }
 
 

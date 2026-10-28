@@ -30,6 +30,15 @@
      "VC portfolio boards"
     ]
    }
+  },
+  "inboxCheck": {
+   "lastCheckedAtHoursAgo": 2,
+   "lastFound": 2
+  },
+  "applyRunner": {
+   "linked": false,
+   "lastTriedAtHoursAgo": 3,
+   "lastError": "Your computer wasn't reachable. Keep it on with the Claude desktop app open."
   }
  },
  "brain": {
@@ -566,7 +575,7 @@
    "location": "Chennai",
    "workMode": "onsite",
    "region": "south-india",
-   "source": "YC jobs",
+   "source": "HN Who is hiring",
    "url": "https://example.com/banyan/fde",
    "postedAtHoursAgo": 120,
    "salary": "12–18 LPA",
@@ -575,7 +584,8 @@
    "fitBand": "pending",
    "needsYou": "The form asks you to create an account on Banyan's careers site. Sign in there once in the Claude app's browser, then press Try again.",
    "needsYouAt": "2026-10-12T09:40:00Z",
-   "applyUrl": "https://example.com/banyan/apply"
+   "applyUrl": "https://example.com/banyan/apply",
+   "applyTo": "jobs@banyan.example"
   },
   "lumen-ml-associate": {
    "company": "Lumen Data",
@@ -853,6 +863,64 @@
    ],
    "theme": "editorial",
    "accent": "#8A2C1D"
+  }
+ },
+ "inbox": {
+  "gm-demo-vela": {
+   "threadId": "demo-vela",
+   "from": "talent@vela.example",
+   "fromName": "Priya Menon",
+   "subject": "Vela AI: next step for the Forward Deployed Engineer role",
+   "receivedAtHoursAgo": 20,
+   "kind": "interview",
+   "quote": "We would love to set up a 45-minute technical interview with our engineering lead.",
+   "asks": [
+    {
+     "text": "Share three times that work for a 45-minute technical interview",
+     "due": ""
+    },
+    {
+     "text": "Confirm your notice period",
+     "due": ""
+    }
+   ],
+   "slots": [
+    "Thu 30 Oct, 11:00–11:45",
+    "Fri 31 Oct, 15:00–15:45",
+    "Mon 3 Nov, 12:00–12:45"
+   ],
+   "body": "Hi Asha,\n\nThanks for applying to Vela AI. We would love to set up a 45-minute technical interview with our engineering lead.\n\nCould you share three times that work for you this week or next, and confirm your notice period?\n\nBest,\nPriya",
+   "jobId": "vela-ai-fde",
+   "company": "Vela AI",
+   "status": "new"
+  },
+  "gm-demo-ridge": {
+   "threadId": "demo-ridge",
+   "from": "no-reply@ridge.example",
+   "fromName": "Ridge Recruiting",
+   "subject": "Your application to Ridge",
+   "receivedAtHoursAgo": 120,
+   "kind": "rejection",
+   "quote": "we have decided to move forward with other candidates",
+   "asks": [],
+   "body": "Thank you for your interest in Ridge. After careful review, we have decided to move forward with other candidates.",
+   "jobId": "ridge-llm",
+   "company": "Ridge",
+   "status": "new"
+  },
+  "gm-demo-cobalt": {
+   "threadId": "demo-cobalt",
+   "from": "no-reply@greenhouse.example",
+   "fromName": "Cobalt Pay",
+   "subject": "Thank you for applying to Cobalt Pay",
+   "receivedAtHoursAgo": 300,
+   "kind": "confirmation",
+   "quote": "We have received your application",
+   "asks": [],
+   "body": "We have received your application for GenAI Engineer.",
+   "jobId": "cobalt-genai",
+   "company": "Cobalt Pay",
+   "status": "done"
   }
  }
 }

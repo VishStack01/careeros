@@ -12,6 +12,7 @@ the 3-hourly scan inside them by reusing the last result until it is due.
 
 from __future__ import annotations
 
+import html as htmllib
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -167,6 +168,25 @@ def hn_jobs(limit: int = 120) -> list[Job]:
 
 
 _ROLE_HINT = re.compile(r"engineer|developer|scientist|ml|ai\b|data|designer|product|sre|devops|founding|intern|research", re.I)
+_PAY_HINT = re.compile(r"[$€£₹]\s?\d|\d\s?(?:k|K)\b|\bLPA\b|\bINR\b|\bUSD\b|\bsalary\b", re.I)
+_EMAIL = re.compile(r"\b([A-Za-z0-9._%+-]+)\s*(?:@|\[at\]|\(at\)|\s+at\s+)\s*([A-Za-z0-9-]+(?:\s*(?:\.|\[dot\]|\(dot\)|\s+dot\s+)\s*[A-Za-z0-9-]+)+)\b")
+_HREF = re.compile(r'href="([^"]+)"')
+
+
+def apply_address(text: str, html: str = "") -> str:
+    """Where a 'Who is hiring' post says to apply: an email (de-obfuscated) or the first link that isn't HN itself."""
+    for m in _EMAIL.finditer(text or ""):
+        domain = re.sub(r"\s*(?:\[dot\]|\(dot\)|\s+dot\s+)\s*", ".", m.group(2)).replace(" ", "")
+        if "." in domain and not domain.lower().endswith((".png", ".jpg")) and len(m.group(1)) < 40:
+            return f"{m.group(1)}@{domain}".lower() if "@" not in m.group(1) else m.group(0)
+    for u in _HREF.findall(html or ""):
+        u = htmllib.unescape(u)
+        if u.startswith("http") and "ycombinator.com" not in u:
+            return u
+    m = re.search(r"https?://[^\s<>()]+", text or "")
+    return m.group(0).rstrip(".,)") if m and "ycombinator.com" not in m.group(0) else ""
+
+
 _LOC_HINT = re.compile(r"remote|onsite|on-site|hybrid|anywhere|worldwide|india|bangalore|bengaluru|hyderabad|chennai|pune|\b[A-Z]{2,}\b,|, [A-Z]{2}\b|london|berlin|new york|san francisco|nyc|sf\b", re.I)
 
 
@@ -191,10 +211,12 @@ def hn_who_is_hiring() -> list[Job]:
         loc = "; ".join(p for p in parts[1:] if _LOC_HINT.search(p) and p != role)[:160]
         if not role:
             continue
+        pay = next((p for p in parts[1:] if _PAY_HINT.search(p) and len(p) < 80), "")
         out.append(Job(company=re.sub(r"\s*\(.*?\)$", "", parts[0])[:80], title=role[:120],
                        url=f"https://news.ycombinator.com/item?id={c.get('id')}", source="HN Who is hiring",
                        location=loc, work_mode=extract.work_mode(location=loc, text=text), description=text,
-                       posted_at=_plain_dt(c.get("created_at", "")), req_id=str(c.get("id", ""))))
+                       posted_at=_plain_dt(c.get("created_at", "")), salary_text=pay, req_id=str(c.get("id", "")),
+                       raw={"apply": apply_address(text, html)}))
     return out
 
 
