@@ -2268,6 +2268,8 @@ async function naRead(){
 async function naCreate(){
   const n = state.na, p = n.parsed; if (!state.db || !p) return;
   if (!p.company || !p.title){ toast('Add the company and the role.'); return; }
+  const dup = sameRole(p.company, p.title);
+  if (dup && !confirm(`You already have “${dup.title}” at ${dup.company} (${STAGE_LABEL[dup.stage || 'found'] || dup.stage}). Add this one anyway?`)){ openApp(dup.id); return; }
   const id = slug(p.company + '-' + p.title) + '-' + Math.random().toString(36).slice(2, 6), t = nowIso();
   const doc = {company: p.company.trim(), title: p.title.trim(), url: safeUrl(n.url) || '', location: p.location || '', workMode: p.workMode || '', salary: p.salary || '', experience: p.experience || '',
     applyBy: p.applyBy || '', jd: String(n.text || '').trim(), jdArchivedAt: t, stage: 'approved', approvedAt: t, autoApply: 'off', manual: true, source: 'Added by you', createdAt: t, foundAt: t, updatedAt: t,
@@ -2283,6 +2285,22 @@ async function naCreate(){
   if (tailorNow) tailorJob(id, opts);
 }
 
+/* ---------- same role, however it is written (mirrors careeros.dedupe.fingerprint) ---------- */
+const DUP_CO = /\b(private|pvt|limited|ltd|llp|inc|incorporated|corp|corporation|co|company|technologies|technology|labs?|solutions|software|systems|ai|india|the|operations|group|holdings|gmbh|ag|plc|llc|bv)\b/g;
+const DUP_PLACE = new Set('remote worldwide global anywhere hybrid onsite on site office in fully 100 work from home wfh multiple cities locations based only india bengaluru bangalore hyderabad chennai pune mumbai delhi new ncr gurugram gurgaon noida kolkata kochi ahmedabad jaipur coimbatore usa us united states uk kingdom kindom ireland germany france spain italy netherlands poland portugal czech republic czechia slovakia canada mexico brazil singapore australia japan uae dubai london berlin paris amsterdam dublin galway prague kosice košice bakersfield ca ny sf san francisco york seattle austin boston toronto sydney emea apac latam eu europe asia americas north america'.split(' '));
+const DUP_TERMS = new Set('fresher freshers contract contractual full part time permanent temporary internship intern new grad graduate entry level'.split(' '));
+const dupNorm = s => String(s || '').toLowerCase().replace(/[^a-z0-9+#.]+/g, ' ').replace(/\s+/g, ' ').trim();
+function roleKey(company, title){
+  const c = dupNorm(company).replace(DUP_CO, ' ').replace(/\s+/g, ' ').trim() || dupNorm(company);
+  const placey = (x, terms) => (x.match(/[a-z0-9š]+/g) || []).every(w => DUP_PLACE.has(w) || (terms && DUP_TERMS.has(w)));
+  let t = String(title || '').toLowerCase().replace(/\b[mfwdx]\/[mfwdx]\/[mfwdx]\b|\ball genders?\b/g, ' ').replace(/\(([^)]*)\)|\[([^\]]*)\]/g, m => placey(m, true) ? ' ' : ' ' + m.slice(1, -1) + ' ');
+  const parts = t.split(/\s+[-–—|]\s+|,\s+|\s+\/\s+/);
+  while (parts.length > 1 && placey(parts[parts.length - 1])) parts.pop();
+  t = parts.join(' ').replace(/([a-z])-(?=\d)/g, '$1 ');
+  [[/\bsde\b/g, 'software development engineer'], [/\bswe\b/g, 'software engineer'], [/\bsre\b/g, 'site reliability engineer'], [/\bfde\b/g, 'forward deployed engineer'], [/\bml\b/g, 'machine learning'], [/\bjr\b/g, 'junior'], [/\bsr\b/g, 'senior']].forEach(([a, b]) => { t = t.replace(a, b); });
+  return c + '|' + dupNorm(t).split(' ').map(w => ({i: '1', ii: '2', iii: '3', iv: '4'})[w] || w).join(' ');
+}
+function sameRole(company, title, exceptId){ const k = roleKey(company, title); return jobsArr().find(j => j.id !== exceptId && roleKey(j.company, j.title) === k) || null; }
 /* ---------- Calendar ---------- */
 function calEvents(){
   const ev = [];

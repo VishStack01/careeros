@@ -15,7 +15,8 @@ SCRIPT = Path(__file__).resolve().parents[1] / "prompts" / "agent_filter.py"
 
 TITLES = ["AI Engineer", "Senior ML Engineer", "Backend Engineer", "Product Engineer (Remote/US)", "QA Analyst (Mexico, Remote)",
           "Account Executive", "Junior Data Analyst", "Software Engineer (Remote, India)", "Sales Engineer", "Product Designer",
-          "Forward Deployed Engineers", "Staff Platform Engineer", "Associate Software Development Engineer (SDE)"]
+          "Forward Deployed Engineers", "Staff Platform Engineer", "Associate Software Development Engineer (SDE)",
+          "AI Engineer - Worldwide", "AI Engineer (m/f/d)", "SDE-1", "Software Development Engineer I", "Backend Engineer, Galway, Ireland"]
 PLACES = [("Bengaluru, India", ""), ("Hyderabad", "hybrid"), ("Pune, India", "onsite"), ("Remote", "remote"), ("Remote - India", "remote"),
           ("Remote - USA", "remote"), ("San Francisco, CA", "onsite"), ("Remote - APAC", "remote"), ("Anywhere in the World", "remote"),
           ("", ""), ("Chennai; Remote", "remote"), ("London, UK", "hybrid")]

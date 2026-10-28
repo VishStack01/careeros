@@ -30,11 +30,28 @@ rest = "any" if "rest of india (any" in locs else ("remote" if ("rest of india (
 abroad = "remote" if ("worldwide" in locs or "global" in locs or not locs) else "never"
 now = datetime.now(timezone.utc)
 iso = lambda d: d.strftime("%Y-%m-%dT%H:%M:%SZ")
-NOISE = re.compile(r"\b(private|pvt|limited|ltd|llp|inc|incorporated|corp|corporation|co|company|technologies|technology|labs?|solutions|software|systems|ai|india|the)\b")
+NOISE = re.compile(r"\b(private|pvt|limited|ltd|llp|inc|incorporated|corp|corporation|co|company|technologies|technology|labs?|solutions|software|systems|ai|india|the|operations|group|holdings|gmbh|ag|plc|llc|bv)\b")
 norm = lambda s: re.sub(r"\s+", " ", re.sub(r"[^a-z0-9+#.]+", " ", (s or "").lower())).strip()
+PLACE = set("remote worldwide global anywhere hybrid onsite on site office in fully 100 work from home wfh multiple cities locations "
+            "based only india bengaluru bangalore hyderabad chennai pune mumbai delhi new ncr gurugram gurgaon noida kolkata kochi "
+            "ahmedabad jaipur coimbatore usa us united states uk kingdom kindom ireland germany france spain italy netherlands poland "
+            "portugal czech republic czechia slovakia canada mexico brazil singapore australia japan uae dubai london berlin paris "
+            "amsterdam dublin galway prague kosice košice bakersfield ca ny sf san francisco york seattle austin boston toronto sydney "
+            "emea apac latam eu europe asia americas north america".split())
+TERMS = set("fresher freshers contract contractual full part time permanent temporary internship intern new grad graduate entry level".split())
+ABBR = [(r"\bsde\b", "software development engineer"), (r"\bswe\b", "software engineer"), (r"\bsre\b", "site reliability engineer"),
+        (r"\bfde\b", "forward deployed engineer"), (r"\bml\b", "machine learning"), (r"\bjr\b", "junior"), (r"\bsr\b", "senior")]
+def title_key(t):  # the role a title names, without where or how it's worked (same as careeros.dedupe.title_key)
+    t = re.sub(r"\b[mfwdx]/[mfwdx]/[mfwdx]\b|\ball genders?\b", " ", (t or "").lower())
+    t = re.sub(r"\(([^)]*)\)|\[([^\]]*)\]", lambda m: " " if all(w in PLACE or w in TERMS for w in re.findall(r"[a-z0-9š]+", m.group(0))) else " " + m.group(0)[1:-1] + " ", t)
+    parts = re.split(r"\s+[-–—|]\s+|,\s+|\s+/\s+", t)
+    while len(parts) > 1 and all(w in PLACE for w in re.findall(r"[a-z0-9š]+", parts[-1])): parts.pop()
+    t = re.sub(r"(?<=[a-z])-(?=\d)", " ", " ".join(parts))
+    for a, b in ABBR: t = re.sub(a, b, t)
+    return " ".join({"i": "1", "ii": "2", "iii": "3", "iv": "4"}.get(w, w) for w in norm(t).split())
 def fp(c, t):
     ck = re.sub(r"\s+", " ", NOISE.sub(" ", norm(c))).strip() or norm(c)
-    return hashlib.sha1((ck + "|" + norm(re.sub(r"\([^)]*\)", " ", t or ""))).encode()).hexdigest()[:16]
+    return hashlib.sha1((ck + "|" + title_key(t)).encode()).hexdigest()[:16]
 curl = lambda u: re.sub(r"[?#].*$", "", (u or "").strip()).rstrip("/").lower()
 
 ids, urls, fps, known = set(), set(), set(), []
