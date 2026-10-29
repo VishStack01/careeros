@@ -199,3 +199,20 @@ def test_linkedin_sign_in(cloud, monkeypatch):
     monkeypatch.setattr(linkedin, "userinfo", lambda tok: {"sub": "x2", "name": "B", "email": "b@example.com", "email_verified": False})
     r = c2.get(f"/api/auth/linkedin/callback?code=abc&state={state}", follow_redirects=False)
     assert "linkedin_no_email" in r.headers["location"] and c2.get("/api/me").status_code == 401
+
+
+def test_referral_ranking_lifts_junior_engineers_on_the_team():
+    people = [
+        {"name": "Sam Senior", "headline": "Senior Software Engineer at Acme", "url": "https://linkedin.com/in/sam"},
+        {"name": "Jo Junior", "headline": "Junior Fullstack Engineer at Acme", "url": "https://linkedin.com/in/jo"},
+        {"name": "Ana Assoc", "headline": "Associate Software Engineer at Acme", "url": "https://linkedin.com/in/ana"},
+        {"name": "Eve Eng", "headline": "Software Engineer I at Acme", "url": "https://linkedin.com/in/eve"},
+        {"name": "Ian Ing", "headline": "Engineering intern in Bangalore at Acme", "url": "https://linkedin.com/in/ian"},
+    ]
+    out = referrals.rank("Acme", "Junior Fullstack Engineer", {}, people=people)
+    names = [p["name"] for p in out]
+    assert names.index("Sam Senior") > 2
+    assert set(names[:3]) == {"Jo Junior", "Ana Assoc", "Eve Eng"}
+    assert any("Junior or associate" in w for w in out[0]["why"])
+    ian = next(p for p in out if p["name"] == "Ian Ing")
+    assert not any("Junior or associate" in w for w in ian["why"])

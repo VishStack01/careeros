@@ -31,6 +31,7 @@ NOTE_LIMIT = 300  # LinkedIn's limit for a connection-request note
 _ENG = re.compile(r"\b(engineer|developer|sde|swe|programmer|scientist|ml|ai|backend|frontend|full[ -]?stack|devops|sre|platform|data)\b", re.I)
 _MGR = re.compile(r"\b(engineering manager|em\b|head of engineering|tech lead|team lead|lead engineer|director of engineering|hiring manager)\b", re.I)
 _RECRUIT = re.compile(r"\b(recruiter|talent acquisition|talent partner|sourcer|hiring|people partner|ta\b)", re.I)
+_JUNIOR = re.compile(r"\b(junior|jr\.?|associate|graduate|trainee|entry[- ]level|(sde|swe|software engineer|software developer|engineer|developer)[ -]?(1|i)\b)", re.I)
 _TOO_SENIOR = re.compile(r"\b(vp|vice president|chief|cto|ceo|cfo|founder|co-founder|partner|president)\b", re.I)
 
 
@@ -96,6 +97,9 @@ def score(person: dict, company: str, title: str, applicant: dict | None = None)
     elif _RECRUIT.search(head):
         s += 12
         why.append("Recruiter: can move your application to a hiring manager")
+    if _JUNIOR.search(head) and not _MGR.search(head):
+        s += 12
+        why.append("Junior or associate level: close to your role and quick to reply")
     if _TOO_SENIOR.search(head):
         s -= 15
         why.append("Very senior; less likely to reply")

@@ -875,6 +875,7 @@ function outreachTodos(){
     const o = obj(j.outreach), c = obj(o.contact), em = obj(o.email), li = obj(o.linkedin);
     if (em.status === 'drafted') items.push({kind:'email', j, c, em});
     if (li.note && li.status !== 'sent' && li.status !== 'skipped') items.push({kind:'linkedin', j, c, li});
+    arr(o.referrers).forEach((p, i) => { if (p && p.note && p.status === 'draft') items.push({kind:'referral', j, c: {name: p.name}, p, i}); });
     arr(j.followUps).forEach((f, i) => { if (!f.done && toDate(f.due) && toDate(f.due) <= new Date()) items.push({kind:'followup', j, c, f, i}); });
   }
   return items;
@@ -981,11 +982,18 @@ function refNote(j, person){
   if (n.length > 300) n = `Hi ${them}, ${alum}I'm ${me}, applying for ${j.title} at ${j.company}. Open to a quick chat or a referral if I fit? Thanks!`;
   return n.slice(0, 300);
 }
+/* One person to ask for a referral: where we found them, their own drafted note, and a follow-up for after they accept. */
+function refCopy(text, label){ return text ? `<div class="copyblock" style="grid-column:1/-1"><div class="q">${esc(label)}</div><div class="copytext">${esc(text)}</div><button class="btn sm" data-act="copy" type="button">Copy</button></div>` : ''; }
+function refRow(t, ro, inJob){
+  const {j, p, i} = t, url = safeUrl(p.url), sent = p.status === 'sent';
+  const where = [p.headline, p.level === 'junior' ? 'junior level' : '', sent ? 'note sent ' + (when(p.sentAt) || '') : ''].filter(Boolean).map(esc).join(' · ');
+  return `<div class="todo"><span class="ic li">${I.user}</span><div class="tx"><b>${esc(p.name)}</b> at <b>${esc(j.company)}</b><small>${where}${safeUrl(p.source) ? ` · <a href="${esc(safeUrl(p.source))}" target="_blank" rel="noopener">source</a>` : ''}</small></div><div class="ract">${url ? `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${p.urlKind === 'search' ? 'Find on LinkedIn' : 'Open profile'}</a>` : ''}${inJob ? '' : `<button class="btn sm ghost" data-act="open" data-id="${esc(j.id)}">Role</button>`}${sent ? '' : `<button class="btn sm" data-act="ref-sent" data-id="${esc(j.id)}" data-i="${i}"${ro === undefined ? wr() : ro}>Mark sent</button>`}</div>${sent ? '' : refCopy(p.note, `Connection note (${String(p.note || '').length}/300)`) + refCopy(p.ask, 'After they accept')}</div>`;
+}
 function referralHtml(j, copy){
-  const people = arr(obj(j.outreach).referrers).slice(0, 5);
-  const list = people.length ? `<div class="rows">${people.map(p => `<div class="todo"><div class="tx"><b>${esc(p.name)}</b><small>${esc(p.headline || '')}${arr(p.why).length ? ' · ' + esc(arr(p.why).join('; ')) : ''}</small></div><div class="ract">${safeUrl(p.url) ? `<a class="btn sm" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">Open profile</a>` : ''}</div></div>`).join('')}</div>` : '';
+  const people = arr(obj(j.outreach).referrers).slice(0, 8), own = people.some(p => obj(p).note);
+  const list = people.length ? `<div class="rows">${people.map((p, i) => p.note ? refRow({j, p, i}, undefined, true) : `<div class="todo"><div class="tx"><b>${esc(p.name)}</b><small>${esc(p.headline || '')}${arr(p.why).length ? ' · ' + esc(arr(p.why).join('; ')) : ''}</small></div><div class="ract">${safeUrl(p.url) ? `<a class="btn sm" href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener">${p.urlKind === 'search' ? 'Find on LinkedIn' : 'Open profile'}</a>` : ''}</div></div>`).join('')}</div>` : '';
   const links = refLinks(j).map(([label, url]) => `<a class="btn sm ghost" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`).join('');
-  return `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Find a referral</b>${list}<div style="display:flex;gap:6px;flex-wrap:wrap">${links}</div><p class="muted" style="font-size:13px">These open LinkedIn's own search in your browser, signed in as you. Alumni and engineers on a similar team answer most often. You send the note; nothing is sent for you.</p>${copy(refNote(j, people[0]), 'Connection note (under 300 characters)')}</div>`;
+  return `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Find a referral</b>${list}<div style="display:flex;gap:6px;flex-wrap:wrap">${links}</div><p class="muted" style="font-size:13px">These open LinkedIn's own search in your browser, signed in as you. Junior engineers on the team you applied to answer most often. You send each note; nothing is sent for you.</p>${own ? '' : copy(refNote(j, people[0]), 'Connection note (under 300 characters)')}</div>`;
 }
 function payEst(j){ const b = obj(j.payBand); return !pay20(j) && !j.payTier && b.low ? b : null; }
 function payPill(j){
@@ -1254,6 +1262,7 @@ function renderWaiting(){
 function todoRow(t){
   const j = t.j, who = t.c.name ? esc(t.c.name) : 'the hiring manager';
   const ro = wr();
+  if (t.kind === 'referral') return refRow(t, ro);
   if (t.kind === 'email') return `<div class="todo"><span class="ic mail">${I.mail}</span><div class="tx">Send the email to ${who} at <b>${esc(j.company)}</b><small>It's in your Gmail drafts${t.em.subject ? ': ' + esc(t.em.subject) : ''}</small></div><div class="ract"><button class="btn sm ghost" data-act="open" data-id="${esc(j.id)}">Read</button><button class="btn sm" data-act="email-sent" data-id="${esc(j.id)}"${ro}>Mark sent</button></div></div>`;
   if (t.kind === 'linkedin'){
     const url = safeUrl(t.li.url) || safeUrl(t.c.url);
@@ -1325,7 +1334,7 @@ function renderPipeline(){
 /* ---------- Outreach ---------- */
 function renderOutreach(){
   const todos = outreachTodos();
-  const groups = [['email','Emails in your Gmail drafts','Written from your brain and the company brief. Review them, then send from Gmail.'],['linkedin','LinkedIn notes to send','Copy, paste and send them yourself. LinkedIn restricts accounts that automate messages.'],['followup','Follow-ups due','Each follow-up adds something new instead of just checking in.']];
+  const groups = [['referral','Referral notes to send','After each application, Claude finds junior and associate engineers at the company from public pages and drafts a note for each. Open their profile in your browser, paste the note, send it yourself.'],['email','Emails in your Gmail drafts','Written from your brain and the company brief. Review them, then send from Gmail.'],['linkedin','LinkedIn notes to send','Copy, paste and send them yourself. LinkedIn restricts accounts that automate messages.'],['followup','Follow-ups due','Each follow-up adds something new instead of just checking in.']];
   const sent = [];
   for (const j of jobsArr()){
     const o = obj(j.outreach), c = obj(o.contact);
@@ -1333,7 +1342,7 @@ function renderOutreach(){
     if (obj(o.linkedin).status === 'sent') sent.push({j, c, ch:'LinkedIn note', at: obj(o.linkedin).sentAt});
   }
   sent.sort((a, b) => (toDate(b.at) || 0) - (toDate(a.at) || 0));
-  return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Messages to hiring managers and recruiters. Claude drafts them; you send them.</p></div></div>` +
+  return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Referral notes, and messages to hiring managers and recruiters. Claude drafts them; you send them.</p></div></div>` +
     groups.map(([k, title, sub]) => { const items = todos.filter(t => t.kind === k); return `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">${title}</h2><p>${items.length ? items.length + ' to send' : sub}</p></div>${items.length ? `<div class="panel"><div class="rows">${items.map(todoRow).join('')}</div></div>` : ''}</div>`; }).join('') +
     renderWarm() +
     `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">Sent</h2><p>${sent.length ? sent.length + ' sent' : 'Nothing sent yet.'}</p></div>${sent.length ? `<div class="panel"><div class="rows">${sent.slice(0, 40).map(s => `<div class="todo"><span class="ic">${I.check.replace('<svg', '<svg class="i"')}</span><div class="tx">${esc(s.ch)} to ${s.c.name ? esc(s.c.name) : 'contact'} at <b>${esc(s.j.company)}</b><small>${esc(when(s.at)) || 'Sent'}</small></div><div class="ract"><button class="btn sm ghost" data-act="open" data-id="${esc(s.j.id)}">Open</button></div></div>`).join('')}</div></div>` : ''}</div>`;
@@ -2729,6 +2738,7 @@ document.addEventListener('click', e => {
     const next = Object.assign({}, settings(), {approvalMode: on ? 'auto-when-clear' : 'daily-batch', updatedAt: nowIso()});
     enqueue('settings/profile', () => state.db.doc('settings/profile').set(next)).then(() => toast(on ? (apMissing().length || !obj(applicant().resume).id || !brainReady() || !runnerLinked() ? 'Auto-apply is on. It starts once the steps are done.' : 'Auto-apply is on.') : 'Auto-apply is off. Roles wait for your approval in the batch.')).catch(() => {});
   }
+  else if (act === 'ref-sent'){ const j = state.jobs.get(id); if (!j) return; const i = Number(el.dataset.i), o = obj(j.outreach), p0 = obj(arr(o.referrers)[i]); const refs = arr(o.referrers).map((p, k) => k === i ? Object.assign({}, p, {status:'sent', sentAt: nowIso()}) : p); patchJob(id, {outreach: Object.assign({}, o, {referrers: refs})}, 'Referral note sent to ' + (p0.name || 'a contact'), 'Marked sent.'); }
   else if (act === 'fu-done'){ const j = state.jobs.get(id); if (!j) return; const i = Number(el.dataset.i); const f0 = arr(j.followUps)[i] || {}; const fus = arr(j.followUps).map((f, k) => k === i ? Object.assign({}, f, {done:true, doneAt: nowIso()}) : f); patchJob(id, {followUps: fus}, (f0.label || 'Follow-up') + ' sent', 'Follow-up marked done.'); }
 });
 document.addEventListener('keydown', e => {
