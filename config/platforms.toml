@@ -310,10 +310,10 @@ name = "Wellfound (AngelList Talent)"
 url = "https://wellfound.com/jobs"
 region = "global"
 kind = "india-board"
-access = "login"
+access = "alerts"
 competition = "high"
 states_pay = true
-notes = "Strong India startup coverage; every listing shows a salary range. Blocks automated access; the agent links roles, you apply."
+notes = "Strong India startup coverage; every listing shows a salary range. Its terms ban automated access, so CareerOS never opens it: set your Wellfound job preferences (India, junior, your roles) and CareerOS adds roles from your alert emails and from search-result titles as Apply yourself."
 
 [[platform]]
 name = "Peerlist"

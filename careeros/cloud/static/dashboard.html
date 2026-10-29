@@ -1100,6 +1100,9 @@ function waitingJobs(){ return jobsArr().filter(j => j.needsYou && !isApplied(j)
 function waitActions(j, ro){
   const u = safeUrl(j.applyUrl) || safeUrl(j.url);
   if (j.needsYouKind === 'score') return `<button class="btn sm ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Don't apply</button><button class="btn sm solid" data-act="apply-anyway" data-id="${esc(j.id)}"${ro}>Apply anyway</button>`;
+  /* Roles that only take applications on LinkedIn, Naukri, Wellfound and the like: CareerOS never applies there, so no Try again. */
+  if (j.needsYouKind === 'platform') return (u ? `<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">Open on ${esc(j.applyOn || 'the site')}</a>` : '')
+    + `<button class="btn sm ghost" data-act="open" data-id="${esc(j.id)}">Answers</button><button class="btn sm ghost" data-act="skip" data-id="${esc(j.id)}"${ro}>Not for me</button><button class="btn sm solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>`;
   return (u ? `<a class="btn sm" href="${esc(u)}" target="_blank" rel="noopener">Open the form</a>` : '')
     + `<button class="btn sm ghost" data-act="retry" data-id="${esc(j.id)}"${ro}>Try again</button><button class="btn sm solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>`;
 }
@@ -1126,7 +1129,7 @@ function renderAutoApply(inPage){
       <div class="autoside">
         <div class="switch"><span>Auto-apply</span><button type="button" role="switch" aria-checked="${autoOn()}" aria-label="Auto-apply" data-act="auto-toggle"${ro}></button></div>
         <div class="autostat"><div><b>${today}<span style="font-size:14px;color:var(--muted);font-weight:500"> / ${esc(s.dailyCap)}</span></b><span>applied today</span></div><div><b>${q}</b><span>queued by you</span></div></div>
-        <p class="never">It stops and asks you when a form wants a captcha, a one-time code, a login it doesn't have, or an answer your details can't back up. It never asks for passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri or Indeed.</p>
+        <p class="never">It stops and asks you when a form wants a captcha, a one-time code, a login it doesn't have, or an answer your details can't back up. It never asks for passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri, Wellfound or Indeed.</p>
       </div>
     </div>${waitHtml}`;
 }

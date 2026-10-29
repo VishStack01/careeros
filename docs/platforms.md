@@ -2,7 +2,7 @@
 
 Generated from [`config/platforms.toml`](../config/platforms.toml) by `scripts/render_platforms.py`. Edit the TOML, not this page.
 
-**96 platforms**, 50 of them low-competition. 11 have public feeds and are scanned automatically every 3 hours; 62 are read by the agent in rotation (every-run ones each time, the rest every third run); 14 need your login, so the agent finds and prepares and you submit; 6 big boards are covered by their own email alerts only.
+**104 platforms**, 55 of them low-competition. 12 have public feeds and are scanned automatically every 3 hours; 69 are read by the agent in rotation (every-run ones each time, the rest every third run); 13 need your login, so the agent finds and prepares and you submit; 7 big boards are covered by their own email alerts only.
 
 Why not 300-500? Past about a hundred, "job sites" are mostly clones and scrapers re-posting the same listings (often stale), or sites that only show jobs after login. They add duplicates, not openings. The real reach is the ~1,000 company career pages in [`config/companies/`](../config/companies/), read straight from each company's hiring system.
 
@@ -19,7 +19,7 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 | Working Nomads<br>[www.workingnomads.com/jobs](https://www.workingnomads.com/jobs) | global-remote | low | Scanned (public feed) · every run | API at /api/exposed_jobs/. |
 | We Work Remotely<br>[weworkremotely.com](https://weworkremotely.com) | global-remote | high | Scanned (public feed) · every run | RSS. Region field says 'Anywhere in the World' or 'USA Only'. |
 | Arbeitnow<br>[www.arbeitnow.com](https://www.arbeitnow.com) | global-remote | low | Scanned (public feed) · every run | API at /api/job-board-api; only its remote roles are kept. Mostly Europe; the location gate drops EU-only roles. |
-| Remote Rocketship<br>[www.remoterocketship.com](https://www.remoterocketship.com) | global-remote | low | Agent reads it · every run | Pulls from company ATS pages; filter by 'India' or 'Worldwide' and entry/junior level. |
+| Remote Rocketship<br>[www.remoterocketship.com](https://www.remoterocketship.com) | global-remote | low | Agent reads it · every run | Pulls from company ATS pages and shows pay where the ATS publishes it; filter 'India' or 'Worldwide' and entry/junior level. |
 | aijobs.net<br>[aijobs.net](https://aijobs.net) | global | low | Agent reads it · every run | AI/ML/data only. Filter by India and remote. |
 | DailyRemote<br>[dailyremote.com](https://dailyremote.com) | global-remote | medium | Agent reads it | Filter location 'Worldwide' or 'India'. |
 | Remote.co<br>[remote.co/remote-jobs](https://remote.co/remote-jobs/) | global-remote | medium | Agent reads it |  |
@@ -48,20 +48,20 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
-| Hiring Cafe<br>[hiring.cafe](https://hiring.cafe) | global | low | Agent reads it · every run | Indexes company career pages directly (no reposts). Filter India + remote + 0-2 years. |
+| Hiring Cafe<br>[hiring.cafe](https://hiring.cafe) | global | low | Agent reads it · every run | Indexes company career pages directly (no reposts) and filters by pay. Filter India + remote + 0-2 years, pay 15 LPA+. |
 | EchoJobs<br>[echojobs.io](https://echojobs.io) | global | low | Agent reads it | Tech roles straight from company ATS boards; has Bengaluru and remote filters. |
 | startup.jobs<br>[startup.jobs](https://startup.jobs) | global | medium | Agent reads it | Filter remote + India. |
-| Levels.fyi jobs<br>[www.levels.fyi/jobs](https://www.levels.fyi/jobs) | global | medium | Agent reads it | Shows pay bands; filter Bengaluru/Hyderabad/Chennai and remote. |
-| Adzuna API (India)<br>[developer.adzuna.com](https://developer.adzuna.com) | india | medium | Planned (needs a free API key) | Free app_id/app_key. Set ADZUNA_APP_ID and ADZUNA_APP_KEY as GitHub secrets to include it in the scan (planned). |
+| Levels.fyi jobs<br>[www.levels.fyi/jobs/title/software-engineer/location/greater-bengaluru](https://www.levels.fyi/jobs/title/software-engineer/location/greater-bengaluru) | global | medium | Agent reads it · every run | Shows pay bands next to roles. Also try /location/hyderabad and remote; sort by pay. |
+| Adzuna API (India)<br>[developer.adzuna.com](https://developer.adzuna.com) | india | medium | Planned (needs a free API key) | Its terms don't allow redistributing results without written consent, so it stays out of the public feed. Usable privately with your own free key. |
 | Jooble API<br>[jooble.org/api/about](https://jooble.org/api/about) | india | medium | Planned (needs a free API key) | Free key; planned scan source. |
 | Careerjet API<br>[www.careerjet.co.in](https://www.careerjet.co.in) | india | medium | Planned (needs a free API key) | Affiliate key; planned scan source. |
 
-## VC portfolio job boards (26)
+## VC portfolio job boards (30)
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
-| Y Combinator jobs<br>[www.ycombinator.com/jobs](https://www.ycombinator.com/jobs) | global | medium | Agent reads it · every run | Public listings; filter 'India' and 'Remote'. Applying goes through Work at a Startup. |
-| Work at a Startup (YC)<br>[www.workatastartup.com](https://www.workatastartup.com) | global | medium | You apply (login) | One YC profile reaches every YC company; founders message you. |
+| Y Combinator jobs<br>[www.ycombinator.com/jobs/role/software-engineer/india](https://www.ycombinator.com/jobs/role/software-engineer/india) | global | medium | Scanned (public feed) · every run | Scanned every 6 hours (careeros/sources/yc.py): software roles in India, Bengaluru, Hyderabad, Chennai and remote, with the salary band and minimum experience YC shows. YC companies hiring in India or remotely are also mapped to their own boards (careeros yc-companies). |
+| Work at a Startup (YC)<br>[www.workatastartup.com](https://www.workatastartup.com) | global | medium | You apply (login) | Its postings are scanned every 6 hours through their public mirror (YC jobs). Applying needs your own profile: make one, stay signed in on the Claude desktop browser, and apply with the drafted note; founders also message you directly. |
 | Peak XV Partners portfolio jobs<br>[careers.peakxv.com/jobs](https://careers.peakxv.com/jobs) | india | low | Agent reads it · every run · to verify |  |
 | Accel India portfolio jobs<br>[jobs.accel.com/jobs](https://jobs.accel.com/jobs) | india | low | Agent reads it · every run · to verify |  |
 | Lightspeed portfolio jobs<br>[jobs.lsvp.com/jobs](https://jobs.lsvp.com/jobs) | global | low | Agent reads it · to verify |  |
@@ -86,14 +86,18 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 | Greylock portfolio jobs<br>[jobs.greylock.com/jobs](https://jobs.greylock.com/jobs) | global | medium | Agent reads it · to verify |  |
 | Khosla Ventures portfolio jobs<br>[jobs.khoslaventures.com/jobs](https://jobs.khoslaventures.com/jobs) | global | medium | Agent reads it · to verify |  |
 | Insight Partners portfolio jobs<br>[jobs.insightpartners.com/jobs](https://jobs.insightpartners.com/jobs) | global | medium | Agent reads it · to verify |  |
+| Techstars portfolio jobs<br>[jobs.techstars.com/jobs](https://jobs.techstars.com/jobs) | global | low | Agent reads it · to verify |  |
+| Kleiner Perkins portfolio jobs<br>[jobs.kleinerperkins.com/jobs](https://jobs.kleinerperkins.com/jobs) | global | low | Agent reads it · to verify |  |
+| Entrepreneur First portfolio jobs<br>[jobs.joinef.com/jobs](https://jobs.joinef.com/jobs) | global | low | Agent reads it · to verify |  |
+| 100X.VC portfolio jobs<br>[jobs.100x.vc/jobs](https://jobs.100x.vc/jobs) | india | low | Agent reads it · to verify |  |
 
 ## Indian startup boards (6)
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
-| Wellfound (AngelList Talent)<br>[wellfound.com/jobs](https://wellfound.com/jobs) | global | high | You apply (login) | Strong India startup coverage. Blocks automated access; the agent links roles, you apply. |
+| Wellfound (AngelList Talent)<br>[wellfound.com/jobs](https://wellfound.com/jobs) | global | high | Email alerts | Strong India startup coverage; every listing shows a salary range. Its terms ban automated access, so CareerOS never opens it: set your Wellfound job preferences (India, junior, your roles) and CareerOS adds roles from your alert emails and from search-result titles as Apply yourself. |
 | Weekday<br>[www.weekday.works](https://www.weekday.works) | india | low | Agent reads it · every run | Indian startup roles with salary bands; many not posted elsewhere. |
-| Cutshort<br>[cutshort.io/jobs](https://cutshort.io/jobs) | india | medium | You apply (login) | Tech startup roles; AI matching. Public pages show role details. |
+| Cutshort<br>[cutshort.io/jobs](https://cutshort.io/jobs) | india | medium | You apply (login) | Tech startup roles with salary ranges on the listing. Public pages show role details. |
 | Instahyre<br>[www.instahyre.com](https://www.instahyre.com) | india | medium | You apply (login) | Recruiters reach out; keep the profile current. |
 | Hirist<br>[www.hirist.tech](https://www.hirist.tech) | india | medium | You apply (login) |  |
 | TechGig jobs<br>[www.techgig.com/jobs](https://www.techgig.com/jobs) | india | medium | Agent reads it |  |
@@ -105,7 +109,7 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 | GeeksforGeeks jobs<br>[www.geeksforgeeks.org/jobs](https://www.geeksforgeeks.org/jobs) | india | medium | Agent reads it | Many fresher and 0-2 year roles. |
 | HackerEarth jobs and hiring challenges<br>[www.hackerearth.com/challenges/hiring](https://www.hackerearth.com/challenges/hiring/) | india | medium | You apply (login) | Hiring challenges skip the resume screen. |
 | Unstop<br>[unstop.com/jobs](https://unstop.com/jobs) | india | medium | You apply (login) · every run | Fresher jobs and hiring competitions. |
-| Internshala jobs<br>[internshala.com/jobs](https://internshala.com/jobs/) | india | high | You apply (login) | Fresher jobs (filter 7 LPA+) and internships. |
+| Internshala jobs<br>[internshala.com/fresher-jobs](https://internshala.com/fresher-jobs/) | india | high | You apply (login) | Fresher jobs always state the CTC; keep only 15 LPA+ (few, but real). Internships too. |
 | Cuvette<br>[cuvette.tech](https://cuvette.tech) | india | medium | You apply (login) |  |
 | Talentd<br>[www.talentd.in](https://www.talentd.in) | india | medium | Agent reads it | Fresher and off-campus tech roles; links to company pages. |
 | Freshersworld<br>[www.freshersworld.com](https://www.freshersworld.com) | india | high | Agent reads it |  |
@@ -114,18 +118,18 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
-| Arc<br>[arc.dev/remote-jobs](https://arc.dev/remote-jobs) | global-remote | medium | You apply (login) | Remote roles open to India; profile vetting first. |
-| Uplers<br>[www.uplers.com](https://www.uplers.com) | india | medium | You apply (login) | Remote roles at global companies for Indian engineers; vetting first. |
+| Arc<br>[arc.dev/remote-jobs](https://arc.dev/remote-jobs) | global-remote | medium | You apply (login) | Remote roles open to India with salary ranges; profile vetting first. |
+| Uplers<br>[www.uplers.com](https://www.uplers.com) | india | medium | You apply (login) | Remote roles at global companies for Indian engineers, with rupee pay stated; vetting first. |
 | Turing<br>[www.turing.com/jobs](https://www.turing.com/jobs) | global-remote | medium | You apply (login) |  |
 
 ## AI work marketplaces (2)
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
-| Mercor<br>[work.mercor.com](https://work.mercor.com) | global-remote | medium | You apply (login) | AI-lab contract roles (evaluation, data, engineering); AI interview once, then many roles. |
-| micro1<br>[www.micro1.ai/jobs](https://www.micro1.ai/jobs) | global-remote | medium | You apply (login) |  |
+| Mercor<br>[work.mercor.com](https://work.mercor.com) | global-remote | medium | You apply (login) | AI-lab contract roles (evaluation, data, engineering) with hourly pay stated; AI interview once, then many roles. |
+| micro1<br>[www.micro1.ai/jobs](https://www.micro1.ai/jobs) | global-remote | medium | You apply (login) | AI engineering contract roles with pay stated. |
 
-## X-ray searches (11)
+## X-ray searches (15)
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
@@ -140,6 +144,10 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 | X-ray: Freshteam career pages<br>`site:freshteam.com/jobs (engineer OR developer)` | india | low | Agent reads it |  |
 | X-ray: 'remote, open to India'<br>`"remote" ("open to candidates in India" OR "anywhere in the world" OR "worldwide") ("AI engineer" OR "software engineer") -senior` | global-remote | low | Agent reads it · every run |  |
 | X-ray: founders hiring on LinkedIn posts<br>`site:linkedin.com/posts ("we are hiring" OR "we're hiring") (Bengaluru OR Hyderabad OR Chennai OR remote) (AI OR "software engineer") fresher` | india | low | Agent reads it | Read-only via search results. The agent never logs into LinkedIn; it drafts the reply for you to send. |
+| Hiring challenges with stated CTC<br>`(site:unstop.com OR site:hackerearth.com) hiring challenge ("software engineer" OR SDE OR "AI engineer") (CTC OR LPA) 2026` | india | medium | Agent reads it · every run | Coding or hiring challenges that lead straight to interviews, skipping the resume screen; most state the CTC (often 15-40 LPA). Record the deadline as applyBy. |
+| 2026-batch off-campus drives<br>`"2026 batch" OR "2026 graduates" off campus ("software engineer" OR SDE OR "AI engineer") (CTC OR LPA) India apply` | india | high | Agent reads it · every run | New-grad programs at product companies, banks and quant firms. Verify on the company's own careers page; ignore paid 'training' or 'placement' offers. |
+| X-ray: Ashby and Lever boards stating rupee pay<br>`(site:jobs.ashbyhq.com OR site:jobs.lever.co) ("₹" OR INR OR LPA) ("software engineer" OR "AI engineer" OR SDE) India` | india | low | Agent reads it | Startup postings that publish rupee pay, straight from the company's own board. |
+| X-ray: quant and trading firms hiring new grads in India<br>`("Tower Research" OR "Graviton" OR "Quadeye" OR "NK Securities" OR "AlphaGrep" OR "Optiver" OR "IMC Trading" OR "Squarepoint" OR "Hudson River Trading") ("software engineer" OR "SDE") ("new grad" OR "2026" OR graduate) India` | india | high | Agent reads it | The highest fresher pay in India (often 50 LPA to 1 Cr+) and the hardest screens. Several post only on their own sites. |
 
 ## Big boards (email alerts only) (6)
 
