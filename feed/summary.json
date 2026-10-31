@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-10-31T10:27:18Z",
+  "legitimacy": {
+    "high": 15210,
+    "caution": 15948,
+    "suspicious": 1812
+  },
+  "relisted": 768,
+  "companies": 4638,
+  "boards": 1829,
+  "openings": 32970,
+  "deepSweep": {
+    "checked": 22561,
+    "kept": 1199
+  },
+  "greenhousePay": {
+    "lookedUp": 7,
+    "withPay": 137
+  },
+  "remoteBoards": {
+    "remotive": 9,
+    "workingnomads": 28,
+    "remoteok": 41,
+    "jobicy": 42,
+    "weworkremotely": 55,
+    "hn-who-is-hiring": 92,
+    "hn-jobs": 3,
+    "arbeitnow": 40,
+    "yc-jobs": 93,
+    "himalayas": 112
+  },
+  "byAts": {
+    "Himalayas": 81,
+    "Ashby": 4427,
+    "Lever": 4043,
+    "We Work Remotely": 35,
+    "Greenhouse": 7018,
+    "Arbeitnow": 36,
+    "Jobicy": 25,
+    "Workday": 10218,
+    "Workable": 2295,
+    "Breezy": 56,
+    "SmartRecruiters": 3844,
+    "Amazon jobs": 429,
+    "Remotive": 7,
+    "Remote OK": 34,
+    "Working Nomads": 24,
+    "Recruitee": 236,
+    "HN Who is hiring": 90,
+    "Hacker News jobs": 3,
+    "Personio": 1,
+    "YC Work at a Startup": 68
+  },
+  "byGeo": {
+    "abroad": 7040,
+    "remote/unknown": 7294,
+    "south": 11882,
+    "india": 6754
+  },
+  "errors": 0,
+  "errorSamples": [],
+  "erroredCompanies": []
+}
