@@ -1,0 +1,769 @@
+name,category,city,website,slugs,ats,token,source
+CircuitHub,deep,,https://circuithub.com,circuithub,,,yc-hiring:Winter 2012
+Rescale,deep,,https://rescale.com,rescale,,,yc-hiring:Winter 2012
+Gusto,deep,,https://gusto.com,gusto,,,yc-hiring:Winter 2012
+Amplitude,deep,,https://amplitude.com,amplitude,,,yc-hiring:Winter 2012
+Y Combinator,deep,,https://www.ycombinator.com,y-combinator ycombinator,,,yc-hiring:Unspecified
+Apollo,deep,,http://apollographql.com/,apollo,,,yc-hiring:Summer 2011
+OneSignal,deep,,https://onesignal.com,onesignal,,,yc-hiring:Summer 2011
+Streak,deep,,http://streak.com,streak,,,yc-hiring:Summer 2011
+Quartzy,deep,,https://www.quartzy.com,quartzy,,,yc-hiring:Summer 2011
+Sift,deep,,https://sift.com/,sift,,,yc-hiring:Summer 2011
+MixRank,deep,,https://mixrank.com,mixrank,,,yc-hiring:Summer 2011
+GOAT Group,deep,,https://www.goatgroup.com/,goat-group goatgroup,,,yc-hiring:Winter 2011
+Stripe,deep,,http://stripe.com,stripe,,,yc-hiring:Summer 2009
+Zapier,deep,,http://zapier.com,zapier,,,yc-hiring:Summer 2012
+Instacart,deep,,https://www.instacart.com,instacart,,,yc-hiring:Summer 2012
+Padlet,deep,,https://padlet.com,padlet,,,yc-hiring:Winter 2013
+InfluxData,deep,,https://influxdata.com,influxdata,,,yc-hiring:Winter 2013
+RADAR,deep,,https://goradar.com,radar,,,yc-hiring:Winter 2013
+Goldbelly,deep,,https://www.goldbelly.com/,goldbelly,,,yc-hiring:Winter 2013
+Lob,deep,,http://lob.com,lob,,,yc-hiring:Summer 2013
+Webflow,deep,,https://webflow.com,webflow,,,yc-hiring:Summer 2013
+AptDeco,deep,,https://www.aptdeco.com/,aptdeco,,,yc-hiring:Winter 2014
+Noora Health,deep,,http://noorahealth.org,noora-health noorahealth,,,yc-hiring:Winter 2014
+Flexport,deep,,https://www.flexport.com/careers/jobs/,flexport,,,yc-hiring:Winter 2014
+Algolia,deep,,http://www.algolia.com,algolia,,,yc-hiring:Winter 2014
+Checkr,deep,,http://www.checkr.com,checkr,,,yc-hiring:Summer 2014
+PicnicAI,deep,,https://picnic.ai,picnicai,,,yc-hiring:Summer 2014
+ShipBob,deep,,http://shipbob.com,shipbob,,,yc-hiring:Summer 2014
+Hive,deep,,http://www.hive.co,hive,,,yc-hiring:Summer 2014
+Ginkgo Bioworks,deep,,http://ginkgobioworks.com,ginkgo-bioworks ginkgobioworks,,,yc-hiring:Summer 2014
+Notable Labs,deep,,http://notablelabs.com,notable-labs notablelabs,,,yc-hiring:Winter 2015
+Qventus,deep,,http://qventus.com,qventus,,,yc-hiring:Winter 2015
+Magic,deep,,https://getmagic.com/,magic,,,yc-hiring:Winter 2015
+Tempo,deep,,https://tempo.fit/,tempo,,,yc-hiring:Winter 2015
+EquipmentShare,deep,,https://www.equipmentshare.com,equipmentshare,,,yc-hiring:Winter 2015
+Giveffect,deep,,http://giveffect.com,giveffect,,,yc-hiring:Winter 2015
+Razorpay,deep,,https://razorpay.com,razorpay,,,yc-hiring:Winter 2015
+Tab,deep,,https://www.tab.travel,tab,,,yc-hiring:Winter 2015
+Mashgin,deep,,http://mashgin.com,mashgin,,,yc-hiring:Winter 2015
+Lugg,deep,,http://lugg.com,lugg,,,yc-hiring:Summer 2015
+Ironclad,deep,,http://ironcladapp.com,ironclad,,,yc-hiring:Summer 2015
+New Story,deep,,http://newstoryhomes.org,new-story newstory,,,yc-hiring:Summer 2015
+Gemnote,deep,,http://gemnote.com,gemnote,,,yc-hiring:Summer 2015
+SnapMagic,deep,,https://www.snapmagic.com,snapmagic,,,yc-hiring:Summer 2015
+Reach,deep,,https://reachpower.com,reach,,,yc-hiring:Summer 2015
+Verge Genomics,deep,,http://vergegenomics.com,verge-genomics vergegenomics,,,yc-hiring:Summer 2015
+Drip Capital,deep,,http://dripcapital.com,drip-capital dripcapital,,,yc-hiring:Summer 2015
+GiveCampus,deep,,http://go.givecampus.com,givecampus,,,yc-hiring:Summer 2015
+Circle Medical,deep,,https://circlemedical.com,circle-medical circlemedical,,,yc-hiring:Summer 2015
+Shape (ShapeScale),deep,,https://shapescale.com,shape-shapescale shapeshapescale,,,yc-hiring:Summer 2015
+Xendit,deep,,https://www.xendit.co/,xendit,,,yc-hiring:Summer 2015
+Go1,deep,,https://go1.com,go1,,,yc-hiring:Summer 2015
+Bitmovin,deep,,http://bitmovin.com,bitmovin,,,yc-hiring:Summer 2015
+Instawork,deep,,http://instawork.com,instawork,,,yc-hiring:Summer 2015
+Eight Sleep,deep,,http://eightsleep.com,eight-sleep eightsleep,,,yc-hiring:Summer 2015
+Human Interest,deep,,http://humaninterest.com,human-interest humaninterest,,,yc-hiring:Summer 2015
+Lattice,deep,,https://lattice.com,lattice,,,yc-hiring:Winter 2016
+SOUNDBOKS,deep,,http://soundboks.com,soundboks,,,yc-hiring:Winter 2016
+Deepgram,deep,,https://www.deepgram.com,deepgram,,,yc-hiring:Winter 2016
+iSono Health,deep,,http://www.isonohealth.com,isono-health isonohealth,,,yc-hiring:Winter 2016
+Tovala,deep,,http://www.tovala.com,tovala,,,yc-hiring:Winter 2016
+Mason,deep,,http://www.bymason.com,mason,,,yc-hiring:Winter 2016
+PocketSuite,deep,,https://pocketsuite.io,pocketsuite,,,yc-hiring:Winter 2016
+Castle,deep,,https://castle.io,castle-2 castle2,,,yc-hiring:Winter 2016
+Netomi,deep,,https://netomi.com,netomi,,,yc-hiring:Winter 2016
+Function of Beauty,deep,,http://www.functionofbeauty.com,function-of-beauty functionofbeauty,,,yc-hiring:Winter 2016
+Podium,deep,,https://podium.com,podium,,,yc-hiring:Winter 2016
+Apollo.io,deep,,https://www.apollo.io/,apollo-io apolloio,,,yc-hiring:Winter 2016
+Thunkable,deep,,http://thunkable.com,thunkable,,,yc-hiring:Winter 2016
+Gecko Robotics,deep,,https://www.geckorobotics.com,gecko-robotics geckorobotics,,,yc-hiring:Winter 2016
+Sendbird,deep,,https://sendbird.com,sendbird,,,yc-hiring:Winter 2016
+Rappi,deep,,http://www.rappi.com,rappi,,,yc-hiring:Winter 2016
+BillionToOne,deep,,https://www.billiontoone.com,billiontoone,,,yc-hiring:Summer 2017
+Vetcove,deep,,https://www.vetcove.com,vetcove,,,yc-hiring:Summer 2016
+Joy,deep,,http://withjoy.com,joy,,,yc-hiring:Summer 2016
+Instrumentl,deep,,https://www.instrumentl.com,instrumentl,,,yc-hiring:Summer 2016
+Nova Credit,deep,,http://www.novacredit.com/,nova-credit novacredit,,,yc-hiring:Summer 2016
+OneChronos,deep,,https://www.onechronos.com/,onechronos,,,yc-hiring:Summer 2016
+Women Who Code,deep,,https://www.womenwhocode.com/,women-who-code womenwhocode,,,yc-hiring:Summer 2016
+Legalist,deep,,https://www.legalist.com,legalist,,,yc-hiring:Summer 2016
+GoGoGrandparent,deep,,https://gogograndparent.com,gogograndparent,,,yc-hiring:Summer 2016
+Meesho,deep,,http://www.meesho.com,meesho,,,yc-hiring:Summer 2016
+Athelas,deep,,http://athelas.com,athelas,,,yc-hiring:Summer 2016
+Scale AI,deep,,http://scale.com,scale-ai scaleai,,,yc-hiring:Summer 2016
+People.ai,deep,,https://people.ai,people-ai peopleai,,,yc-hiring:Summer 2016
+ClassDojo,deep,,http://www.classdojo.com,classdojo,,,yc-hiring:Summer 2012
+Voiceops,deep,,https://voiceops.com,voiceops,,,yc-hiring:Winter 2017
+Speak,deep,,http://speak.com,speak,,,yc-hiring:Winter 2017
+Bountiful,deep,,https://bountiful.ag/,bountiful,,,yc-hiring:Winter 2017
+Rippling,deep,,http://rippling.com/,rippling,,,yc-hiring:Winter 2017
+MDalgorithms Inc.,deep,,https://www.mdalgorithms.com,mdalgorithms-inc mdalgorithmsinc,,,yc-hiring:Winter 2017
+Ledger Investing,deep,,https://ledgerinvesting.com/,ledger-investing ledgerinvesting,,,yc-hiring:Winter 2017
+Clipboard,deep,,https://www.clipboardworks.com/careers,clipboard,,,yc-hiring:Winter 2017
+Ambient.ai,deep,,https://ambient.ai,ambient-ai ambientai,,,yc-hiring:Winter 2017
+Mednet,deep,,https://www.themednet.org,mednet,,,yc-hiring:Winter 2017
+"Veryfi, Inc.",deep,,https://www.veryfi.com/,veryfi-inc veryfiinc,,,yc-hiring:Winter 2017
+Collectly,deep,,http://collectly.co/,collectly,,,yc-hiring:Winter 2017
+AlemHealth,deep,,https://www.alemhealth.com,alemhealth,,,yc-hiring:Winter 2017
+AON3D,deep,,https://www.aon3d.com,aon3d,,,yc-hiring:Winter 2017
+NanoNets,deep,,https://nanonets.com,nanonets,,,yc-hiring:Winter 2017
+"Wifi Dabba, Inc.",deep,,https://dabba.com,wifi-dabba-inc wifidabbainc,,,yc-hiring:Winter 2017
+OneFin,deep,,https://www.onefin.in,onefin,,,yc-hiring:Winter 2017
+Faire,deep,,https://www.faire.com/,faire,,,yc-hiring:Winter 2017
+Ridecell,deep,,https://www.ridecell.com,ridecell,,,yc-hiring:Winter 2012
+VergeSense,deep,,http://www.vergesense.com,vergesense,,,yc-hiring:Summer 2017
+Bloom Institute of Technology,deep,,https://www.bloomtech.com,bloom-institute-of-technology bloominstituteoftechnology,,,yc-hiring:Summer 2017
+UpCodes,deep,,https://up.codes/,upcodes,,,yc-hiring:Summer 2017
+Standard AI,deep,,https://standard.ai,standard-ai standardai,,,yc-hiring:Summer 2017
+Nimble,deep,,http://www.hirenimble.com,nimble,,,yc-hiring:Summer 2017
+SafeButler,deep,,https://www.safebutler.com,safebutler,,,yc-hiring:Summer 2017
+Flock Safety,deep,,http://www.flocksafety.com,flock-safety flocksafety,,,yc-hiring:Summer 2017
+Prelim,deep,,https://prelim.com/,prelim,,,yc-hiring:Summer 2017
+D-ID,deep,,http://www.d-id.com,d-id did,,,yc-hiring:Summer 2017
+Muzz,deep,,https://muzz.com,muzz,,,yc-hiring:Summer 2017
+May Mobility,deep,,http://maymobility.com,may-mobility maymobility,,,yc-hiring:Summer 2017
+AssemblyAI,deep,,https://www.assemblyai.com,assemblyai,,,yc-hiring:Summer 2017
+Just Appraised,deep,,https://www.justappraised.com,just-appraised justappraised,,,yc-hiring:Summer 2017
+Cashfree Payments,deep,,https://www.cashfree.com/,cashfree-payments cashfreepayments,,,yc-hiring:Summer 2017
+Proven Group,deep,,https://www.provenskincare.com,proven-group provengroup,,,yc-hiring:Winter 2018
+CoinTracker,deep,,https://cointracker.com,cointracker,,,yc-hiring:Winter 2018
+Modern Health,deep,,https://www.modernhealth.com/,modern-health modernhealth,,,yc-hiring:Winter 2018
+Vanta,deep,,https://vanta.com,vanta,,,yc-hiring:Winter 2018
+BioRender,deep,,https://www.biorender.com,biorender,,,yc-hiring:Winter 2018
+Sourcify,deep,,https://www.sourcify.com/,sourcify,,,yc-hiring:Winter 2018
+Acely,deep,,https://acely.com,acely,,,yc-hiring:Winter 2018
+Players' Lounge,deep,,https://playerslounge.co/,players-lounge playerslounge,,,yc-hiring:Winter 2018
+Pelago,deep,,https://www.pelagohealth.com,pelago,,,yc-hiring:Winter 2018
+Tilt (f.k.a. Delphia),deep,,http://tilt.io,tilt-fka-delphia tiltfkadelphia,,,yc-hiring:Winter 2018
+SafetyWing,deep,,http://www.safetywing.com,safetywing,,,yc-hiring:Winter 2018
+Aspire,deep,,https://aspireapp.com,aspire,,,yc-hiring:Winter 2018
+Orangewood Labs,deep,,http://www.orangewood.co,orangewood-labs orangewoodlabs,,,yc-hiring:Winter 2018
+Groww,deep,,https://groww.in,groww,,,yc-hiring:Winter 2018
+ArchForm,deep,,http://archform.com,archform,,,yc-hiring:Winter 2018
+CaptivateIQ,deep,,https://www.captivateiq.com,captivateiq,,,yc-hiring:Winter 2018
+Runa,deep,,http://runahr.com/,runa,,,yc-hiring:Winter 2018
+Helloverify,deep,,https://www.helloverify.ae,helloverify,,,yc-hiring:Winter 2018
+Swayable,deep,,http://swayable.com,swayable,,,yc-hiring:Winter 2018
+Replit,deep,,https://replit.com,replit,,,yc-hiring:Winter 2018
+OWNY,deep,,https://www.owny.com,owny,,,yc-hiring:Summer 2018
+Within,deep,,http://within.ai,within,,,yc-hiring:Summer 2018
+Modern Treasury,deep,,http://www.moderntreasury.com/,modern-treasury moderntreasury,,,yc-hiring:Summer 2018
+Verse Medical,deep,,http://versemedical.com/,jetlenses,,,yc-hiring:Summer 2018
+RevenueCat,deep,,https://www.revenuecat.com/,revenuecat,,,yc-hiring:Summer 2018
+Activeloop,deep,,https://activeloop.ai/,activeloop,,,yc-hiring:Summer 2018
+Data Driven Bioscience,deep,,http://datadrivenbioscience.com,data-driven-bioscience datadrivenbioscience,,,yc-hiring:Summer 2018
+Inscribe,deep,,https://www.inscribe.ai/,inscribe,,,yc-hiring:Summer 2018
+JITX,deep,,http://www.jitx.com,jitx,,,yc-hiring:Summer 2018
+Meru Health,deep,,http://www.meruhealth.com,meru-health meruhealth,,,yc-hiring:Summer 2018
+Duffel,deep,,https://duffel.com/,duffel,,,yc-hiring:Summer 2018
+Quickchat AI,deep,,https://quickchat.ai/,quickchat-ai quickchatai,,,yc-hiring:Summer 2018
+"DreamCraft Entertainment, Inc.",deep,,https://www.dreamcraft.com/,dreamcraft-entertainment-inc dreamcraftentertainmentinc,,,yc-hiring:Summer 2018
+Pine Park Health,deep,,http://pineparkhealth.com,pine-park-health pineparkhealth,,,yc-hiring:Summer 2018
+Mytos,deep,,https://www.mytos.bio,cytera-cellworks cyteracellworks,,,yc-hiring:Summer 2018
+BlueCargo,deep,,http://www.bluecargo.io/,bluecargo,,,yc-hiring:Summer 2018
+Alpha Vantage,deep,,https://www.alphavantage.co/,alpha-vantage alphavantage,,,yc-hiring:Summer 2018
+Canary Technologies,deep,,https://www.canarytechnologies.com,canary-technologies canarytechnologies,,,yc-hiring:Summer 2018
+Prodigal,deep,,https://prodigaltech.com/,prodigal,,,yc-hiring:Summer 2018
+Bot MD,deep,,https://www.botmd.io,bot-md botmd,,,yc-hiring:Summer 2018
+ZiffyHomes,deep,,https://www.ziffyhomes.com/,ziffyhomes,,,yc-hiring:Summer 2018
+Nestor,deep,,https://nestorup.com,nestor,,,yc-hiring:Summer 2018
+Eden,deep,,https://edenmed.com,eden-2 eden2,,,yc-hiring:Summer 2018
+Mutiny,deep,,https://www.mutinyhq.com,mutiny,,,yc-hiring:Summer 2018
+Leena AI,deep,,https://www.leena.ai,leena-ai leenaai,,,yc-hiring:Summer 2018
+JuziBot,deep,,https://www.juzibot.com/,juzibot,,,yc-hiring:Winter 2019
+Oxygen,deep,,http://getoxygen.com,oxygen,,,yc-hiring:Summer 2018
+Overview,deep,,https://overview.ai,overview,,,yc-hiring:Winter 2019
+Flockjay,deep,,https://flockjay.com,flockjay,,,yc-hiring:Winter 2019
+Kalshi,deep,,https://www.kalshi.com,kalshi,,,yc-hiring:Winter 2019
+Centaur,deep,,https://centaur.ai/,centaur,,,yc-hiring:Winter 2019
+Sorting Robotics,deep,,https://www.sortingrobotics.com/,sorting-robotics sortingrobotics,,,yc-hiring:Winter 2019
+Dyneti Technologies,deep,,http://www.dyneti.com,dyneti-technologies dynetitechnologies,,,yc-hiring:Winter 2019
+Postscript,deep,,https://postscript.io,postscript,,,yc-hiring:Winter 2019
+Middesk,deep,,http://www.middesk.com,middesk,,,yc-hiring:Winter 2019
+GoLinks,deep,,https://www.golinks.io,golinks,,,yc-hiring:Winter 2019
+Community Phone Company,deep,,https://www.communityphone.org/,community-phone-company communityphonecompany,,,yc-hiring:Winter 2019
+Sapling.ai,deep,,https://sapling.ai,sapling-ai saplingai,,,yc-hiring:Winter 2019
+Nabis,deep,,https://www.nabis.com/,nabis,,,yc-hiring:Winter 2019
+Swadesh,deep,,http://www.swadesh.co,swadesh,,,yc-hiring:Summer 2019
+Okteto,deep,,https://okteto.com,okteto,,,yc-hiring:Winter 2019
+Ashby,deep,,https://www.ashbyhq.com,ashby,,,yc-hiring:Winter 2019
+Bunkerhill Health,deep,,http://bunkerhillhealth.com,bunkerhill-health bunkerhillhealth,,,yc-hiring:Winter 2019
+Handle,deep,,https://www.handle.com,handle,,,yc-hiring:Winter 2019
+Landed,deep,,https://www.gotlanded.com,landed-2 landed2,,,yc-hiring:Winter 2019
+Deel,deep,,https://www.deel.com/,deel,,,yc-hiring:Winter 2019
+Axel Travel,deep,,https://helloaxel.com/,axel-travel axeltravel,,,yc-hiring:Winter 2019
+PNOĒ,deep,,,pnoe,,,yc-hiring:Winter 2019
+Alpaca,deep,,https://alpaca.markets/,alpaca,,,yc-hiring:Winter 2019
+Dover,deep,,https://dover.com,dover,,,yc-hiring:Summer 2019
+Zippi,deep,,https://www.zippi.com.br,zippi,,,yc-hiring:Summer 2019
+Beacons,deep,,https://beacons.ai/,beacons,,,yc-hiring:Summer 2019
+Cityfurnish,deep,,https://cityfurnish.com/,cityfurnish,,,yc-hiring:Winter 2019
+Inito,deep,,https://www.inito.com/,inito,,,yc-hiring:Winter 2019
+Verto,deep,,http://www.vertofx.com,verto,,,yc-hiring:Winter 2019
+FIRST,deep,,https://firstdelivery.com/,first,,,yc-hiring:Winter 2019
+Numero,deep,,https://www.numero.ai,numero,,,yc-hiring:Winter 2019
+Vouch,deep,,http://vouch.us,vouch,,,yc-hiring:Summer 2019
+Apero Health,deep,,https://www.aperohealth.com,apero-health aperohealth,,,yc-hiring:Summer 2019
+Method Financial,deep,,https://methodfi.com,method-financial methodfinancial,,,yc-hiring:Summer 2019
+Pillar,deep,,https://www.pillar.io,pillar-2 pillar2,,,yc-hiring:Summer 2019
+Odeko,deep,,http://www.odeko.com,odeko,,,yc-hiring:Summer 2019
+Short Story,deep,,https://shortstorybox.com,short-story shortstory,,,yc-hiring:Summer 2019
+Pair Team,deep,,https://pairteam.com/,pair-team pairteam,,,yc-hiring:Summer 2019
+TRM Labs,deep,,https://trmlabs.com/,trm-labs trmlabs,,,yc-hiring:Summer 2019
+Prolific,deep,,https://www.prolific.com,prolific,,,yc-hiring:Summer 2019
+Yummy Future,deep,,https://yummy-future.com,yummy-future yummyfuture,,,yc-hiring:Summer 2019
+Canix,deep,,https://www.canix.com/,canix,,,yc-hiring:Summer 2019
+Rutter,deep,,https://rutter.com,rutter,,,yc-hiring:Summer 2019
+DirectShifts,deep,,https://directshifts.com,directshifts,,,yc-hiring:Summer 2019
+Wasmer,deep,,https://wasmer.io,wasmer,,,yc-hiring:Summer 2019
+LineLeap,deep,,https://www.lineleap.com/,lineleap,,,yc-hiring:Summer 2019
+Binks,deep,,https://getbinks.com/,binks,,,yc-hiring:Summer 2019
+Vahan,deep,,https://vahan.ai,vahan,,,yc-hiring:Summer 2019
+FamPay,deep,,https://fampay.in,fampay,,,yc-hiring:Summer 2019
+Recidiviz,deep,,https://www.recidiviz.org/,recidiviz,,,yc-hiring:Summer 2019
+InEvent,deep,,https://inevent.com,inevent,,,yc-hiring:Summer 2019
+Freshpaint,deep,,https://freshpaint.io,freshpaint,,,yc-hiring:Summer 2019
+Curri,deep,,http://www.curri.com,curri,,,yc-hiring:Summer 2019
+Deepnote,deep,,https://www.deepnote.com/,deepnote,,,yc-hiring:Summer 2019
+Taskade,deep,,https://www.taskade.com,taskade,,,yc-hiring:Summer 2019
+Wonderly,deep,,https://www.wonderly.com/,wonderly,,,yc-hiring:Winter 2020
+Karat Financial,deep,,http://trykarat.com,karat-financial karatfinancial,,,yc-hiring:Winter 2020
+Accord,deep,,https://inaccord.com,accord,,,yc-hiring:Winter 2020
+Paragon,deep,,http://useparagon.com,paragon,,,yc-hiring:Winter 2020
+Pulley,deep,,https://pulley.com,pulley,,,yc-hiring:Winter 2020
+Ophelia,deep,,https://ophelia.com,ophelia,,,yc-hiring:Winter 2020
+OpenUnit,deep,,https://www.openunit.com/,openunit,,,yc-hiring:Winter 2020
+Ditto,deep,,http://dittowords.com,ditto,,,yc-hiring:Winter 2020
+Handoff,deep,,https://www.handoff.ai/,handoff,,,yc-hiring:Winter 2020
+Haven,deep,,http://www.havenservicing.com,haven,,,yc-hiring:Winter 2020
+Eze,deep,,https://www.ezeit.ai/,eze,,,yc-hiring:Winter 2020
+Benepass,deep,,https://www.benepass.com,benepass,,,yc-hiring:Winter 2020
+Whatnot,deep,,https://www.whatnot.com/careers/discover,whatnot,,,yc-hiring:Winter 2020
+Ello,deep,,https://www.ello.com,ello,,,yc-hiring:Winter 2020
+BuildBuddy,deep,,https://buildbuddy.io,buildbuddy,,,yc-hiring:Winter 2020
+Vori,deep,,https://www.vori.com,vori,,,yc-hiring:Winter 2020
+Riot,deep,,https://tryriot.com/,riot,,,yc-hiring:Winter 2020
+PostHog,deep,,https://www.posthog.com,posthog,,,yc-hiring:Winter 2020
+AIOS,deep,,https://aiosmedical.notion.site/,aios,,,yc-hiring:Winter 2020
+Junction,deep,,https://www.junction.com/,junction,,,yc-hiring:Winter 2020
+Skypher,deep,,https://skypher.co,skypher,,,yc-hiring:Winter 2020
+Recurrency,deep,,http://www.recurrency.com,recurrency,,,yc-hiring:Summer 2020
+PostEra,deep,,https://postera.ai/,postera,,,yc-hiring:Winter 2020
+Morphle Labs,deep,,https://morphlelabs.com,morphle-labs morphlelabs,,,yc-hiring:Winter 2020
+adyn,deep,,https://adyn.com,adyn,,,yc-hiring:Summer 2020
+BeGo,deep,,http://www.bego.ai,be-go bego,,,yc-hiring:Winter 2020
+Ramani,deep,,http://www.ramani.io,ramani,,,yc-hiring:Winter 2020
+Nomic Bio,deep,,http://www.nomic.bio,nomic-bio nomicbio,,,yc-hiring:Winter 2020
+Stable,deep,,https://useStable.com,stable,,,yc-hiring:Winter 2020
+Recall.ai,deep,,https://www.recall.ai,recall-ai recallai,,,yc-hiring:Winter 2020
+borong,deep,,https://www.borong.com/,borong,,,yc-hiring:Winter 2020
+99minutos,deep,,https://99minutos.com,99minutos,,,yc-hiring:Winter 2020
+Living Carbon,deep,,https://www.livingcarbon.com,living-carbon livingcarbon,,,yc-hiring:Winter 2020
+Belvo,deep,,https://belvo.com,belvo,,,yc-hiring:Winter 2020
+Zip,deep,,https://ziphq.com/,zip,,,yc-hiring:Summer 2020
+Luminai,deep,,https://www.luminai.com,luminai,,,yc-hiring:Summer 2020
+Roboflow,deep,,https://roboflow.com,roboflow,,,yc-hiring:Summer 2020
+SuperTokens,deep,,https://supertokens.com,supertokens,,,yc-hiring:Summer 2020
+Datafold,deep,,https://datafold.com,datafold,,,yc-hiring:Summer 2020
+Lightdash,deep,,http://lightdash.com/,hubble,,,yc-hiring:Summer 2020
+Blue Onion,deep,,https://www.blueonion.ai/,blue-onion blueonion,,,yc-hiring:Summer 2020
+AtoB,deep,,https://atob.com/,atob,,,yc-hiring:Summer 2020
+QuestDB,deep,,https://questdb.com/,questdb,,,yc-hiring:Summer 2020
+Seam,deep,,https://seam.co,seam,,,yc-hiring:Summer 2020
+Safepay,deep,,https://getsafepay.pk/,safepay,,,yc-hiring:Summer 2020
+Explorex,deep,,https://explorex.co,explorex,,,yc-hiring:Summer 2020
+Pave,deep,,https://pave.com,pave-2 pave2,,,yc-hiring:Summer 2020
+Hypotenuse AI,deep,,https://hypotenuse.ai/,hypotenuse-ai hypotenuseai,,,yc-hiring:Summer 2020
+Swif.ai,deep,,https://www.swif.ai,swif-ai swifai,,,yc-hiring:Summer 2020
+Blissway,deep,,https://www.blissway.com/,blissway,,,yc-hiring:Summer 2020
+doola,deep,,https://www.doola.com/,doola,,,yc-hiring:Summer 2020
+Seal,deep,,https://seal.run,seal-2 seal2,,,yc-hiring:Summer 2020
+Atomic,deep,,https://www.atomicvest.com/,atomic,,,yc-hiring:Summer 2020
+Hellometer,deep,,https://hellometer.io/,hellometer,,,yc-hiring:Summer 2020
+Vitable Health,deep,,https://vitablehealth.com,vitable-health vitablehealth,,,yc-hiring:Summer 2020
+BIK,deep,,https://bik.ai/,bik,,,yc-hiring:Summer 2020
+Notabene,deep,,https://notabene.id,notabene,,,yc-hiring:Summer 2020
+Flint,deep,,https://withflint.com,flint,,,yc-hiring:Summer 2020
+Minimum,deep,,https://minimum.com,minimum,,,yc-hiring:Summer 2020
+Laylo,deep,,https://laylo.com,laylo,,,yc-hiring:Summer 2020
+Arketa,deep,,https://arketa.com,arketa,,,yc-hiring:Summer 2020
+CarbonChain,deep,,https://carbonchain.com,carbonchain,,,yc-hiring:Summer 2020
+Ready,deep,,https://ready.net,ready,,,yc-hiring:Summer 2020
+Taktile,deep,,http://www.taktile.com,taktile,,,yc-hiring:Summer 2020
+Draftwise,deep,,https://www.draftwise.com/,draftwise,,,yc-hiring:Summer 2020
+Spenmo,deep,,https://summitglobal.com/,spenmo,,,yc-hiring:Summer 2020
+Afriex,deep,,https://www.afriexapp.com,afriex,,,yc-hiring:Summer 2020
+Vena Vitals,deep,,http://venavitals.com,vena-vitals venavitals,,,yc-hiring:Summer 2020
+Rally,deep,,https://rally.video,rally,,,yc-hiring:Summer 2020
+Inspectify,deep,,http://www.inspectify.com,inspectify,,,yc-hiring:Summer 2020
+Zuddl,deep,,http://www.zuddl.com,zuddl,,,yc-hiring:Summer 2020
+Finch,deep,,https://tryfinch.com,finch,,,yc-hiring:Summer 2020
+Fieldguide,deep,,http://fieldguide.com,fieldguide,,,yc-hiring:Summer 2020
+Matter,deep,,https://getmatter.app,matter,,,yc-hiring:Summer 2020
+Gather,deep,,https://www.gather.town/,gather-2 gather2,,,yc-hiring:Summer 2019
+Abacum,deep,,https://www.abacum.ai/,abacum,,,yc-hiring:Winter 2021
+Runway,deep,,https://runway.team,runway,,,yc-hiring:Winter 2021
+Atomic Industries,deep,,http://atomic.industries,atomic-industries atomicindustries,,,yc-hiring:Winter 2021
+authzed,deep,,https://authzed.com,authzed,,,yc-hiring:Winter 2021
+Humaans,deep,,https://humaans.io,humaans,,,yc-hiring:Winter 2021
+Albedo,deep,,https://albedo.com,albedo,,,yc-hiring:Winter 2021
+RocketSDR,deep,,https://rocketsdr.ai,rocketsdr,,,yc-hiring:Winter 2021
+MedMe Health,deep,,https://www.medmehealth.com,medme-health medmehealth,,,yc-hiring:Winter 2021
+Hapi,deep,,https://hapi.trade/,hapi,,,yc-hiring:Winter 2021
+SigNoz,deep,,https://signoz.io,signoz,,,yc-hiring:Winter 2021
+GroMo,deep,,https://www.gromo.in,gromo,,,yc-hiring:Winter 2021
+Nourish,deep,,https://nourish.com,nourish,,,yc-hiring:Winter 2021
+SpruceID,deep,,https://www.spruceid.com,spruceid,,,yc-hiring:Winter 2021
+Weekday,deep,,https://weekday.works,weekday,,,yc-hiring:Winter 2021
+Smartcuts,deep,,https://trysmartcuts.com/,smartcuts,,,yc-hiring:Winter 2021
+Pesto,deep,,https://www.getpesto.com/,pesto,,,yc-hiring:Winter 2021
+Fractional,deep,,https://fractional.app,fractional,,,yc-hiring:Winter 2021
+Cyble,deep,,https://cyble.com/,cyble,,,yc-hiring:Winter 2021
+Gridware,deep,,https://www.gridware.io,gridware,,,yc-hiring:Winter 2021
+Firstbase.io,deep,,https://firstbase.io/,firstbase-io firstbaseio,,,yc-hiring:Winter 2021
+Per Diem,deep,,https://tryperdiem.com,per-diem perdiem,,,yc-hiring:Winter 2021
+Kodo,deep,,https://www.kodo.com,kodo,,,yc-hiring:Winter 2021
+Quadrant Health,deep,,https://quadrant.health,quadrant-health quadranthealth,,,yc-hiring:Winter 2021
+Topkey,deep,,https://www.topkey.io/,topkey,,,yc-hiring:Winter 2021
+Pangea.app,deep,,https://www.pangea.app,pangea-app pangeaapp,,,yc-hiring:Winter 2021
+Anima,deep,,http://www.animahealth.com,anima,,,yc-hiring:Winter 2021
+Popl,deep,,https://popl.co/,popl,,,yc-hiring:Winter 2021
+Measured,deep,,https://trymeasured.com/,measured,,,yc-hiring:Winter 2021
+LiveFlow,deep,,https://www.liveflow.com,liveflow,,,yc-hiring:Winter 2021
+Great Question,deep,,https://greatquestion.co,great-question greatquestion,,,yc-hiring:Winter 2021
+Datrics,deep,,https://datrics.ai,datrics,,,yc-hiring:Winter 2021
+Enode,deep,,http://www.enode.com,enode,,,yc-hiring:Winter 2021
+Coderhouse,deep,,https://www.coderhouse.com/,coderhouse,,,yc-hiring:Winter 2021
+Text Blaze,deep,,https://blaze.today,text-blaze textblaze,,,yc-hiring:Winter 2021
+Topline Pro,deep,,https://www.toplinepro.com,topline-pro toplinepro,,,yc-hiring:Winter 2021
+Quicknode,deep,,https://www.quicknode.com,quicknode,,,yc-hiring:Winter 2021
+Resquared,deep,,http://re2.ai,resquared,,,yc-hiring:Winter 2021
+Codingal,deep,,https://www.codingal.com/?utm_source=yc,codingal,,,yc-hiring:Winter 2021
+Tractian,deep,,https://tractian.com,tractian,,,yc-hiring:Winter 2021
+Solo,deep,,https://www.solosuit.com/,solo,,,yc-hiring:Winter 2021
+Stoke Space,deep,,https://www.stokespace.com/,stoke-space stokespace,,,yc-hiring:Winter 2021
+Tint,deep,,http://www.tint.ai,tint,,,yc-hiring:Winter 2021
+Betterhalf,deep,,https://betterhalf.ai,betterhalf,,,yc-hiring:Winter 2021
+Biodock,deep,,https://www.biodock.ai,biodock,,,yc-hiring:Winter 2021
+Venu AI,deep,,https://www.venu3d.com,venu-ai venuai,,,yc-hiring:Winter 2021
+Compose.ai,deep,,https://compose.ai,compose-ai composeai,,,yc-hiring:Winter 2021
+Lamar Health,deep,,http://www.lamarhealth.com,lamar-health lamarhealth,,,yc-hiring:Winter 2021
+Soraban,deep,,https://www.soraban.com,soraban,,,yc-hiring:Winter 2021
+Stayflexi,deep,,https://business.stayflexi.com/,stayflexi,,,yc-hiring:Winter 2021
+Haystack,deep,,https://usehaystack.io/,haystack,,,yc-hiring:Winter 2021
+Ziina,deep,,https://www.ziina.com,ziina,,,yc-hiring:Winter 2021
+Infracost,deep,,https://infracost.io,infracost,,,yc-hiring:Winter 2021
+FlutterFlow,deep,,https://flutterflow.io,flutterflow,,,yc-hiring:Winter 2021
+Svix,deep,,https://www.svix.com,svix,,,yc-hiring:Winter 2021
+BusinessOnBot,deep,,https://www.businessonbot.com/,businessonbot,,,yc-hiring:Winter 2021
+Gigs,deep,,https://gigs.com,gigs,,,yc-hiring:Winter 2021
+Prospa,deep,,https://getprospa.com,prospa,,,yc-hiring:Winter 2021
+Jiga,deep,,https://jiga.io,jiga,,,yc-hiring:Winter 2021
+Turing College,deep,,https://www.turingcollege.com/,turing-college turingcollege,,,yc-hiring:Winter 2021
+Moonvalley,deep,,https://www.moonvalley.com,moonvalley,,,yc-hiring:Winter 2021
+Waydev,deep,,https://waydev.co/,waydev,,,yc-hiring:Winter 2021
+Authologic,deep,,https://authologic.com,authologic,,,yc-hiring:Winter 2021
+Triomics,deep,,https://triomics.com/,triomics,,,yc-hiring:Winter 2021
+SwiftSku,deep,,https://swiftsku.com,swiftsku,,,yc-hiring:Winter 2021
+Shepherd,deep,,https://shepherdinsurance.com,shepherd,,,yc-hiring:Winter 2021
+PaletteHQ,deep,,https://palettehq.com/en,palettehq,,,yc-hiring:Summer 2021
+Epsilon3,deep,,https://www.epsilon3.io/,epsilon3-inc epsilon3inc,,,yc-hiring:Summer 2021
+Reframe,deep,,https://www.joinreframeapp.com/,reframe,,,yc-hiring:Summer 2021
+Agapé,deep,,https://www.getdailyagape.com,agape,,,yc-hiring:Summer 2021
+Legion Health,deep,,https://legionhealth.com,legion-health legionhealth,,,yc-hiring:Summer 2021
+Odys Aviation,deep,,https://www.odysaviation.com/,odys-aviation odysaviation,,,yc-hiring:Summer 2021
+Serif Health,deep,,https://www.serifhealth.com,serif-health serifhealth,,,yc-hiring:Winter 2022
+Varos,deep,,http://varos.com,varos,,,yc-hiring:Summer 2021
+Baraka,deep,,https://www.getbaraka.com/,baraka,,,yc-hiring:Summer 2021
+Rootly,deep,,https://rootly.com,rootly,,,yc-hiring:Summer 2021
+ARQ,deep,,https://www.arqfinance.com/,arq,,,yc-hiring:Summer 2021
+Kalam Labs,deep,,http://www.kalamlabs.in,kalam-labs kalamlabs,,,yc-hiring:Summer 2021
+Coulomb AI,deep,,https://coulomb.ai/,coulomb-ai coulombai,,,yc-hiring:Summer 2021
+Parallel Bio,deep,,http://parallel.bio,parallel-bio parallelbio,,,yc-hiring:Summer 2021
+Rivia.AI,deep,,https://rivia.ai,rivia-ai riviaai,,,yc-hiring:Summer 2021
+AlgoUniversity,deep,,http://algouniversity.com/,algouniversity,,,yc-hiring:Summer 2021
+Neodocs,deep,,https://www.neodocs.in,neodocs,,,yc-hiring:Summer 2021
+Strive Math,deep,,https://www.strivemath.com/,strive-math strivemath,,,yc-hiring:Summer 2021
+Double,deep,,https://www.doublehq.com,doublehq,,,yc-hiring:Summer 2021
+Lago,deep,,https://www.getlago.com/,lago,,,yc-hiring:Summer 2021
+Forage,deep,,http://www.joinforage.com,forage-2 forage2,,,yc-hiring:Summer 2021
+Tavus,deep,,https://www.tavus.io,tavus,,,yc-hiring:Summer 2021
+SafeBeat,deep,,https://safebeat.com,safebeat,,,yc-hiring:Summer 2021
+Kodex,deep,,https://www.kodexglobal.com,kodex,,,yc-hiring:Summer 2021
+Pirouette Pharma,deep,,https://www.pirouettepharma.com/,pirouette-pharma pirouettepharma,,,yc-hiring:Summer 2021
+Aqua,deep,,https://www.investwithaqua.com,aqua,,,yc-hiring:Summer 2021
+SalaryBox,deep,,https://salarybox.in/,salarybox,,,yc-hiring:Summer 2021
+Rinse,deep,,http://www.rinse.dental,rinse,,,yc-hiring:Summer 2021
+Hyperbrowser,deep,,https://hyperbrowser.ai,hyperbrowser,,,yc-hiring:Summer 2021
+Bree,deep,,https://www.trybree.com/,bree,,,yc-hiring:Summer 2021
+Enerjazz,deep,,https://www.enerjazz.tech/,enerjazz,,,yc-hiring:Summer 2021
+testRigor,deep,,https://testrigor.com,testrigor,,,yc-hiring:Summer 2021
+DigiBuild,deep,,https://digibuild.com,digibuild,,,yc-hiring:Summer 2021
+WarpBuild,deep,,https://www.warpbuild.com,warpbuild,,,yc-hiring:Summer 2021
+MindFi,deep,,https://www.mindfi.co,mindfi,,,yc-hiring:Summer 2021
+Truss,deep,,https://trusspayments.com,truss,,,yc-hiring:Summer 2021
+Nira Energy,deep,,https://www.niraenergy.com/,nira-energy niraenergy,,,yc-hiring:Winter 2022
+LootRush,deep,,https://www.lootrush.com,lootrush,,,yc-hiring:Summer 2021
+Scispot,deep,,https://scispot.io,scispot-io scispotio,,,yc-hiring:Summer 2021
+Coinrule,deep,,https://coinrule.com/,coinrule,,,yc-hiring:Summer 2021
+Formance,deep,,https://formance.com,formance,,,yc-hiring:Summer 2021
+GetDot,deep,,https://getdot.ai,getdot,,,yc-hiring:Summer 2021
+OneSchema,deep,,https://www.oneschema.co,oneschema,,,yc-hiring:Summer 2021
+Shimmer,deep,,https://shimmer.care,shimmer,,,yc-hiring:Summer 2021
+KaiPod Learning,deep,,http://www.kaipodlearning.com,kaipod-learning kaipodlearning,,,yc-hiring:Summer 2021
+Aleph,deep,,https://getaleph.com/,aleph,,,yc-hiring:Summer 2021
+Protex AI,deep,,https://www.protex.ai,protex-ai protexai,,,yc-hiring:Summer 2021
+Zensors,deep,,https://www.zensors.com,zensors-inc zensorsinc,,,yc-hiring:Summer 2021
+HeyCharge,deep,,https://heycharge.com/,heycharge,,,yc-hiring:Summer 2021
+Akute Health,deep,,https://www.akutehealth.com,akute-health akutehealth,,,yc-hiring:Summer 2021
+TransAstra Corporation,deep,,https://www.transastra.com,transastra-corporation transastracorporation,,,yc-hiring:Summer 2021
+HitPay,deep,,https://www.hitpayapp.com,hitpay,,,yc-hiring:Summer 2021
+Mach9,deep,,https://www.mach9.ai/,mach9,,,yc-hiring:Summer 2021
+Dots 💸,deep,,https://usedots.com,dots-2 dots2,,,yc-hiring:Summer 2021
+Noloco,deep,,https://noloco.io,noloco,,,yc-hiring:Summer 2021
+Telmai,deep,,https://www.telm.ai/,telmai,,,yc-hiring:Summer 2021
+Buoyant Aero,deep,,https://www.buoyant.aero,buoyant-aero buoyantaero,,,yc-hiring:Summer 2021
+Infer,deep,,https://www.infer.so/,infer,,,yc-hiring:Summer 2021
+Storylane,deep,,https://www.storylane.io/,storylane,,,yc-hiring:Summer 2021
+Atlas,deep,,https://atlas.kitchen,atlas,,,yc-hiring:Summer 2021
+Hirebolt,deep,,https://hirebolt.com/,hirebolt,,,yc-hiring:Summer 2021
+Crew,deep,,https://crew.work/,crew,,,yc-hiring:Summer 2021
+Evidence,deep,,https://www.evidence.dev,evidence,,,yc-hiring:Summer 2021
+Aviator,deep,,https://aviator.co,aviator,,,yc-hiring:Summer 2021
+Payflow,deep,,https://www.payflow.es/,payflow,,,yc-hiring:Summer 2021
+Nash,deep,,https://www.usenash.com/,nash,,,yc-hiring:Summer 2021
+Lightly,deep,,https://lightly.ai/,lightly,,,yc-hiring:Summer 2021
+JABU,deep,,http://www.gojabu.com,jabu,,,yc-hiring:Summer 2021
+Attack Capital,deep,,https://attack.capital/,attack-capital attackcapital,,,yc-hiring:Winter 2022
+Apollo,deep,,https://www.apollofirst.xyz/,apollo-3 apollo3,,,yc-hiring:Winter 2022
+Spot Health,deep,,https://spotdx.com,spot-health spothealth,,,yc-hiring:Winter 2022
+Mederva,deep,,https://medervahealth.com/,mederva,,,yc-hiring:Winter 2022
+GrowthBook,deep,,https://www.growthbook.io,growthbook,,,yc-hiring:Winter 2022
+SilkChart,deep,,https://www.silkchart.com,silkchart,,,yc-hiring:Summer 2022
+Agave,deep,,https://www.useagave.com,agave,,,yc-hiring:Winter 2022
+Strac,deep,,https://www.strac.io/,strac,,,yc-hiring:Winter 2022
+Rebill,deep,,https://www.rebill.com,rebill,,,yc-hiring:Winter 2022
+Trébol,deep,,https://gotrebol.com/,trebol,,,yc-hiring:Winter 2022
+Peakflo,deep,,https://peakflo.co,peakflo,,,yc-hiring:Winter 2022
+Nest Genomics,deep,,https://nestgenomics.com,nest-genomics nestgenomics,,,yc-hiring:Winter 2022
+Axross Pte Ltd,deep,,https://www.axross.co/,axross-pte-ltd axrosspteltd,,,yc-hiring:Winter 2022
+Gym Class,deep,,https://gymclass.com,gym-class gymclass,,,yc-hiring:Winter 2022
+TeamOut,deep,,https://www.teamout.com/,teamout,,,yc-hiring:Winter 2022
+Dynamo AI,deep,,https://dynamo.ai,dynamo-ai dynamoai,,,yc-hiring:Winter 2022
+Invert,deep,,http://www.invertbio.com/,invert,,,yc-hiring:Winter 2022
+Shuttle Central,deep,,https://book.shuttlecentral.com/,shuttle-central shuttlecentral,,,yc-hiring:Winter 2022
+Ankr Health,deep,,https://ankr.us,ankr-health ankrhealth,,,yc-hiring:Winter 2022
+Happl,deep,,https://happl.com/,happl,,,yc-hiring:Winter 2022
+Complif,deep,,https://complif.com,complif,,,yc-hiring:Winter 2022
+Versable,deep,,https://www.versableai.com/,versable,,,yc-hiring:Winter 2022
+Beam,deep,,https://beam.cloud,beam,,,yc-hiring:Winter 2022
+Dart,deep,,https://www.dartai.com,dart,,,yc-hiring:Winter 2022
+Reforged Labs,deep,,https://reforgedlabs.com/,reforged-labs reforgedlabs,,,yc-hiring:Winter 2022
+HOKALI,deep,,https://www.hokali.com/,hokali,,,yc-hiring:Winter 2022
+Flagright,deep,,https://flagright.com,flagright,,,yc-hiring:Winter 2022
+Gauss,deep,,https://gauss.money,gauss,,,yc-hiring:Winter 2022
+IOMETE,deep,,https://www.iomete.com/,iomete,,,yc-hiring:Winter 2022
+PermitFlow,deep,,http://www.permitflow.com,permitflow,,,yc-hiring:Winter 2022
+IMT Care,deep,,https://www.imt.care,imt-care imtcare,,,yc-hiring:Winter 2022
+digi,deep,,https://www.digitech.la/,digi,,,yc-hiring:Winter 2022
+Velt,deep,,https://velt.dev,velt,,,yc-hiring:Winter 2022
+Cogram,deep,,https://cogram.com,cogram,,,yc-hiring:Winter 2022
+Posh,deep,,https://www.poshenergy.com,posh,,,yc-hiring:Winter 2022
+Cotera,deep,,https://cotera.co,cotera,,,yc-hiring:Winter 2022
+LunaJoy Health,deep,,http://HelloLunaJoy.com,lunajoy-health lunajoyhealth,,,yc-hiring:Winter 2022
+Curacel,deep,,https://curacel.co,curacel,,,yc-hiring:Winter 2022
+voize,deep,,https://voize.de/,voize,,,yc-hiring:Winter 2022
+Prembly (formerly Identitypass),deep,,https://prembly.com/,prembly,,,yc-hiring:Winter 2022
+Strong Compute,deep,,https://strongcompute.com,strong-compute strongcompute,,,yc-hiring:Winter 2022
+goodfin,deep,,http://www.goodfin.com,goodfin,,,yc-hiring:Winter 2022
+Cinder,deep,,https://cinder.ai,cinder-2 cinder2,,,yc-hiring:Winter 2022
+Material Depot,deep,,https://materialdepot.in/,material-depot materialdepot,,,yc-hiring:Winter 2022
+Broccoli AI,deep,,https://www.broccoli.com/,broccoli-ai broccoliai,,,yc-hiring:Winter 2022
+Bemlo,deep,,https://www.bemlo.com/en,bemlo,,,yc-hiring:Winter 2022
+Attain,deep,,https://joinattain.com/,attain,,,yc-hiring:Winter 2022
+PropelAuth,deep,,https://www.propelauth.com,propelauth,,,yc-hiring:Winter 2022
+Spade,deep,,https://www.spade.com,spade,,,yc-hiring:Winter 2022
+BelozFi,deep,,https://www.belozfi.com.mx/,belozfi,,,yc-hiring:Winter 2022
+yhangry,deep,,http://www.yhangry.com,yhangry,,,yc-hiring:Winter 2022
+Fleek,deep,,https://www.joinfleek.com/,fleek,,,yc-hiring:Winter 2022
+Rally,deep,,https://www.rallyuxr.com/,rallyuxr,,,yc-hiring:Winter 2022
+Blink,deep,,https://blink.new,blink-new blinknew,,,yc-hiring:Winter 2022
+Finku,deep,,http://finku.id,finku,,,yc-hiring:Winter 2022
+Reviving Mind,deep,,https://www.revivingmind.com/,reviving-mind revivingmind,,,yc-hiring:Winter 2022
+Darsel,deep,,http://darsel.tech,darsel,,,yc-hiring:Winter 2022
+GIMO,deep,,https://gimo.vn/en,gimo,,,yc-hiring:Winter 2022
+GoSats,deep,,https://gosats.io,gosats,,,yc-hiring:Winter 2022
+AirMyne,deep,,http://www.airmyne.com,airmyne,,,yc-hiring:Winter 2022
+GovDash,deep,,https://govdash.com/,govdash,,,yc-hiring:Winter 2022
+MSPilot,deep,,https://mspilot.io,mspilot,,,yc-hiring:Fall 2025
+Cofactr,deep,,https://www.cofactr.com/,cofactr,,,yc-hiring:Winter 2022
+Eventual,deep,,https://www.daft.ai/,eventual,,,yc-hiring:Winter 2022
+Reality Defender,deep,,http://www.realitydefender.com,reality-defender realitydefender,,,yc-hiring:Winter 2022
+Medplum,deep,,https://www.medplum.com,medplum,,,yc-hiring:Summer 2022
+Clinikally,deep,,https://www.clinikally.com/,clinikally,,,yc-hiring:Summer 2022
+Star,deep,,https://buildwithstar.com,star,,,yc-hiring:Summer 2022
+Stackup,deep,,https://www.stackup.fi,stackup,,,yc-hiring:Summer 2022
+Tailor,deep,,https://www.tailor.tech/,tailor,,,yc-hiring:Summer 2022
+Pasito,deep,,https://pasito.ai,pasito,,,yc-hiring:Summer 2022
+TrueBiz,deep,,https://truebiz.io/,truebiz,,,yc-hiring:Summer 2022
+BlueHill Payments,deep,,https://www.useBlueHill.com/,bluehill-payments bluehillpayments,,,yc-hiring:Summer 2022
+Paragon AI,deep,,https://paragon.ai,paragon-ai paragonai,,,yc-hiring:Summer 2022
+Signatur Biosciences,deep,,https://www.signatur.bio/,signatur-biosciences signaturbiosciences,,,yc-hiring:Summer 2022
+Voltic,deep,,https://volticshipping.com/,voltic,,,yc-hiring:Summer 2022
+Blee,deep,,https://www.blee.com,blee,,,yc-hiring:Summer 2022
+Windmill,deep,,https://windmill.dev,windmill,,,yc-hiring:Summer 2022
+Tank Payments,deep,,https://www.tankpayments.com/,tank-payments tankpayments,,,yc-hiring:Summer 2022
+Malama Health,deep,,https://www.heymalama.co,malama-health malamahealth,,,yc-hiring:Summer 2022
+Aragorn AI,deep,,https://www.aragorn.ai,aragorn-ai aragornai,,,yc-hiring:Summer 2022
+Flair Labs,deep,,https://www.flairlabs.ai/,flair-labs flairlabs,,,yc-hiring:Summer 2022
+NewsCatcher,deep,,https://newscatcherapi.com/,newscatcher,,,yc-hiring:Summer 2022
+Thera,deep,,https://www.getthera.com,thera,,,yc-hiring:Summer 2022
+Airhart Aeronautics,deep,,https://www.airhartaero.com/,airhart-aeronautics airhartaeronautics,,,yc-hiring:Summer 2022
+Coris,deep,,https://coris.ai/,coris,,,yc-hiring:Summer 2022
+AviaryAI,deep,,http://www.helloaviary.ai,aviaryai,,,yc-hiring:Summer 2022
+Metriport,deep,,https://metriport.com/,metriport,,,yc-hiring:Summer 2022
+Quindar,deep,,https://www.quindar.space,quindar,,,yc-hiring:Summer 2022
+Vinci Games,deep,,https://ruffnauts.com/,vinci-games vincigames,,,yc-hiring:Summer 2022
+Roforco,deep,,,roforco,,,yc-hiring:Summer 2022
+AiPrise,deep,,https://aiprise.com/,aiprise,,,yc-hiring:Summer 2022
+HOMLI,deep,,https://thehomli.com,homli,,,yc-hiring:Summer 2022
+PrimeVault,deep,,https://www.primevault.com,primevault,,,yc-hiring:Summer 2022
+Solum Health,deep,,https://www.getsolum.com/,solum-health solumhealth,,,yc-hiring:Summer 2022
+Firecrawl,deep,,https://www.firecrawl.dev,firecrawl,,,yc-hiring:Summer 2022
+Oneleet,deep,,https://www.oneleet.com/?utm_source=yc&utm_medium=bookface,oneleet,,,yc-hiring:Summer 2022
+AlgoTest,deep,,https://algotest.in,algotest,,,yc-hiring:Summer 2022
+REVER,deep,,https://itsrever.com/,rever,,,yc-hiring:Summer 2022
+Delfino AI,deep,,https://www.delfino.ai/,delfino-ai delfinoai,,,yc-hiring:Summer 2022
+Cambio,deep,,https://www.cambio.ai/,cambio-2 cambio2,,,yc-hiring:Summer 2022
+Landeed,deep,,https://www.landeed.com/,landeed,,,yc-hiring:Summer 2022
+Coverage Cat,deep,,https://www.coveragecat.com/,coverage-cat coveragecat,,,yc-hiring:Summer 2022
+Sameday,deep,,https://www.gosameday.com/,sameday,,,yc-hiring:Winter 2023
+Rubbrband,deep,,https://rubbrband.com,rubbrband,,,yc-hiring:Winter 2023
+Infisical,deep,,https://infisical.com,infisical,,,yc-hiring:Winter 2023
+Magic Patterns,deep,,https://www.magicpatterns.com/,magic-patterns magicpatterns,,,yc-hiring:Winter 2023
+Rollstack,deep,,https://www.rollstack.com,rollstack-2 rollstack2,,,yc-hiring:Winter 2023
+Concourse,deep,,https://concourse.ai/,concourse,,,yc-hiring:Winter 2023
+FlexDesk,deep,,https://www.flexdesk.com/,flexdesk,,,yc-hiring:Winter 2023
+Hammr,deep,,https://www.hammr.com,hammr,,,yc-hiring:Winter 2023
+Nango,deep,,https://nango.dev,nango,,,yc-hiring:Winter 2023
+Numeral,deep,,https://www.numeral.com/,numeral,,,yc-hiring:Winter 2023
+Omnistrate,deep,,http://www.omnistrate.com,omnistrate,,,yc-hiring:Winter 2023
+Narrative,deep,,https://www.trynarrative.com/,narrative,,,yc-hiring:Winter 2023
+loopfour,deep,,https://www.loopfour.com,loopfour,,,yc-hiring:Winter 2023
+Coperniq,deep,,https://coperniq.io,coperniq,,,yc-hiring:Winter 2023
+Cosine,deep,,http://www.cosine.sh,cosine,,,yc-hiring:Winter 2023
+Gooseworks,deep,,https://gooseworks.ai/,gooseworks,,,yc-hiring:Winter 2023
+Suger,deep,,https://www.suger.io/,suger,,,yc-hiring:Winter 2023
+Kivo Health,deep,,https://kivohealth.com,kivo-health kivohealth,,,yc-hiring:Winter 2023
+Inkeep,deep,,https://inkeep.com,inkeep,,,yc-hiring:Winter 2023
+ShortLoop,deep,,https://shortloop.dev/,shortloop,,,yc-hiring:Winter 2023
+Truewind,deep,,https://www.trytruewind.com,truewind,,,yc-hiring:Winter 2023
+Orchid,deep,,https://orchid.health,orchid,,,yc-hiring:Winter 2023
+Storyboarder,deep,,https://storyboarder.com,storyboarder,,,yc-hiring:Winter 2023
+ClickPe,deep,,https://clickpe.ai/,clickpe,,,yc-hiring:Winter 2023
+Vendah,deep,,https://vendah.com.br/,vendah,,,yc-hiring:Winter 2023
+SuperKalam,deep,,https://superkalam.com,superkalam,,,yc-hiring:Winter 2023
+Sirdab,deep,,https://sirdab.co/en,sirdab,,,yc-hiring:Winter 2023
+inBuild,deep,,https://www.inbuild.ai/,inbuild,,,yc-hiring:Winter 2023
+Diffuse Bio,deep,,http://diffuse.bio,diffuse-bio diffusebio,,,yc-hiring:Winter 2023
+Invopop,deep,,https://www.invopop.com/,invopop,,,yc-hiring:Winter 2023
+Rivet,deep,,https://rivet.dev,rivet,,,yc-hiring:Winter 2023
+Dill,deep,,https://usedill.com/,dill,,,yc-hiring:Winter 2023
+Conduit,deep,,http://helloconduit.com,conduit,,,yc-hiring:Winter 2023
+Berry,deep,,https://berryai.com/,berry,,,yc-hiring:Winter 2023
+Finni Health,deep,,https://www.finnihealth.com/,finni-health finnihealth,,,yc-hiring:Winter 2023
+Vector,deep,,https://vector.co,vector,,,yc-hiring:Winter 2023
+Escape,deep,,https://escape.tech,escape,,,yc-hiring:Winter 2023
+Kyber,deep,,https://askkyber.com,kyber,,,yc-hiring:Winter 2023
+Vendora,deep,,https://www.vendora.io/,vendora,,,yc-hiring:Winter 2023
+Finta,deep,,https://www.finta.com/,finta,,,yc-hiring:Winter 2023
+Speedy Labs,deep,,https://speedylabs.ai/,speedy-labs speedylabs,,,yc-hiring:Winter 2023
+HockeyStack,deep,,https://hockeystack.com,hockeystack,,,yc-hiring:Summer 2023
+kapa.ai,deep,,https://www.kapa.ai,kapa-ai kapaai,,,yc-hiring:Summer 2023
+Twenty,deep,,https://twenty.com,twenty,,,yc-hiring:Summer 2023
+Hyperbound,deep,,https://hyperbound.ai,hyperbound,,,yc-hiring:Summer 2023
+AIVideo.com,deep,,https://aivideo.com,aivideo-com aivideocom,,,yc-hiring:Summer 2023
+Pointhound,deep,,http://www.pointhound.com,pointhound,,,yc-hiring:Summer 2023
+Cedana,deep,,https://cedana.ai,cedana,,,yc-hiring:Summer 2023
+Every,deep,,https://every.io/,every,,,yc-hiring:Summer 2023
+Prosper,deep,,https://www.getprosper.ai?utm_source=yc&utm_medium=directory&utm_campaign=yc_directory,prosper,,,yc-hiring:Summer 2023
+Craftwork,deep,,https://craftwork.com/,craftwork,,,yc-hiring:Summer 2023
+Capi Money,deep,,https://www.capimoney.com,capi-money capimoney,,,yc-hiring:Summer 2023
+Alguna,deep,,https://alguna.com,alguna,,,yc-hiring:Summer 2023
+Corgea,deep,,https://www.corgea.com/,corgea,,,yc-hiring:Summer 2023
+Skyvern,deep,,https://www.skyvern.com/,skyvern,,,yc-hiring:Summer 2023
+Decoda Health,deep,,https://decodahealth.com/,decoda-health decodahealth,,,yc-hiring:Summer 2023
+Numen,deep,,https://www.numen.com,numen,,,yc-hiring:Summer 2023
+Surface Labs,deep,,https://withsurface.com,surface-labs surfacelabs,,,yc-hiring:Summer 2023
+Aglide,deep,,https://aglide.com,aglide,,,yc-hiring:Summer 2023
+Rimward,deep,,https://rimward.ai/,rimward,,,yc-hiring:Summer 2023
+Bolto,deep,,https://www.bolto.com,bolto,,,yc-hiring:Summer 2023
+Flint,deep,,http://flintk12.com/,flint-2 flint2,,,yc-hiring:Summer 2023
+Sendblue,deep,,https://www.sendblue.com,sendblue,,,yc-hiring:Summer 2023
+SyntheticFi,deep,,https://www.syntheticfi.com/,syntheticfi,,,yc-hiring:Summer 2023
+HappyRobot,deep,,https://happyrobot.ai,happyrobot,,,yc-hiring:Summer 2023
+ParadeDB,deep,,https://paradedb.com,paradedb,,,yc-hiring:Summer 2023
+dili,deep,,https://www.dili.com,dili,,,yc-hiring:Summer 2023
+Cargo,deep,,https://getcargo.io,cargo,,,yc-hiring:Summer 2023
+Simbie AI,deep,,http://www.simbie.ai,simbie-ai simbieai,,,yc-hiring:Summer 2023
+Morph,deep,,https://morphllm.com,morph,,,yc-hiring:Summer 2023
+truemetrics,deep,,https://www.truemetrics.io/,truemetrics,,,yc-hiring:Summer 2023
+Coba,deep,,https://www.coba.ai,coba,,,yc-hiring:Summer 2023
+Flex,deep,,https://www.withflex.com/shop,flex,,,yc-hiring:Summer 2023
+Upsolve AI,deep,,https://upsolve.ai/,upsolve-ai upsolveai,,,yc-hiring:Winter 2024
+Legora,deep,,https://www.legora.com/,legora,,,yc-hiring:Winter 2024
+Ubicloud,deep,,https://www.ubicloud.com,ubicloud,,,yc-hiring:Winter 2024
+Garage,deep,,https://www.shopgarage.com/,garage-2 garage2,,,yc-hiring:Winter 2024
+Artisan,deep,,https://artisan.co/?utm_source=ycombinator,artisan,,,yc-hiring:Winter 2024
+Respan,deep,,https://respan.ai,respan,,,yc-hiring:Winter 2024
+Infinity,deep,,https://www.infinityapp.in/,infinity,,,yc-hiring:Winter 2024
+Centralize,deep,,https://www.usecentralize.com/,centralize,,,yc-hiring:Winter 2024
+Open,deep,,https://open.cx,open,,,yc-hiring:Winter 2024
+CodeAnt AI,deep,,https://codeant.ai/,codeant-ai codeantai,,,yc-hiring:Winter 2024
+Carma,deep,,https://www.joincarma.com/,carma,,,yc-hiring:Winter 2024
+Conduit,deep,,https://conduit.ai/,conduit-ai conduitai,,,yc-hiring:Winter 2024
+Hazel,deep,,https://hazelai.com,hazel-2 hazel2,,,yc-hiring:Winter 2024
+Andy AI,deep,,https://with-andy.com,andy-ai andyai,,,yc-hiring:Winter 2024
+ProSights,deep,,https://prosights.co/,prosights,,,yc-hiring:Winter 2024
+BetterBasket,deep,,http://www.betterbasket.com,betterbasket,,,yc-hiring:Winter 2024
+Deep24,deep,,https://deep24.com,deep24,,,yc-hiring:Winter 2024
+Zep AI,deep,,https://www.getzep.com/,zep-ai zepai,,,yc-hiring:Winter 2024
+Stacksync,deep,,https://www.stacksync.com/,stacksync,,,yc-hiring:Winter 2024
+Deepnight,deep,,https://www.deepnight.com,deepnight,,,yc-hiring:Winter 2024
+xPay,deep,,https://www.xpaycheckout.com/,xpay,,,yc-hiring:Winter 2024
+Powder,deep,,https://www.powderfi.com/,powder,,,yc-hiring:Winter 2024
+Senso,deep,,http://www.senso.ai,senso,,,yc-hiring:Winter 2024
+Piramidal,deep,,https://piramidal.ai,piramidal,,,yc-hiring:Winter 2024
+TrueClaim,deep,,https://www.trytrueclaim.com,trueclaim,,,yc-hiring:Winter 2024
+Healia,deep,,https://www.healiahealth.com/,healia,,,yc-hiring:Winter 2024
+Haplotype Labs,deep,,https://www.haplotypelabs.com/,haplotype-labs haplotypelabs,,,yc-hiring:Winter 2024
+The Vibe Company,deep,,https://thevibecompany.co,the-vibe-company thevibecompany,,,yc-hiring:Winter 2024
+Indemni,deep,,http://www.indemni.com,indemni,,,yc-hiring:Winter 2024
+Mem0,deep,,https://mem0.ai,mem0,,,yc-hiring:Summer 2024
+Saphira AI,deep,,https://saphira.ai,saphira-ai saphiraai,,,yc-hiring:Summer 2024
+Educato,deep,,https://www.educato.com/,educato,,,yc-hiring:Summer 2024
+ProhostAI,deep,,https://www.prohost.ai/,prohostai,,,yc-hiring:Summer 2024
+Hamming AI,deep,,https://hamming.ai/,hamming-ai hammingai,,,yc-hiring:Summer 2024
+mdhub,deep,,https://www.mdhub.ai/,mdhub,,,yc-hiring:Summer 2024
+ClaimSorted,deep,,https://claimsorted.com,claimsorted,,,yc-hiring:Summer 2024
+VideoGen,deep,,https://videogen.io,videogen,,,yc-hiring:Summer 2024
+Phonely,deep,,https://phonely.ai,phonely,,,yc-hiring:Summer 2024
+FirstWork,deep,,https://firstwork.com,firstwork,,,yc-hiring:Summer 2024
+Azalea Robotics Corporation,deep,,https://azalearobotics.com/,azalea-robotics-corporation azalearoboticscorporation,,,yc-hiring:Summer 2024
+Unbound,deep,,https://getunbound.ai/,unbound,,,yc-hiring:Summer 2024
+Silurian,deep,,https://silurian.ai/,silurian,,,yc-hiring:Summer 2024
+Cloudglue,deep,,https://cloudglue.dev,cloudglue,,,yc-hiring:Summer 2024
+Offstream,deep,,https://www.useoffstream.com/,offstream,,,yc-hiring:Summer 2024
+Elevate,deep,,https://www.useelevate.dev/,elevate-2 elevate2,,,yc-hiring:Summer 2024
+Tandem,deep,,https://tandemspace.com/,tandem-2 tandem2,,,yc-hiring:Summer 2024
+Dench.com,deep,,https://dench.com,dench-com denchcom,,,yc-hiring:Summer 2024
+Substrate,deep,,https://www.substrate.cc/,substrate,,,yc-hiring:Summer 2024
+TaxGPT,deep,,https://www.taxgpt.com,taxgpt,,,yc-hiring:Summer 2024
+Clearly AI,deep,,https://clearly-ai.com,clearly-ai clearlyai,,,yc-hiring:Summer 2024
+Saturn,deep,,https://www.SaturnOS.com,saturn,,,yc-hiring:Summer 2024
+"Hestus, Inc.",deep,,https://www.hestus.co,hestus-inc hestusinc,,,yc-hiring:Summer 2024
+Anara,deep,,https://anara.com,anara,,,yc-hiring:Summer 2024
+Drillbit,deep,,https://www.drillbit.com,drillbit,,,yc-hiring:Summer 2024
+Zeit AI,deep,,https://zeit-ai.com/,zeit-ai zeitai,,,yc-hiring:Summer 2024
+Emergent,deep,,https://emergent.sh,emergent,,,yc-hiring:Summer 2024
+Intryc,deep,,https://intryc.com,intryc,,,yc-hiring:Summer 2024
+Presti AI,deep,,https://www.presti.ai/,presti-ai prestiai,,,yc-hiring:Summer 2024
+YouShift,deep,,https://www.you-shift.com/,youshift,,,yc-hiring:Winter 2025
+Cartage,deep,,https://cartage.ai,cartage,,,yc-hiring:Summer 2024
+Kontigo,deep,,https://kontigo.lat/,kontigo,,,yc-hiring:Summer 2024
+Assembly HOA,deep,,https://assemblyhoa.com,assembly-hoa assemblyhoa,,,yc-hiring:Summer 2024
+Draft The Record,deep,,https://www.drafttherecord.com/,draft-the-record drafttherecord,,,yc-hiring:Summer 2024
+Blaze,deep,,https://blaze.money,blaze-2 blaze2,,,yc-hiring:Summer 2024
+Oway,deep,,https://www.oway.io,oway,,,yc-hiring:Summer 2024
+SureBright,deep,,https://surebright.com/,surebright,,,yc-hiring:Summer 2024
+Capitol AI,deep,,https://www.capitol.ai/,capitol-ai capitolai,,,yc-hiring:Summer 2024
+Merlin AI,deep,,https://www.merlinai.co,merlin-ai merlinai,,,yc-hiring:Summer 2024
+Syntra,deep,,https://www.syntra.com,syntra,,,yc-hiring:Summer 2024
+Onlook,deep,,https://onlook.com/,onlook,,,yc-hiring:Winter 2025
+Moonset Health,deep,,https://www.moonsethealth.com/,moonset-health moonsethealth,,,yc-hiring:Fall 2024
+Raycaster,deep,,https://eval.raycaster.ai,raycaster,,,yc-hiring:Fall 2024
+Cekura,deep,,https://www.cekura.ai/,cekura-ai cekuraai,,,yc-hiring:Fall 2024
+Keye,deep,,https://www.keye.co,keye,,,yc-hiring:Fall 2024
+Crustdata,deep,,https://crustdata.com,crustdata,,,yc-hiring:Fall 2024
+Kilvin,deep,,https://www.kilvin.ai,kilvin,,,yc-hiring:Fall 2024
+ArchiLabs,deep,,https://archilabs.ai,archilabs,,,yc-hiring:Fall 2024
+Laminar,deep,,https://laminar.com,laminar-com laminarcom,,,yc-hiring:Fall 2024
+Careforce,deep,,https://careforce.ai/,careforce,,,yc-hiring:Fall 2024
+Asha Health,deep,,https://asha.health,asha-health ashahealth,,,yc-hiring:Fall 2024
+Leaping AI,deep,,https://www.leapingai.com,leaping-ai leapingai,,,yc-hiring:Winter 2025
+Closure,deep,,https://closure-intel.com/,closure,,,yc-hiring:Winter 2025
+Contrario,deep,,https://contrario.ai,contrario,,,yc-hiring:Winter 2025
+Toothy AI,deep,,https://www.toothy.ai/,toothy-ai toothyai,,,yc-hiring:Winter 2025
+Cifrato,deep,,https://cifrato.ai,cifrato,,,yc-hiring:Winter 2025
+HUD,deep,,https://www.hud.ai,hud,,,yc-hiring:Winter 2025
+Lucid,deep,,https://lucid.ai,lucid,,,yc-hiring:Winter 2025
+Optifye.ai,deep,,https://www.optifye.ai,optifye-ai optifyeai,,,yc-hiring:Winter 2025
+Dalus,deep,,https://dalus.io,dalus,,,yc-hiring:Winter 2025
+Bloom,deep,,https://bloom.diy/,bloom-4 bloom4,,,yc-hiring:Spring 2025
+GroundControl,deep,,https://rungroundcontrol.com/,groundcontrol,,,yc-hiring:Spring 2025
+PgDog,deep,,https://pgdog.dev,pgdog,,,yc-hiring:Spring 2025
+Parsewise,deep,,https://parsewise.ai,parsewise,,,yc-hiring:Spring 2025
+Lucis,deep,,https://www.lucis.life,lucis,,,yc-hiring:Spring 2025
+Klavis AI,deep,,https://www.klavis.ai/,klavis-ai klavisai,,,yc-hiring:Spring 2025
+MorphoAI,deep,,https://morpho.ai/,morphoai,,,yc-hiring:Spring 2025
+Eloquent AI,deep,,https://www.eloquentai.co/,eloquent-ai eloquentai,,,yc-hiring:Spring 2025
+Adentris,deep,,https://www.adentris.com,adentris,,,yc-hiring:Spring 2025
+Autonomous Technologies Group,deep,,https://becomeautonomous.com/,autonomous-technologies-group autonomoustechnologiesgroup,,,yc-hiring:Fall 2025
+Prox,deep,,,prox,,,yc-hiring:Fall 2025
+TraceRoot.AI,deep,,https://traceroot.ai,traceroot-ai tracerootai,,,yc-hiring:Summer 2025
+truthsystems,deep,,https://www.truthsystems.ai,truthsystems,,,yc-hiring:Summer 2025
+DeepAware AI (Robotics Center of Silicon Valley),deep,,https://roboticscenter.ai/,deepaware-ai-robotics-center-of-silicon-valley deepawareairoboticscenterofsiliconvalley,,,yc-hiring:Summer 2025
+Pangolin,deep,,https://pangolin.net,pangolin,,,yc-hiring:Summer 2025
+IronLedger.ai,deep,,https://ironledger.ai,ironledger-ai ironledgerai,,,yc-hiring:Summer 2025
+ProcIndex,deep,,https://procindex.com/,procindex,,,yc-hiring:Summer 2025
+Altur,deep,,https://altur.io,altur,,,yc-hiring:Summer 2025
+Reacher,deep,,https://reacherapp.com/,reacher,,,yc-hiring:Summer 2025
+Juxta,deep,,https://juxta.com,juxta,,,yc-hiring:Summer 2025
+Veritus,deep,,https://www.veritus.com,veritus,,,yc-hiring:Summer 2025
+Avent,deep,,https://www.aventindustrial.com,avent,,,yc-hiring:Summer 2025
+Uplift AI,deep,,https://upliftai.org/,uplift-ai upliftai,,,yc-hiring:Summer 2025
+F2,deep,,http://f2.ai,f2,,,yc-hiring:Summer 2025
+Bolna AI,deep,,https://bolna.ai,bolna-ai bolnaai,,,yc-hiring:Fall 2025
+Hyperspell,deep,,https://hyperspell.com,hyperspell,,,yc-hiring:Fall 2025
+Koyal,deep,,https://koyal.ai,koyal,,,yc-hiring:Fall 2025
+Flick,deep,,https://flick.art,flick,,,yc-hiring:Fall 2025
+AnswerThis,deep,,https://answerthis.io/,answerthis,,,yc-hiring:Fall 2025
+Allus AI,deep,,https://allus.ai,allus-ai allusai,,,yc-hiring:Fall 2025
+Sunflower,deep,,https://sunflowerclinic.com/,sunflower,,,yc-hiring:Summer 2026
+Aside,deep,,https://aside.com,aside,,,yc-hiring:Fall 2025
+Metorial,deep,,https://metorial.com,metorial,,,yc-hiring:Fall 2025
+Moss,deep,,https://moss.dev,moss,,,yc-hiring:Fall 2025
+Ploy,deep,,https://ploy.ai,ploy,,,yc-hiring:Spring 2026
+Asimov,deep,,https://tryasimov.ai/,asimov,,,yc-hiring:Winter 2026
+10x Science,deep,,https://10xscience.com,10x-science 10xscience,,,yc-hiring:Winter 2026
+Cumulus Labs,deep,,https://cumuluslabs.io,cumulus-labs cumuluslabs,,,yc-hiring:Winter 2026
+OctaPulse,deep,,https://www.tryoctapulse.com/,octapulse,,,yc-hiring:Winter 2026
+RamAIn,deep,,https://ramain.ai,ramain,,,yc-hiring:Winter 2026
+Moritz,deep,,http://moritzlegal.com/,moritz,,,yc-hiring:Winter 2026
+Opalite Health,deep,,http://opalitehealth.com/,opalite-health opalitehealth,,,yc-hiring:Winter 2026
+Cardboard,deep,,https://cardboard.ai,cardboard,,,yc-hiring:Winter 2026
+Jinba,deep,,https://jinba.io,jinba,,,yc-hiring:Winter 2026
+Seeing Systems,deep,,https://www.seeing-systems.com,seeing-systems seeingsystems,,,yc-hiring:Winter 2026
+Maywood,deep,,https://maywoodai.com/,maywood,,,yc-hiring:Winter 2026
+Revion,deep,,https://revion.inc,revion,,,yc-hiring:Winter 2026
+Pocket,deep,,https://heypocket.com/now,pocket,,,yc-hiring:Winter 2026
+Brumby,deep,,https://brumby.com,brumby,,,yc-hiring:Winter 2026
+Klarify,deep,,https://www.klarify.ca/,klarify,,,yc-hiring:Spring 2026
+Hub,deep,,https://hub.xyz,hub,,,yc-hiring:Spring 2026
+Limrun,deep,,https://lim.run,limrun,,,yc-hiring:Spring 2026
+KelAI,deep,,https://kelaitech.com/,kelai,,,yc-hiring:Spring 2026
+Callab AI,deep,,https://callab.ai,callab-ai callabai,,,yc-hiring:Spring 2026
+Taiga,deep,,https://taigabilling.com,taiga,,,yc-hiring:Spring 2026
+Lab0,deep,,https://lab0.ai,lab0,,,yc-hiring:Spring 2026
+Gojiberry AI,deep,,https://www.gojiberry.ai,gojiberry-ai gojiberryai,,,yc-hiring:Spring 2026
+Adialante,deep,,http://www.adialante.com,adialante,,,yc-hiring:Spring 2026
+Complir,deep,,https://complir.io/,complir,,,yc-hiring:Spring 2026
+Minicor,deep,,https://minicor.com,minicor,,,yc-hiring:Spring 2026
+Aseon Labs,deep,,https://www.aseonlabs.com/,aseon-labs aseonlabs,,,yc-hiring:Spring 2026
+Tasklet,deep,,https://tasklet.ai,tasklet-2 tasklet2,,,yc-hiring:Spring 2026
+Amboras,deep,,https://amboras.com,amboras,,,yc-hiring:Spring 2026
+CharacterQuilt,deep,,https://characterquilt.com,characterquilt,,,yc-hiring:Spring 2026
+Manicule,deep,,https://manicule.com,manicule,,,yc-hiring:Spring 2026
+Arlo Industries,deep,,https://arlo1.com/,arlo-industries arloindustries,,,yc-hiring:Spring 2026
+Huscarl,deep,,https://www.huscarl.io/,huscarl,,,yc-hiring:Spring 2026
+Pango,deep,,https://pango.ai/,pango,,,yc-hiring:Summer 2026
+screenpipe,deep,,https://screenpipe.com,screenpipe,,,yc-hiring:Summer 2026
+Ooak Data,deep,,https://ooakdata.com/,ooak-data ooakdata,,,yc-hiring:Summer 2026
+TryNearby,deep,,https://trynearby.com,trynearby,,,yc-hiring:Summer 2026
+"Vernius Systems, Inc.",deep,,https://www.vernius.systems,vernius-systems-inc verniussystemsinc,,,yc-hiring:Summer 2026
+Inflection Space Systems,deep,,https://inflection-space.com/,inflection-space-systems inflectionspacesystems,,,yc-hiring:Fall 2026
+Rhem Labs,deep,,https://rhem.ai,rhem-labs rhemlabs,,,yc-hiring:Fall 2026
+Ignition Benefits,deep,,https://www.ignitionbenefits.com/,ignition-benefits ignitionbenefits,,,yc-hiring:Fall 2026
+Spine,deep,,https://www.joinspine.ai/,spine,,,yc-hiring:Fall 2026
