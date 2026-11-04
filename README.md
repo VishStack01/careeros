@@ -238,6 +238,7 @@ tests/               292 tests, including real browser form fills, every LLM pro
 - [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
 - [Build your own](docs/build-your-own.md)
 - [Launch it as a product](docs/launch.md)
+- [Design rules](docs/design.md)
 - [Bring your own key](https://vishstack01.github.io/careeros/docs.html#key)
 - [Responsible use](docs/responsible-use.md)
 - [Roadmap](docs/roadmap.md)

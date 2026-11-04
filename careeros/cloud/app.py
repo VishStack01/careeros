@@ -262,7 +262,19 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
 
     @app.get("/pricing", include_in_schema=False)
     def pricing(request: Request):
-        return html("pricing.html", request.state.nonce)
+        # Rendered on the server from the live plan settings, so the page never waits on a fetch.
+        star = ('<span class="shape" style="right:-26px;top:-26px;width:130px;height:130px" aria-hidden="true"><svg viewBox="0 0 100 100" '
+                'fill="#B6CAEB"><path d="M50 0 L62.6 19.5 L85.4 14.6 L80.5 37.4 L100 50 L80.5 62.6 L85.4 85.4 L62.6 80.5 L50 100 L37.4 80.5 '
+                'L14.6 85.4 L19.5 62.6 L0 50 L19.5 37.4 L14.6 14.6 L37.4 19.5 Z"/></svg></span>')
+        cards = []
+        for pl in plans.catalog(cfg):
+            price = f"₹{pl['priceInr']:,}" + ("<small> / month</small>" if pl["priceInr"] else "")
+            items = "".join(f"<li>{html_escape(f)}</li>" for f in pl["features"])
+            cls = "btn" if pl["id"] == "pro" else "btn light"
+            cards.append(f'<article class="plan {pl["id"]}">{star if pl["id"] == "pro" else ""}<h2>{html_escape(pl["name"])}</h2>'
+                         f'<div class="price">{price}</div><ul>{items}</ul><a class="{cls}" href="/signup">Start free</a></article>')
+        text = (STATIC / "pricing.html").read_text(encoding="utf-8").replace("<!--PLANS-->", "".join(cards))
+        return HTMLResponse(text)
 
     # The installable app: manifest, service worker, icons and the offline page.
     APP_STATIC = STATIC / "app"

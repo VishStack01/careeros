@@ -2,6 +2,24 @@
 
 All notable changes to CareerOS. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [1.1.1] - 2026-11-05
+
+### Changed
+- **Unslopped the website, dashboard, phone app and sign-in pages** with the Appllama app design skill. The rules are written down in [docs/design.md](docs/design.md):
+  - one accent (pink) and one warm grey family; the stray saturated blues, violets and teals are gone;
+  - a single corner-radius scale;
+  - one label per intent;
+  - a dark theme on every page.
+- **Motion has one vocabulary:** strong ease-out, 280 ms entrances, 190 ms exits, 120 ms presses. Every entrance plays once, from opacity and a short rise, never from `scale(0)` or blur.
+- **Decorative motion deleted:** floating and spinning shapes, the infinite marquee, word-by-word headlines, count-ups, parallax, the tilt card and the typing terminal. Tabs change instantly, and lists animate only when a filter changes them.
+- **The "Add..." sheet** grows from the "+", and its backdrop fades with it.
+- **Back closes before it leaves:** sheets, the job sheet and application pages each own one history entry. Signing in, signing up and confirming your email can't be stepped back into.
+- **Home has designed states:**
+  - a skeleton shaped like the page while loading;
+  - a three-step first-run state before the first match;
+  - every touch target at least 44 px, muted text at 4.9:1 contrast, and the toast lifted above the dock.
+- **Pricing** is rendered on the server, so it never shows a loading state.
+
 ## [1.1.0] - 2026-11-04
 
 ### Added

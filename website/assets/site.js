@@ -1,8 +1,9 @@
-/* CareerOS website motion: reveals, word-by-word headlines, counters, parallax, terminal typing, tilt, docs helpers.
-   Everything is decoration: the page reads fully without it, and it all switches off with prefers-reduced-motion. */
+/* CareerOS website behaviour.
+   Motion follows one rule set: an element enters once, the first time it scrolls into view,
+   in 280 ms with a strong ease-out (opacity + a short rise; never from scale 0, never blurred).
+   Nothing loops, nothing moves while you read it, and Reduce Motion turns entrances into fades. */
 (function () {
   "use strict";
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
   // Old job-board links (?q=... or #/job/...) moved to jobs.html.
@@ -16,111 +17,34 @@
   var appUrl = appMeta && /^https:\/\//.test(appMeta.content) ? appMeta.content.replace(/\/+$/, "") : "";
   if (appUrl) $$("[data-app]").forEach(function (a) { a.href = appUrl + a.getAttribute("data-app"); });
 
-  // Stagger: children of [data-stagger] get increasing delays.
+  // Siblings in a group enter 40 ms apart, capped at eight steps; beyond that they enter as a block.
   $$("[data-stagger]").forEach(function (g) {
-    var step = parseFloat(g.dataset.stagger) || 0.08;
-    $$(":scope > .reveal", g).forEach(function (el, i) { el.style.setProperty("--d", (i * step).toFixed(2) + "s"); });
+    $$(":scope > .reveal", g).forEach(function (el, i) { el.style.setProperty("--d", (Math.min(i, 8) * 0.04).toFixed(2) + "s"); });
+  });
+  $$(".principles .pr").forEach(function (p, i) {
+    var d = Math.min(i, 8) * 40;
+    var bg = p.querySelector(".bg"), tx = p.querySelector(".tx");
+    if (bg) bg.style.transitionDelay = d + "ms";
+    if (tx) tx.style.transitionDelay = (d + 60) + "ms";
   });
 
-  // Headline words.
-  $$(".split-words").forEach(function (el) {
-    var i = 0;
-    var walk = function (node) {
-      Array.prototype.slice.call(node.childNodes).forEach(function (n) {
-        if (n.nodeType === 3) {
-          var frag = document.createDocumentFragment();
-          n.textContent.split(/(\s+)/).forEach(function (part) {
-            if (!part) return;
-            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
-            var s = document.createElement("span");
-            s.className = "w"; s.textContent = part;
-            s.style.transitionDelay = (0.15 + i++ * 0.035).toFixed(3) + "s";
-            frag.appendChild(s);
-          });
-          n.parentNode.replaceChild(frag, n);
-        } else if (n.nodeType === 1) { walk(n); }
-      });
-    };
-    walk(el);
-  });
-
-  function countUp(el) {
-    var end = parseFloat(el.dataset.count), dur = 1400, t0 = null;
-    var fmt = function (v) { return Math.round(v).toLocaleString("en-US"); };
-    if (reduce) { el.textContent = fmt(end); return; }
-    var tick = function (t) {
-      if (!t0) t0 = t;
-      var p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 4);
-      el.textContent = fmt(end * e);
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-
-  function typeTerm(term) {
-    var lines = $$(".ln", term), i = 0;
-    var caret = term.querySelector(".caret");
-    var next = function () {
-      if (i >= lines.length) { if (caret) lines[lines.length - 1].appendChild(caret); return; }
-      lines[i].classList.add("on");
-      if (caret) lines[i].appendChild(caret);
-      i++;
-      setTimeout(next, reduce ? 0 : 260);
-    };
-    next();
-  }
-
-  function show(el) {
-    el.classList.add("in");
-    if (el.classList.contains("split-words")) el.classList.add("words-in");
-    $$("[data-count]", el).concat(el.dataset.count ? [el] : []).forEach(function (c) { if (!c._done) { c._done = 1; countUp(c); } });
-    if (el.classList.contains("term")) typeTerm(el);
-  }
-
-  var targets = $$(".reveal, .split-words, .pr, .term, .tick, [data-count], .phone");
-  if (reduce || !("IntersectionObserver" in window)) {
-    targets.forEach(show);
+  // Enter once, on first view.
+  var targets = $$(".reveal, .split-words, .pr, .tick, .phone");
+  if (!("IntersectionObserver" in window)) {
+    targets.forEach(function (t) { t.classList.add("in"); });
   } else {
     var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
-    }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
     targets.forEach(function (t) { io.observe(t); });
   }
 
-  // Principles pop in one after another.
-  $$(".pr").forEach(function (p, i) {
-    var d = (i * 0.12).toFixed(2) + "s";
-    var bg = p.querySelector(".bg"), tx = p.querySelector(".tx");
-    if (bg) bg.style.transitionDelay = d;
-    if (tx) tx.style.transitionDelay = (i * 0.12 + 0.35).toFixed(2) + "s";
-  });
-
-  // Nav shadow, parallax.
+  // The nav gets its hairline once the page has scrolled.
   var nav = document.querySelector("nav.top");
-  var par = reduce ? [] : $$("[data-speed]");
   var ticking = false;
-  function onScroll() {
-    if (nav) nav.classList.toggle("scrolled", window.scrollY > 8);
-    par.forEach(function (el) {
-      var r = el.parentElement.getBoundingClientRect();
-      var off = (r.top + r.height / 2 - innerHeight / 2) * parseFloat(el.dataset.speed);
-      el.style.translate = "0 " + off.toFixed(1) + "px";
-    });
-    ticking = false;
-  }
+  function onScroll() { if (nav) nav.classList.toggle("scrolled", window.scrollY > 8); ticking = false; }
   window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
   onScroll();
-
-  // Tilt.
-  if (!reduce) $$("[data-tilt]").forEach(function (box) {
-    var card = box.querySelector(".mock") || box;
-    box.addEventListener("pointermove", function (e) {
-      var r = box.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      card.style.transform = "rotateY(" + (x * 10).toFixed(2) + "deg) rotateX(" + (-y * 10).toFixed(2) + "deg) translateZ(0)";
-    });
-    box.addEventListener("pointerleave", function () { card.style.transform = ""; });
-  });
 
   // Docs: copy buttons and the active section in the table of contents.
   $$(".code").forEach(function (block) {

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "careeros"
-version = "1.1.0"
+version = "1.1.1"
 description = "Open-source AI agent for the job search: finds fresh roles, checks them with quotes from the posting, writes applications from your real experience only. Bring your own model and key."
 readme = "README.md"
 license = { text = "MIT" }

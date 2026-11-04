@@ -177,7 +177,7 @@ def test_plan_caps_auto_apply_and_match_cadence(cloud):
 def test_public_pages_and_installable_app(cloud):
     c = cloud.client()
     cloud.cfg.support_email = "help@example.com"
-    for path, text in [("/pricing", "Pricing"), ("/refunds", "Refunds and cancellation"), ("/contact", "help@example.com"), ("/terms", "Terms of use")]:
+    for path, text in [("/pricing", "₹299"), ("/refunds", "Refunds and cancellation"), ("/contact", "help@example.com"), ("/terms", "Terms of use")]:
         r = c.get(path)
         assert r.status_code == 200 and text in r.text, path
     assert "{{" not in c.get("/privacy").text
