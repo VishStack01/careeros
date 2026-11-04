@@ -27,9 +27,14 @@ cloud = (
     "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
     "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n"
     "<meta name=\"description\" content=\"CareerOS: fresh roles from company career pages, checked against your filters.\">\n"
+    "<meta name=\"theme-color\" content=\"#FAF3E6\">\n<link rel=\"manifest\" href=\"/manifest.webmanifest\">\n"
+    "<link rel=\"icon\" href=\"/favicon.ico\" type=\"image/svg+xml\">\n<link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\">\n"
+    "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-title\" content=\"CareerOS\">\n"
     "<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>\n"
     + head.replace("<title>VishStack CareerOS</title>", "<title>CareerOS</title>") + "</style>\n</head>\n<body>\n"
-    + body.strip() + "\n</body>\n</html>\n"
+    + body.strip()
+    + "\n<script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));</script>"
+    + "\n</body>\n</html>\n"
 )
 target = root.parent / "careeros" / "cloud" / "static" / "dashboard.html"
 target.write_text(cloud, encoding="utf-8")

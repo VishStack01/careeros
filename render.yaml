@@ -1,6 +1,8 @@
 # One-click deploy on Render: a PostgreSQL database, the web app and the worker.
 # After the first deploy, set PUBLIC_URL (your https://...onrender.com or custom domain),
-# SMTP_URL, MAIL_FROM and BOOTSTRAP_ADMIN_EMAIL in the dashboard, then redeploy.
+# SMTP_URL, MAIL_FROM, SUPPORT_EMAIL and BOOTSTRAP_ADMIN_EMAIL in the dashboard, then redeploy.
+# Optional: CAREEROS_LLM + a provider key for the hosted AI allowance, and the four RAZORPAY_*
+# values to take payments. The full walk-through is docs/launch.md.
 # Check plan names and prices on render.com before you deploy.
 databases:
   - name: careeros-db
@@ -37,6 +39,30 @@ services:
         sync: false
       - key: SIGNUP_MODE
         value: open
+      - key: SUPPORT_EMAIL
+        sync: false
+      - key: COMPANY_NAME
+        sync: false
+      - key: SECRETS_KEY
+        generateValue: true
+      - key: PRO_PRICE_INR
+        value: "299"
+      - key: FREE_AI_CREDITS
+        value: "15"
+      - key: PRO_AI_CREDITS
+        value: "400"
+      - key: CAREEROS_LLM
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: RAZORPAY_PLAN_PRO
+        sync: false
 
   - type: worker
     name: careeros-worker
@@ -62,3 +88,10 @@ services:
         sync: false
       - key: SIGNUP_MODE
         value: open
+      - key: SECRETS_KEY
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: SECRETS_KEY
+      - key: SUPPORT_EMAIL
+        sync: false

@@ -2,6 +2,15 @@
 
 All notable changes to CareerOS. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [1.1.0] - 2026-11-04
+
+### Added
+- **A product you can launch.** Free and Pro plans with Razorpay subscriptions (hosted checkout, verified and idempotent webhooks, cancel at the end of the cycle), operator grants for beta testers, and plan-based limits: matching every hour on Pro and daily on Free, AI actions per month, auto-apply per day and storage.
+- **AI in the hosted app.** `/api/ai` runs dashboard AI actions on the service's model within the plan's monthly allowance, or on the user's own Anthropic, OpenAI-compatible or Gemini key, stored encrypted. OpenAI-compatible addresses are limited to known providers.
+- **New design for the dashboard and the app**, matching the website: black sidebar on wide screens; on phones, a home with one big number and today's highlights as shapes, a floating dock with a pink "+" and an "Add..." sheet, and coloured detail screens.
+- **Installable web app** (manifest, service worker, icons, an offline screen) and **Android and iOS apps** in `mobile/` (Capacitor), with a workflow that builds the Android app.
+- Sign-in, pricing and policy pages (terms, privacy, refunds, contact) in the brand; pricing and app sections on the website; `docs/launch.md`.
+
 ## [1.0.0] - 2026-11-04
 
 ### Added

@@ -47,6 +47,17 @@ class Config:
     max_doc_kb: int = 512
     linkedin_client_id: str = ""  # "Sign in with LinkedIn using OpenID Connect": name, email, photo only
     linkedin_client_secret: str = ""
+    # Plans and billing. Prices are in rupees per month; credits are AI actions per calendar month (UTC).
+    secrets_key: str = ""  # encrypts users' own AI keys at rest; any long random string
+    pro_price_inr: int = 299
+    free_ai_credits: int = 15
+    pro_ai_credits: int = 400
+    razorpay_key_id: str = ""
+    razorpay_key_secret: str = ""
+    razorpay_webhook_secret: str = ""
+    razorpay_plan_pro: str = ""  # plan_... created in the Razorpay dashboard at pro_price_inr per month
+    support_email: str = ""
+    company_name: str = "CareerOS"
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -76,7 +87,21 @@ class Config:
             max_doc_kb=_int("MAX_DOC_KB", 512),
             linkedin_client_id=e("LINKEDIN_CLIENT_ID", "").strip(),
             linkedin_client_secret=e("LINKEDIN_CLIENT_SECRET", "").strip(),
+            secrets_key=e("SECRETS_KEY", "").strip(),
+            pro_price_inr=_int("PRO_PRICE_INR", 299),
+            free_ai_credits=_int("FREE_AI_CREDITS", 15),
+            pro_ai_credits=_int("PRO_AI_CREDITS", 400),
+            razorpay_key_id=e("RAZORPAY_KEY_ID", "").strip(),
+            razorpay_key_secret=e("RAZORPAY_KEY_SECRET", "").strip(),
+            razorpay_webhook_secret=e("RAZORPAY_WEBHOOK_SECRET", "").strip(),
+            razorpay_plan_pro=e("RAZORPAY_PLAN_PRO", "").strip(),
+            support_email=e("SUPPORT_EMAIL", "").strip(),
+            company_name=e("COMPANY_NAME", "CareerOS").strip() or "CareerOS",
         )
+
+    @property
+    def billing_enabled(self) -> bool:
+        return bool(self.razorpay_key_id and self.razorpay_key_secret and self.razorpay_webhook_secret and self.razorpay_plan_pro)
 
     @property
     def linkedin_enabled(self) -> bool:
@@ -105,6 +130,12 @@ class Config:
             problems.append("PASSWORD_ITERATIONS must be at least 310000.")
         if self.signup_mode not in ("open", "allowlist", "closed"):
             problems.append("SIGNUP_MODE must be open, allowlist or closed.")
+        if len(self.secrets_key) < 32:
+            problems.append("SECRETS_KEY must be a random string of at least 32 characters (it encrypts users' AI keys).")
+        if any((self.razorpay_key_id, self.razorpay_key_secret, self.razorpay_webhook_secret, self.razorpay_plan_pro)) and not self.billing_enabled:
+            problems.append("Billing is half set up: set all of RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET and RAZORPAY_PLAN_PRO, or none.")
+        if self.billing_enabled and not self.support_email:
+            problems.append("SUPPORT_EMAIL is required when payments are on: the refund and contact pages show it.")
         if "change_me" in self.database_url.lower():
             problems.append("DATABASE_URL still contains the example password.")
         return problems

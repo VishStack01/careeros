@@ -1,0 +1,22 @@
+{
+  "name": "CareerOS",
+  "short_name": "CareerOS",
+  "description": "Fresh roles from company career pages, checked against your rules, with applications written from your real experience.",
+  "id": "/",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF3E6",
+  "theme_color": "#FAF3E6",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {"src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Fresh roles", "url": "/#today", "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Applications", "url": "/#pipeline", "icons": [{"src": "/icons/icon-192.png", "sizes": "192x192"}]}
+  ]
+}

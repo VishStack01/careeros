@@ -1,8 +1,10 @@
 """The CareerOS Cloud web app and API (FastAPI).
 
-Pages: /login /signup /forgot /reset /verify (sign-in), / (the dashboard), /privacy, /terms.
+Pages: /login /signup /forgot /reset /verify (sign-in), / (the dashboard), /pricing,
+       /privacy /terms /refunds /contact, plus the installable app's manifest, service worker and icons.
 API:   /api/auth/*  /api/me*  /api/tokens*  /api/c/<collection>  /api/d/<collection>/<id>
-       /api/assets*  /_blob/<id>  /api/agent/*  /api/admin/overview  /api/health  /api/ready
+       /api/assets*  /_blob/<id>  /api/agent/*  /api/admin/*  /api/health  /api/ready
+       /api/billing* (plans, Razorpay checkout and webhook)  /api/ai (AI actions, metered by plan)
 
 Browser requests are authenticated by an HttpOnly session cookie and must send
 the X-CareerOS-CSRF header on writes. The user's apply agent authenticates with
@@ -13,6 +15,7 @@ through /api/agent only.
 from __future__ import annotations
 
 import hashlib
+from html import escape as html_escape
 import json
 import logging
 import re
@@ -32,11 +35,11 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .. import __version__
 from .. import evaluation as evaluation_mod
-from .. import followups
+from .. import followups, llm
 from ..dedupe import canonical_url, company_key
 from . import mailer as mail
 from . import linkedin as li_auth
-from . import repo, security
+from . import plans, repo, security
 from .config import Config
 from .db import Database, now_iso
 from .ingest import feed_state
@@ -215,7 +218,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         if not request.url.path.startswith("/_blob/"):
             response.headers["Content-Security-Policy"] = (
-                f"default-src 'self'; script-src 'self' 'nonce-{nonce}'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                f"default-src 'self'; script-src 'self' 'nonce-{nonce}'; manifest-src 'self'; worker-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
                 "font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; "
                 "base-uri 'none'; form-action 'self'; object-src 'none'")
         if request.url.path.startswith("/api/"):
@@ -244,17 +247,55 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         return html("auth.html", request.state.nonce)
 
     def legal_page(request: Request):
-        return html("legal.html", request.state.nonce)
+        text = (STATIC / "legal.html").read_text(encoding="utf-8").replace("<script>", f'<script nonce="{request.state.nonce}">')
+        support = html_escape(cfg.support_email)
+        if support:
+            text = text.replace("{{SUPPORT_EMAIL}}", support)
+        else:
+            text = text.replace('<a href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a>', "the address on the emails this service sends you")
+        return HTMLResponse(text.replace("{{COMPANY}}", html_escape(cfg.company_name)))
 
     for path in ("/login", "/signup", "/forgot", "/reset", "/verify"):
         app.add_api_route(path, auth_page, methods=["GET"], include_in_schema=False)
-    for path in ("/privacy", "/terms"):
+    for path in ("/privacy", "/terms", "/refunds", "/contact"):
         app.add_api_route(path, legal_page, methods=["GET"], include_in_schema=False)
+
+    @app.get("/pricing", include_in_schema=False)
+    def pricing(request: Request):
+        return html("pricing.html", request.state.nonce)
+
+    # The installable app: manifest, service worker, icons and the offline page.
+    APP_STATIC = STATIC / "app"
+
+    @app.get("/manifest.webmanifest", include_in_schema=False)
+    def manifest():
+        return Response((APP_STATIC / "manifest.webmanifest").read_bytes(), media_type="application/manifest+json",
+                        headers={"Cache-Control": "public, max-age=3600"})
+
+    @app.get("/sw.js", include_in_schema=False)
+    def service_worker():
+        return Response((APP_STATIC / "sw.js").read_bytes(), media_type="text/javascript",
+                        headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": "/"})
+
+    @app.get("/offline", include_in_schema=False)
+    def offline():
+        return HTMLResponse((APP_STATIC / "offline.html").read_text(encoding="utf-8"), headers={"Cache-Control": "public, max-age=3600"})
+
+    @app.get("/icons/{name}", include_in_schema=False)
+    def icon(name: str):
+        if not re.match(r"^[a-z0-9-]{1,40}\.png$", name) or not (APP_STATIC / "icons" / name).is_file():
+            raise err(404, "Not found.")
+        return Response((APP_STATIC / "icons" / name).read_bytes(), media_type="image/png", headers={"Cache-Control": "public, max-age=604800"})
+
+    @app.get("/apple-touch-icon.png", include_in_schema=False)
+    def apple_icon():
+        return icon("apple-touch-icon.png")
 
     @app.get("/favicon.ico", include_in_schema=False)
     def favicon():
-        svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#000"/>'
-               '<path d="M7 21l6-6 5 5 7-9M20 11h5v5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+        svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="#F5B8DB"/>'
+               '<g transform="translate(14 14) scale(.72)" fill="#151515"><circle cx="34" cy="20" r="11"/><path d="M14 86 C14 58 30 44 52 44 L52 60 C38 60 30 70 30 86 Z"/>'
+               '<path d="M48 30 L86 30 L86 68 L72 68 L72 54 L56 70 L46 60 L62 44 L48 44 Z"/></g></svg>')
         return Response(svg, media_type="image/svg+xml", headers={"Cache-Control": "public, max-age=86400"})
 
     # ------------------------------------------------------------ health
@@ -473,7 +514,11 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         with db.tx() as c:
             used = repo.storage_used(c, p.uid)
             state = feed_state(c)
-        return dict(repo.public_user(p.user), via=p.kind, storage={"usedBytes": used, "quotaBytes": cfg.user_storage_mb * 1024 * 1024},
+            plan = plans.plan_of(c, p.user)
+            ai = plans.ai_status(c, cfg, p.user)
+        quota = plans.plan_info(cfg, plan)["storageMb"]
+        return dict(repo.public_user(p.user), via=p.kind, plan=plan, ai=ai, billing=cfg.billing_enabled,
+                    storage={"usedBytes": used, "quotaBytes": quota * 1024 * 1024},
                     feed={"generatedAt": state.get("generatedAt"), "inventory": state.get("records"), "companies": state.get("companies")})
 
     @app.patch("/api/me")
@@ -519,6 +564,9 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 "computerKeys": repo.list_api_tokens(c, p.uid),
                 "sessions": c.all("SELECT created_at, last_seen_at, expires_at, revoked_at, user_agent FROM sessions WHERE user_id = ?", (p.uid,)),
                 "securityEvents": c.all("SELECT at, kind, detail FROM audit_events WHERE user_id = ? ORDER BY at", (p.uid,)),
+                "plan": {k: v for k, v in plans.billing_view(c, cfg, p.user).items() if k != "plans"},
+                "aiKey": plans.public_key(c, p.uid),
+                "aiUsage": c.all("SELECT period, hosted, own FROM ai_usage WHERE user_id = ? ORDER BY period", (p.uid,)),
             }
             repo.audit(c, p.uid, "export", client_ip(request))
         return JSONResponse(data, headers={"Content-Disposition": 'attachment; filename="careeros-export.json"'})
@@ -706,7 +754,9 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 return datetime.fromisoformat(s.replace("Z", "+00:00")).astimezone(tz).date()
             except (ValueError, AttributeError):
                 return None
-        cap = int(settings.get("dailyCap") or 8)
+        with db.tx() as c:
+            plan_cap = plans.plan_info(cfg, plans.plan_of(c, p.user))["autoApplyPerDay"]
+        cap = min(int(settings.get("dailyCap") or 8), plan_cap)
         done_today = sum(1 for j in jobs if local_day(j["data"].get("appliedAt") or "") == today)
         recent |= {company_key(j["data"].get("company", "")) for j in jobs if j["data"].get("appliedAt")}
         left = max(0, cap - done_today)
@@ -917,7 +967,172 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                       (now_iso(), p.uid, _app_key(d)))
         return {"ok": True}
 
+    # ------------------------------------------------------------ plans and billing
+    app.state.razorpay = plans.Razorpay(cfg)
+
+    @app.get("/api/plans")
+    def plan_catalog():
+        return {"plans": plans.catalog(cfg), "checkoutEnabled": cfg.billing_enabled, "currency": "INR"}
+
+    @app.get("/api/billing")
+    def billing(p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            return dict(plans.billing_view(c, cfg, p.user), ai=plans.ai_status(c, cfg, p.user))
+
+    @app.post("/api/billing/checkout")
+    async def checkout(request: Request, p: Principal = Depends(session_only)):
+        if not cfg.billing_enabled:
+            raise err(503, "Payments aren't switched on yet. Write to support to get Pro.", "billing_off")
+        with db.tx() as c:
+            limited(c, f"checkout:{p.uid}", 10, 3600)
+            s = plans.subscription(c, p.uid)
+            if plans.plan_of(c, p.user) == "pro" and not (s and s["status"] == "cancelled"):
+                raise err(409, "You're already on Pro.", "already_pro")
+        try:
+            sub = await run_in_threadpool(app.state.razorpay.create_subscription, p.uid, p.user["email"])
+        except plans.BillingError as e:
+            log.warning(json.dumps({"event": "checkout-failed", "error": str(e)[:200]}))
+            raise err(502, "We couldn't start the payment. Try again in a minute.", "billing")
+        with db.tx() as c:
+            plans.start_checkout(c, p.uid, sub)
+            repo.audit(c, p.uid, "checkout-started", client_ip(request))
+        return {"url": sub["short_url"]}
+
+    @app.post("/api/billing/cancel")
+    async def cancel_plan(request: Request, p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            s = plans.subscription(c, p.uid)
+        if not s or s["provider"] != "razorpay" or s["status"] not in plans.PRO_STATUSES | {"created"}:
+            raise err(400, "There's no paid plan to cancel.", "no_subscription")
+        try:
+            await run_in_threadpool(app.state.razorpay.cancel, s["provider_sub_id"], s["status"] != "created")
+        except plans.BillingError:
+            raise err(502, "We couldn't reach the payment provider. Try again in a minute.", "billing")
+        with db.tx() as c:
+            if s["status"] == "created":
+                c.execute("UPDATE subscriptions SET status = 'cancelled', updated_at = ? WHERE user_id = ?", (now_iso(), p.uid))
+            else:
+                c.execute("UPDATE subscriptions SET cancel_at_period_end = 1, updated_at = ? WHERE user_id = ?", (now_iso(), p.uid))
+            repo.audit(c, p.uid, "plan-cancelled", client_ip(request))
+            return plans.billing_view(c, cfg, p.user)
+
+    @app.post("/api/billing/webhook", include_in_schema=False)
+    async def billing_webhook(request: Request):
+        body = await request.body()
+        if not plans.verify_signature(body, request.headers.get("x-razorpay-signature", ""), cfg.razorpay_webhook_secret):
+            raise err(400, "Bad signature.", "signature")
+        try:
+            event = json.loads(body)
+        except ValueError:
+            raise err(400, "Bad JSON.")
+        if not isinstance(event, dict):
+            raise err(400, "Bad JSON.")
+        eid = (request.headers.get("x-razorpay-event-id") or hashlib.sha256(body).hexdigest())[:100]
+        with db.tx() as c:
+            result = plans.apply_event(c, eid, event)
+            if event.get("event") == "subscription.activated" and result == "active":
+                ent = event["payload"]["subscription"]["entity"]
+                row = c.one("SELECT u.id, u.email FROM users u JOIN subscriptions s ON s.user_id = u.id WHERE s.provider_sub_id = ?", (ent["id"],))
+                if row:
+                    send(c, row["email"], mail.pro_welcome(cfg.public_url))
+                    repo.audit(c, row["id"], "plan-activated")
+        log.info(json.dumps({"event": "billing-webhook", "kind": str(event.get("event", ""))[:60], "result": result}))
+        return {"ok": True, "result": result}
+
+    # ------------------------------------------------------------ AI actions
+    @app.put("/api/me/ai-key")
+    def save_ai_key(request: Request, body: dict = Body(default={}), p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            limited(c, f"aikey:{p.uid}", 20, 3600)
+            try:
+                saved = plans.save_key(c, cfg, p.uid, str(body.get("provider", "")), str(body.get("key", "")),
+                                       str(body.get("model", "")), str(body.get("baseUrl", "")))
+            except ValueError as e:
+                raise err(400, str(e), "invalid_key")
+            except plans.BillingError as e:
+                raise err(503, str(e), "unavailable")
+            repo.audit(c, p.uid, "ai-key-saved", client_ip(request), {"provider": saved["provider"]})
+        return {"ownKey": saved}
+
+    @app.delete("/api/me/ai-key")
+    def delete_ai_key(request: Request, p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            plans.delete_key(c, p.uid)
+            repo.audit(c, p.uid, "ai-key-removed", client_ip(request))
+        return {"ok": True}
+
+    @app.post("/api/me/ai-key/test")
+    async def test_ai_key(p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            limited(c, f"aitest:{p.uid}", 10, 3600)
+            try:
+                own = plans.own_config(c, cfg, p.uid)
+            except Exception:  # noqa: BLE001 - a key saved under another SECRETS_KEY can't be read
+                raise err(400, "Your saved key can't be read any more. Save it again.", "invalid_key")
+        if not own:
+            raise err(400, "Save a key first.", "no_key")
+        try:
+            text = await run_in_threadpool(llm.complete, "Reply with the single word OK.", "quick", "", 8, False, own, 30)
+        except llm.LLMError as e:
+            return {"ok": False, "error": str(e)}
+        return {"ok": True, "model": own.model, "reply": text.strip()[:20]}
+
+    @app.post("/api/ai")
+    async def ai_action(request: Request, body: dict = Body(default={}), p: Principal = Depends(session_only)):
+        prompt = str(body.get("prompt") or "")
+        if not prompt.strip():
+            raise err(400, "The prompt is empty.")
+        if len(prompt) > llm.MAX_PROMPT:
+            raise err(413, "That's too long for one AI action.", "too_large")
+        tier = body.get("tier") if body.get("tier") in llm.TIERS else "default"
+        with db.tx() as c:
+            limited(c, f"ai:{p.uid}", 40, 600)
+            try:
+                model = plans.own_config(c, cfg, p.uid)
+            except Exception:  # noqa: BLE001
+                raise err(400, "Your saved AI key can't be read any more. Save it again in Settings.", "invalid_key")
+            kind = "own"
+            if model:
+                plans.take_credit(c, p.uid, "own")
+            else:
+                model, kind = plans.hosted_config(), "hosted"
+                if not model:
+                    raise err(503, "AI isn't available on this server. Add your own key in Settings.", "ai_off")
+                plan = plans.plan_of(c, p.user)
+                limit = plans.plan_info(cfg, plan)["aiCredits"]
+                if not plans.take_credit(c, p.uid, "hosted", limit):
+                    hint = "Upgrade to Pro or add your own key in Settings." if plan == "free" else "Add your own key in Settings to keep going."
+                    raise err(402, f"You've used this month's {limit} AI actions. {hint}", "ai_quota")
+        try:
+            if body.get("json"):
+                out = {"json": await run_in_threadpool(lambda: llm.complete_json(prompt, tier=tier, max_tokens=8000, cfg=model))}
+            else:
+                out = {"text": await run_in_threadpool(lambda: llm.complete(prompt, tier=tier, max_tokens=8000, cfg=model))}
+        except llm.LLMError as e:
+            with db.tx() as c:
+                plans.refund_credit(c, p.uid, kind)
+            msg = str(e) if kind == "own" else "The AI model didn't answer. Your action wasn't counted; try again."
+            raise err(502, msg, "llm_error")
+        return dict(out, source=kind)
+
     # ------------------------------------------------------------ operators
+    @app.post("/api/admin/grant")
+    def admin_grant(request: Request, body: dict = Body(default={}), p: Principal = Depends(admin_only)):
+        email = str(body.get("email", "")).strip().lower()
+        until = str(body.get("until") or "").strip() or None
+        if until and not re.match(r"^\d{4}-\d{2}-\d{2}$", until):
+            raise err(400, "Use a date like 2026-12-31 for until.")
+        with db.tx() as c:
+            u = repo.user_by_email(c, email)
+            if not u:
+                raise err(404, "No account with that email.")
+            if body.get("plan", "pro") == "free":
+                c.execute("DELETE FROM subscriptions WHERE user_id = ? AND provider = 'manual'", (u["id"],))
+            else:
+                plans.grant(c, u["id"], p.uid, until + "T23:59:59Z" if until else None)
+            repo.audit(c, u["id"], "plan-granted", client_ip(request), {"by": p.uid, "until": until})
+            return {"ok": True, "plan": plans.plan_of(c, repo.user_by_id(c, u["id"]))}
+
     @app.get("/api/admin/overview")
     def admin_overview(p: Principal = Depends(admin_only)):
         with db.tx() as c:
@@ -929,6 +1144,11 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 "feed": feed_state(c),
                 "tasks": c.all("SELECT kind, status, COUNT(*) AS n FROM tasks GROUP BY kind, status ORDER BY kind, status"),
                 "recentFailures": c.all("SELECT kind, last_error, finished_at FROM tasks WHERE status = 'failed' ORDER BY finished_at DESC LIMIT 10"),
+                "plans": c.all("SELECT plan, status, COUNT(*) AS n FROM subscriptions GROUP BY plan, status ORDER BY plan, status"),
+                "aiThisMonth": c.one("SELECT COALESCE(SUM(hosted), 0) AS hosted, COALESCE(SUM(own), 0) AS own FROM ai_usage WHERE period = ?",
+                                     (plans.period(),)),
+                "billingEnabled": cfg.billing_enabled,
+                "hostedAi": plans.hosted_config() is not None,
             }
 
     return app

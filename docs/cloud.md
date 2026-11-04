@@ -35,6 +35,18 @@ Applications go out from each user's own computer, exactly as in the personal se
 with the same stop rules. The server's job is to find and match roles, keep each
 person's pipeline, and refuse a second submission for any role.
 
+## Plans, payments and AI
+
+| | How |
+|---|---|
+| Plans | `careeros/cloud/plans.py`: Free and Pro, with limits for matching cadence, AI actions per month, auto-apply per day and storage. Prices and allowances come from `PRO_PRICE_INR`, `FREE_AI_CREDITS` and `PRO_AI_CREDITS`. |
+| Payments | Razorpay subscriptions. `/api/billing/checkout` creates a subscription and returns Razorpay's hosted payment page, so card and UPI details never reach this service. `/api/billing/webhook` checks the `X-Razorpay-Signature` HMAC, stores each event once by its id, and updates the subscription's status. Cancelling keeps Pro until the paid period ends. |
+| AI actions | `/api/ai` (signed-in sessions only, never computer keys) runs on the user's own key when one is saved, otherwise on the service's model within the plan's monthly allowance. A failed model call isn't counted. |
+| Own keys | Encrypted with `SECRETS_KEY` (Fernet). Only the last four characters are shown or exported. OpenAI-compatible addresses must be https on a list of known providers, so the server can't be pointed at internal addresses. |
+| Phone apps | `mobile/` wraps the hosted app (Capacitor). The apps hide the Upgrade button because app stores require their own billing for in-app subscriptions. |
+
+Launch steps, from Render to the app stores: [launch.md](launch.md).
+
 ## Tenant boundaries
 
 - **Shared:** the job inventory (`jobs`, `feed_state`). It holds public postings only.

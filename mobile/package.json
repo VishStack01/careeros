@@ -1,0 +1,23 @@
+{
+  "name": "careeros-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareerOS for Android and iOS: the hosted CareerOS web app in a native shell (Capacitor).",
+  "license": "MIT",
+  "scripts": {
+    "set-url": "node scripts/set-url.mjs",
+    "sync": "node scripts/set-url.mjs && cap sync",
+    "android": "node scripts/set-url.mjs && cap sync android && cap open android",
+    "ios": "node scripts/set-url.mjs && cap sync ios && cap open ios",
+    "assets": "capacitor-assets generate --iconBackgroundColor '#F5B8DB' --iconBackgroundColorDark '#F5B8DB' --splashBackgroundColor '#FAF3E6' --splashBackgroundColorDark '#12110F'"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "3.0.5",
+    "@capacitor/cli": "8.5.3"
+  }
+}

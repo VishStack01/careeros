@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "careeros"
-version = "1.0.0"
+version = "1.1.0"
 description = "Open-source AI agent for the job search: finds fresh roles, checks them with quotes from the posting, writes applications from your real experience only. Bring your own model and key."
 readme = "README.md"
 license = { text = "MIT" }
@@ -35,7 +35,7 @@ Changelog = "https://github.com/VishStack01/careeros/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 browser = ["playwright>=1.44"]
-cloud = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "psycopg[binary,pool]>=3.1", "pypdf>=4.0"]
+cloud = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "psycopg[binary,pool]>=3.1", "pypdf>=4.0", "cryptography>=42"]
 radar = ["python-jobspy>=1.4"]
 dev = ["pytest>=8", "httpx>=0.27"]
 
@@ -46,7 +46,7 @@ careeros = "careeros.cli:main"
 include = ["careeros*"]
 
 [tool.setuptools.package-data]
-careeros = ["site_app.html", "data/*.json", "cloud/static/*.html", "cloud/migrations/*.sql", "cloud/prompts/*.md"]
+careeros = ["site_app.html", "data/*.json", "cloud/static/*.html", "cloud/static/app/*.html", "cloud/static/app/*.js", "cloud/static/app/*.webmanifest", "cloud/static/app/icons/*.png", "cloud/migrations/*.sql", "cloud/prompts/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CareerOS · Pricing</title>
+<meta name="description" content="CareerOS is free to start. Pro adds hourly matching and a monthly AI allowance for tailored resumes and fit scores.">
+<meta name="theme-color" content="#FAF3E6">
+<link rel="icon" href="/favicon.ico" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{--cream:#FAF3E6;--sand:#EFE7D9;--ink:#151515;--text:#47433D;--muted:#8C867D;--pink:#F5B8DB;--green:#9AAB63;--blue:#B6CAEB;--yellow:#F5D867;
+  --f:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;--d:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;--spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--d);font-weight:600;font-size:23px;text-decoration:none;letter-spacing:-.02em}
+.mark{width:36px;height:36px;border-radius:12px;background:var(--pink);display:grid;place-items:center}.mark svg{width:21px;height:21px;fill:#151515}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--ink);color:var(--cream);border-radius:999px;padding:14px 26px;font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;transition:transform .35s var(--spring),box-shadow .3s}
+.btn:hover{transform:translateY(-3px);box-shadow:0 12px 24px -12px rgba(0,0,0,.5)}
+.btn.light{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.pill{display:inline-block;background:var(--pink);border-radius:999px;padding:8px 20px;font-size:14px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.lede{font-family:var(--d);font-weight:400;color:#57534D;font-size:clamp(32px,5vw,58px);line-height:1.12;letter-spacing:-.03em;text-indent:1.4em;max-width:900px;margin:24px 0 0}
+.lede b{color:var(--ink);font-weight:500}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:48px 0 24px}
+.plan{border-radius:30px;padding:32px;display:flex;flex-direction:column;gap:16px;background:var(--sand);position:relative;overflow:hidden;opacity:0;transform:translateY(20px);animation:rise .7s var(--ease) forwards}
+.plan.pro{background:var(--pink);animation-delay:.12s}
+.plan h2{font-family:var(--d);font-size:30px;margin:0;letter-spacing:-.03em;font-weight:600}
+.price{font-family:var(--d);font-size:64px;font-weight:600;letter-spacing:-.05em;line-height:1}
+.price small{font-family:var(--f);font-size:17px;font-weight:500;letter-spacing:0}
+.plan ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.plan li{display:grid;grid-template-columns:22px 1fr;gap:10px;color:var(--text)}
+.plan.pro li{color:#2b2925}
+.plan li::before{content:"";width:16px;height:16px;border-radius:50%;background:var(--green);margin-top:4px}
+.plan.pro li::before{background:var(--ink)}
+.plan .btn{margin-top:auto;align-self:flex-start}
+.shape{position:absolute;pointer-events:none;animation:fl 7s ease-in-out infinite}
+.shape svg{width:100%;height:100%}
+@keyframes fl{50%{transform:translateY(-10px) rotate(6deg)}}
+@keyframes rise{to{opacity:1;transform:none}}
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:40px 0}
+.faq div{background:var(--sand);border-radius:24px;padding:22px 24px}
+.faq h3{font-family:var(--d);font-size:21px;margin:0 0 6px;font-weight:600}
+.faq p{margin:0;color:var(--text);font-size:16px}
+footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:14px;padding:30px 0 50px;border-top:1px solid #DDD2C1;margin-top:30px}
+footer a{text-decoration:none}footer a:hover{text-decoration:underline}
+@media (max-width:760px){.grid,.faq{grid-template-columns:1fr}.price{font-size:52px}.plan{padding:26px}}
+@media (prefers-reduced-motion:reduce){.plan,.shape{animation:none;opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a class="brand" href="/"><span class="mark" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="34" cy="20" r="11"/><path d="M14 86 C14 58 30 44 52 44 L52 60 C38 60 30 70 30 86 Z"/><path d="M48 30 L86 30 L86 68 L72 68 L72 54 L56 70 L46 60 L62 44 L48 44 Z"/></svg></span>careeros</a><a class="btn light" href="/login">Sign in</a></nav>
+  <span class="pill">Pricing</span>
+  <p class="lede">Finding and checking roles is <b>free for everyone</b>. Pro is for when you want them <b>every hour</b>, with AI that writes from your real experience.</p>
+  <div class="grid" id="plans">
+    <article class="plan"><h2>Free</h2><div class="price">₹0</div><ul><li>Loading the plan details…</li></ul></article>
+    <article class="plan pro"><h2>Pro</h2><div class="price">…</div><ul><li>Loading the plan details…</li></ul></article>
+  </div>
+  <div class="faq">
+    <div><h3>Can I use my own AI key?</h3><p>Yes, on any plan. Save an Anthropic, OpenAI-compatible or Gemini key in Settings and AI actions run on it without counting toward your allowance. It's stored encrypted.</p></div>
+    <div><h3>How do I pay?</h3><p>UPI, cards or netbanking through Razorpay. We never see your card or bank details. Pro renews monthly until you cancel.</p></div>
+    <div><h3>Can I cancel?</h3><p>Any time, in Settings. You keep Pro until the end of the month you paid for, then move to Free with all your data. See <a href="/refunds">refunds</a>.</p></div>
+    <div><h3>Does CareerOS apply on LinkedIn or Naukri?</h3><p>No. It reads company career pages and applies from your own computer only where it can answer every question truthfully. Roles listed only on the big boards are marked "Apply yourself".</p></div>
+  </div>
+  <footer><span>CareerOS · open source under the MIT licence</span><span><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/refunds">Refunds</a> · <a href="/contact">Contact</a></span></footer>
+</div>
+<script>
+(function(){
+  var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+  var shapes = ['<span class="shape" style="right:-26px;top:-26px;width:130px;height:130px" aria-hidden="true"><svg viewBox="0 0 100 100" fill="#B6CAEB"><path d="M50 0 L62.6 19.5 L85.4 14.6 L80.5 37.4 L100 50 L80.5 62.6 L85.4 85.4 L62.6 80.5 L50 100 L37.4 80.5 L14.6 85.4 L19.5 62.6 L0 50 L19.5 37.4 L14.6 14.6 L37.4 19.5 Z"/></svg></span>',
+                '<span class="shape" style="right:24px;top:20px;width:110px;height:110px" aria-hidden="true"><svg viewBox="0 0 100 100" fill="#F5D867"><path d="M64 2 A48 48 0 1 0 98 56 A38 38 0 1 1 64 2 Z"/></svg></span>'];
+  fetch("/api/plans").then(function(r){ return r.json(); }).then(function(d){
+    document.getElementById("plans").innerHTML = d.plans.map(function(p, i){
+      return '<article class="plan ' + esc(p.id) + '">' + shapes[i] + '<h2>' + esc(p.name) + '</h2><div class="price">₹' + Number(p.priceInr).toLocaleString("en-IN") + (p.priceInr ? '<small> / month</small>' : '') + '</div><ul>' +
+        p.features.map(function(f){ return "<li>" + esc(f) + "</li>"; }).join("") + '</ul><a class="btn' + (p.id === "pro" ? "" : " light") + '" href="/signup">' + (p.id === "pro" ? "Start free, upgrade inside" : "Create a free account") + '</a></article>';
+    }).join("");
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>

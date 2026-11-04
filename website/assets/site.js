@@ -11,6 +11,11 @@
     return;
   }
 
+  // Links into the hosted app follow <meta name="careeros-app">, so the address lives in one place.
+  var appMeta = document.querySelector('meta[name="careeros-app"]');
+  var appUrl = appMeta && /^https:\/\//.test(appMeta.content) ? appMeta.content.replace(/\/+$/, "") : "";
+  if (appUrl) $$("[data-app]").forEach(function (a) { a.href = appUrl + a.getAttribute("data-app"); });
+
   // Stagger: children of [data-stagger] get increasing delays.
   $$("[data-stagger]").forEach(function (g) {
     var step = parseFloat(g.dataset.stagger) || 0.08;
@@ -72,7 +77,7 @@
     if (el.classList.contains("term")) typeTerm(el);
   }
 
-  var targets = $$(".reveal, .split-words, .pr, .term, .tick, [data-count]");
+  var targets = $$(".reveal, .split-words, .pr, .term, .tick, [data-count], .phone");
   if (reduce || !("IntersectionObserver" in window)) {
     targets.forEach(show);
   } else {

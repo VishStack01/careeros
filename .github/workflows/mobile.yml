@@ -1,0 +1,91 @@
+name: mobile
+
+# Builds the Android app (and checks the iOS project compiles) from mobile/.
+# Run it by hand from the Actions tab with your server's address.
+#
+# Android release signing (optional): add these repository secrets to get a signed
+# .aab ready for Google Play: ANDROID_KEYSTORE_BASE64 (base64 of your upload keystore),
+# ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS. Without them you get a debug .apk to
+# install on your own phone and an unsigned .aab.
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_url:
+        description: "Your CareerOS server, e.g. https://careeros-web.onrender.com"
+        required: true
+        default: "https://careeros-web.onrender.com"
+      ios:
+        description: "Also check that the iOS project builds (macOS runner)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run set-url
+        env:
+          CAREEROS_APP_URL: ${{ inputs.app_url }}
+      - run: npx cap sync android
+      - name: Build
+        working-directory: mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug bundleRelease
+      - name: Sign the release bundle
+        if: ${{ env.KS != '' }}
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        working-directory: mobile/android
+        run: |
+          echo "$KS" | base64 -d > upload.jks
+          jarsigner -keystore upload.jks -storepass "$KS_PASS" app/build/outputs/bundle/release/app-release.aab "$KS_ALIAS"
+          rm upload.jks
+      - uses: actions/upload-artifact@v4
+        with:
+          name: careeros-android
+          path: |
+            mobile/android/app/build/outputs/apk/debug/app-debug.apk
+            mobile/android/app/build/outputs/bundle/release/app-release.aab
+
+  ios:
+    if: ${{ inputs.ios }}
+    runs-on: macos-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm run set-url
+        env:
+          CAREEROS_APP_URL: ${{ inputs.app_url }}
+      - run: npx cap sync ios
+      - name: Build for the simulator (no signing)
+        working-directory: mobile/ios/App
+        run: xcodebuild -project App.xcodeproj -scheme App -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO build | tail -20

@@ -111,6 +111,16 @@ The dashboard has an **Auto-apply** switch. Fill in your application details and
 
 It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri, Indeed or Wellfound. The run's instructions: [prompts/scheduled-apply.md](prompts/scheduled-apply.md).
 
+## Launch it as a product
+
+CareerOS Cloud is the hosted version people sign up for, on the web, as an installable app, or as the Android and iOS apps in [`mobile/`](mobile/). It has Free and Pro plans with Razorpay subscriptions, a monthly AI allowance on your model (or the user's own key, encrypted), and pricing, terms, privacy and refund pages. **[docs/launch.md](docs/launch.md)** walks through every account and setting, from Render to the app stores.
+
+| Free | Pro |
+|---|---|
+| Fresh roles matched daily, with quotes | Matching every hour |
+| 15 AI actions a month, unlimited with your own key | 400 AI actions a month |
+| Auto-apply up to 5 a day | Auto-apply up to 25 a day |
+
 ## CareerOS Cloud: for many job seekers
 
 The same product as a multi-user service: people sign up with their email, set their filters, upload their resume and get matched against the shared hourly inventory, each with a private pipeline. Auto-apply still runs on each person's own computer, in the Claude desktop app, with a computer key that can only read their pipeline and report results; the server never fills employer forms or holds job-site logins.
@@ -195,7 +205,7 @@ careeros/            Python package (standard library only; Playwright optional)
   apply/answers.py   form-answer resolver with confidence
   apply/runner.py    Playwright form filler
   site.py, tags.py   the public job board and its tags
-  cloud/             the multi-user service: API, worker, migrations, sign-in pages
+  cloud/             the multi-user service: API, worker, plans and billing, migrations, pages
   llm.py             bring-your-own-key client: Anthropic, OpenAI-compatible, Gemini, Ollama
   ai.py              AI steps (profile, posting, evaluate) with code checks on every output
   server.py, cli.py  local dashboard API and command line
@@ -203,13 +213,14 @@ careeros/            Python package (standard library only; Playwright optional)
                      tailor, reviewer, apply, outreach, tracker, coach, weekly-review
 dashboard/           app.html (single source), demo data, built index.html
 website/             the project website and docs (GitHub Pages)
+mobile/              Android and iOS apps (Capacitor) around the hosted app
 prompts/             scheduled search and apply prompts
 config/companies/    the company list (curated + moreThanFAANGM + YC), 1,396 companies
 config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume, an application package, a posting and its evaluation
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               264 tests, including real browser form fills, every LLM provider
+tests/               292 tests, including real browser form fills, every LLM provider
                      (mocked), and the cloud service on SQLite and PostgreSQL
 ```
 
@@ -226,6 +237,7 @@ tests/               264 tests, including real browser form fills, every LLM pro
 - [Data model](docs/data-model.md)
 - [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
 - [Build your own](docs/build-your-own.md)
+- [Launch it as a product](docs/launch.md)
 - [Bring your own key](https://vishstack01.github.io/careeros/docs.html#key)
 - [Responsible use](docs/responsible-use.md)
 - [Roadmap](docs/roadmap.md)

@@ -70,3 +70,10 @@ def password_changed() -> tuple[str, str]:
     return ("Your CareerOS password was changed",
             "Your password was just changed and every session was signed out.\n\n"
             "If this wasn't you, reset your password now from the sign-in page.\n")
+
+
+def pro_welcome(public_url: str) -> tuple[str, str]:
+    return ("You're on CareerOS Pro",
+            "Thanks for upgrading. Your account now matches new roles every hour and has a larger monthly AI allowance.\n\n"
+            f"Open your dashboard: {public_url}/\n\n"
+            "You can cancel any time under Settings, Plan. You keep Pro until the end of the month you paid for.\n")

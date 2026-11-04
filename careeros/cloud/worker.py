@@ -22,7 +22,7 @@ import threading
 import time
 from datetime import timedelta
 
-from . import repo
+from . import plans, repo
 from .config import Config
 from .db import Database, now_iso
 from .ingest import IngestError, ingest
@@ -107,10 +107,16 @@ class Worker:
         self.finish(task)
 
     def queue_matches(self) -> int:
+        """After each ingest: Pro accounts are matched every time, Free accounts once a day.
+        Saving new filters still queues a match straight away for everyone (see the API)."""
         n = 0
+        day_ago = now_iso(timedelta(hours=-23))
         with self.db.tx() as c:
-            users = c.all("SELECT id FROM users WHERE email_verified_at IS NOT NULL AND disabled_at IS NULL")
+            users = c.all("SELECT u.id, u.is_admin, m.last_match_at, m.last_feed_at FROM users u LEFT JOIN match_state m ON m.user_id = u.id "
+                          "WHERE u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL")
             for u in users:
+                if plans.plan_of(c, u) == "free" and u["last_feed_at"] and u["last_match_at"] and u["last_match_at"] > day_ago:
+                    continue
                 n += repo.enqueue(c, "match_user", user_id=u["id"], dedupe_key=f"match:{u['id']}", max_attempts=3)
         return n
 

@@ -33,4 +33,4 @@ jobs:
       - name: Package data ships with the cloud app
         run: |
           pip install build && python -m build --wheel --outdir dist
-          python -m zipfile -l dist/*.whl | grep -E "cloud/(static/dashboard.html|migrations/0001_init.sql|prompts/apply.md)"
+          python -m zipfile -l dist/*.whl | grep -E "cloud/(static/dashboard.html|static/pricing.html|static/app/manifest.webmanifest|static/app/icons/icon-512.png|migrations/0002_plans.sql|prompts/apply.md)"
