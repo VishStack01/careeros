@@ -1,9 +1,11 @@
 """Build the public job board from the feed: a static site for GitHub Pages.
 
-  careeros site --feed feed --out site [--demo dashboard/index.html]
+  careeros site --feed feed --out site [--demo dashboard/index.html] [--website website]
 
 Output:
-  index.html               the board (search, filters, job pages, companies)
+  index.html, docs.html    the project website, when a website folder is given
+  jobs.html                the board (search, filters, job pages, companies);
+                           also index.html when there is no website
   data/jobs.json           every open role, compact, for the board
   data/jobs/<id>.json      one role with the full posting and the quoted facts
   api/jobs.json            public JSON API, 100 roles per page, Arbeitnow-style
@@ -128,7 +130,8 @@ def _rss(jobs: list[dict], base_url: str, now: datetime) -> str:
             f"<lastBuildDate>{format_datetime(now)}</lastBuildDate>" + "".join(items) + "</channel></rss>\n")
 
 
-def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = None, base_url: str = "", log=print) -> dict:
+def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = None, base_url: str = "", log=print,
+          website: str | Path | None = None) -> dict:
     feed_dir, out = Path(feed_dir), Path(out_dir)
     records = _read_jsonl(feed_dir / "india.jsonl.gz")
     texts = {t["id"]: t.get("text", "") for t in _read_jsonl(feed_dir / "full.jsonl.gz")}
@@ -174,7 +177,17 @@ def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = N
         if n == 1:
             (out / "api" / "jobs.json").write_text(payload, encoding="utf-8")
     (out / "feed.xml").write_text(_rss(records, base_url, now), encoding="utf-8")
-    (out / "index.html").write_text(TEMPLATE.read_text(encoding="utf-8"), encoding="utf-8")
+    board = TEMPLATE.read_text(encoding="utf-8")
+    (out / "jobs.html").write_text(board, encoding="utf-8")
+    site_dir = Path(website) if website else None
+    if site_dir and (site_dir / "index.html").is_file():
+        for f in site_dir.rglob("*"):
+            if f.is_file():
+                dest = out / f.relative_to(site_dir)
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(f, dest)
+    else:
+        (out / "index.html").write_text(board, encoding="utf-8")
     (out / ".nojekyll").write_text("")
     if demo and Path(demo).exists():
         (out / "demo").mkdir()

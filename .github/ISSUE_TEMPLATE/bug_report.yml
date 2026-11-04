@@ -1,0 +1,36 @@
+name: Bug report
+description: Something broke or gave a wrong result
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Please remove names, emails, phone numbers and resume text before posting. Never paste an API key.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected and what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. careeros ...
+        2. ...
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: output of `careeros --version`
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Model provider (if the bug is in an AI step)
+      options: [None, Anthropic, OpenAI, OpenAI-compatible, Gemini, Ollama]
+  - type: textarea
+    id: posting
+    attributes:
+      label: Posting text (for wrong gate results)
+      description: Trim it and replace the company name. Wrong gate results become test cases.

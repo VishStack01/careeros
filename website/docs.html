@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CareerOS docs: install, bring your own key, run</title>
+<meta name="description" content="Install CareerOS, connect your own model (Anthropic, OpenAI, Gemini or Ollama) and run the open-source job-search agent on your machine.">
+<meta name="theme-color" content="#FAF3E6">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="docs">
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="top" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="CareerOS home"><svg><use href="assets/shapes.svg#mark"/></svg>careeros</a>
+    <div class="links">
+      <a href="./#approach">Approach</a>
+      <a href="./#product">Product</a>
+      <a class="on" href="docs.html">Docs</a>
+      <a href="jobs.html">Job board</a>
+      <a class="btn" href="https://github.com/VishStack01/careeros">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main" class="wrap">
+  <div class="docs">
+    <aside class="toc" aria-label="On this page">
+      <a href="#install">Install</a>
+      <a href="#key">Bring your own key</a>
+      <a href="#first-run">First run</a>
+      <a href="#ai">AI commands</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#feed">Job feed and API</a>
+      <a href="#agents">Agents and skills</a>
+      <a href="#privacy">Privacy and safety</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contribute">Contribute</a>
+    </aside>
+
+    <article class="doc">
+      <div class="pills reveal" data-stagger><span class="pill">Docs</span><span class="pill">Quick start</span></div>
+      <h1 class="split-words">Run CareerOS on your machine, with your own model.</h1>
+      <p class="intro reveal">CareerOS is a Python package (standard library only), a local dashboard and a set of agent skills. The AI steps use the provider and API key you choose. Everything else, including the job scan and every check, runs without a model.</p>
+
+      <h2 id="install">Install</h2>
+      <p>You need Python 3.11 or newer and git.</p>
+<pre class="code"><span class="c"># get the code</span>
+git clone https://github.com/VishStack01/careeros.git
+cd careeros
+
+<span class="c"># install (add [browser] for the apply agent, [dev] for tests)</span>
+pip install -e .
+careeros --version</pre>
+      <p>Optional extras: <code>pip install -e ".[browser]"</code> then <code>python -m playwright install chromium</code> for the apply agent, and <code>pip install pypdf</code> to read resume PDFs.</p>
+
+      <h2 id="key">Bring your own key</h2>
+      <p>Copy <code>.env.example</code> to <code>.env</code> and fill in one provider. CareerOS reads <code>.env</code> from the folder you run it in; values already set in your shell win. The file is git-ignored.</p>
+<pre class="code">cp .env.example .env
+<span class="c"># then edit .env, for example:</span>
+<span class="k">CAREEROS_LLM</span>=anthropic
+<span class="k">ANTHROPIC_API_KEY</span>=<span class="g">sk-ant-...</span>
+
+careeros llm          <span class="c"># shows provider and model, never the key</span>
+careeros llm test     <span class="c"># one tiny request to check it works</span></pre>
+      <table class="t">
+        <thead><tr><th>Provider</th><th>Set</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Anthropic</td><td><code>CAREEROS_LLM=anthropic</code><br><code>ANTHROPIC_API_KEY</code></td><td>Claude models</td></tr>
+          <tr><td>OpenAI</td><td><code>CAREEROS_LLM=openai</code><br><code>OPENAI_API_KEY</code></td><td>Add <code>OPENAI_BASE_URL</code> for any OpenAI-compatible API: OpenRouter, Groq, Together, vLLM</td></tr>
+          <tr><td>Google Gemini</td><td><code>CAREEROS_LLM=gemini</code><br><code>GEMINI_API_KEY</code></td><td>Gemini models</td></tr>
+          <tr><td>Ollama</td><td><code>CAREEROS_LLM=ollama</code><br><code>OLLAMA_HOST</code> (optional)</td><td>Free and fully local. No key, nothing leaves your machine</td></tr>
+        </tbody>
+      </table>
+      <p>Pin models with <code>CAREEROS_MODEL</code> (every step) and <code>CAREEROS_MODEL_QUICK</code> (small steps). Without them CareerOS picks a sensible model per provider.</p>
+      <div class="callout">Your key is read from the environment at call time and sent only to the provider you chose. CareerOS never prints, logs or stores it, and the dashboard only accepts AI requests from its own page, so another website can't spend your key.</div>
+
+      <h2 id="first-run">First run</h2>
+<pre class="code">careeros init                       <span class="c"># creates your private config files</span>
+careeros discover && careeros scan  <span class="c"># map company job boards and build the feed</span>
+careeros serve                      <span class="c"># dashboard at http://127.0.0.1:8765</span></pre>
+      <p>Set your filters in <code>config/settings.toml</code>: target roles, experience limit, locations, posting window and pay floor. Your private files (<code>config/*.toml</code>, <code>brain/</code>, <code>data/</code>, <code>.env</code>) are git-ignored. <code>careeros doctor</code> checks the install and that nothing private is tracked.</p>
+      <p>Try the gates on any posting without a model:</p>
+<pre class="code">careeros evaluate --company "Demo Co" --title "Junior AI Engineer" \
+  --location "Remote, India" --mode remote --text-file posting.txt</pre>
+
+      <h2 id="ai">AI commands</h2>
+      <p>Each command drafts with your model, then code checks the draft before you see it.</p>
+      <h3><code>careeros ai profile resume.pdf -o profile.json</code></h3>
+      <p>Turns your resume into a structured profile. Any value the resume doesn't contain is removed and listed, so the model can't add a job, a tool or a number.</p>
+      <h3><code>careeros ai posting posting.txt</code></h3>
+      <p>Extracts company, title, pay, experience and requirements. A requirement is kept only if its quote appears in the posting.</p>
+      <h3><code>careeros ai evaluate --jd posting.txt --resume resume.pdf -o eval.json</code></h3>
+      <p>Scores fit from 1 to 5, requirement by requirement, with gaps and how to handle them. The draft must pass the same checks as <code>careeros eval-check</code>: verbatim quotes from the posting, the score inside its dimensions' range, a gap for every unmet critical requirement. If it fails, the model gets the errors once and tries again; if it fails twice, nothing is written. Use <code>--brain brain.json</code> to score against your Career Brain instead of the resume.</p>
+<pre class="code">careeros ai evaluate --jd jd.txt --resume resume.pdf -o eval.json
+careeros eval-check eval.json --jd jd.txt --md report.md</pre>
+
+      <h2 id="dashboard">Dashboard</h2>
+      <p><code>careeros serve</code> opens the dashboard on <code>127.0.0.1</code> only. It shows fresh roles with the quotes behind every check, a daily batch to approve, applications by stage, inbox replies, follow-ups and referral notes. When a model is configured, the dashboard's AI actions (reading a posting, tailoring a resume and cover letter, importing your resume) run on it; without one, they fall back to rule-based versions.</p>
+      <p>Try it without installing: <a href="https://vishstack01.github.io/careeros/demo/">the live demo</a> uses fictional data.</p>
+
+      <h2 id="feed">Job feed and API</h2>
+      <p>An hourly GitHub Actions scan reads about 1,400 product companies' career pages through eight hiring systems and publishes a public feed. It contains public postings only.</p>
+      <table class="t">
+        <thead><tr><th>URL</th><th>What</th></tr></thead>
+        <tbody>
+          <tr><td><a href="jobs.html">jobs.html</a></td><td>The job board: search, filters, companies</td></tr>
+          <tr><td><a href="api/jobs.json">api/jobs.json</a></td><td>JSON API, 100 roles per page; <code>links.next</code> points to the next page</td></tr>
+          <tr><td><a href="feed.xml">feed.xml</a></td><td>RSS of the 100 newest roles</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="agents">Agents and skills</h2>
+      <p>The repo ships agent skills for Claude Code (and instructions for Codex and others) in <code>.claude/skills/</code>: career-brain, job-scout, evaluate, tailor, reviewer, apply, tracker, outreach, coach, company-research and weekly-review. Open the folder in Claude Code and say "Use the career-brain skill" with your resume attached to start. Scheduled prompts for search, apply and inbox runs are in <code>prompts/</code>.</p>
+
+      <h2 id="privacy">Privacy and safety</h2>
+      <ul>
+        <li>Your resume, profile, Career Brain and pipeline stay in local, git-ignored files.</li>
+        <li>No LinkedIn, Naukri, Indeed or Wellfound automation, no account creation and no captcha solving. Roles that only take applications there are marked "Apply yourself".</li>
+        <li>Messages and referral notes are drafted; you send them.</li>
+        <li>The apply agent submits only when it can answer every question from your saved details, and never twice.</li>
+      </ul>
+      <div class="callout pink">Read the full <a href="https://github.com/VishStack01/careeros/blob/main/docs/responsible-use.md">responsible use</a> notes before running the apply agent.</div>
+
+      <h2 id="faq">FAQ</h2>
+      <h3>Do I need an API key?</h3>
+      <p>No. Scanning, filtering, tracking and the dashboard work without one. A key (or Ollama) adds the AI steps.</p>
+      <h3>Which model should I use?</h3>
+      <p>Any capable chat model works. Evaluations are long and strict, so a larger model passes the checks more often; small steps can use a cheaper model through <code>CAREEROS_MODEL_QUICK</code>.</p>
+      <h3>What does it cost?</h3>
+      <p>CareerOS is free and MIT licensed. You pay your provider for what your key uses, or nothing with Ollama.</p>
+
+      <h2 id="contribute">Contribute</h2>
+      <p>Issues and pull requests are welcome. Run <code>pip install -e ".[dev]"</code> and <code>pytest</code> before opening a PR, and read <a href="https://github.com/VishStack01/careeros/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+<pre class="code">pip install -e ".[dev]"
+pytest -q</pre>
+    </article>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>CareerOS · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
+    <span><a href="./">Home</a> · <a href="jobs.html">Job board</a> · <a href="https://github.com/VishStack01/careeros">GitHub</a></span>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

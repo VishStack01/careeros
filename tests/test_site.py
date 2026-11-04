@@ -49,10 +49,22 @@ def test_site_build(tmp_path):
     assert len(json.loads((out / "api" / "jobs" / "page-3.json").read_text())["data"]) == 50
     rss = ET.fromstring((out / "feed.xml").read_text())
     assert len(rss.findall("./channel/item")) == 100
-    assert (out / "index.html").read_text().startswith("<!doctype html>")
+    assert (out / "index.html").read_text().startswith("<!doctype html>") and (out / "jobs.html").exists()
     assert (out / "demo" / "index.html").exists() and (out / ".nojekyll").exists()
     companies = json.loads((out / "data" / "companies.json").read_text())
     assert sum(c["jobs"] for c in companies) == 250
+
+
+def test_site_with_website(tmp_path):
+    write_feed(tmp_path / "feed", n=3)
+    web = tmp_path / "web"
+    (web / "assets").mkdir(parents=True)
+    (web / "index.html").write_text("<!doctype html>home")
+    (web / "assets" / "site.css").write_text("body{}")
+    site.build(tmp_path / "feed", tmp_path / "s", website=web, log=lambda *_: None)
+    out = tmp_path / "s"
+    assert (out / "index.html").read_text() == "<!doctype html>home" and (out / "assets" / "site.css").exists()
+    assert "feed.xml" in (out / "jobs.html").read_text()
 
 
 def test_site_cli(tmp_path):

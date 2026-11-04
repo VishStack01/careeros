@@ -3058,6 +3058,16 @@ function makeCloudAssets(){
     list: async () => (await api('api/assets')).json()
   };
 }
+/* Your own model through `careeros serve` (CAREEROS_LLM + your API key): the same json() call the hosted page uses. */
+function makeServerSample(){
+  const call = async (prompt, opts) => {
+    const r = await fetch('api/ai', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({prompt, tier: obj(opts).modelTier || 'default', json: true})});
+    const body = await r.json().catch(() => ({}));
+    if (!r.ok) throw {code: r.status === 429 ? 'rate_limited' : 'unavailable', message: body.error || 'The model request failed.'};
+    return body.json;
+  };
+  return {json: call};
+}
 async function bootStandalone(){
   let db = null, health = null;
   try { const r = await fetch('api/health', {cache: 'no-store'}); if (r.ok) health = await r.json(); } catch(e){}
@@ -3067,7 +3077,7 @@ async function bootStandalone(){
     state.me = await r.json();
     db = makeLocalDB({cloud: true}); state.status = 'cloud'; state.assets = makeCloudAssets();
     document.body.classList.add('is-cloud');
-  } else if (health && health.ok){ db = makeLocalDB(); state.status = 'local'; }
+  } else if (health && health.ok){ db = makeLocalDB(); state.status = 'local'; if (health.ai) state.sample = makeServerSample(); }
   if (!db){
     const el = document.getElementById('demo-data');
     let seed = {}; try { seed = el ? JSON.parse(el.textContent) : {}; } catch(e){}

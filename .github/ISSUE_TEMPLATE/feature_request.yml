@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest an idea
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What's hard or missing in your job search today?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Project rules
+      options:
+        - label: It doesn't automate LinkedIn, Naukri, Indeed or Wellfound, create accounts, solve captchas or handle passwords.
+          required: true
+        - label: It doesn't write a claim, number or answer the user's own data can't back up.
+          required: true

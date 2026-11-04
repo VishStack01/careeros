@@ -1,0 +1,65 @@
+name: pages
+
+# Rebuild the website, docs, job board and dashboard demo on GitHub Pages
+# whenever they change on main. The hourly scan (scan.yml) publishes the same
+# site after each scan; this workflow covers changes made between scans and
+# reuses the last published feed, so it never scrapes anything itself.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - "dashboard/**"
+      - "careeros/site.py"
+      - "careeros/site_app.html"
+      - "careeros/tags.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - run: pip install -e .
+
+      - name: Fetch the last published feed
+        run: |
+          if git fetch --depth 1 origin feed 2>/dev/null; then
+            git archive FETCH_HEAD feed | tar -x
+          fi
+          mkdir -p feed
+
+      - name: Build the site
+        run: |
+          base="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/"
+          careeros site --feed feed --out site --demo dashboard/index.html --website website --base-url "$base"
+          ls site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

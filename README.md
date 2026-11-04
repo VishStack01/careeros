@@ -1,14 +1,70 @@
-# CareerOS
+<p align="center">
+  <a href="https://vishstack01.github.io/careeros/"><img src="website/assets/og.png" alt="CareerOS: an open-source AI agent for the job search" width="820"></a>
+</p>
 
-**An open-source job-application agent that finds fresh roles, checks each one against your filters with quotes from the posting, writes truthful tailored applications, and applies when it can answer every question. Everything else comes to you.**
+<h1 align="center">CareerOS</h1>
 
-Built for Claude Code. Works with Codex and Antigravity.
+<p align="center">
+  <b>An open-source AI agent for the job search.</b><br>
+  It finds fresh roles, checks each one against your rules with quotes from the posting,<br>
+  and writes applications from your real experience only. Bring your own model and key.
+</p>
+
+<p align="center">
+  <a href="https://github.com/VishStack01/careeros/actions/workflows/tests.yml"><img alt="tests" src="https://github.com/VishStack01/careeros/actions/workflows/tests.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9AAB63"></a>
+  <img alt="Python 3.11 to 3.13" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-B6CAEB">
+  <img alt="Bring your own key" src="https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Gemini%20%7C%20Ollama-F5B8DB">
+  <img alt="No runtime dependencies" src="https://img.shields.io/badge/core-standard%20library%20only-F5D867">
+</p>
+
+<p align="center">
+  <a href="https://vishstack01.github.io/careeros/"><b>Website</b></a> ·
+  <a href="https://vishstack01.github.io/careeros/docs.html"><b>Docs</b></a> ·
+  <a href="https://vishstack01.github.io/careeros/jobs.html"><b>Live job board</b></a> ·
+  <a href="https://vishstack01.github.io/careeros/demo/"><b>Dashboard demo</b></a>
+</p>
+
+---
 
 ![CareerOS dashboard: fresh roles, stage cards and today's batch](docs/assets/dashboard-today.png)
 
-**[Browse the live job board](https://vishstack01.github.io/careeros/)**: every open role the scan finds, updated hourly, with a free JSON API and RSS · **[Dashboard demo](https://vishstack01.github.io/careeros/demo/)** (fictional companies)
+## Quick start
 
----
+```bash
+git clone https://github.com/VishStack01/careeros.git && cd careeros
+pip install -e .
+
+cp .env.example .env            # pick a provider and paste your key
+careeros llm test               # one tiny request; never prints the key
+
+careeros init                   # creates your private, git-ignored config
+careeros discover && careeros scan   # map company job boards, build the feed
+careeros serve                  # dashboard at http://127.0.0.1:8765
+```
+
+No key? Scanning, filtering, tracking and the dashboard all work without a model. A key, or a local Ollama model, adds the AI steps.
+
+## Bring your own model
+
+CareerOS calls the provider you choose with your key, using only Python's standard library (no SDKs).
+
+| Provider | `.env` | Notes |
+|---|---|---|
+| Anthropic | `CAREEROS_LLM=anthropic`, `ANTHROPIC_API_KEY` | Claude models |
+| OpenAI | `CAREEROS_LLM=openai`, `OPENAI_API_KEY` | Set `OPENAI_BASE_URL` for any OpenAI-compatible API (OpenRouter, Groq, Together, vLLM) |
+| Google Gemini | `CAREEROS_LLM=gemini`, `GEMINI_API_KEY` | Gemini models |
+| Ollama | `CAREEROS_LLM=ollama`, `OLLAMA_HOST` (optional) | Free and fully local |
+
+Pin models with `CAREEROS_MODEL` and `CAREEROS_MODEL_QUICK`. Your key is read at call time, sent only to your provider, and never printed, logged or stored. The local dashboard accepts AI requests only from its own page, so another website can't spend your key.
+
+```bash
+careeros ai profile resume.pdf -o profile.json        # resume to profile; unsupported values removed
+careeros ai posting posting.txt                       # requirements kept only with a verbatim quote
+careeros ai evaluate --jd posting.txt --resume resume.pdf -o eval.json   # 1 to 5 fit, code-checked
+```
+
+Every AI output passes a code check before you see it: quotes must appear in the posting, scores must stay inside their dimension ranges, and anything your resume doesn't contain is dropped and listed. A draft that fails gets the errors back once; if it fails again, nothing is written.
 
 ## Why it's different
 
@@ -20,7 +76,7 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 - **It scores before it applies.** Each role gets a 1–5 score against your Career Brain, requirement by requirement, with the gaps and how to handle them. Under 4.0, auto-apply waits for you.
 - **It applies only when it can answer everything.** Each form answer has a confidence. Sensitive fields, essays nobody wrote, captchas and logins go to you.
 - **One submit per role, ever.** An idempotent state machine, receipts with screenshots, and a kill switch.
-- **Platform-safe.** No LinkedIn or Indeed automation, no account creation, no captcha solving. Outreach is drafted; you send it.
+- **Platform-safe.** No LinkedIn, Naukri, Indeed or Wellfound automation, no account creation, no captcha solving. Outreach is drafted; you send it.
 - **Where the openings are first.** About 1,400 product companies' career pages, read straight from their hiring systems every hour, before roles reach the big boards.
 
 ## Coverage
@@ -30,11 +86,11 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 | Company career pages | 1,396 product companies: Indian product companies, India engineering centres, the [moreThanFAANGM](https://github.com/Kaustubh-Natuskar/moreThanFAANGM) list, and YC companies in India or hiring remotely | Public feeds of 8 hiring systems (Greenhouse, Lever, Ashby, Workable, SmartRecruiters, Recruitee, Breezy, Personio), scanned every hour on GitHub Actions. [docs/feed.md](docs/feed.md) |
 | Remote job boards with feeds | 9 | Remote OK, Remotive, Himalayas, Jobicy, Working Nomads, We Work Remotely, HN jobs, HN "Who is hiring?", Arbeitnow |
 | Other platforms | 96 in the registry, 50 low-competition | 26 VC portfolio boards, Indian startup and fresher boards, 11 x-ray searches that find career pages on Keka, Zoho Recruit, Darwinbox and others. [docs/platforms.md](docs/platforms.md) |
-| Big boards | LinkedIn, Naukri, Indeed, foundit, Glassdoor, Shine | Their own email alerts only; never automated |
+| Big boards | LinkedIn, Naukri, Indeed, Wellfound, foundit, Glassdoor, Shine | Their own email alerts only; never automated |
 
 ## The job board
 
-The hourly scan also publishes a public job board on GitHub Pages, in the spirit of Arbeitnow: search, filters with counts (where you can work from, experience, posted date, contract, category, skills, perks), a page per role with the full posting and the quoted facts, and a page per company. Only roles still open and posted in the last 60 days are listed.
+The hourly scan also publishes a public job board on GitHub Pages ([jobs.html](https://vishstack01.github.io/careeros/jobs.html)), in the spirit of Arbeitnow: search, filters with counts (where you can work from, experience, posted date, contract, category, skills, perks), a page per role with the full posting and the quoted facts, and a page per company. Only roles still open and posted in the last 60 days are listed.
 
 | Endpoint | What |
 |---|---|
@@ -42,7 +98,7 @@ The hourly scan also publishes a public job board on GitHub Pages, in the spirit
 | [`/feed.xml`](https://vishstack01.github.io/careeros/feed.xml) | RSS of the 100 newest roles |
 | `/data/jobs/<id>.json` | One role with its full text and facts |
 
-Build it yourself with `careeros site --feed feed --out site`.
+Build it yourself with `careeros site --feed feed --out site`. When a `website/` folder is present, the site's home page is the project website and the board lives at `jobs.html`.
 
 ## Auto-apply
 
@@ -53,7 +109,7 @@ The dashboard has an **Auto-apply** switch. Fill in your application details and
 - every field comes from your saved details; short "why us" answers use one real proof point; a tailored resume once your Career Brain is built;
 - it stops and lists the role under **Auto-apply needs you** with the exact reason for a sign-in, captcha, one-time code, assessment or any answer it would have to guess.
 
-It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri or Indeed. The run's instructions: [prompts/scheduled-apply.md](prompts/scheduled-apply.md).
+It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri, Indeed or Wellfound. The run's instructions: [prompts/scheduled-apply.md](prompts/scheduled-apply.md).
 
 ## CareerOS Cloud: for many job seekers
 
@@ -90,18 +146,9 @@ Architecture, deployment and operations: **[docs/cloud.md](docs/cloud.md)**. Bef
 
 ![A role's package with its checks](docs/assets/dashboard-package.png)
 
-## Quick start
+## Agent skills
 
-```bash
-git clone https://github.com/VishStack01/careeros.git && cd careeros
-pip install -e ".[browser,dev]" && python -m playwright install chromium
-careeros init                    # creates your private config files
-careeros scout                   # poll your watchlist, gate every role
-careeros discover && careeros scan   # or: build the 1,400-company India feed
-careeros serve                   # dashboard at http://127.0.0.1:8765
-```
-
-Then open Claude Code in the folder and say *"Use the career-brain skill"* with your resume attached. The full walkthrough, including Codex, Antigravity, cron and a fully hosted setup on claude.ai, is in **[docs/build-your-own.md](docs/build-your-own.md)**.
+Open the folder in Claude Code and say *"Use the career-brain skill"* with your resume attached. The full walkthrough, including Codex, Antigravity, cron and a fully hosted setup on claude.ai, is in **[docs/build-your-own.md](docs/build-your-own.md)**.
 
 Try the gates on any posting:
 
@@ -122,6 +169,7 @@ flowchart LR
   Apply -- yes --> Submit["apply + receipt"]
   Apply -- no --> You["your batch"]
   Store --> Dash["dashboard"]
+  LLM["your model<br/>(bring your own key)"] -.-> Research & Tailor & Dash
 ```
 
 Code handles everything with a right answer (dates, experience parsing, dedupe, refusing a second submit); agents handle judgement (interviewing, research, writing, review). Details: **[docs/architecture.md](docs/architecture.md)**.
@@ -148,17 +196,21 @@ careeros/            Python package (standard library only; Playwright optional)
   apply/runner.py    Playwright form filler
   site.py, tags.py   the public job board and its tags
   cloud/             the multi-user service: API, worker, migrations, sign-in pages
+  llm.py             bring-your-own-key client: Anthropic, OpenAI-compatible, Gemini, Ollama
+  ai.py              AI steps (profile, posting, evaluate) with code checks on every output
   server.py, cli.py  local dashboard API and command line
 .claude/skills/      agent skills: career-brain, job-scout, company-research, evaluate,
                      tailor, reviewer, apply, outreach, tracker, coach, weekly-review
 dashboard/           app.html (single source), demo data, built index.html
+website/             the project website and docs (GitHub Pages)
 prompts/             scheduled search and apply prompts
 config/companies/    the company list (curated + moreThanFAANGM + YC), 1,396 companies
 config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume, an application package, a posting and its evaluation
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               209 tests, including real browser form fills and the cloud service on SQLite and PostgreSQL
+tests/               264 tests, including real browser form fills, every LLM provider
+                     (mocked), and the cloud service on SQLite and PostgreSQL
 ```
 
 ## Docs
@@ -174,18 +226,19 @@ tests/               209 tests, including real browser form fills and the cloud 
 - [Data model](docs/data-model.md)
 - [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
 - [Build your own](docs/build-your-own.md)
+- [Bring your own key](https://vishstack01.github.io/careeros/docs.html#key)
 - [Responsible use](docs/responsible-use.md)
 - [Roadmap](docs/roadmap.md)
 - [AGENTS.md](AGENTS.md): instructions for Claude Code, Codex and Antigravity
 
-## Status
+## Contributing
 
-Phases 0–4 and 7 of the blueprint are built and tested; learning and interview layers ship as skills. See the [roadmap](docs/roadmap.md).
+Issues and pull requests are welcome: read [CONTRIBUTING.md](CONTRIBUTING.md), the [code of conduct](CODE_OF_CONDUCT.md) and the [security policy](SECURITY.md). Changes are listed in the [changelog](CHANGELOG.md); what's next is on the [roadmap](docs/roadmap.md).
 
 ## Responsible use
 
-It never invents experience or fakes a shortlist percentage, never automates LinkedIn or Indeed, never handles passwords or captchas, and keeps your data in git-ignored files on your machine. Read [docs/responsible-use.md](docs/responsible-use.md) before you schedule it.
+It never invents experience or fakes a shortlist percentage, never automates LinkedIn, Naukri, Indeed or Wellfound, never handles passwords or captchas, and keeps your data in git-ignored files on your machine. Read [docs/responsible-use.md](docs/responsible-use.md) before you schedule it.
 
 ## License
 
-MIT. Built by [VishStack](https://github.com/VishStack01) with Claude. The scoring, posting checks, follow-up cadence and interview modes adapt ideas from [career-ops](https://github.com/career-ops-hq/career-ops) (MIT); see [docs/features.md](docs/features.md).
+MIT. Built by [Venkata Vishnu Vardhan Raju Chakravarthula](https://github.com/VishStack01) with Claude. The scoring, posting checks, follow-up cadence and interview modes adapt ideas from [career-ops](https://github.com/career-ops-hq/career-ops) (MIT); see [docs/features.md](docs/features.md).

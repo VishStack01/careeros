@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CareerOS: open-source AI job-search agent</title>
+<meta name="description" content="CareerOS is an open-source AI agent that finds fresh roles, checks every one against your rules with quotes from the posting, writes truthful applications from your real experience, and runs on your own API key.">
+<meta property="og:title" content="CareerOS: open-source AI job-search agent">
+<meta property="og:description" content="Fresh roles, honest checks, truthful applications. Bring your own model and API key.">
+<meta property="og:image" content="assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#FAF3E6">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body data-page="home">
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="top" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="CareerOS home"><svg><use href="assets/shapes.svg#mark"/></svg>careeros</a>
+    <div class="links">
+      <a href="#approach">Approach</a>
+      <a href="#product">Product</a>
+      <a href="#byok">Your API key</a>
+      <a href="docs.html">Docs</a>
+      <a href="jobs.html">Job board</a>
+      <a class="btn" href="https://github.com/VishStack01/careeros">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- 01 -->
+<section class="hero">
+  <div class="wrap">
+    <div class="pills reveal" data-stagger><span class="pill">About project</span><span class="pill">Open source</span><span class="pill">MIT</span></div>
+    <div class="head">
+      <h1 class="lede split-words"><b>CareerOS</b> is an open-source AI agent for the job search. It finds fresh roles, checks each one against your rules with quotes from the posting, and writes applications from <b>your real experience only</b>.</h1>
+      <div class="ghost" aria-hidden="true">01</div>
+    </div>
+    <div class="hero-grid">
+      <div class="ctas reveal">
+        <a class="btn" href="#approach">Discover <span aria-hidden="true">↓</span></a>
+        <a class="btn light" href="https://github.com/VishStack01/careeros"><svg aria-hidden="true"><use href="assets/shapes.svg#i-github"/></svg>Star on GitHub</a>
+      </div>
+      <div class="notes" data-stagger=".15">
+        <div class="note reveal">
+          <h3><svg fill="#F5B8DB" aria-hidden="true"><use href="assets/shapes.svg#heart"/></svg>Main goal</h3>
+          <p>Get people interviews, not application counts. CareerOS reads company career pages directly, filters by rules you set, and only prepares applications it can back up with evidence from your own work.</p>
+        </div>
+        <div class="note reveal">
+          <h3><svg fill="#B6CAEB" aria-hidden="true"><use href="assets/shapes.svg#blob"/></svg>Why it's different</h3>
+          <p>Every keep or skip records the exact sentence that decided it. A code gate blocks resume lines your experience can't support, and messages are drafted for you to send. Run it on your own machine with your own API key.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-label="Hiring systems CareerOS reads">
+  <div class="track">
+    <span>Greenhouse <svg fill="#F5B8DB"><use href="assets/shapes.svg#star"/></svg> Lever <svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg> Ashby <svg fill="#B6CAEB"><use href="assets/shapes.svg#heart"/></svg> Workable <svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg> SmartRecruiters <svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg> Recruitee <svg fill="#9AAB63"><use href="assets/shapes.svg#star"/></svg> Breezy <svg fill="#B6CAEB"><use href="assets/shapes.svg#plus"/></svg> Personio <svg fill="#F5D867"><use href="assets/shapes.svg#heart"/></svg></span>
+    <span aria-hidden="true">Greenhouse <svg fill="#F5B8DB"><use href="assets/shapes.svg#star"/></svg> Lever <svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg> Ashby <svg fill="#B6CAEB"><use href="assets/shapes.svg#heart"/></svg> Workable <svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg> SmartRecruiters <svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg> Recruitee <svg fill="#9AAB63"><use href="assets/shapes.svg#star"/></svg> Breezy <svg fill="#B6CAEB"><use href="assets/shapes.svg#plus"/></svg> Personio <svg fill="#F5D867"><use href="assets/shapes.svg#heart"/></svg></span>
+  </div>
+</div>
+
+<!-- bento -->
+<section>
+  <div class="wrap">
+    <div class="pills reveal" data-stagger><span class="pill">Sources</span><span class="pill">Checks</span><span class="pill">Colours</span></div>
+    <div class="bento" data-stagger=".07">
+      <div class="tile reveal">
+        <span class="tag">Hiring systems</span>
+        <div class="big" data-count="8">8</div>
+        <small>ATS feeds read every hour</small>
+      </div>
+      <div class="tile reveal">
+        <span class="tag">Gates</span>
+        <div class="chips"><span class="chip">Role</span><span class="chip" style="background:var(--yellow)">Experience</span><span class="chip" style="background:var(--blue)">Posted</span><span class="chip" style="background:var(--green)">Pay</span></div>
+      </div>
+      <div class="span2 brandset reveal">
+        <div class="marks">
+          <div class="tile mark-grid" aria-hidden="true">
+            <svg viewBox="0 0 200 200" fill="none" stroke="#CFC5B3" stroke-width="1"><g class="spin" style="transform-origin:100px 100px"><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="52"/><path d="M20 20L180 180M180 20L20 180M100 0V200M0 100H200"/></g><path d="M60 0V200M140 0V200M0 60H200M0 140H200"/><svg x="40" y="40" width="120" height="120" fill="#151515" stroke="none"><use href="assets/shapes.svg#mark"/></svg></svg>
+          </div>
+          <div class="tile mark-pink" aria-hidden="true"><svg fill="#FAF3E6"><use href="assets/shapes.svg#mark"/></svg></div>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:var(--pink)"><span>#F5B8DB</span></div>
+          <div class="sw" style="background:var(--green)"><span>#9AAB63</span></div>
+          <div class="sw" style="background:var(--blue)"><span>#B6CAEB</span></div>
+          <div class="sw" style="background:var(--yellow)"><span>#F5D867</span></div>
+        </div>
+      </div>
+      <div class="tile reveal">
+        <span class="tag">Stages</span>
+        <div class="icons">
+          <span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-search"/></svg></span>
+          <span class="ic" style="background:var(--pink)"><svg><use href="assets/shapes.svg#i-doc"/></svg></span>
+          <span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-check"/></svg></span>
+          <span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-mail"/></svg></span>
+          <span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-cal"/></svg></span>
+        </div>
+      </div>
+      <div class="tile reveal">
+        <span class="tag">Tests</span>
+        <div class="big" data-count="264">264</div>
+        <small>pytest, with Postgres</small>
+      </div>
+
+      <div class="tile span2 scene wide reveal" aria-hidden="true">
+        <div class="shape sq float" data-speed=".05" style="left:6%;top:10%;width:60%;--t:11s"><svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg></div>
+        <div class="shape sq float" style="right:8%;top:6%;width:16%;--t:7s"><svg fill="#F5D867"><use href="assets/shapes.svg#cross"/></svg></div>
+        <div class="shape sq float" data-speed="-.04" style="left:4%;bottom:4%;width:36%;--t:13s;--fd:-3s"><svg fill="#B6CAEB"><use href="assets/shapes.svg#spark"/></svg></div>
+        <div class="shape sq float" data-speed=".06" style="right:6%;bottom:8%;width:38%;--t:9s;--fd:-5s"><svg fill="#9AAB63"><use href="assets/shapes.svg#heart"/></svg></div>
+        <span class="label" style="left:32%;top:18%">Find fresh roles</span>
+        <span class="label" style="left:40%;top:46%">Check every claim</span>
+        <span class="label" style="left:12%;top:74%">Track every reply</span>
+      </div>
+      <div class="tile span2 mock-wrap wide reveal" data-tilt>
+        <div class="mock" role="img" aria-label="Example role card: AI Engineer at Northwind Labs, fit score 4.4, posted 2 hours ago">
+          <div class="bar"><span class="time">9:41</span><span class="sub">Find jobs</span></div>
+          <div class="row">
+            <div class="logo"><svg fill="#FAF3E6"><use href="assets/shapes.svg#mark"/></svg></div>
+            <div>
+              <h4>AI Engineer at Northwind Labs</h4>
+              <div class="sub">Remote, India · posted 2 h ago</div>
+              <span class="open">PREPARE</span>
+            </div>
+          </div>
+          <div class="stats">
+            <div><b>4.4</b><span>Fit score</span></div>
+            <div><b>0 to 1 yr</b><span>Experience</span></div>
+            <div><b>18 LPA</b><span>Stated pay</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="tile span2 scene wide reveal" aria-hidden="true">
+        <div class="shape sq float" style="left:8%;top:8%;width:14%;--t:8s"><svg fill="#F5B8DB"><use href="assets/shapes.svg#triangle"/></svg></div>
+        <div class="shape sq float" data-speed=".05" style="left:22%;top:20%;width:58%;--t:14s"><svg fill="#F5D867"><use href="assets/shapes.svg#moon"/></svg></div>
+        <div class="shape sq float" style="right:6%;top:5%;width:13%;--t:6s;--fd:-2s"><svg fill="#B6CAEB"><use href="assets/shapes.svg#cross"/></svg></div>
+        <div class="shape sq float" data-speed="-.05" style="right:6%;bottom:5%;width:30%;--t:10s;--fd:-4s"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg></div>
+        <div class="shape sq float" style="left:8%;bottom:4%;width:28%;--t:12s;--fd:-6s"><svg fill="#9AAB63"><use href="assets/shapes.svg#arch"/></svg></div>
+        <span class="label" style="left:8%;top:38%">Drafts, never spam</span>
+        <span class="label" style="right:8%;top:20%">You send</span>
+        <span class="label" style="left:30%;top:64%">Your key, your data</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section id="approach">
+  <div class="wrap">
+    <div class="pills reveal" data-stagger><span class="pill">Problem</span><span class="pill">Approach</span><span class="pill">Principles</span></div>
+    <div class="head">
+      <h2 class="lede split-words">Most job bots optimise the weakest variable: <b>volume</b>. They read job cards instead of postings, invent resume lines and guess form answers. CareerOS is built the other way round.</h2>
+      <div class="ghost" aria-hidden="true">02</div>
+    </div>
+
+    <div class="split">
+      <div class="checks reveal">
+        <span class="tag">Every role, every check</span>
+        <div style="margin-top:14px">
+          <div class="check"><span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-user"/></svg></span><div><b>Role</b><span>Title fits your target roles and none of your excluded ones</span></div><span class="tick" style="background:var(--green)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
+          <div class="check"><span class="ic" style="background:var(--pink)"><svg><use href="assets/shapes.svg#i-doc"/></svg></span><div><b>Experience</b><span>The whole posting is read; the higher figure wins</span><q>0 to 1 years of experience with Python</q></div><span class="tick" style="background:var(--pink)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
+          <div class="check"><span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-clock"/></svg></span><div><b>Posted</b><span>Inside your window; listings open 60+ days are flagged as ghosts</span></div><span class="tick" style="background:var(--yellow)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
+          <div class="check"><span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-pin"/></svg></span><div><b>Location</b><span>Work mode and who can apply, not just "remote" in passing</span></div><span class="tick" style="background:var(--blue)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
+          <div class="check"><span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-coin"/></svg></span><div><b>Pay</b><span>Stated range, or public fresher pay data, against your floor</span></div><span class="tick" style="background:var(--green)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
+        </div>
+      </div>
+      <div class="right-col">
+        <div class="feed reveal">
+          <div>
+            <span class="tag" style="border-color:#7E8FB3;color:#3F4A66">Hourly scan</span>
+            <p style="margin-top:14px;color:#3F4A66;font-size:16px">Postings are read straight from companies' hiring systems on GitHub Actions, before they reach the big job boards.</p>
+          </div>
+          <div class="ev">
+            <b><span class="dot"></span>Scan finished</b>
+            <p>Greenhouse · Lever · Ashby · Workable · SmartRecruiters · Recruitee · Breezy · Personio</p>
+            <div class="avs"><i style="background:#F5B8DB">GH</i><i style="background:#9AAB63">LV</i><i style="background:#F5D867">AS</i><i style="background:#fff">+5</i></div>
+          </div>
+        </div>
+        <div class="stat reveal">
+          <div class="shape sq spin" style="right:-36px;top:-36px;width:230px"><svg fill="#F5D867"><use href="assets/shapes.svg#spark"/></svg></div>
+          <div class="num"><span data-count="1396">1,396</span><em>companies</em></div>
+          <p>Product companies' career pages read every hour: Indian product companies, India engineering centres and YC companies hiring remotely.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="principles" aria-label="Principles">
+      <div class="pr circle"><svg class="bg" fill="#F5D867" aria-hidden="true"><use href="assets/shapes.svg#circle"/></svg><div class="tx"><b>01</b>Your key, your data. It runs on your machine with your own AI provider.</div></div>
+      <div class="pr blob"><svg class="bg" fill="#9AAB63" aria-hidden="true"><use href="assets/shapes.svg#blob"/></svg><div class="tx"><b>02</b>Never invents a claim. Every resume line cites your own work.</div></div>
+      <div class="pr star"><svg class="bg" fill="#B6CAEB" aria-hidden="true"><use href="assets/shapes.svg#star"/></svg><div class="tx"><b>03</b>Shows its work: the sentence behind every decision.</div></div>
+      <div class="pr heart"><svg class="bg" fill="#F5B8DB" aria-hidden="true"><use href="assets/shapes.svg#heart"/></svg><div class="tx"><b>04</b>Messages are drafted. You send them.</div></div>
+      <div class="pr flower"><svg class="bg" fill="#F5D867" aria-hidden="true"><use href="assets/shapes.svg#flower"/></svg><div class="tx"><b>05</b>Platform-safe: no LinkedIn bots and no captcha solving.</div></div>
+    </div>
+
+    <div class="opps" data-stagger=".15">
+      <div class="reveal">
+        <h4><svg width="24" height="24" fill="#9AAB63" aria-hidden="true"><use href="assets/shapes.svg#plus"/></svg>For job seekers</h4>
+        <ul><li>Fresh roles before the big boards</li><li>Honest skips with the reason quoted</li><li>Tailored resumes you can defend in interviews</li><li>Follow-ups on day 7 and 14, drafted for you</li></ul>
+      </div>
+      <div class="reveal">
+        <h4><svg width="24" height="24" fill="#F5D867" aria-hidden="true"><use href="assets/shapes.svg#spark"/></svg>For developers</h4>
+        <ul><li>MIT licensed Python, no SDK lock-in</li><li>Bring your own model: Anthropic, OpenAI, Gemini or Ollama</li><li>Free hourly job feed with a JSON API and RSS</li><li>Agent skills for Claude Code, Codex and others</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 -->
+<section id="product">
+  <div class="wrap">
+    <div class="pills reveal" data-stagger><span class="pill">Dashboard</span><span class="pill">Workflow</span></div>
+    <div class="head">
+      <h2 class="lede split-words">One dashboard for the whole search: <b>fresh roles</b>, a daily batch to approve, tailored applications, replies from your inbox and interviews on your calendar.</h2>
+      <div class="ghost" aria-hidden="true">03</div>
+    </div>
+
+    <div class="dash-head">
+      <div class="features reveal">
+        <span class="tag">Key features</span>
+        <div style="margin-top:10px">
+          <div class="feat"><span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-search"/></svg></span>Fresh roles, filtered with quotes<span class="no">03.1</span></div>
+          <div class="feat"><span class="ic" style="background:var(--pink)"><svg><use href="assets/shapes.svg#i-doc"/></svg></span>Truthful tailored resumes<span class="no">03.1</span></div>
+          <div class="feat"><span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-bolt"/></svg></span>Fit score before applying<span class="no">03.2</span></div>
+          <div class="feat"><span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-mail"/></svg></span>Inbox replies and follow-ups<span class="no">03.2</span></div>
+          <div class="feat"><span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-chat"/></svg></span>Referral notes, drafted<span class="no">03.3</span></div>
+        </div>
+      </div>
+      <p class="reveal" style="color:var(--text);font-size:19px;align-self:center">The dashboard runs on your machine with <code>careeros serve</code>. It tracks every role from found to offer, shows why each one was kept or skipped, and puts anything that needs a person (a sign-in, an essay, a referral) in one place. With your API key set, its AI buttons use your model.</p>
+    </div>
+
+    <div class="screen reveal" role="img" aria-label="CareerOS dashboard with fictional example data">
+      <div class="app">
+        <aside class="side" aria-hidden="true">
+          <div class="brand"><svg><use href="assets/shapes.svg#mark"/></svg>careeros</div>
+          <div class="grp">General</div>
+          <span class="it on"><svg><use href="assets/shapes.svg#i-grid"/></svg>Dashboard</span>
+          <span class="it"><svg><use href="assets/shapes.svg#i-search"/></svg>Find jobs</span>
+          <span class="it"><svg><use href="assets/shapes.svg#i-doc"/></svg>Applications</span>
+          <span class="it"><svg><use href="assets/shapes.svg#i-cal"/></svg>Calendar</span>
+          <div class="grp">Tools</div>
+          <span class="it"><svg><use href="assets/shapes.svg#i-mail"/></svg>Inbox</span>
+          <span class="it"><svg><use href="assets/shapes.svg#i-chat"/></svg>Outreach</span>
+          <span class="it"><svg><use href="assets/shapes.svg#i-key"/></svg>API key</span>
+        </aside>
+        <div class="mainp">
+          <div class="search"><svg><use href="assets/shapes.svg#i-search"/></svg>AI engineer<span class="seg"><span class="on">Roles</span><span>Companies</span><span>Replies</span></span></div>
+          <h5>Good morning, Asha</h5>
+          <p class="sub">12 fresh roles passed your checks overnight. 3 replies need you today.</p>
+          <div class="cards">
+            <div class="mc" style="background:var(--yellow)">
+              <h6>Fresh roles</h6>
+              <div class="nums"><div><b>12</b><span>new</span></div><div><b>5</b><span>remote</span></div><div><b>3</b><span>&lt;48 h</span></div></div>
+              <div class="bars"><i style="height:40%"></i><i style="height:70%;transition-delay:.05s"></i><i class="k" style="height:30%;transition-delay:.1s"></i><i style="height:55%;transition-delay:.15s"></i><i class="k" style="height:90%;transition-delay:.2s"></i><i style="height:45%;transition-delay:.25s"></i><i class="k" style="height:60%;transition-delay:.3s"></i><i style="height:35%;transition-delay:.35s"></i><i style="height:75%;transition-delay:.4s"></i></div>
+            </div>
+            <div class="mc" style="background:var(--pink)">
+              <h6>Funnel</h6>
+              <div class="nums"><div><b>24</b><span>applied</span></div><div><b>6</b><span>screens</span></div><div><b>2</b><span>interviews</span></div></div>
+              <svg class="line" viewBox="0 0 300 70" style="width:100%;height:66px;margin-top:8px" fill="none" stroke="#151515" stroke-width="2"><path d="M0 50 C30 60 40 30 70 40 S110 60 130 30 160 10 180 20 210 50 240 34 270 30 300 26"/></svg>
+            </div>
+            <div class="mc" style="background:var(--green)">
+              <h6>Checks</h6>
+              <div class="nums"><div><b>12</b><span>kept</span></div><div><b>41</b><span>skipped</span></div><div><b>0</b><span>guessed</span></div></div>
+            </div>
+            <div class="mc" style="background:var(--blue)">
+              <h6>Follow-ups</h6>
+              <div class="nums"><div><b>4</b><span>due</span></div><div><b>2</b><span>referrals</span></div><div><b>1</b><span>thank-you</span></div></div>
+            </div>
+          </div>
+          <div class="list">
+            <div class="li hot"><span class="ic"><svg><use href="assets/shapes.svg#i-bolt"/></svg></span><div><b>AI Engineer · Northwind Labs</b><small>Fit 4.4 · remote, India</small></div><span class="t">Prepare</span></div>
+            <div class="li"><span class="ic"><svg><use href="assets/shapes.svg#i-doc"/></svg></span><div><b>Backend SDE 1 · Lumen Pay</b><small>Fit 4.1 · Bengaluru</small></div><span class="t">Approve</span></div>
+            <div class="li"><span class="ic"><svg><use href="assets/shapes.svg#i-mail"/></svg></span><div><b>Recruiter reply · Harbor AI</b><small>Asks for availability</small></div><span class="t">Reply</span></div>
+          </div>
+        </div>
+        <div class="cal" aria-hidden="true">
+          <h6>November</h6>
+          <div class="days">
+            <span class="h">MO</span><span class="h">TU</span><span class="h">WE</span><span class="h">TH</span><span class="h">FR</span><span class="h">SA</span><span class="h">SU</span>
+            <span></span><span></span><span></span><span></span><span></span><span>1</span><span>2</span>
+            <span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+            <span>10</span><span>11</span><span class="on">12</span><span>13</span><span>14</span><span>15</span><span>16</span>
+          </div>
+          <div class="tl">
+            <div class="ev2 y"><b>Interview · Harbor AI</b><span>11:00 to 11:45 · video call</span></div>
+            <div class="ev2"><b>Follow-up · Lumen Pay</b><span>Day 7: add a new result</span></div>
+            <div class="ev2"><b>Thank-you note</b><span>Due tomorrow</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="reveal" style="color:var(--muted);font-size:13px;margin-top:12px">Example data. Companies and people shown are fictional. <a href="https://vishstack01.github.io/careeros/demo/">Open the live demo ↗</a></p>
+  </div>
+</section>
+
+<!-- 04 -->
+<section id="how">
+  <div class="wrap">
+    <div class="pills reveal" data-stagger><span class="pill">How it works</span><span class="pill">Four steps</span></div>
+    <div class="head">
+      <h2 class="lede split-words">From a posting to an interview, with <b>a person deciding</b> at every step that matters.</h2>
+      <div class="ghost" aria-hidden="true">04</div>
+    </div>
+    <div class="steps" data-stagger=".12">
+      <div class="step reveal"><div class="n">01</div><h3>Find</h3><p>An hourly scan reads company hiring systems, verifies each role and keeps only those inside your rules, with quotes.</p><div class="shape sq"><svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg></div></div>
+      <div class="step reveal"><div class="n">02</div><h3>Score</h3><p>Your model scores fit 1 to 5, requirement by requirement. Code checks every quote; under 4.0 waits for you.</p><div class="shape sq"><svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg></div></div>
+      <div class="step reveal"><div class="n">03</div><h3>Tailor</h3><p>A resume and note built only from claims in your Career Brain. Anything it can't back up is blocked.</p><div class="shape sq"><svg fill="#B6CAEB"><use href="assets/shapes.svg#star"/></svg></div></div>
+      <div class="step reveal"><div class="n">04</div><h3>Track</h3><p>Replies from your inbox move each role along. Follow-ups, referral notes and thank-yous are drafted for you to send.</p><div class="shape sq"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section id="byok">
+  <div class="wrap">
+    <div class="pills reveal" data-stagger><span class="pill">Open source</span><span class="pill">Bring your own key</span></div>
+    <div class="head">
+      <h2 class="lede split-words">Clone it, add <b>your own API key</b>, and run the whole agent on your machine. Your resume and search history never leave it.</h2>
+      <div class="ghost" aria-hidden="true">05</div>
+    </div>
+    <div class="byok">
+      <div class="term" aria-label="Terminal: install and run CareerOS">
+        <div class="dots"><i style="background:#F5B8DB"></i><i style="background:#F5D867"></i><i style="background:#9AAB63"></i></div>
+        <div class="ln"><span class="c"># install</span></div>
+        <div class="ln"><span class="p">$</span> git clone https://github.com/VishStack01/careeros && cd careeros</div>
+        <div class="ln"><span class="p">$</span> pip install -e .</div>
+        <div class="ln"><span class="c"># your model, your key (or put them in .env)</span></div>
+        <div class="ln"><span class="p">$</span> <span class="k">export</span> CAREEROS_LLM=<span class="g">anthropic</span>   <span class="c"># openai, gemini, ollama</span></div>
+        <div class="ln"><span class="p">$</span> <span class="k">export</span> ANTHROPIC_API_KEY=<span class="g">sk-ant-...</span></div>
+        <div class="ln"><span class="p">$</span> careeros llm test</div>
+        <div class="ln"><span class="c"># go</span></div>
+        <div class="ln"><span class="p">$</span> careeros init && careeros serve   <span class="c"># http://127.0.0.1:8765</span></div>
+        <span class="caret"></span>
+      </div>
+      <div class="reveal">
+        <span class="tag">Providers</span>
+        <p style="color:var(--text);margin-top:14px;font-size:18px">The AI steps (reading your resume, scoring fit, tailoring applications, drafting notes) call the model you choose with your key. Scanning, filtering and tracking run without any model at all, and Ollama runs everything locally for free.</p>
+        <div class="providers"><span>Anthropic</span><span>OpenAI</span><span>Gemini</span><span>Ollama (local)</span><span>Any OpenAI-compatible API</span></div>
+        <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn" href="docs.html">Read the docs</a>
+          <a class="btn light" href="https://vishstack01.github.io/careeros/demo/">Try the demo ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div class="shape sq float" style="left:-40px;top:-30px;width:180px;--t:12s"><svg fill="#F5D867"><use href="assets/shapes.svg#moon"/></svg></div>
+      <div class="shape sq float" style="right:6%;top:14%;width:60px;--t:7s"><svg fill="#B6CAEB"><use href="assets/shapes.svg#cross"/></svg></div>
+      <div class="shape sq float" style="right:-20px;bottom:-34px;width:160px;--t:10s;--fd:-3s"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg></div>
+      <div class="shape sq float" style="left:10%;bottom:-30px;width:110px;--t:13s;--fd:-5s"><svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg></div>
+      <h2>Fewer, better applications. Every claim one you can defend.</h2>
+      <div class="btns">
+        <a class="btn" href="https://github.com/VishStack01/careeros"><svg aria-hidden="true"><use href="assets/shapes.svg#i-github"/></svg>Get CareerOS</a>
+        <a class="btn light" href="jobs.html">Browse the live job board</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>CareerOS · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
+    <span><a href="docs.html">Docs</a> · <a href="jobs.html">Job board</a> · <a href="https://github.com/VishStack01/careeros">GitHub</a> · <a href="https://github.com/VishStack01/careeros/blob/main/docs/responsible-use.md">Responsible use</a></span>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

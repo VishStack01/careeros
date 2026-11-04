@@ -246,7 +246,7 @@ def cmd_platforms(a):
 
 def cmd_site(a):
     from . import site
-    site.build(a.feed, a.out, demo=a.demo, base_url=a.base_url)
+    site.build(a.feed, a.out, demo=a.demo, base_url=a.base_url, website=a.website)
 
 
 def cmd_serve(a):
@@ -254,7 +254,57 @@ def cmd_serve(a):
     serve(Store(a.db), Path(a.root), a.port)
 
 
+def cmd_llm(a) -> None:
+    from . import llm
+    st = llm.status()
+    if not st.get("configured"):
+        sys.exit(st.get("error") or "No model configured.")
+    print(f"Provider: {st['provider']}  Model: {st['model']}  Quick model: {st['quickModel']}" + ("  (local, no key)" if st["local"] else "  (your key, from the environment)"))
+    if a.action == "test":
+        try:
+            reply = llm.complete("Reply with the single word: ready", tier="quick", max_tokens=20)
+        except llm.LLMError as e:
+            sys.exit(f"Test failed: {e}")
+        print(f"Test reply: {reply.strip()[:80]}")
+
+
+def _write_json(obj, out: str | None) -> None:
+    text = json.dumps(obj, ensure_ascii=False, indent=2)
+    if out:
+        Path(out).parent.mkdir(parents=True, exist_ok=True)
+        Path(out).write_text(text + "\n", encoding="utf-8")
+        print(f"Wrote {out}")
+    else:
+        print(text)
+
+
+def cmd_ai(a) -> None:
+    from . import ai, llm
+    try:
+        if a.task == "profile":
+            out = ai.profile(ai.read_text(a.file))
+            removed = out.get("_checks", {}).get("removedNotInResume") or []
+            if removed:
+                print(f"Removed {len(removed)} value(s) the resume doesn't contain: {', '.join(removed[:8])}", file=sys.stderr)
+            _write_json(out, a.out)
+        elif a.task == "posting":
+            _write_json(ai.posting(ai.read_text(a.file)), a.out)
+        else:
+            if not a.jd or not (a.resume or a.brain):
+                sys.exit("ai evaluate needs --jd and --resume (or --brain).")
+            br = brain.load(a.brain) if a.brain else None
+            ev, warnings = ai.evaluate(ai.read_text(a.jd), ai.read_text(a.resume) if a.resume else "", br)
+            for w in warnings:
+                print(f"WARN   {w}", file=sys.stderr)
+            print(f"Score {float(ev['score']):.1f}/5. Passed eval-check.", file=sys.stderr)
+            _write_json(ev, a.out)
+    except llm.LLMError as e:
+        sys.exit(str(e))
+
+
 def main(argv: list[str] | None = None) -> None:
+    from .llm import load_dotenv
+    load_dotenv(Path.cwd() / ".env")
     p = argparse.ArgumentParser(prog="careeros", description="Evidence-first job application agent.")
     p.add_argument("--version", action="version", version=f"careeros {__version__}")
     p.add_argument("--db", default="data/careeros.db", help="SQLite file (default: data/careeros.db)")
@@ -407,6 +457,7 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--out", default="site")
     sp.add_argument("--demo", default="dashboard/index.html", help="Dashboard demo page to include at /demo/")
     sp.add_argument("--base-url", default="", help="Public URL of the board, for API links and RSS")
+    sp.add_argument("--website", default="website", help="Project website folder copied to the root (board moves to jobs.html)")
     sp.set_defaults(fn=cmd_site)
 
     sp = sub.add_parser("serve")
@@ -519,7 +570,22 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--force", action="store_true", help="ingest: accept a feed even if it shrank sharply")
     sp.set_defaults(fn=cmd_cloud)
 
+    sp = sub.add_parser("llm", help="Show or test the model you configured (your own API key)")
+    sp.add_argument("action", nargs="?", choices=["status", "test"], default="status")
+    sp.set_defaults(fn=cmd_llm)
+
+    sp = sub.add_parser("ai", help="AI steps on your own model, each checked by code: profile, posting, evaluate")
+    sp.add_argument("task", choices=["profile", "posting", "evaluate"])
+    sp.add_argument("file", nargs="?", help="profile: your resume (.pdf or .txt); posting: the posting text")
+    sp.add_argument("--jd", help="evaluate: the posting text")
+    sp.add_argument("--resume", help="evaluate: your resume (.pdf or .txt)")
+    sp.add_argument("--brain", help="evaluate: your Career Brain JSON, used instead of the resume")
+    sp.add_argument("-o", "--out", help="write the JSON here instead of printing it")
+    sp.set_defaults(fn=cmd_ai)
+
     a = p.parse_args(argv)
+    if getattr(a, "cmd", "") == "ai" and a.task != "evaluate" and not a.file:
+        p.error(f"ai {a.task} needs a file")
     a.fn(a)
 
 

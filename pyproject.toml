@@ -4,19 +4,34 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "careeros"
-version = "0.1.0"
-description = "Evidence-first job application agent: finds fresh roles, verifies them on source, tailors truthful applications and applies with you in control."
+version = "1.0.0"
+description = "Open-source AI agent for the job search: finds fresh roles, checks them with quotes from the posting, writes applications from your real experience only. Bring your own model and key."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.11"
-authors = [{ name = "VishStack" }]
-keywords = ["job-search", "agents", "claude-code", "ats", "automation", "careers"]
+authors = [{ name = "Venkata Vishnu Vardhan Raju Chakravarthula" }]
+keywords = ["job-search", "ai-agent", "llm", "claude-code", "ats", "resume", "careers", "bring-your-own-key"]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: End Users/Desktop",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
+  "Topic :: Office/Business",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = []
+
+[project.urls]
+Homepage = "https://vishstack01.github.io/careeros/"
+Documentation = "https://vishstack01.github.io/careeros/docs.html"
+Repository = "https://github.com/VishStack01/careeros"
+Issues = "https://github.com/VishStack01/careeros/issues"
+Changelog = "https://github.com/VishStack01/careeros/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 browser = ["playwright>=1.44"]
@@ -31,7 +46,7 @@ careeros = "careeros.cli:main"
 include = ["careeros*"]
 
 [tool.setuptools.package-data]
-careeros = ["site_app.html", "cloud/static/*.html", "cloud/migrations/*.sql", "cloud/prompts/*.md"]
+careeros = ["site_app.html", "data/*.json", "cloud/static/*.html", "cloud/migrations/*.sql", "cloud/prompts/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
