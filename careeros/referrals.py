@@ -4,7 +4,7 @@
         [--connections Connections.csv] [--people people.json] [--applicant applicant.json] [--json]
 
 A referral is the single biggest lift to being shortlisted, so for each role
-CareerOS finds the people most likely to refer you, in this order:
+Propelo finds the people most likely to refer you, in this order:
 
 1. people you already know there (your LinkedIn Connections.csv export);
 2. alumni of your college working there, then engineers on a similar team,
@@ -14,7 +14,7 @@ CareerOS finds the people most likely to refer you, in this order:
      in as --people [{name, headline, url, location, degree}].
 
 It ranks them, explains each pick, and drafts a short connection note and a
-referral ask from your own profile. You send every message yourself: CareerOS
+referral ask from your own profile. You send every message yourself: Propelo
 never signs in to LinkedIn, never scrapes it and never sends anything there.
 """
 

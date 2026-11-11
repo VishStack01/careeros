@@ -1,5 +1,5 @@
-/* CareerOS Autofill: the part that runs inside an application page.
-   It fills empty fields from the CareerOS profile it is given, attaches the resume, outlines what
+/* Propelo Autofill: the part that runs inside an application page.
+   It fills empty fields from the Propelo profile it is given, attaches the resume, outlines what
    it filled, and lists what it left for you. It never presses Submit, never ticks consent boxes,
    never overwrites what is already typed, and never touches passwords, one-time codes, identity
    numbers, bank details or dates of birth. The page's own text is only matched, never followed. */
@@ -26,6 +26,11 @@
     ["expectedCtcLpa", /expected (ctc|salary|compensation|pay)|salary expectation|desired (salary|compensation)|compensation expectation/i],
     ["currentCtcLpa", /current (ctc|salary|compensation|pay)|present (ctc|salary)/i],
     ["graduationYear", /graduation (year|date)|year of (graduation|passing)|passing year|batch/i],
+    ["cgpa", /\bc?gpa\b|cgpa|^percentage$|percentage (scored|obtained)|aggregate (marks|score|percentage)|academic score|marks obtained/i],
+    ["branch", /\bbranch\b|speciali[sz]ation|^major$|^stream$|^discipline$|field of study/i],
+    ["backlogs", /backlogs?|arrears|\bkt\b/i],
+    ["pinCode", /pin ?code|postal code|post ?code|zip ?code|\bzip\b/i],
+    ["state", /^(state|province|state ?\/ ?ut|state or province|state of residence)$|\b(current|home|residential) state\b/i],
     ["degree", /degree|qualification|education level/i],
     ["college", /college|university|school|institut/i],
     ["workAuthIndia", /(authori[sz]ed|eligible|legally (allowed|permitted)).{0,40}work.{0,40}india|work (authori[sz]ation|permit).{0,30}india/i],
@@ -37,7 +42,26 @@
   ];
   // Questions about someone else (a referrer, a reference, an emergency contact) are never filled with your details.
   var OTHER_PERSON = /referr(er|ed by|ing employee)|\breference\b|emergency|guardian|father|mother|spouse|parent|recruiter'?s|manager'?s|employee'?s/i;
-  var CHOICE_KEYS = { workAuthIndia: 1, sponsorshipAbroad: 1, relocate: 1, noticePeriod: 1, degree: 1 };
+  var CHOICE_KEYS = { workAuthIndia: 1, sponsorshipAbroad: 1, relocate: 1, noticePeriod: 1, degree: 1, backlogs: 1 };
+  function words(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter(function (w) { return w.length > 2 && !/^(the|and|you|your|for|with|this|that|are|our|why|what|how|please|tell|describe)$/.test(w); }); }
+  // A saved answer fits a question when they share most of their words, and a company-only answer
+  // is used only on that company's form.
+  function savedAnswer(label, answers, company) {
+    var cw = words(company).concat(["here", "company", "join", "team", "organisation", "organization"]);
+    var strip = function (ws) { return ws.filter(function (w) { return cw.indexOf(w) < 0; }); };
+    var lw = strip(words(label)); if (lw.length < 2) return null;
+    var co = String(company || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+    var best = null, bestScore = 0;
+    (answers || []).forEach(function (a) {
+      if (!a || !a.q || !a.a) return;
+      var ac = String(a.company || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+      if (ac && (!co || (co.indexOf(ac) < 0 && ac.indexOf(co) < 0))) return;
+      var qw = strip(words(a.q).filter(function (w) { return words(a.company).indexOf(w) < 0; })), inter = qw.filter(function (w) { return lw.indexOf(w) >= 0; }).length;
+      var score = inter / Math.max(1, Math.min(qw.length, lw.length));
+      if (score > bestScore) { best = a; bestScore = score; }
+    });
+    return bestScore >= 0.75 ? best : null;
+  }
 
   function clean(s) { return String(s || "").replace(/[\s ]+/g, " ").replace(/[*:]+\s*$/, "").trim(); }
   function visible(el) {
@@ -159,6 +183,8 @@
     var out = { host: location.hostname, filled: [], needs: [], skippedSensitive: 0, resume: "", blocked: false };
     if (BLOCKED.test(location.hostname)) { out.blocked = true; return out; }
     var a = (data && data.applicant) || {};
+    if (/prefer not/i.test(a.backlogs || "")) delete a.backlogs;
+    out.fromAnswers = 0;
     var seenRadio = {};
     var fields = Array.prototype.slice.call(document.querySelectorAll("input, textarea, select"));
     fields.forEach(function (el) {
@@ -169,13 +195,13 @@
       }
       if (!visible(el)) return;
       var label = labelOf(el), hint = hints(el), key = matchKey(label, hint);
-      if (key === "__sensitive") { out.skippedSensitive++; if (required(el, label)) { out.needs.push({ label: label || "A private field", why: "CareerOS never fills this. Type it yourself if you choose to share it." }); mark(el, "needs"); } return; }
+      if (key === "__sensitive") { out.skippedSensitive++; if (required(el, label)) { out.needs.push({ label: label || "A private field", why: "Propelo never fills this. Type it yourself if you choose to share it." }); mark(el, "needs"); } return; }
 
       if (type === "file") {
         var isResume = /resume|\bcv\b|curriculum/i.test(label + " " + hint) && !/cover/i.test(label + " " + hint);
         if (!isResume) { if (required(el, label)) { out.needs.push({ label: label || "A file upload", why: "Attach this yourself." }); mark(el, "needs"); } return; }
         if (el.files && el.files.length) { out.resume = "already attached"; return; }
-        if (!data.resume || !data.resume.b64) { out.resume = "no resume in CareerOS"; out.needs.push({ label: label || "Resume", why: "Upload your resume PDF in CareerOS first, or attach it here." }); mark(el, "needs"); return; }
+        if (!data.resume || !data.resume.b64) { out.resume = "no resume in Propelo"; out.needs.push({ label: label || "Resume", why: "Upload your resume PDF in Propelo first, or attach it here." }); mark(el, "needs"); return; }
         try { var dt = new DataTransfer(); dt.items.add(b64ToFile(data.resume)); el.files = dt.files; el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true })); out.resume = "attached"; mark(el, "filled"); out.filled.push({ label: label || "Resume", value: data.resume.name || "resume.pdf" }); }
         catch (e) { out.resume = "couldn't attach"; out.needs.push({ label: label || "Resume", why: "This page wouldn't take the file. Attach it yourself." }); mark(el, "needs"); }
         return;
@@ -207,8 +233,10 @@
         if (type === "email" && v.indexOf("@") < 0) v = "";
         if (v) { setValue(el, v); mark(el, "filled"); out.filled.push({ label: label || key, value: v }); return; }
       }
+      var saved = (el.tagName === "TEXTAREA" || type === "text" || !type) && !key ? savedAnswer(label, data.answers, data.company) : null;
+      if (saved) { setValue(el, saved.a); mark(el, "filled"); out.filled.push({ label: label, value: "From your saved answers" }); out.fromAnswers++; return; }
       if (required(el, label) || el.tagName === "TEXTAREA") {
-        out.needs.push({ label: label || "A question", why: el.tagName === "TEXTAREA" ? "Write this in your own words, or draft it in CareerOS under Writing & interviews > Form answer." : "CareerOS doesn't have this. Fill it in yourself." });
+        out.needs.push({ label: label || "A question", why: el.tagName === "TEXTAREA" ? "Write this in your own words, or draft it in Propelo under Writing & interviews > Form answer." : "Propelo doesn't have this. Fill it in yourself." });
         mark(el, "needs");
       }
     });

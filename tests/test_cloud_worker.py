@@ -89,7 +89,7 @@ def test_queue_dedupe_retry_and_leases(cloud):
     w1, w2 = _worker(cloud, "w1"), _worker(cloud, "w2")
     with cloud.db.tx() as c:
         c.execute("DELETE FROM tasks")
-        c.execute("INSERT INTO feed_state(key, value, updated_at) VALUES ('next_ingest_at', '2999-01-01', 'x'), ('next_cleanup_at', '2999-01-01', 'x')")
+        c.execute("INSERT INTO feed_state(key, value, updated_at) VALUES ('next_ingest_at', '2999-01-01', 'x'), ('next_cleanup_at', '2999-01-01', 'x'), ('next_alerts_at', '2999-01-01', 'x')")
         assert repo.enqueue(c, "send_email", {"to": "a@example.com", "subject": "s", "text": "t"}, dedupe_key="mail:1")
         assert not repo.enqueue(c, "send_email", {"to": "a@example.com", "subject": "s", "text": "t"}, dedupe_key="mail:1")
         assert repo.enqueue(c, "nonsense", dedupe_key="bad", max_attempts=2)
@@ -125,7 +125,7 @@ def test_failed_task_backs_off(cloud):
     w = _worker(cloud)
     with cloud.db.tx() as c:
         c.execute("DELETE FROM tasks")
-        c.execute("INSERT INTO feed_state(key, value, updated_at) VALUES ('next_ingest_at', '2999-01-01', 'x'), ('next_cleanup_at', '2999-01-01', 'x')")
+        c.execute("INSERT INTO feed_state(key, value, updated_at) VALUES ('next_ingest_at', '2999-01-01', 'x'), ('next_cleanup_at', '2999-01-01', 'x'), ('next_alerts_at', '2999-01-01', 'x')")
         repo.enqueue(c, "ingest", dedupe_key="ingest", max_attempts=3)  # the feed folder doesn't exist: fails closed
     w.tick()
     with cloud.db.tx() as c:
@@ -143,7 +143,7 @@ def test_scheduler_and_cleanup(cloud):
     w.schedule()
     with cloud.db.tx() as c:
         kinds = sorted(r["kind"] for r in c.all("SELECT kind FROM tasks"))
-    assert kinds == ["cleanup", "ingest"]  # once each, however often the scheduler ticks
+    assert kinds == ["alerts", "cleanup", "ingest"]  # once each, however often the scheduler ticks
     out = cleanup(cloud.db)
     assert set(out) == {"sessions", "links", "rate", "tasks", "jobs", "audit"}
     assert json.dumps(out)
@@ -155,7 +155,7 @@ def test_concurrent_workers_claim_each_task_once(cloud):
     from careeros.cloud import repo
     with cloud.db.tx() as c:
         c.execute("DELETE FROM tasks")
-        c.execute("INSERT INTO feed_state(key, value, updated_at) VALUES ('next_ingest_at', '2999-01-01', 'x'), ('next_cleanup_at', '2999-01-01', 'x')")
+        c.execute("INSERT INTO feed_state(key, value, updated_at) VALUES ('next_ingest_at', '2999-01-01', 'x'), ('next_cleanup_at', '2999-01-01', 'x'), ('next_alerts_at', '2999-01-01', 'x')")
         for i in range(60):
             repo.enqueue(c, "cleanup", dedupe_key=f"t{i}")
     claimed, lock = [], threading.Lock()
@@ -187,3 +187,28 @@ def test_ingest_drops_implausible_pay(cloud, tmp_path):
     with cloud.db.tx() as c:
         facts = {row["id"]: _json.loads(row["record"])["facts"] for row in c.all("SELECT id, record FROM jobs")}
     assert "salaryHigh" not in facts[r["id"]] and facts[feed_record(2)["id"]]["salaryHigh"] == 14.0
+
+
+def test_job_alerts_are_opt_in_and_only_for_new_roles(cloud):
+    from datetime import datetime, timedelta, timezone
+    from careeros.cloud import alerts, repo
+    c = cloud.user()
+    now = datetime.now(timezone.utc)
+    stamp = (now - timedelta(hours=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    for i in range(3):
+        c.put(f"/api/d/jobs/j{i}", json={"company": f"Co {i}", "title": "Data Analyst", "url": f"https://jobs.example.com/{i}", "stage": "found", "foundAt": stamp})
+    c.put("/api/d/jobs/mine", json={"company": "Mine", "title": "PM", "url": "https://x.example/1", "stage": "approved", "manual": True, "foundAt": stamp})
+    with cloud.db.tx() as tx:
+        before = tx.scalar("SELECT COUNT(*) FROM tasks WHERE kind = 'send_email'")
+    assert alerts.send_due(cloud.db, "https://propelo.in", now=now, log=lambda *_: None) == 0  # off by default
+    c.patch("/api/d/settings/profile", json={"alerts": "daily"})
+    assert alerts.send_due(cloud.db, "https://propelo.in", now=now, log=lambda *_: None) == 1
+    with cloud.db.tx() as tx:
+        row = tx.one("SELECT payload FROM tasks WHERE kind = 'send_email' ORDER BY created_at DESC LIMIT 1")
+        assert tx.scalar("SELECT COUNT(*) FROM tasks WHERE kind = 'send_email'") == before + 1
+    body = __import__("json").loads(row["payload"])
+    assert body["subject"] == "3 new roles for you on Propelo" and "https://jobs.example.com/0" in body["text"]
+    assert "Mine" not in body["text"] and "Turn them off in Settings" in body["text"]
+    # Not again until the next period, and nothing when nothing is new
+    assert alerts.send_due(cloud.db, "https://propelo.in", now=now + timedelta(hours=1), log=lambda *_: None) == 0
+    assert alerts.send_due(cloud.db, "https://propelo.in", now=now + timedelta(days=1), log=lambda *_: None) == 0

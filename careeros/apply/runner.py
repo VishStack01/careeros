@@ -10,7 +10,7 @@ Flow
      switch is off, and the state machine says this role was never submitted.
   7. Confirm success from the page, screenshot it, and store a receipt.
 
-CareerOS never solves captchas, never creates accounts and never enters
+Propelo never solves captchas, never creates accounts and never enters
 passwords. Those cases go to you.
 """
 

@@ -14,6 +14,7 @@ on:
       - "careeros/site.py"
       - "careeros/site_app.html"
       - "careeros/tags.py"
+      - "careeros/logos.py"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -29,7 +30,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
@@ -49,10 +50,22 @@ jobs:
           fi
           mkdir -p feed
 
+      - name: Restore company logos
+        uses: actions/cache@v4
+        with:
+          path: .logo-cache
+          key: logos-${{ github.run_id }}
+          restore-keys: logos-
+
+      - name: Fetch company logos (new or stale only)
+        continue-on-error: true
+        timeout-minutes: 12
+        run: careeros logos --feed feed --cache .logo-cache --limit 1500
+
       - name: Build the site
         run: |
           base="https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/"
-          careeros site --feed feed --out site --demo dashboard/index.html --website website --base-url "$base"
+          careeros site --feed feed --out site --demo dashboard/index.html --website website --base-url "$base" --logos .logo-cache
           ls site
 
       - uses: actions/configure-pages@v5

@@ -2,6 +2,19 @@
 
 The website, the dashboard, the phone app and the sign-in pages share one set of rules. They follow the anti-slop and motion laws of the [Appllama app design skill](https://github.com/Appllama/appllama-skills). Each rule below can be checked mechanically, and a change that breaks one is a bug.
 
+## Propelo layer (1.3.0)
+
+The job board, the dashboard and the website add a layer on top of the rules below, following [unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky (CC BY 4.0). Where the two disagree, this layer wins on those three pages.
+
+- **Direction:** exact, warm, unhurried. The world is a placement-cell notice board in paper and ink. The bright moments are company logos and the fit score; the signature is the source line under each role: where it was found and when the feed last checked it, in mono.
+- **Light:** page `#F7F4EE`, card `#FDFBF7`, raised `#EFE9DF`; ink `#1F1B16`, secondary `#5E554A`, muted `#756C60`; hairlines in ink at 10%.
+- **Dark:** page `#161513`, card `#1C1A18`, raised `#262421`; ink `#EFE9DE`, secondary `#AAA398`, muted `#948D82`.
+- **One accent:** pink `#F5B8DB`, unchanged. The pastels stay category colours.
+- **Shape:** controls 10 px, cards 16 px, panels 20 px.
+- **Type:** IBM Plex Mono for dates, figures, sources and other metadata; headings at weight 500; labels in sentence case.
+- **Motion:** one curve, `cubic-bezier(.22,1,.36,1)`.
+- **Illustrations:** one style and one subject per image, no text inside; prompts and sizes are in [illustrations.md](illustrations.md).
+
 ## Colour
 
 - **One accent: pink `#F5B8DB`.** It marks the primary action (the "+", New application), the active place (the selected tab, today's date) and highlights. Black `#151515` is the second action colour.

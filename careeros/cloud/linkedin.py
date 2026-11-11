@@ -1,7 +1,7 @@
 """Sign in with LinkedIn (OpenID Connect).
 
 LinkedIn's self-serve sign-in product gives an app the member's name, email and
-photo, nothing else: no connections, no messaging, no posting. CareerOS uses it
+photo, nothing else: no connections, no messaging, no posting. Propelo uses it
 only to sign people in. Finding referrers works from the member's own
 Connections.csv export and LinkedIn searches they open in their own browser.
 """

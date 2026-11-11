@@ -32,7 +32,7 @@ class Config:
     session_ttl_days: int = 14
     password_iterations: int = 600_000
     smtp_url: str = ""
-    mail_from: str = "CareerOS <no-reply@localhost>"
+    mail_from: str = "Propelo <no-reply@localhost>"
     bootstrap_admin_email: str = ""
     signup_mode: str = "open"  # open | allowlist | closed
     signup_allowlist: list[str] = field(default_factory=list)  # emails or @domains
@@ -57,7 +57,7 @@ class Config:
     razorpay_webhook_secret: str = ""
     razorpay_plan_pro: str = ""  # plan_... created in the Razorpay dashboard at pro_price_inr per month
     support_email: str = ""
-    company_name: str = "CareerOS"
+    company_name: str = "Propelo"
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -72,7 +72,7 @@ class Config:
             session_ttl_days=_int("SESSION_TTL_DAYS", 14),
             password_iterations=_int("PASSWORD_ITERATIONS", 600_000),
             smtp_url=e("SMTP_URL", ""),
-            mail_from=e("MAIL_FROM", "CareerOS <no-reply@localhost>"),
+            mail_from=e("MAIL_FROM", "Propelo <no-reply@localhost>"),
             bootstrap_admin_email=e("BOOTSTRAP_ADMIN_EMAIL", "").strip().lower(),
             signup_mode=e("SIGNUP_MODE", "open").lower(),
             signup_allowlist=_list("SIGNUP_ALLOWLIST"),
@@ -96,7 +96,7 @@ class Config:
             razorpay_webhook_secret=e("RAZORPAY_WEBHOOK_SECRET", "").strip(),
             razorpay_plan_pro=e("RAZORPAY_PLAN_PRO", "").strip(),
             support_email=e("SUPPORT_EMAIL", "").strip(),
-            company_name=e("COMPANY_NAME", "CareerOS").strip() or "CareerOS",
+            company_name=e("COMPANY_NAME", "Propelo").strip() or "Propelo",
         )
 
     @property

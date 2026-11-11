@@ -1,4 +1,4 @@
-"""Plans, Razorpay billing, AI metering and users' own keys in CareerOS Cloud."""
+"""Plans, Razorpay billing, AI metering and users' own keys in Propelo Cloud."""
 
 import hashlib
 import hmac

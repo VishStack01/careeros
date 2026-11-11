@@ -2,7 +2,7 @@
   "name": "careeros-mobile",
   "version": "1.0.0",
   "private": true,
-  "description": "CareerOS for Android and iOS: the hosted CareerOS web app in a native shell (Capacitor).",
+  "description": "Propelo for Android and iOS: the hosted Propelo web app in a native shell (Capacitor).",
   "license": "MIT",
   "scripts": {
     "set-url": "node scripts/set-url.mjs",

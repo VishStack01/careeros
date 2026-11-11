@@ -1,7 +1,7 @@
 # Application profile: the answers every form asks for.
 # Copy to config/profile.toml (git-ignored) and fill in your own.
 # Never put passwords, Aadhaar, PAN, bank or passport numbers here.
-# Fields CareerOS can't answer from this file are sent to you for review.
+# Fields Propelo can't answer from this file are sent to you for review.
 
 [identity]
 first_name = "Asha"

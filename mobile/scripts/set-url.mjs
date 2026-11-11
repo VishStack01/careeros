@@ -1,4 +1,4 @@
-// Point the app at your CareerOS server: CAREEROS_APP_URL=https://your-domain npm run set-url
+// Point the app at your Propelo server: CAREEROS_APP_URL=https://your-domain npm run set-url
 // The address must be https. It is written into capacitor.config.json (server.url).
 import { readFileSync, writeFileSync } from "node:fs";
 
@@ -17,4 +17,4 @@ config.server.url = url;
 writeFileSync(path, JSON.stringify(config, null, 2) + "\n");
 const offline = new URL("../www/offline.html", import.meta.url);
 writeFileSync(offline, readFileSync(offline, "utf8").replace(/data-app-url="[^"]*"/, `data-app-url="${url}"`));
-console.log(`CareerOS app now opens ${url}`);
+console.log(`Propelo app now opens ${url}`);

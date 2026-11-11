@@ -1,13 +1,13 @@
-# CareerOS Autofill (Chrome extension)
+# Propelo Autofill (Chrome extension)
 
-Fills job application forms from your CareerOS profile. You review every answer and press Submit yourself.
+Fills job application forms from your Propelo profile. You review every answer and press Submit yourself.
 
 ## Install
 
 1. Get the zip from the latest **extension** workflow run (GitHub Actions tab), or use this folder directly.
 2. Open `chrome://extensions`, turn on **Developer mode**, press **Load unpacked** and pick the `extension` folder (unzipped).
-3. In CareerOS: Settings, Your computer, **Create computer key**. Copy the key (it starts with `cos_k_`).
-4. Click the CareerOS icon in Chrome, enter your CareerOS address and the key, press **Connect**.
+3. In Propelo: Settings, Your computer, **Create computer key**. Copy the key (it starts with `cos_k_`).
+4. Click the Propelo icon in Chrome, enter your Propelo address and the key, press **Connect**.
 
 ## Use
 
@@ -15,7 +15,9 @@ Open an application form and press **Fill this form**.
 
 - Filled fields get a pink outline. Fields that need you get an orange dashed outline and are listed in the popup.
 - Your resume PDF is attached to the resume upload when the form has one.
-- **Track this application** adds the role to your CareerOS applications (or updates it if CareerOS already found it).
+- Campus questions (CGPA or percentage, branch, state, PIN code) are filled from your application details. Active backlogs stay empty unless you chose an answer in Propelo.
+- A question that closely matches one of your **Saved answers** (Writing & interviews) gets that answer, and the popup says how many came from them. An answer saved for one company is only used on that company's forms; essays you haven't saved an answer for are listed for you.
+- **Track this application** adds the role to your Propelo applications (or updates it if Propelo already found it).
 
 ## What it never does
 
@@ -30,11 +32,11 @@ Open an application form and press **Fill this form**.
 | Permission | Why |
 |---|---|
 | `activeTab`, `scripting` | Fill the tab you're looking at, when you press the button |
-| `storage` | Keep your CareerOS address and computer key in this browser |
-| Your CareerOS address (asked when you connect) | Read your application details and resume, and track roles |
+| `storage` | Keep your Propelo address and computer key in this browser |
+| Your Propelo address (asked when you connect) | Read your application details and resume, and track roles |
 | A form's frame host (asked only if a form is embedded from another site) | Fill forms embedded from Greenhouse, Lever and similar |
 
-The computer key can only read your application details and report applications. Remove it any time in CareerOS (Settings, Your computer) or press **Disconnect**.
+The computer key can only read your application details and report applications. Remove it any time in Propelo (Settings, Your computer) or press **Disconnect**.
 
 ## Works best on
 

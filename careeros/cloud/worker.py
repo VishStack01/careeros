@@ -8,6 +8,7 @@ Scheduled work:
   ingest       every INGEST_EVERY_MINUTES: read the hourly scan into the shared inventory,
                then queue a match for every verified account
   match_user   one account's filters against the inventory (also queued when settings change)
+  alerts       hourly: queue the opt-in job alert digests that are due (see alerts.py)
   send_email   verification, reset and notice emails, with retries
   cleanup      daily: expired sessions and links, old tasks, rate-limit windows, long-closed roles
 """
@@ -27,6 +28,7 @@ from .config import Config
 from .db import Database, now_iso
 from .ingest import IngestError, ingest
 from .mailer import Mailer
+from . import alerts
 from .matching import match_user
 
 log = logging.getLogger("careeros.worker")
@@ -54,6 +56,8 @@ class Worker:
                 repo.enqueue(c, "ingest", dedupe_key="ingest", max_attempts=3)
             if self._due(c, "next_cleanup_at", timedelta(hours=24)):
                 repo.enqueue(c, "cleanup", dedupe_key="cleanup", max_attempts=2)
+            if self._due(c, "next_alerts_at", timedelta(hours=1)):
+                repo.enqueue(c, "alerts", dedupe_key="alerts", max_attempts=2)
 
     # ------------------------------------------------------------ queue
     def claim(self) -> dict | None:
@@ -94,6 +98,8 @@ class Worker:
                 self.mailer.send(payload["to"], payload["subject"], payload["text"])
             elif task["kind"] == "cleanup":
                 cleanup(self.db)
+            elif task["kind"] == "alerts":
+                alerts.send_due(self.db, self.cfg.public_url, log=log.info)
             else:
                 raise ValueError(f"unknown task kind {task['kind']}")
         except IngestError as e:

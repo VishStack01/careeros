@@ -2,6 +2,36 @@
 
 All notable changes to CareerOS. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-11
+
+### Changed
+- **CareerOS is now Propelo** (propelo.in). The `propelo` command works alongside `careeros`, which stays for existing scripts. The repository, Python package and data folders keep their names, so nothing you have set up breaks.
+- **A calmer, warmer design** on the job board, dashboard and website, following [unslop](https://github.com/heydamir/unslop) (CC BY 4.0): warm paper and ink colours with one pink accent, IBM Plex Mono for dates, figures and sources, three corner sizes, sentence-case labels and one easing curve. Dark mode has its own warm tokens.
+
+### Added
+- **Company logos on every role** of the public board. The site build finds each company's own website from evidence (its careers page, the posting itself, or a guessed domain whose homepage names the company), fetches its icon, caches it for 30 days and publishes it with the board. A company without a verified logo shows its initial instead; a wrong logo is never guessed into place.
+- **Board**:
+  - **Plain-English search**: "remote python internships in Bengaluru over 6 LPA" sets the filters for you, and shows what it understood with a way to undo each part.
+  - **Save and hide** roles on the board (kept in your browser), with a Saved list.
+  - **Where every role came from**: each card and posting says which board it was found on and when it was last checked, and the posting has "Report a problem".
+- **Applications**:
+  - new stages: **Assessment** (between Applied and Screen) and **No response** (closed without a reply);
+  - **CSV export and import** of your applications, for a spreadsheet or another tracker.
+- **Writing & interviews**:
+  - six more emails: ask to reschedule an interview, ask for more time on an assessment, questions about an offer, negotiate an offer, accept an offer, withdraw an application;
+  - mock interviews by round (campus or fresher, software engineering, AI and data, product and design, managerial, HR) and difficulty (warm-up, standard, tough);
+  - **Saved answers**: keep your answers to common application questions, for any company or one company;
+  - **Career wins**: a running list of what you did and what changed because of it, used as evidence when Claude writes for you.
+- **Campus details** in your application details: CGPA or percentage, branch, active backlogs (only if a form asks, "Prefer not to say" by default), state and PIN code.
+- **Job alerts by email** (Propelo Cloud): off by default; daily or weekly in Settings. Each email lists up to ten new roles that passed your filters, best fit first, each with the company's own link, and nothing is sent when there's nothing new.
+- **Propelo Autofill 1.3.0**: fills the campus fields, and fills a question from your saved answers when the wording matches closely (a company's own answer is only used for that company). Backlogs are left empty unless you chose an answer.
+- **Website**: a new hero with a notice-style role card, and four illustration slots that stay hidden until the images exist. [docs/illustrations.md](docs/illustrations.md) has the prompts, sizes and palette to generate them.
+- Home leads with the best fit waiting for you and one line each for fresh roles, applications, replies, interviews in the next two weeks, follow-ups due and skipped roles, each a tap from its page.
+
+### Fixed
+- A question such as "Please state your reasons..." is no longer mistaken for the State field.
+- Plain-English searches for internships no longer drop every internship by also setting a level.
+
 ## [1.2.0] - 2026-11-11
 
 ### Added

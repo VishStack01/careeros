@@ -1,4 +1,4 @@
-# CareerOS Cloud release checklist
+# Propelo Cloud release checklist
 
 A passing test run is not a launch approval. Tick these in order; the first section is
 what the code already does, so you can see where the remaining work is.

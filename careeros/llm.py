@@ -1,8 +1,8 @@
 """Bring your own model: one small client for the AI steps, using your own API key.
 
-CareerOS never ships a key and never sends your data anywhere you didn't choose.
+Propelo never ships a key and never sends your data anywhere you didn't choose.
 Pick a provider with environment variables (or a `.env` file in the folder you
-run CareerOS from):
+run Propelo from):
 
     CAREEROS_LLM=anthropic   ANTHROPIC_API_KEY=...
     CAREEROS_LLM=openai      OPENAI_API_KEY=...      [OPENAI_BASE_URL=...  any OpenAI-compatible API]
@@ -14,7 +14,7 @@ run CareerOS from):
 
 When CAREEROS_LLM is unset, the first provider with a key set is used. Standard
 library only: no SDKs to install. Keys are read from the environment at call time
-and never printed, logged or written to disk by CareerOS.
+and never printed, logged or written to disk by Propelo.
 """
 
 from __future__ import annotations

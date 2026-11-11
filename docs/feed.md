@@ -3,7 +3,7 @@
 Most openings at Indian product companies never reach a job board, or reach it
 days later with hundreds of applicants already in. They are first posted on the
 company's own careers page, and most careers pages are a thin skin over a hiring
-system (ATS) that publishes every opening as public JSON. CareerOS reads those
+system (ATS) that publishes every opening as public JSON. Propelo reads those
 feeds directly, for about 1,400 companies, every hour.
 
 ```mermaid

@@ -1,4 +1,4 @@
-# CareerOS Cloud on one machine: PostgreSQL, a migration step, the web app and the worker.
+# Propelo Cloud on one machine: PostgreSQL, a migration step, the web app and the worker.
 #
 #   cp .env.example .env        # set POSTGRES_PASSWORD at least
 #   docker compose up --build -d

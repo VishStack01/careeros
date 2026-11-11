@@ -48,32 +48,32 @@ class Mailer:
 
 
 def verify_email(name: str, link: str) -> tuple[str, str]:
-    return ("Confirm your email for CareerOS",
-            f"Hi {name or 'there'},\n\nConfirm your email to finish creating your CareerOS account:\n\n{link}\n\n"
+    return ("Confirm your email for Propelo",
+            f"Hi {name or 'there'},\n\nConfirm your email to finish creating your Propelo account:\n\n{link}\n\n"
             "The link works once and expires in 24 hours. If you didn't sign up, ignore this email.\n")
 
 
 def already_registered(link: str) -> tuple[str, str]:
-    return ("You already have a CareerOS account",
+    return ("You already have a Propelo account",
             "Someone (probably you) tried to sign up with this email, but it already has an account.\n\n"
             f"Sign in, or reset your password here:\n\n{link}\n\nIf this wasn't you, you can ignore this email.\n")
 
 
 def reset_password(link: str) -> tuple[str, str]:
-    return ("Reset your CareerOS password",
+    return ("Reset your Propelo password",
             f"Use this link to choose a new password:\n\n{link}\n\n"
             "It works once and expires in 1 hour. Resetting signs you out everywhere. "
             "If you didn't ask for this, ignore this email; your password stays the same.\n")
 
 
 def password_changed() -> tuple[str, str]:
-    return ("Your CareerOS password was changed",
+    return ("Your Propelo password was changed",
             "Your password was just changed and every session was signed out.\n\n"
             "If this wasn't you, reset your password now from the sign-in page.\n")
 
 
 def pro_welcome(public_url: str) -> tuple[str, str]:
-    return ("You're on CareerOS Pro",
+    return ("You're on Propelo Pro",
             "Thanks for upgrading. Your account now matches new roles every hour and has a larger monthly AI allowance.\n\n"
             f"Open your dashboard: {public_url}/\n\n"
             "You can cancel any time under Settings, Plan. You keep Pro until the end of the month you paid for.\n")

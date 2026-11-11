@@ -6,7 +6,7 @@ the score trustworthy:
 
 * The overall score is a judgment, not a formula, but it must sit inside the
   range of its five dimension scores.
-* 4.0 is the apply line. Below it CareerOS recommends against applying, and
+* 4.0 is the apply line. Below it Propelo recommends against applying, and
   auto-apply skips the role unless you press "Apply anyway".
 * Confidence is computed from the evidence, never typed in: High only when all
   five dimensions are supported and no open question remains.
@@ -308,7 +308,7 @@ def report_md(ev: dict, job: dict | None = None, jd: str | None = None) -> str:
         L.append(f"**Posting:** {job['url']}")
     L.append(f"**Evaluated:** {ev.get('evaluatedAt', '')[:10]}{' · ' + ev['archetype'] if ev.get('archetype') else ''}")
     L += ["", "## Verdict (lead)", "", f"**{v['call']}.** {ev.get('summary', '')}", "",
-          f"_{v['label']} The apply line is {APPLY_LINE}: below it CareerOS recommends against applying, and auto-apply waits for you._", ""]
+          f"_{v['label']} The apply line is {APPLY_LINE}: below it Propelo recommends against applying, and auto-apply waits for you._", ""]
 
     facts = job.get("facts") or {}
     rows = [("Company", company), ("Role", job.get("title")), ("Role family", ev.get("archetype") or job.get("archetype")),

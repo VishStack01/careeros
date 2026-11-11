@@ -18,7 +18,7 @@ from datetime import datetime, timedelta, timezone
 from statistics import median
 
 FLOW = ["found", "ready", "approved", "applied", "screen", "interview", "offer"]
-RESPONDED = ("screen", "interview", "offer")
+RESPONDED = ("assessment", "screen", "interview", "offer")
 MIN_SAMPLE = 10
 
 

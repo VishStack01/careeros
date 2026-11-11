@@ -1,4 +1,4 @@
-# CareerOS Cloud: one image for the web app, the worker and migrations.
+# Propelo Cloud: one image for the web app, the worker and migrations.
 #   docker build -t careeros .
 #   docker run careeros careeros cloud serve --host 0.0.0.0     (web, the default)
 #   docker run careeros careeros cloud worker                   (background worker)

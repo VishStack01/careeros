@@ -4,7 +4,7 @@ read those companies' own job boards.
     careeros radar --config config/radar.toml --boards feed/boards.json --out feed/radar-companies.csv
 
 JobSpy (MIT, github.com/speedyapply/JobSpy) searches Indeed India and Naukri
-(LinkedIn and Glassdoor too, if you turn them on). CareerOS keeps none of those
+(LinkedIn and Glassdoor too, if you turn them on). Propelo keeps none of those
 listings. From each result it takes only two things:
 
 * the employer's own application link, when the board gives one: if it is a

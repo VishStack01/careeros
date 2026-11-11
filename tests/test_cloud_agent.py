@@ -176,7 +176,7 @@ def test_extension_tracks_an_application_once(cloud):
     assert d["stage"] == "applied" and d["appliedVia"] == "you" and d["via"] == "extension" and d["source"] == "job-boards.greenhouse.io"
     again = k.post("/api/agent/track", json={"url": "https://job-boards.greenhouse.io/acme/jobs/9", "title": "AI Engineer", "company": "Acme"}).json()
     assert again["id"] == r["id"] and not again["created"]
-    # A role CareerOS already found is updated, not duplicated.
+    # A role Propelo already found is updated, not duplicated.
     _job(c, "found1", "Beta", stage="found")
     r2 = k.post("/api/agent/track", json={"url": "https://jobs.example.com/found1", "title": "AI Engineer", "company": "Beta"}).json()
     assert r2["id"] == "found1" and not r2["created"]

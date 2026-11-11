@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CareerOS docs: install, bring your own key, run</title>
-<meta name="description" content="Install CareerOS, connect your own model (Anthropic, OpenAI, Gemini or Ollama) and run the open-source job-search agent on your machine.">
+<title>Propelo docs: install, bring your own key, run</title>
+<meta name="description" content="Install Propelo, connect your own model (Anthropic, OpenAI, Gemini or Ollama) and run the open-source job-search agent on your machine.">
 <meta name="theme-color" content="#FAF3E6">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="docs">
@@ -17,7 +17,7 @@
 
 <nav class="top" aria-label="Main">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="CareerOS home"><svg><use href="assets/shapes.svg#mark"/></svg>careeros</a>
+    <a class="brand" href="./" aria-label="Propelo home"><svg><use href="assets/shapes.svg#mark"/></svg>propelo</a>
     <div class="links">
       <a href="./#approach">Approach</a>
       <a href="./#product">Product</a>
@@ -45,8 +45,8 @@
 
     <article class="doc">
       <div class="pills reveal" data-stagger><span class="pill">Docs</span><span class="pill">Quick start</span></div>
-      <h1 class="split-words">Run CareerOS on your machine, with your own model.</h1>
-      <p class="intro reveal">CareerOS is a Python package (standard library only), a local dashboard and a set of agent skills. The AI steps use the provider and API key you choose. Everything else, including the job scan and every check, runs without a model.</p>
+      <h1 class="split-words">Run Propelo on your machine, with your own model.</h1>
+      <p class="intro reveal">Propelo is a Python package (standard library only), a local dashboard and a set of agent skills. The AI steps use the provider and API key you choose. Everything else, including the job scan and every check, runs without a model.</p>
 
       <h2 id="install">Install</h2>
       <p>You need Python 3.11 or newer and git.</p>
@@ -60,7 +60,7 @@ careeros --version</pre>
       <p>Optional extras: <code>pip install -e ".[browser]"</code> then <code>python -m playwright install chromium</code> for the apply agent, and <code>pip install pypdf</code> to read resume PDFs.</p>
 
       <h2 id="key">Bring your own key</h2>
-      <p>Copy <code>.env.example</code> to <code>.env</code> and fill in one provider. CareerOS reads <code>.env</code> from the folder you run it in; values already set in your shell win. The file is git-ignored.</p>
+      <p>Copy <code>.env.example</code> to <code>.env</code> and fill in one provider. Propelo reads <code>.env</code> from the folder you run it in; values already set in your shell win. The file is git-ignored.</p>
 <pre class="code">cp .env.example .env
 <span class="c"># then edit .env, for example:</span>
 <span class="k">CAREEROS_LLM</span>=anthropic
@@ -77,8 +77,8 @@ careeros llm test     <span class="c"># one tiny request to check it works</span
           <tr><td>Ollama</td><td><code>CAREEROS_LLM=ollama</code><br><code>OLLAMA_HOST</code> (optional)</td><td>Free and fully local. No key, nothing leaves your machine</td></tr>
         </tbody>
       </table>
-      <p>Pin models with <code>CAREEROS_MODEL</code> (every step) and <code>CAREEROS_MODEL_QUICK</code> (small steps). Without them CareerOS picks a sensible model per provider.</p>
-      <div class="callout">Your key is read from the environment at call time and sent only to the provider you chose. CareerOS never prints, logs or stores it, and the dashboard only accepts AI requests from its own page, so another website can't spend your key.</div>
+      <p>Pin models with <code>CAREEROS_MODEL</code> (every step) and <code>CAREEROS_MODEL_QUICK</code> (small steps). Without them Propelo picks a sensible model per provider.</p>
+      <div class="callout">Your key is read from the environment at call time and sent only to the provider you chose. Propelo never prints, logs or stores it, and the dashboard only accepts AI requests from its own page, so another website can't spend your key.</div>
 
       <h2 id="first-run">First run</h2>
 <pre class="code">careeros init                       <span class="c"># creates your private config files</span>
@@ -133,7 +133,7 @@ careeros eval-check eval.json --jd jd.txt --md report.md</pre>
       <h3>Which model should I use?</h3>
       <p>Any capable chat model works. Evaluations are long and strict, so a larger model passes the checks more often; small steps can use a cheaper model through <code>CAREEROS_MODEL_QUICK</code>.</p>
       <h3>What does it cost?</h3>
-      <p>CareerOS is free and MIT licensed. You pay your provider for what your key uses, or nothing with Ollama.</p>
+      <p>Propelo is free and MIT licensed. You pay your provider for what your key uses, or nothing with Ollama.</p>
 
       <h2 id="contribute">Contribute</h2>
       <p>Issues and pull requests are welcome. Run <code>pip install -e ".[dev]"</code> and <code>pytest</code> before opening a PR, and read <a href="https://github.com/VishStack01/careeros/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
@@ -145,7 +145,7 @@ pytest -q</pre>
 
 <footer>
   <div class="wrap">
-    <span>CareerOS · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
+    <span>Propelo · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
     <span><a href="./">Home</a> · <a href="jobs.html">Job board</a> · <a href="https://github.com/VishStack01/careeros">GitHub</a></span>
   </div>
 </footer>

@@ -1,4 +1,4 @@
-"""CareerOS Cloud: the multi-user service.
+"""Propelo Cloud: the multi-user service.
 
 One shared job inventory, read from the hourly scan, serves every account.
 Everything about a person (filters, pipeline, application details, resume,

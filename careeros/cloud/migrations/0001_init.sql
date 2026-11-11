@@ -1,4 +1,4 @@
--- CareerOS Cloud: initial schema. Portable SQL for SQLite and PostgreSQL.
+-- Propelo Cloud: initial schema. Portable SQL for SQLite and PostgreSQL.
 -- Ids are TEXT, timestamps are ISO-8601 UTC TEXT, JSON is TEXT, booleans are INTEGER 0/1.
 
 CREATE TABLE users (

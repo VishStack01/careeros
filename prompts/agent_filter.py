@@ -1,4 +1,4 @@
-# CareerOS feed filter for sandboxed agents (standard library only).
+# Propelo feed filter for sandboxed agents (standard library only).
 # Same decisions as `careeros filter-feed`, using the facts the scan already
 # extracted. The scheduled prompt carries this script so the agent writes it
 # itself instead of running downloaded code.

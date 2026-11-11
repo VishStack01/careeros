@@ -1,4 +1,4 @@
-"""Plans, billing and AI metering for CareerOS Cloud.
+"""Plans, billing and AI metering for Propelo Cloud.
 
 Two plans:
 

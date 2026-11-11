@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CareerOS · Sign in</title>
-<meta name="description" content="CareerOS finds fresh roles from company career pages, checks each against your filters with quotes from the posting, and applies from your own computer.">
+<title>Propelo · Sign in</title>
+<meta name="description" content="Propelo finds fresh roles from company career pages, checks each against your filters with quotes from the posting, and applies from your own computer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
@@ -87,7 +87,7 @@ input[aria-invalid="true"]{border-color:var(--bad)}
   .promises{display:none}
   .main{place-items:start center;padding:28px 16px 40px}
 }
-/* CareerOS brand: cream, pastel shapes, Bricolage Grotesque + Figtree */
+/* Propelo brand: cream, pastel shapes, Bricolage Grotesque + Figtree */
 :root{--page:#FAF3E6;--ink:#151515;--ink-2:#47433D;--muted:#8C867D;--panel:#EFE7D9;--panel-2:#E6DCCB;--line:#DDD2C1;--field:#FFFDF8;--btn:#151515;--btn-ink:#FAF3E6;
   --pink:#F5B8DB;--bgreen:#9AAB63;--bblue:#B6CAEB;--yellow:#F5D867;--good:#5E7A1F;--good-soft:#E2EAC6;
   --f:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;--d:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;--spring:cubic-bezier(.34,1.56,.64,1)}
@@ -129,7 +129,7 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 60%,transparent)}
     <span class="sh" style="right:170px;bottom:150px;width:80px;height:80px" aria-hidden="true"><svg viewBox="0 0 100 100" fill="#9AAB63"><path d="M50 2 C58 2 62 12 68 14 C75 16 84 10 90 16 C96 22 90 31 92 38 C94 45 100 50 100 50 C100 50 94 55 92 62 C90 69 96 78 90 84 C84 90 75 84 68 86 C62 88 58 98 50 98 C42 98 38 88 32 86 C25 84 16 90 10 84 C4 78 10 69 8 62 C6 55 0 50 0 50 C0 50 6 45 8 38 C10 31 4 22 10 16 C16 10 25 16 32 14 C38 12 42 2 50 2 Z"/></svg></span>
     <div class="pitch">
       <h1>Fresh roles, checked against your rules.</h1>
-      <p>CareerOS reads about 1,400 company career pages every hour, keeps the roles that fit you, and shows the sentence from each posting that decided it.</p>
+      <p>Propelo reads about 1,400 company career pages every hour, keeps the roles that fit you, and shows the sentence from each posting that decided it.</p>
     </div>
     <ul class="promises">
       <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span><b>Straight from company sites,</b> often before the big boards list them.</span></li>
@@ -226,12 +226,12 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 60%,transparent)}
   // Sign in with LinkedIn, when this server has it set up (name and email only; nothing is posted or sent).
   fetch('/api/auth/providers').then(r => r.ok ? r.json() : {}).then(p => { if (p && p.linkedin) document.querySelectorAll('.li-btn').forEach(b => { b.hidden = false; }); }).catch(() => {});
   const liErr = {linkedin_cancelled: 'LinkedIn sign-in was cancelled.', linkedin_state: 'That sign-in link expired. Try again.', linkedin_failed: "LinkedIn didn't confirm the sign-in. Try again.",
-                 linkedin_no_email: "LinkedIn didn't share a confirmed email address, which CareerOS needs.", closed: 'Sign-up is by invitation right now.', disabled: 'This account is disabled.'}[new URLSearchParams(location.hash.slice(1)).get('error') || ''];
+                 linkedin_no_email: "LinkedIn didn't share a confirmed email address, which Propelo needs.", closed: 'Sign-up is by invitation right now.', disabled: 'This account is disabled.'}[new URLSearchParams(location.hash.slice(1)).get('error') || ''];
 
   function show(m){
     mode = m;
     document.querySelectorAll('[data-mode]').forEach(s => { s.hidden = s.dataset.mode !== m; });
-    document.title = 'CareerOS · ' + ({login:'Sign in', signup:'Create account', sent:'Check your inbox', forgot:'Reset password', reset:'New password', verify:'Confirm email'}[m] || 'Sign in');
+    document.title = 'Propelo · ' + ({login:'Sign in', signup:'Create account', sent:'Check your inbox', forgot:'Reset password', reset:'New password', verify:'Confirm email'}[m] || 'Sign in');
     const first = $('[data-mode="' + m + '"] input');
     if (first && matchMedia('(min-width: 861px)').matches) first.focus();
   }
@@ -247,7 +247,7 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 60%,transparent)}
   async function post(url, body){
     let r;
     try { r = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json', 'X-CareerOS-CSRF': '1'}, credentials: 'same-origin', body: JSON.stringify(body)}); }
-    catch(e){ return {ok: false, status: 0, data: {error: "Can't reach CareerOS. Check your connection and try again."}}; }
+    catch(e){ return {ok: false, status: 0, data: {error: "Can't reach Propelo. Check your connection and try again."}}; }
     let data = {}; try { data = await r.json(); } catch(e){}
     return {ok: r.ok, status: r.status, data};
   }

@@ -95,7 +95,7 @@ Why not 300-500? Past about a hundred, "job sites" are mostly clones and scraper
 
 | Platform | Region | Competition | How | Notes |
 |---|---|---|---|---|
-| Wellfound (AngelList Talent)<br>[wellfound.com/jobs](https://wellfound.com/jobs) | global | high | Email alerts | Strong India startup coverage; every listing shows a salary range. Its terms ban automated access, so CareerOS never opens it: set your Wellfound job preferences (India, junior, your roles) and CareerOS adds roles from your alert emails and from search-result titles as Apply yourself. |
+| Wellfound (AngelList Talent)<br>[wellfound.com/jobs](https://wellfound.com/jobs) | global | high | Email alerts | Strong India startup coverage; every listing shows a salary range. Its terms ban automated access, so Propelo never opens it: set your Wellfound job preferences (India, junior, your roles) and Propelo adds roles from your alert emails and from search-result titles as Apply yourself. |
 | Weekday<br>[www.weekday.works](https://www.weekday.works) | india | low | Agent reads it · every run | Indian startup roles with salary bands; many not posted elsewhere. |
 | Cutshort<br>[cutshort.io/jobs](https://cutshort.io/jobs) | india | medium | You apply (login) | Tech startup roles with salary ranges on the listing. Public pages show role details. |
 | Instahyre<br>[www.instahyre.com](https://www.instahyre.com) | india | medium | You apply (login) | Recruiters reach out; keep the profile current. |

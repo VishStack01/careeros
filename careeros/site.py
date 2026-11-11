@@ -27,6 +27,7 @@ from email.utils import format_datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
 
+from . import logos
 from . import tags as tagger
 from .models import iso
 
@@ -125,14 +126,14 @@ def _rss(jobs: list[dict], base_url: str, now: datetime) -> str:
         desc = " · ".join(x for x in (r["company"], r.get("location", ""), _salary(r)) if x)
         items.append(f"<item><title>{escape(r['title'] + ' at ' + r['company'])}</title><link>{escape(link)}</link>"
                      f"<guid isPermaLink=\"false\">{escape(r['id'])}</guid><pubDate>{pub}</pubDate><description>{escape(desc)}</description></item>")
-    return ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>CareerOS Jobs</title>'
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>Propelo Jobs</title>'
             f"<link>{escape(base_url or 'https://github.com/VishStack01/careeros')}</link>"
             "<description>Open tech roles in India and remote, straight from company career pages.</description>"
             f"<lastBuildDate>{format_datetime(now)}</lastBuildDate>" + "".join(items) + "</channel></rss>\n")
 
 
 def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = None, base_url: str = "", log=print,
-          website: str | Path | None = None) -> dict:
+          website: str | Path | None = None, logos_dir: str | Path | None = None) -> dict:
     feed_dir, out = Path(feed_dir), Path(out_dir)
     records = _read_jsonl(feed_dir / "india.jsonl.gz")
     texts = {t["id"]: t.get("text", "") for t in _read_jsonl(feed_dir / "full.jsonl.gz")}
@@ -152,9 +153,20 @@ def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = N
     records = [r for r in records if age_days(r) <= MAX_AGE_DAYS and not (r.get("facts") or {}).get("closedQuote")]
     records.sort(key=lambda r: r.get("postedAt") or "", reverse=True)
     compacts = [compact(r) for r in records]
+    logo_files = logos.for_site(logos_dir)
+    used = set()
+    for c in compacts:
+        f = logo_files.get(c["cs"])
+        if f:
+            c["lo"] = "logos/" + f
+            used.add(f)
+    if used:
+        (out / "logos").mkdir()
+        for f in used:
+            shutil.copy(Path(logos_dir) / "files" / f, out / "logos" / f)
     companies: dict[str, dict] = {}
     for c in compacts:
-        e = companies.setdefault(c["cs"], {"name": c["c"], "slug": c["cs"], "jobs": 0})
+        e = companies.setdefault(c["cs"], {"name": c["c"], "slug": c["cs"], "jobs": 0, **({"lo": c["lo"]} if c.get("lo") else {})})
         e["jobs"] += 1
     meta = {"generatedAt": iso(now), "feedAt": summary.get("generatedAt", ""), "jobs": len(compacts),
             "companyBoards": summary.get("boards", 0), "companiesTracked": summary.get("companies", 0),
@@ -193,5 +205,5 @@ def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = N
     if demo and Path(demo).exists():
         (out / "demo").mkdir()
         shutil.copy(demo, out / "demo" / "index.html")
-    log(f"Job board: {len(records)} roles, {len(companies)} companies, {pages} API pages -> {out}")
+    log(f"Job board: {len(records)} roles, {len(companies)} companies ({len(used)} logos), {pages} API pages -> {out}")
     return meta

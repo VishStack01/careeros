@@ -62,7 +62,7 @@ with the posting archived at the end.
 | `careeros calibrate` | Do roles scored 4.5+ get more replies than 4.0–4.4 ones? If not, the scoring needs a look. |
 | `careeros gaps` | Skills your kept roles keep asking for that your brain can't prove yet. |
 | Warm intros | Upload LinkedIn's own Connections.csv on the Outreach tab (or `careeros warm-intros`). Matches are tiered: works there, very likely, or a similar name to check. It stays in your private dashboard. |
-| Referral finder | Each role's card ranks who to ask: people you know there first, then alumni of your college, engineers on a similar team, engineering managers and recruiters (`careeros referrals`, or the outreach skill with public web search). The card has LinkedIn search links that open in your own signed-in browser, and a connection note under 300 characters drafted from your profile. You send it; CareerOS never signs in to LinkedIn or sends anything there. |
+| Referral finder | Each role's card ranks who to ask: people you know there first, then alumni of your college, engineers on a similar team, engineering managers and recruiters (`careeros referrals`, or the outreach skill with public web search). The card has LinkedIn search links that open in your own signed-in browser, and a connection note under 300 characters drafted from your profile. You send it; Propelo never signs in to LinkedIn or sends anything there. |
 
 ## Interviews and offers
 
@@ -88,7 +88,7 @@ number you've stated, and the offer.
   are marked so they are never matched to a look-alike board, and the agent
   reads them instead. The agent also searches hiring challenges and 2026-batch
   off-campus drives that state CTC.
-- **Sign in with LinkedIn** (CareerOS Cloud): set `LINKEDIN_CLIENT_ID` and
+- **Sign in with LinkedIn** (Propelo Cloud): set `LINKEDIN_CLIENT_ID` and
   `LINKEDIN_CLIENT_SECRET` from a LinkedIn app with "Sign in with LinkedIn using
   OpenID Connect". It shares name, email and photo only; LinkedIn doesn't let
   apps read connections or send messages, so referrals work from your export.
@@ -114,11 +114,15 @@ The dashboard is laid out as a personal job-search workspace: a sidebar with Das
 - **Review AI edits**: on the Resume tab, each line the AI changed is shown next to your original. Keep it, or use yours; "Keep all" and "Use all of mine" do the lot.
 - **Writing & interviews**: a cover letter, an email (follow-up, thank-you, referral request, note to a hiring manager, reply to a recruiter) or an answer to an application question, written from your profile with any unknown number flagged; and a five-question mock interview (behavioural, about the role, or technical from your skills) with feedback after each answer. Without AI, templates and a question bank with a STAR checklist.
 - **Job families**: in Settings, pick whole families (Software Engineering, AI & Data, Product & Design, Marketing & Growth, Sales & Accounts, Finance & Strategy, Operations & People). A role in one of them passes the role check even if its title isn't in your target roles.
+- **Stages**: Found, Ready, Approved, Applied, Assessment, Screen, Interview, Offer, and the closed ones: Rejected, Withdrawn, No response. Applications export to CSV and import from one (up to 1,000 rows; roles you already track are skipped).
+- **Saved answers and Career wins** (in Writing & interviews): answers to common application questions, for any company or one company, which Propelo Autofill reuses when a form asks the same thing; and a running list of what you did and what changed because of it, which Claude may cite when it writes for you.
+- **Campus details**: CGPA or percentage, branch, active backlogs (only when a form asks; "Prefer not to say" by default), state and PIN code.
+- **Job alerts** (Propelo Cloud): an email, daily or weekly, with up to ten new roles that passed your filters. Off until you turn it on in Settings.
 - **Your data**: export everything as JSON, import a profile and applications that aren't there yet, or delete everything.
 
-## The browser extension (CareerOS Autofill)
+## The browser extension (Propelo Autofill)
 
-For roles you apply to yourself on company sites. Connect it once with your CareerOS address and a computer key, then press "Fill this form" on an application page. It fills empty fields from your application details, attaches your resume, outlines what it filled and lists what needs you, and "Track this application" adds the role to Applications. It never submits, never fills private numbers or passwords, and doesn't run on LinkedIn, Naukri, Indeed or Wellfound. Details and install steps: [extension/README.md](../extension/README.md).
+For roles you apply to yourself on company sites. Connect it once with your Propelo address and a computer key, then press "Fill this form" on an application page. It fills empty fields from your application details, attaches your resume, outlines what it filled and lists what needs you, and "Track this application" adds the role to Applications. It also fills campus fields and reuses a saved answer when a question's wording matches closely (an answer saved for one company is only used for that company). It never submits, never fills private numbers or passwords, and doesn't run on LinkedIn, Naukri, Indeed or Wellfound. Details and install steps: [extension/README.md](../extension/README.md).
 
 ## Getting shortlisted
 
@@ -145,7 +149,7 @@ For roles you apply to yourself on company sites. Connect it once with your Care
 
 ## What we didn't take, and why
 
-- **A terminal dashboard**: the CareerOS dashboard is a web page that works on
+- **A terminal dashboard**: the Propelo dashboard is a web page that works on
   your phone and in Claude.
 - **Plugins and a self-updater**: skills and `git pull` cover it.
 - **Translations of every mode**: the product targets India in English first.

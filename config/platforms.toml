@@ -1,4 +1,4 @@
-# Job platforms CareerOS searches, beyond company career pages.
+# Job platforms Propelo searches, beyond company career pages.
 #
 # access
 #   feed    public JSON/RSS; scanned automatically every 3 hours by `careeros scan`
@@ -313,7 +313,7 @@ kind = "india-board"
 access = "alerts"
 competition = "high"
 states_pay = true
-notes = "Strong India startup coverage; every listing shows a salary range. Its terms ban automated access, so CareerOS never opens it: set your Wellfound job preferences (India, junior, your roles) and CareerOS adds roles from your alert emails and from search-result titles as Apply yourself."
+notes = "Strong India startup coverage; every listing shows a salary range. Its terms ban automated access, so Propelo never opens it: set your Wellfound job preferences (India, junior, your roles) and Propelo adds roles from your alert emails and from search-result titles as Apply yourself."
 
 [[platform]]
 name = "Peerlist"

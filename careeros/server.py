@@ -136,7 +136,7 @@ def make_handler(store: Store, root: Path):
 
 def serve(store: Store, root: Path, port: int = 8765) -> None:
     httpd = ThreadingHTTPServer(("127.0.0.1", port), make_handler(store, root))
-    print(f"CareerOS dashboard: http://127.0.0.1:{port}  (Ctrl+C to stop)")
+    print(f"Propelo dashboard: http://127.0.0.1:{port}  (Ctrl+C to stop)")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

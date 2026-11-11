@@ -45,7 +45,7 @@ def classify(subject: str, body: str) -> dict:
 
 def apply_to_job(job: dict, result: dict, at: str) -> dict:
     """The job fields to change for a classified reply. Never moves a role backwards."""
-    order = ["found", "ready", "approved", "applied", "screen", "interview", "offer"]
+    order = ["found", "ready", "approved", "applied", "assessment", "screen", "interview", "offer"]
     stage, cur = result.get("stage"), job.get("stage") or "found"
     patch: dict = {}
     if stage == "rejected" and cur not in ("offer", "withdrawn"):
@@ -54,6 +54,6 @@ def apply_to_job(job: dict, result: dict, at: str) -> dict:
         patch = {"stage": stage, f"{stage}At": at}
     if result.get("kind") == "assessment":
         patch["assessment"] = {"at": at, "quote": result.get("quote", "")}
-    if job.get("appliedAt") and patch.get("stage") in ("screen", "interview", "offer", "rejected") and not job.get("firstResponseAt"):
+    if job.get("appliedAt") and patch.get("stage") in ("assessment", "screen", "interview", "offer", "rejected") and not job.get("firstResponseAt"):
         patch["firstResponseAt"] = at
     return patch

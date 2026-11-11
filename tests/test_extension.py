@@ -1,4 +1,4 @@
-"""The CareerOS Autofill extension: what it fills, what it leaves for you, and where it never runs.
+"""The Propelo Autofill extension: what it fills, what it leaves for you, and where it never runs.
 
 The fill script runs against fixture forms in a real Chromium (skipped when Playwright or its
 browser isn't installed). The manifest checks run everywhere."""
@@ -101,4 +101,30 @@ def test_never_runs_on_big_job_boards(browser, url):
     r = page.evaluate("d => window.__careerosFill(d)", {"applicant": APPLICANT, "resume": RESUME})
     assert r["blocked"] and not r["filled"]
     assert page.eval_on_selector("#first_name", "e => e.value") == ""
+    page.close()
+
+
+ANSWERS = [{"q": "Why do you want to work at Globex?", "a": "Globex answer.", "company": "Globex"},
+           {"q": "Why do you want to work here?", "a": "I want to build developer tools that people use daily.", "company": "Acme"},
+           {"q": "Tell us about a project you're proud of", "a": "I built a ticket router used by 40 support agents.", "company": ""}]
+
+
+def test_campus_fields_and_saved_answers(browser):
+    page = _open(browser, "campus.html", "https://jobs.lever.co/acme/123/apply")
+    data = {"applicant": {**APPLICANT, "cgpa": "8.2/10", "branch": "Computer Science", "state": "Karnataka", "pinCode": "560001"},
+            "resume": None, "answers": ANSWERS, "company": "Acme"}
+    r = page.evaluate("d => window.__careerosFill(d)", data)
+    val = lambda sel: page.eval_on_selector(sel, "e => e.value")  # noqa: E731
+    assert val("#cg") == "8.2/10" and val("#br") == "Computer Science" and val("#st") == "Karnataka" and val("#pin") == "560001"
+    assert val("#why") == "I want to build developer tools that people use daily."  # the Acme answer, not Globex's
+    assert val("#proud").startswith("I built a ticket router")  # an any-company answer
+    assert val("#leave") == ""  # "Please state..." is a question, not the State field
+    assert r["fromAnswers"] == 2
+    page.close()
+
+
+def test_company_answers_stay_with_their_company(browser):
+    page = _open(browser, "campus.html", "https://jobs.lever.co/initech/9/apply")
+    page.evaluate("d => window.__careerosFill(d)", {"applicant": APPLICANT, "resume": None, "answers": ANSWERS, "company": "Initech"})
+    assert page.eval_on_selector("#why", "e => e.value") == ""
     page.close()

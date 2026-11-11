@@ -4,7 +4,7 @@ Instructions for any coding agent working in this repo: Claude Code, Codex,
 Antigravity, Cursor or others. Claude Code also reads `CLAUDE.md`, which points here.
 
 ## What this project is
-CareerOS is a job-application agent. Python code (`careeros/`) does the
+Propelo is a job-application agent. Python code (`careeros/`) does the
 deterministic parts: board scouts, requirement extraction, filter gates,
 dedupe, durable state, the claims checker, the form-answer resolver and the
 browser form filler. Agent skills (`.claude/skills/*/SKILL.md`) do the

@@ -5,9 +5,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 
-# Every stage a role can be in. The order of the first seven is the funnel.
-FUNNEL = ("found", "ready", "approved", "applied", "screen", "interview", "offer")
-CLOSED = ("rejected", "withdrawn")
+# Every stage a role can be in. The order of the first eight is the funnel.
+FUNNEL = ("found", "ready", "approved", "applied", "assessment", "screen", "interview", "offer")
+CLOSED = ("rejected", "withdrawn", "archived")
 STAGES = FUNNEL + CLOSED + ("skipped",)
 
 # Where a kept role sits in the priority order (lower is better).

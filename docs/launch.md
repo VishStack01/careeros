@@ -1,4 +1,4 @@
-# Launching CareerOS to users
+# Launching Propelo to users
 
 Everything in the code is ready. Launching needs a handful of accounts that only you can open, and an afternoon of setup.
 
@@ -17,7 +17,7 @@ Everything in the code is ready. Launching needs a handful of accounts that only
 1. In Render, choose **New > Blueprint** and pick this repository. It creates `careeros-web`, `careeros-worker` and `careeros-db`. The free tier isn't enough (workers and disks aren't free, and free databases expire), so check current prices at render.com/pricing before you confirm.
 2. In `careeros-web`, set:
    - `PUBLIC_URL`: `https://careeros-web.onrender.com` or your domain
-   - `SMTP_URL`: `smtps://user:password@smtp.yourprovider.com:465` and `MAIL_FROM`: `CareerOS <hello@yourdomain>`
+   - `SMTP_URL`: `smtps://user:password@smtp.yourprovider.com:465` and `MAIL_FROM`: `Propelo <hello@yourdomain>`
    - `SUPPORT_EMAIL`: where users and Razorpay can reach you
    - `BOOTSTRAP_ADMIN_EMAIL`: your own email (this account becomes the operator)
    - `COMPANY_NAME`: your name or business name (shown on the policy pages)

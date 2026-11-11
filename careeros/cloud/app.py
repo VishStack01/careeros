@@ -1,4 +1,4 @@
-"""The CareerOS Cloud web app and API (FastAPI).
+"""The Propelo Cloud web app and API (FastAPI).
 
 Pages: /login /signup /forgot /reset /verify (sign-in), / (the dashboard), /pricing,
        /privacy /terms /refunds /contact, plus the installable app's manifest, service worker and icons.
@@ -98,7 +98,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         db.migrate(log=log.info)
     storage = LocalStorage(cfg.upload_dir)
     mailer = Mailer(cfg.smtp_url, cfg.mail_from)
-    app = FastAPI(title="CareerOS Cloud", version=__version__, docs_url=None, redoc_url=None, openapi_url=None)
+    app = FastAPI(title="Propelo Cloud", version=__version__, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.cfg, app.state.db, app.state.storage, app.state.mailer = cfg, db, storage, mailer
     hits: dict[str, deque] = defaultdict(deque)  # per-process API rate limiter
 
@@ -777,7 +777,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         groups = {"queued": [], "approved": [], "auto": []}
         for j in jobs:
             d = j["data"]
-            if d.get("appliedAt") or d.get("stage") in ("skipped", "applied", "screen", "interview", "offer", "rejected", "withdrawn") or d.get("needsYou"):
+            if d.get("appliedAt") or d.get("stage") in ("skipped", "applied", "assessment", "screen", "interview", "offer", "rejected", "withdrawn", "archived") or d.get("needsYou"):
                 continue
             if d.get("stage") == "approved":
                 groups["queued" if d.get("autoApply") == "queued" else "approved"].append(j)
@@ -854,7 +854,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 doc.update({"appliedAt": stamp, "appliedVia": "you"})
                 doc["timeline"].append({"at": stamp, "event": f"You applied on {host}"})
             if _BIG_BOARDS.search(host):
-                doc["note"] = "Tracked from a job board CareerOS never fills in."
+                doc["note"] = "Tracked from a job board Propelo never fills in."
             repo.set_doc(c, p.uid, "jobs", jid, doc)
         return {"id": jid, "created": True, "stage": doc["stage"]}
 

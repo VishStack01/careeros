@@ -1,6 +1,6 @@
 {
   "appId": "io.github.vishstack01.careeros",
-  "appName": "CareerOS",
+  "appName": "Propelo",
   "webDir": "www",
   "server": {
     "url": "https://careeros-web.onrender.com",

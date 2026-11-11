@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping. A few rules keep CareerOS accurate and safe.
+Thanks for helping. A few rules keep Propelo accurate and safe.
 
 1. **Tests first.** Every change to extraction, gates, dedupe, claims or answers comes with a test. If a real posting fooled a gate, add its text (trimmed, with company names replaced) as a test case.
 2. **No fabrication paths.** Don't add anything that writes a claim, number or answer the brain or profile can't back up. When unsure, escalate to the user.

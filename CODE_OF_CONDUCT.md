@@ -1,6 +1,6 @@
 # Code of conduct
 
-CareerOS follows the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+Propelo follows the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
 
 In short: be kind and patient, assume good faith, welcome people who are new to open source or still looking for their first job, and keep feedback about the work, not the person. Harassment, discrimination, personal attacks and sharing someone's private information are not accepted anywhere in the project: issues, pull requests, discussions or messages.
 

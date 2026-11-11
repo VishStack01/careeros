@@ -3,7 +3,7 @@
 Most job bots fail in the same places: they trust job cards, misread
 experience requirements, apply to closed or stale roles, invent resume lines,
 guess form answers and submit twice. Each failure below has a specific
-mechanism in CareerOS, and most of them are code with tests rather than
+mechanism in Propelo, and most of them are code with tests rather than
 instructions to a model.
 
 | # | Failure | Mechanism | Where |

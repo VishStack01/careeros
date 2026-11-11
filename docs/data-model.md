@@ -70,7 +70,7 @@ in the hosted setup it is the `brain/brain` document, readable only by you. See
 | `receipts/<time>-<job-id>/` | `filled.png`, `after-submit.png`, `result.json` |
 | `data/careeros.db` | SQLite: `docs`, `job_keys`, `applications`, `events`, `flags` |
 
-## CareerOS Cloud
+## Propelo Cloud
 The multi-user service keeps the same documents per account in a `docs` table
 keyed by `(user_id, collection, id)`, next to `users`, `sessions`, `api_tokens`
 (computer keys), `one_time_tokens`, `assets`, `applications` (the submit state

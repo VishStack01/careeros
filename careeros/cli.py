@@ -246,7 +246,12 @@ def cmd_platforms(a):
 
 def cmd_site(a):
     from . import site
-    site.build(a.feed, a.out, demo=a.demo, base_url=a.base_url, website=a.website)
+    site.build(a.feed, a.out, demo=a.demo, base_url=a.base_url, website=a.website, logos_dir=a.logos)
+
+
+def cmd_logos(a):
+    from . import logos
+    logos.run(a.feed, a.cache, limit=a.limit)
 
 
 def cmd_serve(a):
@@ -458,7 +463,14 @@ def main(argv: list[str] | None = None) -> None:
     sp.add_argument("--demo", default="dashboard/index.html", help="Dashboard demo page to include at /demo/")
     sp.add_argument("--base-url", default="", help="Public URL of the board, for API links and RSS")
     sp.add_argument("--website", default="website", help="Project website folder copied to the root (board moves to jobs.html)")
+    sp.add_argument("--logos", default="", help="Logo cache made by `logos`; its company logos are published with the board")
     sp.set_defaults(fn=cmd_site)
+
+    sp = sub.add_parser("logos", help="Fetch company logos for the job board (only for companies whose own website is known)")
+    sp.add_argument("--feed", default="feed")
+    sp.add_argument("--cache", default=".logo-cache")
+    sp.add_argument("--limit", type=int, default=1500, help="Most new sites to check or fetch in one run")
+    sp.set_defaults(fn=cmd_logos)
 
     sp = sub.add_parser("serve")
     sp.add_argument("--port", type=int, default=8765)

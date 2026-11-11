@@ -4,7 +4,7 @@
     careeros ai posting JD.txt                     company, title, pay, experience and requirements
     careeros ai evaluate --jd JD.txt --resume R    a 1-5 fit score, validated by eval-check rules
 
-The model drafts; CareerOS checks. A profile may only contain text found in the
+The model drafts; Propelo checks. A profile may only contain text found in the
 resume, and an evaluation must pass evaluation.validate (verbatim quotes from the
 posting, scores inside their range, gaps for every unmet requirement) or it is
 sent back once with the errors, then rejected.

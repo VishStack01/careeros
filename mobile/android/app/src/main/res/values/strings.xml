@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">CareerOS</string>
-    <string name="title_activity_main">CareerOS</string>
+    <string name="app_name">Propelo</string>
+    <string name="title_activity_main">Propelo</string>
     <string name="package_name">io.github.vishstack01.careeros</string>
     <string name="custom_url_scheme">io.github.vishstack01.careeros</string>
 </resources>

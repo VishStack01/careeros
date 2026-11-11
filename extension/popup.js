@@ -1,4 +1,4 @@
-/* CareerOS Autofill popup: connect once with your server address and a computer key, then
+/* Propelo Autofill popup: connect once with your server address and a computer key, then
    "Fill this form" on any application page. Filling runs only when you press the button, only
    in the tab you're looking at, and never submits. The key stays in this browser's extension storage. */
 (function () {
@@ -36,23 +36,23 @@
     var t = S.tab, url = t && t.url || "", host = hostOf(url);
     var parts = [];
     if (!/^https?:/.test(url)) {
-      parts.push('<h1>Open an application form</h1><p class="muted">Go to a job\'s application page, then click CareerOS and press Fill this form.</p>');
+      parts.push('<h1>Open an application form</h1><p class="muted">Go to a job\'s application page, then click Propelo and press Fill this form.</p>');
     } else if (BLOCKED.test(host)) {
-      parts.push('<h1>Apply here yourself</h1><div class="note">CareerOS never fills forms on LinkedIn, Naukri, Indeed or Wellfound. Those sites don\'t allow it, and it can get your account restricted. Your answers are ready in CareerOS to copy.</div>');
+      parts.push('<h1>Apply here yourself</h1><div class="note">Propelo never fills forms on LinkedIn, Naukri, Indeed or Wellfound. Those sites don\'t allow it, and it can get your account restricted. Your answers are ready in Propelo to copy.</div>');
       parts.push(trackCard());
     } else {
       parts.push('<h1>' + esc(S.page && S.page.title || host) + '</h1><p class="muted">' + esc(S.page && S.page.company ? S.page.company + " · " + host : host) + '</p>');
       parts.push('<button class="btn solid block" data-act="fill"' + (S.busy ? " disabled" : "") + '>' + (S.busy === "fill" ? '<span class="spin" aria-hidden="true"></span>Filling…' : S.report ? "Fill again" : "Fill this form") + '</button>');
       if (S.report) parts.push(reportView(S.report));
-      if (S.page && S.page.frames && S.page.frames.length && !S.framesOk) parts.push('<div class="note">This form sits inside a frame from <b>' + esc(S.page.frames.map(hostOf).join(", ")) + '</b>. <button class="btn ghost" data-act="frames">Allow CareerOS there</button></div>');
+      if (S.page && S.page.frames && S.page.frames.length && !S.framesOk) parts.push('<div class="note">This form sits inside a frame from <b>' + esc(S.page.frames.map(hostOf).join(", ")) + '</b>. <button class="btn ghost" data-act="frames">Allow Propelo there</button></div>');
       parts.push(trackCard());
     }
     if (S.msg) parts.push('<p class="' + (S.err ? "note" : "good") + '" role="status">' + esc(S.msg) + '</p>');
-    parts.push('<div class="foot"><a href="' + esc(S.server) + '/app" target="_blank" rel="noopener">Open CareerOS</a><button class="btn ghost" data-act="disconnect">Disconnect</button></div>');
+    parts.push('<div class="foot"><a href="' + esc(S.server) + '/app" target="_blank" rel="noopener">Open Propelo</a><button class="btn ghost" data-act="disconnect">Disconnect</button></div>');
     app.innerHTML = parts.join("");
   }
   function trackCard() {
-    if (S.tracked) return '<div class="good">Tracked in CareerOS as <b>' + esc(S.tracked.stage === "applied" ? "Applied" : "Saved") + '</b>.</div>';
+    if (S.tracked) return '<div class="good">Tracked in Propelo as <b>' + esc(S.tracked.stage === "applied" ? "Applied" : "Saved") + '</b>.</div>';
     var p = S.page || {};
     return '<details class="card"' + (S.report ? " open" : "") + '><summary>Track this application</summary>' +
       '<label>Role<input type="text" id="tr-title" value="' + esc(p.title || "") + '" maxlength="160"></label>' +
@@ -62,18 +62,19 @@
   function reportView(r) {
     var out = [];
     out.push('<div class="good"><b>Filled ' + r.filled.length + (r.filled.length === 1 ? " field" : " fields") + '.</b> Check each answer on the page (outlined in pink), then press Submit yourself.</div>');
+    if (r.fromAnswers) out.push('<div class="note"><b>' + r.fromAnswers + ' from your saved answers.</b> Read each one: it should still be true for this role.</div>');
     if (r.needs.length) out.push('<div class="card"><div class="row end"><b>Needs you</b><span class="count">' + r.needs.length + '</span></div><ul>' +
       r.needs.slice(0, 12).map(function (n) { return '<li><b>' + esc(n.label.slice(0, 120)) + '</b><span>' + esc(n.why) + '</span></li>'; }).join("") + '</ul>' +
       (r.needs.length > 12 ? '<p class="muted">And ' + (r.needs.length - 12) + ' more, outlined in orange on the page.</p>' : "") + '</div>');
     if (r.filled.length) out.push('<details class="card"><summary>What was filled</summary><ul>' + r.filled.slice(0, 30).map(function (f) { return '<li><b>' + esc(f.label.slice(0, 90)) + '</b><span>' + esc(String(f.value).slice(0, 90)) + '</span></li>'; }).join("") + '</ul></details>');
-    if (r.skippedSensitive) out.push('<p class="muted">Left ' + r.skippedSensitive + ' private ' + (r.skippedSensitive === 1 ? "field" : "fields") + ' alone. CareerOS never fills passwords, codes, ID numbers, bank details or dates of birth.</p>');
+    if (r.skippedSensitive) out.push('<p class="muted">Left ' + r.skippedSensitive + ' private ' + (r.skippedSensitive === 1 ? "field" : "fields") + ' alone. Propelo never fills passwords, codes, ID numbers, bank details or dates of birth.</p>');
     return out.join("");
   }
   function renderConnect() {
-    app.innerHTML = '<h1>Connect to CareerOS</h1><p class="muted">Fills application forms from your CareerOS profile. You review every answer and press Submit yourself.</p>' +
-      '<form id="connect" class="card" novalidate><label>Your CareerOS address<input type="url" id="server" placeholder="https://your-careeros-server" value="' + esc(S.server || "") + '" required></label>' +
+    app.innerHTML = '<h1>Connect to Propelo</h1><p class="muted">Fills application forms from your Propelo profile. You review every answer and press Submit yourself.</p>' +
+      '<form id="connect" class="card" novalidate><label>Your Propelo address<input type="url" id="server" placeholder="https://your-careeros-server" value="' + esc(S.server || "") + '" required></label>' +
       '<label>Computer key<input type="password" id="key" placeholder="cos_k_…" autocomplete="off" required></label>' +
-      '<p class="muted">Make one in CareerOS: Settings, Your computer, Create computer key. The key stays in this browser.</p>' +
+      '<p class="muted">Make one in Propelo: Settings, Your computer, Create computer key. The key stays in this browser.</p>' +
       '<button class="btn solid block" type="submit"' + (S.busy ? " disabled" : "") + '>' + (S.busy === "connect" ? '<span class="spin" aria-hidden="true"></span>Checking…' : "Connect") + '</button></form>' +
       (S.msg ? '<p class="' + (S.err ? "note" : "good") + '" role="status">' + esc(S.msg) + '</p>' : "");
   }
@@ -83,20 +84,20 @@
     e.preventDefault();
     var server = document.getElementById("server").value.trim().replace(/\/+$/, "").replace(/\/app$/, "");
     var key = document.getElementById("key").value.trim();
-    if (!okServer(server)) return say("Use your CareerOS address starting with https://", true);
+    if (!okServer(server)) return say("Use your Propelo address starting with https://", true);
     if (!/^cos_k_[A-Za-z0-9_-]{10,}$/.test(key)) return say("That doesn't look like a computer key. It starts with cos_k_.", true);
     // Permission must be asked inside the click, before anything async.
     chrome.permissions.request({ origins: [originOf(server) + "/*"] }, function (granted) {
-      if (!granted) return say("CareerOS needs permission to talk to " + hostOf(server) + ".", true);
+      if (!granted) return say("Propelo needs permission to talk to " + hostOf(server) + ".", true);
       S.server = server; S.key = key; S.busy = "connect"; S.msg = ""; renderConnect();
       api("/api/agent/applicant").then(function (d) {
         S.busy = "";
         chrome.storage.local.set({ server: server, key: key });
-        say(d.applicant ? "Connected. Your application details are ready." : "Connected. Add your application details in CareerOS (Profile) so there's something to fill.", !d.applicant);
+        say(d.applicant ? "Connected. Your application details are ready." : "Connected. Add your application details in Propelo (Profile) so there's something to fill.", !d.applicant);
         loadPage();
       }, function (err) {
         S.busy = ""; S.key = "";
-        say(err.status === 401 || err.status === 403 ? "That key didn't work. Make a new one in CareerOS and paste it here." : err.message, true);
+        say(err.status === 401 || err.status === 403 ? "That key didn't work. Make a new one in Propelo and paste it here." : err.message, true);
       });
     });
   }
@@ -127,15 +128,17 @@
     S.busy = "fill"; S.msg = ""; render();
     api("/api/agent/applicant").then(function (d) {
       var a = d.applicant || {};
-      if (!d.applicant) throw new Error("Add your application details in CareerOS first (Profile, Application details).");
+      if (!d.applicant) throw new Error("Add your application details in Propelo first (Profile, Application details).");
       var res = a.resume || {};
       var getResume = res.id ? api("/_blob/" + encodeURIComponent(res.id), { raw: true }).then(function (r) { return r.arrayBuffer(); })
         .then(function (b) { return b.byteLength > 8 * 1024 * 1024 ? null : { b64: bufToB64(b), name: res.name || "resume.pdf", type: "application/pdf" }; }, function () { return null; }) : Promise.resolve(null);
       return getResume.then(function (resume) {
         var applicant = {};
         ["fullName", "email", "phone", "city", "linkedin", "github", "portfolio", "currentTitle", "currentCompany", "experienceYears", "noticePeriod",
-          "currentCtcLpa", "expectedCtcLpa", "degree", "college", "graduationYear", "workAuthIndia", "sponsorshipAbroad", "relocate", "howHeard"].forEach(function (k) { if (a[k] !== undefined && a[k] !== null && a[k] !== "") applicant[k] = a[k]; });
-        return exec(S.tab.id, true, function (data) { return window.__careerosFill(data); }, [{ applicant: applicant, resume: resume }]);
+          "currentCtcLpa", "expectedCtcLpa", "degree", "college", "graduationYear", "cgpa", "branch", "backlogs", "state", "pinCode",
+          "workAuthIndia", "sponsorshipAbroad", "relocate", "howHeard"].forEach(function (k) { if (a[k] !== undefined && a[k] !== null && a[k] !== "") applicant[k] = a[k]; });
+        var answers = (a.answers || []).filter(function (x) { return x && x.q && x.a; }).map(function (x) { return { q: x.q, a: x.a, company: x.company || "" }; });
+        return exec(S.tab.id, true, function (data) { return window.__careerosFill(data); }, [{ applicant: applicant, resume: resume, answers: answers, company: (S.page && S.page.company) || "" }]);
       });
     }).then(function (results) {
       var merged = { filled: [], needs: [], skippedSensitive: 0, resume: "", blocked: false };
@@ -143,9 +146,10 @@
         var x = r && r.result; if (!x) return;
         merged.filled = merged.filled.concat(x.filled); merged.needs = merged.needs.concat(x.needs);
         merged.skippedSensitive += x.skippedSensitive; merged.blocked = merged.blocked || x.blocked; if (x.resume) merged.resume = x.resume;
+        merged.fromAnswers = (merged.fromAnswers || 0) + (x.fromAnswers || 0);
       });
       S.busy = ""; S.report = merged;
-      if (merged.blocked) return say("CareerOS doesn't fill forms on this site.", true);
+      if (merged.blocked) return say("Propelo doesn't fill forms on this site.", true);
       if (!merged.filled.length && !merged.needs.length) return say("No form fields found on this page. Open the application form itself (often behind an Apply button).", true);
       S.msg = ""; render();
     }).catch(function (err) { S.busy = ""; say(err.message || "Something went wrong.", true); });
@@ -167,7 +171,7 @@
     else if (act === "track") track(b.dataset.applied === "1");
     else if (act === "frames") {
       var origins = S.page.frames.map(function (f) { return originOf(f) + "/*"; });
-      chrome.permissions.request({ origins: origins }, function (ok) { S.framesOk = ok; if (ok) fill(); else say("Without that, CareerOS can't reach the form inside the frame.", true); });
+      chrome.permissions.request({ origins: origins }, function (ok) { S.framesOk = ok; if (ok) fill(); else say("Without that, Propelo can't reach the form inside the frame.", true); });
     }
     else if (act === "disconnect") { chrome.storage.local.remove(["server", "key"]); S.key = ""; S.report = null; S.msg = ""; render(); }
   });

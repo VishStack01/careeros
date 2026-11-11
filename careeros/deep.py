@@ -6,7 +6,7 @@ Most job seekers only see what reaches LinkedIn, Naukri and Indeed. Thousands
 of startups post only on their own Greenhouse, Lever, Ashby, Workable,
 SmartRecruiters or Recruitee board, and most large employers on Workday. The open-source ats-scrapers project
 (MIT, github.com/kalil0321/ats-scrapers) keeps an inventory of about 24,000
-such boards. This command downloads that inventory, drops the boards CareerOS
+such boards. This command downloads that inventory, drops the boards Propelo
 already knows, and writes the rest as a company list for `careeros discover`.
 
 `discover` then checks each board once (about 400 an hour, so the first pass
@@ -63,7 +63,7 @@ def fetch(ats_list: list[str] = ATS, get: Callable[[str], str] | None = None, lo
 
 
 def build(rows: list[dict], cache: dict) -> list[dict]:
-    """Inventory rows CareerOS doesn't know yet, as company-list rows for discover."""
+    """Inventory rows Propelo doesn't know yet, as company-list rows for discover."""
     # Boards found by the curated list or the hiring radar stay theirs; boards found by an
     # earlier sweep stay on this list so discover keeps re-checking them.
     known = {n: e for n, e in cache.get("companies", {}).items() if e.get("category") != "deep"}

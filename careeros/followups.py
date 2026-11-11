@@ -22,7 +22,7 @@ NOTE = {
     "responded": "Reply to the recruiter: confirm interest, availability and anything they asked for.",
     "thankyou": "Thank the interviewers for their time and add one specific follow-up to something you discussed.",
 }
-PAST_APPLIED = ("screen", "interview", "offer", "rejected", "withdrawn")
+PAST_APPLIED = ("assessment", "screen", "interview", "offer", "rejected", "withdrawn", "archived")
 
 
 def _dt(s) -> datetime | None:

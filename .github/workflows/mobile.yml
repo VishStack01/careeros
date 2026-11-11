@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       app_url:
-        description: "Your CareerOS server, e.g. https://careeros-web.onrender.com"
+        description: "Your Propelo server, e.g. https://careeros-web.onrender.com"
         required: true
         default: "https://careeros-web.onrender.com"
       ios:

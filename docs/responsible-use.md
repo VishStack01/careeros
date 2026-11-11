@@ -1,6 +1,6 @@
 # Responsible use
 
-CareerOS is built to make each application better, not to send more of them.
+Propelo is built to make each application better, not to send more of them.
 These limits are part of the design, not settings to switch off.
 
 **Truth.** Everything it writes is traceable to your Career Brain, and the

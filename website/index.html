@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CareerOS: open-source AI job-search agent</title>
-<meta name="description" content="CareerOS is an open-source AI agent that finds fresh roles, checks every one against your rules with quotes from the posting, writes truthful applications from your real experience, and runs on your own API key.">
-<meta property="og:title" content="CareerOS: open-source AI job-search agent">
+<title>Propelo: open-source AI job-search agent</title>
+<meta name="description" content="Propelo is an open-source AI agent that finds fresh roles, checks every one against your rules with quotes from the posting, writes truthful applications from your real experience, and runs on your own API key.">
+<meta property="og:title" content="Propelo: open-source AI job-search agent">
 <meta property="og:description" content="Fresh roles, honest checks, truthful applications. Bring your own model and API key.">
 <meta property="og:image" content="assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -14,7 +14,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="home">
@@ -22,7 +22,7 @@
 
 <nav class="top" aria-label="Main">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="CareerOS home"><svg><use href="assets/shapes.svg#mark"/></svg>careeros</a>
+    <a class="brand" href="./" aria-label="Propelo home"><svg><use href="assets/shapes.svg#mark"/></svg>propelo</a>
     <div class="links">
       <a href="#approach">Approach</a>
       <a href="#product">Product</a>
@@ -39,33 +39,45 @@
 <main id="main">
 
 <!-- 01 -->
-<section class="hero">
-  <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">About project</span><span class="pill">Open source</span><span class="pill">MIT</span></div>
-    <div class="head">
-      <h1 class="lede split-words"><b>CareerOS</b> is an open-source AI agent for the job search. It finds fresh roles, checks each one against your rules with quotes from the posting, and writes applications from <b>your real experience only</b>.</h1>
-      <div class="ghost" aria-hidden="true">01</div>
+<section class="hero" data-art="assets/art/hero-scene.webp" data-art-dark="assets/art/hero-scene-dark.webp">
+  <div class="wrap hero-split">
+    <div class="hero-copy">
+      <h1>Find the roles you qualify for. Apply with only what's true.</h1>
+      <p class="sub">Propelo reads company career pages across India every hour, checks each role against your rules with a quote from the posting, and prepares applications from your real experience. Open source, and free to start.</p>
+      <div class="ctas">
+        <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a>
+        <a class="btn light" href="jobs.html">Browse open roles</a>
+      </div>
     </div>
-    <div class="hero-grid">
-      <div class="ctas reveal">
-        <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free <span aria-hidden="true">→</span></a>
-        <a class="btn light" href="https://github.com/VishStack01/careeros"><svg aria-hidden="true"><use href="assets/shapes.svg#i-github"/></svg>Star on GitHub</a>
+    <div class="notice" role="img" aria-label="Example role in Propelo: AI Engineer at Northwind Labs, fit 4.4 out of 5, with the quotes behind each check">
+      <div class="nhead">
+        <span class="nlogo" aria-hidden="true">N</span>
+        <div><b>AI Engineer</b><span>Northwind Labs · Bengaluru, hybrid</span></div>
+        <span class="nfit"><b>4.4</b>/5 fit</span>
       </div>
-      <div class="notes" data-stagger=".15">
-        <div class="note reveal">
-          <h3><svg fill="#F5B8DB" aria-hidden="true"><use href="assets/shapes.svg#heart"/></svg>Main goal</h3>
-          <p>Get people interviews, not application counts. CareerOS reads company career pages directly, filters by rules you set, and only prepares applications it can back up with evidence from your own work.</p>
-        </div>
-        <div class="note reveal">
-          <h3><svg fill="#B6CAEB" aria-hidden="true"><use href="assets/shapes.svg#blob"/></svg>Why it's different</h3>
-          <p>Every keep or skip records the exact sentence that decided it. A code gate blocks resume lines your experience can't support, and messages are drafted for you to send. Run it on your own machine with your own API key.</p>
-        </div>
-      </div>
+      <dl class="nfacts">
+        <div><dt>Experience</dt><dd>0 to 2 years<q>“Freshers and engineers with up to 2 years are welcome.”</q></dd></div>
+        <div><dt>Pay</dt><dd>14 to 18 LPA<q>“Compensation: ₹14–18 LPA.”</q></dd></div>
+        <div><dt>Where</dt><dd>Bengaluru, 3 days in office<q>“Hybrid, Indiranagar office.”</q></dd></div>
+      </dl>
+      <div class="nmatch"><span class="ok">Python, from your RAG project</span><span class="ok">FastAPI, from Acme Labs</span><span class="gap">Kubernetes: not in your profile</span></div>
+      <p class="nsrc">boards.greenhouse.io/northwind · posted 2 h ago · checked 14 min ago</p>
+      <span class="nart" data-art="assets/art/stamp.webp" aria-hidden="true"></span>
+    </div>
+  </div>
+  <div class="wrap notes">
+    <div class="note reveal">
+      <h3>Main goal</h3>
+      <p>Get people interviews, not application counts. Propelo reads company career pages directly, filters by rules you set, and only prepares applications it can back up with evidence from your own work.</p>
+    </div>
+    <div class="note reveal">
+      <h3>Why it's different</h3>
+      <p>Every keep or skip records the exact sentence that decided it. A code gate blocks resume lines your experience can't support, and messages are drafted for you to send. Run it on your own machine with your own API key.</p>
     </div>
   </div>
 </section>
 
-<div class="marquee" aria-label="Hiring systems CareerOS reads">
+<div class="marquee" aria-label="Hiring systems Propelo reads">
   <div class="track">
     <span>Greenhouse <svg fill="#F5B8DB"><use href="assets/shapes.svg#star"/></svg> Lever <svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg> Ashby <svg fill="#B6CAEB"><use href="assets/shapes.svg#heart"/></svg> Workable <svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg> SmartRecruiters <svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg> Recruitee <svg fill="#9AAB63"><use href="assets/shapes.svg#star"/></svg> Breezy <svg fill="#B6CAEB"><use href="assets/shapes.svg#plus"/></svg> Personio <svg fill="#F5D867"><use href="assets/shapes.svg#heart"/></svg></span>
     <span aria-hidden="true">Greenhouse <svg fill="#F5B8DB"><use href="assets/shapes.svg#star"/></svg> Lever <svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg> Ashby <svg fill="#B6CAEB"><use href="assets/shapes.svg#heart"/></svg> Workable <svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg> SmartRecruiters <svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg> Recruitee <svg fill="#9AAB63"><use href="assets/shapes.svg#star"/></svg> Breezy <svg fill="#B6CAEB"><use href="assets/shapes.svg#plus"/></svg> Personio <svg fill="#F5D867"><use href="assets/shapes.svg#heart"/></svg></span>
@@ -133,7 +145,7 @@
             <div>
               <h4>AI Engineer at Northwind Labs</h4>
               <div class="sub">Remote, India · posted 2 h ago</div>
-              <span class="open">PREPARE</span>
+              <span class="open">Prepare</span>
             </div>
           </div>
           <div class="stats">
@@ -162,7 +174,7 @@
   <div class="wrap">
     <div class="pills reveal" data-stagger><span class="pill">Problem</span><span class="pill">Approach</span><span class="pill">Principles</span></div>
     <div class="head">
-      <h2 class="lede split-words">Most job bots optimise the weakest variable: <b>volume</b>. They read job cards instead of postings, invent resume lines and guess form answers. CareerOS is built the other way round.</h2>
+      <h2 class="lede split-words">Most job bots optimise the weakest variable: <b>volume</b>. They read job cards instead of postings, invent resume lines and guess form answers. Propelo is built the other way round.</h2>
       <div class="ghost" aria-hidden="true">02</div>
     </div>
 
@@ -241,10 +253,10 @@
       <p class="reveal" style="color:var(--text);font-size:19px;align-self:center">The dashboard runs on your machine with <code>careeros serve</code>. It tracks every role from found to offer, shows why each one was kept or skipped, and puts anything that needs a person (a sign-in, an essay, a referral) in one place. With your API key set, its AI buttons use your model.</p>
     </div>
 
-    <div class="screen reveal" role="img" aria-label="CareerOS dashboard with fictional example data">
+    <div class="screen reveal" role="img" aria-label="Propelo dashboard with fictional example data">
       <div class="app">
         <aside class="side" aria-hidden="true">
-          <div class="brand"><svg><use href="assets/shapes.svg#mark"/></svg>careeros</div>
+          <div class="brand"><svg><use href="assets/shapes.svg#mark"/></svg>propelo</div>
           <div class="grp">General</div>
           <span class="it on"><svg><use href="assets/shapes.svg#i-grid"/></svg>Dashboard</span>
           <span class="it"><svg><use href="assets/shapes.svg#i-search"/></svg>Find jobs</span>
@@ -257,7 +269,7 @@
         </aside>
         <div class="mainp">
           <div class="search"><svg><use href="assets/shapes.svg#i-search"/></svg>AI engineer<span class="seg"><span class="on">Roles</span><span>Companies</span><span>Replies</span></span></div>
-          <h5>Good morning, Asha</h5>
+          <h5>Wednesday 11 November</h5>
           <p class="sub">12 fresh roles passed your checks overnight. 3 replies need you today.</p>
           <div class="cards">
             <div class="mc" style="background:var(--yellow)">
@@ -303,7 +315,7 @@
     </div>
     <p class="reveal" style="color:var(--muted);font-size:13px;margin-top:12px">Example data. Companies and people shown are fictional. <a href="https://vishstack01.github.io/careeros/demo/">Try the demo ↗</a></p>
     <div class="toolgrid" data-stagger>
-      <div class="tile reveal"><span class="tag">Browser extension</span><h3>Autofill, you press Submit</h3><p>CareerOS Autofill fills company application forms from your profile, attaches your resume and lists the questions only you can answer. It never submits, never fills passwords or ID numbers, and stays off LinkedIn, Naukri, Indeed and Wellfound.</p></div>
+      <div class="tile reveal"><span class="tag">Browser extension</span><h3>Autofill, you press Submit</h3><p>Propelo Autofill fills company application forms from your profile, attaches your resume and lists the questions only you can answer. It never submits, never fills passwords or ID numbers, and stays off LinkedIn, Naukri, Indeed and Wellfound.</p></div>
       <div class="tile reveal" style="background:var(--pink)"><span class="tag">Resume score</span><h3>See the gaps, accept edits line by line</h3><p>Each posting gets a score for how much of its language your resume already covers, with the missing keywords listed. Review every AI edit and keep it or switch back to your own line.</p></div>
       <div class="tile reveal" style="background:var(--blue)"><span class="tag">Job board</span><h3>Seven job families and quick lists</h3><p>Browse by Software, AI and Data, Product and Design, Marketing, Sales, Finance or Operations, with lists for internships, new grads, remote, 20 LPA and up, and roles from the last day.</p></div>
       <div class="tile reveal" style="background:var(--yellow)"><span class="tag">Writing and interviews</span><h3>Cover letters, emails, mock interviews</h3><p>Drafts are written only from your profile, and any number that isn't in it is flagged before you send. Practise five questions for the role and get feedback on every answer.</p></div>
@@ -337,7 +349,7 @@
       <div class="ghost" aria-hidden="true">05</div>
     </div>
     <div class="byok">
-      <div class="term" aria-label="Terminal: install and run CareerOS">
+      <div class="term" aria-label="Terminal: install and run Propelo">
         <div class="dots"><i style="background:#F5B8DB"></i><i style="background:#F5D867"></i><i style="background:#9AAB63"></i></div>
         <div class="ln"><span class="c"># install</span></div>
         <div class="ln"><span class="p">$</span> git clone https://github.com/VishStack01/careeros && cd careeros</div>
@@ -366,24 +378,23 @@
   <div class="wrap">
     <div class="pills reveal" data-stagger><span class="pill">Web</span><span class="pill">Android</span><span class="pill">iOS</span></div>
     <div class="head">
-      <h2 class="lede split-words">Your whole search <b>in your pocket</b>. One number to start the day, today's highlights as shapes you tap, and a pink plus for anything new.</h2>
+      <h2 class="lede split-words">Your whole search <b>in your pocket</b>. One number to start the day, today's roles, replies and follow-ups in one list, and a plus for anything new.</h2>
       <div class="ghost" aria-hidden="true">06</div>
     </div>
     <div class="phones">
       <div class="phone reveal">
         <div class="pst"><span>9:41</span><span class="isl"></span><span>●●●</span></div>
-        <p class="pq">Asha, ready for today?</p>
-        <div class="pnum">4.6<small>/5</small><svg fill="#F5B8DB"><use href="assets/shapes.svg#spark"/></svg></div>
-        <p class="plab">best fit waiting for you</p>
+        <p class="pq">Wednesday 11 November</p>
+        <div class="pnum">4.6<small>/5</small></div>
+        <p class="plab">Best fit waiting for you</p>
         <div class="pacts"><span class="pb">Review batch (2)</span><span class="pc"><svg><use href="assets/shapes.svg#i-search"/></svg></span><span class="pc"><svg><use href="assets/shapes.svg#i-doc"/></svg></span></div>
-        <div class="phh"><b>Today's highlights</b><span>Show all ...</span></div>
-        <div class="pblobs">
-          <span style="left:2%;top:4%;width:96px;height:96px"><svg fill="#B6CAEB"><use href="assets/shapes.svg#circle"/></svg><em>fresh<small>5 roles</small></em></span>
-          <span style="left:36%;top:0;width:86px;height:86px"><svg fill="#F5D867"><use href="assets/shapes.svg#plus"/></svg><em>applied<small>6 sent</small></em></span>
-          <span style="left:66%;top:8%;width:92px;height:92px"><svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg><em>replies<small>2 new</small></em></span>
-          <span style="left:30%;top:44%;width:104px;height:104px"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg><em>interviews<small>2 so far</small></em></span>
-          <span style="left:64%;top:50%;width:96px;height:96px"><svg fill="#B6CAEB"><use href="assets/shapes.svg#star"/></svg><em>follow-ups<small>1 due</small></em></span>
-          <span style="left:0;top:58%;width:84px;height:84px"><svg fill="#F5D867"><use href="assets/shapes.svg#moon"/></svg><em>skipped<small>3</small></em></span>
+        <div class="phh"><b>Today</b><span>All applications</span></div>
+        <div class="plist">
+          <span><i style="background:#B6CAEB"></i>Fresh roles<b>5</b></span>
+          <span><i style="background:#F5B8DB"></i>Applied<b>6</b></span>
+          <span><i style="background:#9AAB63"></i>Replies<b>2</b></span>
+          <span><i style="background:#F5B8DB"></i>Interviews<b>2</b></span>
+          <span><i style="background:#F5D867"></i>Follow-ups<b>1</b></span>
         </div>
         <div class="pdock"><i><svg><use href="assets/shapes.svg#heart"/></svg></i><i><svg><use href="assets/shapes.svg#i-search"/></svg></i><b>+</b><i><svg><use href="assets/shapes.svg#i-chat"/></svg></i><i><svg><use href="assets/shapes.svg#i-user"/></svg></i></div>
       </div>
@@ -392,7 +403,7 @@
         <div class="pbar"><span class="pback">←</span><span>Fresh roles</span><span></span></div>
         <div class="pdays"><span>MO<b>3</b></span><span>TU<b>4</b></span><span class="on">WE<b>5</b></span><span>TH<b>6</b></span><span>FR<b>7</b></span><span>SA<b>8</b></span></div>
         <div class="pbig"><svg fill="rgba(255,255,255,.35)"><use href="assets/shapes.svg#blob"/></svg><span>Matched today</span><b>12</b><small>from 1,396 career pages</small></div>
-        <div class="pstats"><span><b>5</b>REMOTE</span><span><b>3</b>&lt;48 H</span><span><b>41</b>SKIPPED</span></div>
+        <div class="pstats"><span><b>5</b>remote</span><span><b>3</b>under 48 h</span><span><b>41</b>skipped</span></div>
         <div class="pacts"><span class="pb">Review batch</span><span class="pc"><svg><use href="assets/shapes.svg#i-check"/></svg></span></div>
         <p class="psum">Summary:</p>
         <div class="pbars"><i style="height:30%"></i><i style="height:55%"></i><i style="height:40%"></i><i class="k" style="height:70%"></i><i style="height:35%"></i><i style="height:88%"></i><i class="k" style="height:100%"></i><i style="height:50%"></i><i style="height:62%"></i></div>
@@ -400,7 +411,7 @@
       </div>
       <div class="appcopy reveal">
         <span class="tag">Get the app</span>
-        <p>Open CareerOS on your phone and add it to your home screen: it installs like an app, with its own icon, and works offline. The Android and iOS apps use the same screens.</p>
+        <p>Open Propelo on your phone and add it to your home screen: it installs like an app, with its own icon, and works offline. The Android and iOS apps use the same screens.</p>
         <ul class="applist">
           <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Installable today from any modern browser</li>
           <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Android and iOS builds included in the repo</li>
@@ -451,11 +462,12 @@
   </div>
 </section>
 
+<div class="art-band" data-art="assets/art/footer-scene.webp" data-art-dark="assets/art/footer-scene-dark.webp" aria-hidden="true"></div>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>CareerOS · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
+    <span>Propelo · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
     <span><a href="#pricing">Pricing</a> · <a data-app="/terms" href="https://careeros-web.onrender.com/terms">Terms</a> · <a data-app="/privacy" href="https://careeros-web.onrender.com/privacy">Privacy</a> · <a href="docs.html">Docs</a> · <a href="jobs.html">Job board</a> · <a href="https://github.com/VishStack01/careeros">GitHub</a> · <a href="https://github.com/VishStack01/careeros/blob/main/docs/responsible-use.md">Responsible use</a></span>
   </div>
 </footer>

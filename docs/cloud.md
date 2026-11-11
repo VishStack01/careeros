@@ -1,6 +1,6 @@
-# CareerOS Cloud: the multi-user service
+# Propelo Cloud: the multi-user service
 
-CareerOS Cloud lets other job seekers sign up and use CareerOS without running anything
+Propelo Cloud lets other job seekers sign up and use Propelo without running anything
 themselves. It is the same product as the personal setup: the same filters, the same
 quoted checks, the same dashboard and the same apply rules. What changes is that one
 service holds many accounts.

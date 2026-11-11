@@ -23,7 +23,7 @@ B.Tech CSE, GITAM University, 2026
 SKILLS
 Python, FastAPI, React, PostgreSQL, Docker, AWS
 PROJECTS
-CareerOS: scans 3,000 company job boards every hour and keeps roles with quoted checks.
+Propelo: scans 3,000 company job boards every hour and keeps roles with quoted checks.
 """ + "Detail line with enough words to look like a real resume line for parsing. " * 12
 
 

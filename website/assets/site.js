@@ -1,4 +1,4 @@
-/* CareerOS website behaviour.
+/* Propelo website behaviour.
    Motion follows one rule set: an element enters once, the first time it scrolls into view,
    in 280 ms with a strong ease-out (opacity + a short rise; never from scale 0, never blurred).
    Nothing loops, nothing moves while you read it, and Reduce Motion turns entrances into fades. */
@@ -16,6 +16,15 @@
   var appMeta = document.querySelector('meta[name="careeros-app"]');
   var appUrl = appMeta && /^https:\/\//.test(appMeta.content) ? appMeta.content.replace(/\/+$/, "") : "";
   if (appUrl) $$("[data-app]").forEach(function (a) { a.href = appUrl + a.getAttribute("data-app"); });
+
+  // Generated illustrations: a [data-art] slot shows its image only once the file has loaded,
+  // so the page never shows an empty frame for art that hasn't been made yet.
+  $$("[data-art]").forEach(function (el) {
+    var dark = el.getAttribute("data-art-dark") && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches;
+    var src = dark ? el.getAttribute("data-art-dark") : el.getAttribute("data-art"), img = new Image();
+    img.onload = function () { el.style.setProperty("--art", 'url("' + src + '")'); el.classList.add("has-art"); };
+    img.src = src;
+  });
 
   // Siblings in a group enter 40 ms apart, capped at eight steps; beyond that they enter as a block.
   $$("[data-stagger]").forEach(function (g) {

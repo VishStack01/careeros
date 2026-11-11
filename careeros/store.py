@@ -167,7 +167,7 @@ class Store:
 
     def begin_submit(self, job_id_: str, job: dict) -> str:
         if self.flag("paused"):
-            raise Paused("CareerOS is paused. Run `careeros resume` to continue.")
+            raise Paused("Propelo is paused. Run `careeros resume` to continue.")
         key = self.application_key(job)
         row = self.db.execute("SELECT state FROM applications WHERE key=?", (key,)).fetchone()
         if row and row["state"] == "submitted":

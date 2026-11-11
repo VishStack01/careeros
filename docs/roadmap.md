@@ -1,6 +1,6 @@
 # Roadmap
 
-Status of the build order from the CareerOS blueprint.
+Status of the build order from the Propelo blueprint.
 
 | Phase | Scope | Status |
 |---|---|---|

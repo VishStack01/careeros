@@ -1,8 +1,8 @@
 <p align="center">
-  <a href="https://vishstack01.github.io/careeros/"><img src="website/assets/og.png" alt="CareerOS: an open-source AI agent for the job search" width="820"></a>
+  <a href="https://vishstack01.github.io/careeros/"><img src="website/assets/og.png" alt="Propelo: an open-source AI agent for the job search" width="820"></a>
 </p>
 
-<h1 align="center">CareerOS</h1>
+<h1 align="center">Propelo</h1>
 
 <p align="center">
   <b>An open-source AI agent for the job search.</b><br>
@@ -27,7 +27,7 @@
 
 ---
 
-![CareerOS dashboard: fresh roles, stage cards and today's batch](docs/assets/dashboard-today.png)
+![Propelo dashboard: fresh roles, stage cards and today's batch](docs/assets/dashboard-today.png)
 
 ## Quick start
 
@@ -43,11 +43,13 @@ careeros discover && careeros scan   # map company job boards, build the feed
 careeros serve                  # dashboard at http://127.0.0.1:8765
 ```
 
+The command is `careeros`; `propelo` is the same command under the new name (Propelo was called CareerOS until 1.3.0, and the repository and package keep that name).
+
 No key? Scanning, filtering, tracking and the dashboard all work without a model. A key, or a local Ollama model, adds the AI steps.
 
 ## Bring your own model
 
-CareerOS calls the provider you choose with your key, using only Python's standard library (no SDKs).
+Propelo calls the provider you choose with your key, using only Python's standard library (no SDKs).
 
 | Provider | `.env` | Notes |
 |---|---|---|
@@ -68,7 +70,7 @@ Every AI output passes a code check before you see it: quotes must appear in the
 
 ## Why it's different
 
-Most job bots optimise the weakest variable: volume. They read job cards instead of postings, invent resume lines, guess form answers and sometimes submit twice. CareerOS is built the other way round.
+Most job bots optimise the weakest variable: volume. They read job cards instead of postings, invent resume lines, guess form answers and sometimes submit twice. Propelo is built the other way round.
 
 - **Interviews, not application count.** A daily cap, freshness priority, referral-first decisions and honest skips.
 - **Evidence, not keywords.** Every resume line cites a claim in your Career Brain. A code gate blocks numbers, tools or projects the brain can't back up.
@@ -113,11 +115,11 @@ It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth
 
 ## Autofill extension
 
-For roles you apply to yourself, **CareerOS Autofill** ([extension/](extension/README.md)) is a Chrome extension that fills a company's application form from your saved details, attaches your resume, lists the questions only you can answer and tracks the application in CareerOS. You review it and press Submit. It uses the same computer key, runs only when you press its button, and never runs on LinkedIn, Naukri, Indeed or Wellfound.
+For roles you apply to yourself, **Propelo Autofill** ([extension/](extension/README.md)) is a Chrome extension that fills a company's application form from your saved details, attaches your resume, lists the questions only you can answer and tracks the application in Propelo. You review it and press Submit. It uses the same computer key, runs only when you press its button, and never runs on LinkedIn, Naukri, Indeed or Wellfound.
 
 ## Launch it as a product
 
-CareerOS Cloud is the hosted version people sign up for, on the web, as an installable app, or as the Android and iOS apps in [`mobile/`](mobile/). It has Free and Pro plans with Razorpay subscriptions, a monthly AI allowance on your model (or the user's own key, encrypted), and pricing, terms, privacy and refund pages. **[docs/launch.md](docs/launch.md)** walks through every account and setting, from Render to the app stores.
+Propelo Cloud is the hosted version people sign up for, on the web, as an installable app, or as the Android and iOS apps in [`mobile/`](mobile/). It has Free and Pro plans with Razorpay subscriptions, a monthly AI allowance on your model (or the user's own key, encrypted), and pricing, terms, privacy and refund pages. **[docs/launch.md](docs/launch.md)** walks through every account and setting, from Render to the app stores.
 
 | Free | Pro |
 |---|---|
@@ -125,7 +127,7 @@ CareerOS Cloud is the hosted version people sign up for, on the web, as an insta
 | 15 AI actions a month, unlimited with your own key | 400 AI actions a month |
 | Auto-apply up to 5 a day | Auto-apply up to 25 a day |
 
-## CareerOS Cloud: for many job seekers
+## Propelo Cloud: for many job seekers
 
 The same product as a multi-user service: people sign up with their email, set their filters, upload their resume and get matched against the shared hourly inventory, each with a private pipeline. Auto-apply still runs on each person's own computer, in the Claude desktop app, with a computer key that can only read their pipeline and report results; the server never fills employer forms or holds job-site logins.
 
@@ -218,7 +220,7 @@ careeros/            Python package (standard library only; Playwright optional)
 dashboard/           app.html (single source), demo data, built index.html
 website/             the project website and docs (GitHub Pages)
 mobile/              Android and iOS apps (Capacitor) around the hosted app
-extension/           CareerOS Autofill, the Chrome extension (Manifest V3)
+extension/           Propelo Autofill, the Chrome extension (Manifest V3)
 prompts/             scheduled search and apply prompts
 config/companies/    the company list (curated + moreThanFAANGM + YC), 1,396 companies
 config/platforms.toml  96 job platforms with access and competition
@@ -240,7 +242,7 @@ tests/               292 tests, including real browser form fills, every LLM pro
 - [Where the jobs come from, and the open-source projects we evaluated](docs/sources.md)
 - [The apply agent](docs/apply-agent.md)
 - [Data model](docs/data-model.md)
-- [CareerOS Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
+- [Propelo Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
 - [Build your own](docs/build-your-own.md)
 - [Launch it as a product](docs/launch.md)
 - [Design rules](docs/design.md)

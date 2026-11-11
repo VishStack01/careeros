@@ -1,6 +1,6 @@
 name: extension
 
-# Packages the CareerOS Autofill browser extension as a zip you can load in Chrome
+# Packages the Propelo Autofill browser extension as a zip you can load in Chrome
 # (chrome://extensions, Developer mode, Load unpacked after unzipping) or upload to the Chrome Web Store.
 on:
   push:

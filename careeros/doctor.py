@@ -1,6 +1,6 @@
 """careeros doctor: is this install ready, and is your private data private?
 
-Each check prints OK, WARN or FAIL with the fix. FAIL means something CareerOS
+Each check prints OK, WARN or FAIL with the fix. FAIL means something Propelo
 needs is missing; WARN means a feature is off or something deserves a look.
 Nothing here touches the network unless you pass --online.
 """

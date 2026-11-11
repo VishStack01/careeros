@@ -1,4 +1,4 @@
-/* CareerOS service worker: makes the app installable and shows a friendly page when you're offline.
+/* Propelo service worker: makes the app installable and shows a friendly page when you're offline.
    It never caches your data: API calls always go to the network. */
 const CACHE = "careeros-shell-v1";
 const SHELL = ["/offline", "/icons/icon-192.png"];
