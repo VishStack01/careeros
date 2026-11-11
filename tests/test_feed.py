@@ -313,8 +313,9 @@ def test_scan_writes_feed(boards, tmp_path):
     out = tmp_path / "feed"
     summary = scan.run(boards, out, workers=4, log=lambda *_: None)
     recs = {r["title"]: r for r in read_feed(out / "india.jsonl.gz")}
-    # Tech roles in India or remote only: no "Account Executive", no US-only onsite roles.
-    assert "Account Executive" not in recs
+    # Roles in India or remote only: business roles such as "Account Executive" are kept (with their job
+    # family) since 1.2.0; US-only onsite roles are not.
+    assert "Account Executive" in recs and recs["Account Executive"]["tags"]["family"] == "Sales & Accounts"
     assert {"AI Engineer, Agents", "Junior AI Automation Engineer", "Junior Backend Engineer"} <= set(recs)
     ai = recs["AI Engineer, Agents"]
     assert ai["company"] == "Example Labs" and ai["category"] == "ai-native" and ai["geo"] == "south"

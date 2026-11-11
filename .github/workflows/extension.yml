@@ -1,0 +1,28 @@
+name: extension
+
+# Packages the CareerOS Autofill browser extension as a zip you can load in Chrome
+# (chrome://extensions, Developer mode, Load unpacked after unzipping) or upload to the Chrome Web Store.
+on:
+  push:
+    paths: ["extension/**", ".github/workflows/extension.yml"]
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check the manifest and scripts
+        run: |
+          python3 -c "import json; m = json.load(open('extension/manifest.json')); assert m['manifest_version'] == 3; print(m['name'], m['version'])"
+          node --check extension/fill.js
+          node --check extension/popup.js
+      - name: Zip
+        run: |
+          v=$(python3 -c "import json; print(json.load(open('extension/manifest.json'))['version'])")
+          cd extension && zip -r -X "../careeros-autofill-$v.zip" . -x "*.DS_Store" && cd ..
+          echo "ZIP=careeros-autofill-$v.zip" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: careeros-autofill
+          path: ${{ env.ZIP }}

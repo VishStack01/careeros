@@ -2,6 +2,25 @@
 
 All notable changes to CareerOS. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-11
+
+### Added
+- **CareerOS Autofill, a Chrome extension** (`extension/`). Press "Fill this form" on a company application page:
+  - fills empty fields from your application details and attaches your resume PDF;
+  - outlines what it filled in pink and lists what needs you (essays, consent boxes, anything it couldn't match);
+  - "Track this application" adds the role to Applications, or updates it if CareerOS already found it (`POST /api/agent/track`).
+  - It never submits, never ticks consent boxes, never overwrites what you typed, never fills passwords, codes, identity numbers, bank details or dates of birth, skips voluntary questions and other people's details, and doesn't run on LinkedIn, Naukri, Indeed or Wellfound.
+  - It connects with the same computer key as auto-apply and only runs when you press its button, in the tab you're on. A workflow packages it as a zip.
+- **Resume score** on every application and posting: how much of the posting's language your resume covers, with matched and missing keywords. Missing keywords are never added for you.
+- **Line-by-line review of AI edits**: keep each tailored line, or switch it back to your own (one by one, or all at once).
+- **Job families** on the public board and in Settings: Software Engineering, AI & Data, Product & Design, Marketing & Growth, Sales & Accounts, Finance & Strategy, Operations & People. The board adds quick lists (internships, new grads, remote, 20 LPA and up, posted in the last day) and shareable links. Choosing families in Settings matches whole families instead of a keyword list.
+- The search now keeps business roles (marketing, sales, finance, operations, people) as well as tech roles.
+- **Writing & interviews**: cover letters, five kinds of emails (follow-up, thank-you, referral request, note to a hiring manager, reply to a recruiter), answers to application questions with a word limit, and a mock interview with feedback on each answer. All of it is written only from your profile, with unknown numbers flagged. Templates and a question bank work without AI.
+
+### Fixed
+- Solid buttons kept their colour on hover (the text used to disappear).
+- An unescaped apostrophe in an AI error message no longer stops the dashboard loading.
+
 ## [1.1.1] - 2026-11-05
 
 ### Changed

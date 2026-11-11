@@ -39,6 +39,20 @@ TECH = re.compile(
     r"forward deployed|solutions? engineer|applied",
     re.I,
 )
+# Business families scanned too (marketing, sales, finance and strategy, operations and people, product and design),
+# so the board covers the same job families as the big US boards, not only engineering.
+BUSINESS = re.compile(
+    r"marketing|growth|\bseo\b|content (writer|strategist|marketing)|copywriter|\bbrand\b|social media|communications|"
+    r"\bsales\b|account (executive|manager)|business development|\b(bdr|sdr|bde)\b|partnership|customer success|presales|"
+    r"finance|financial|accountant|accounting|\baudit|\btax\b|treasury|fp&a|strategy|business analyst|investment|\brisk\b|compliance|\blegal\b|counsel|"
+    r"chief of staff|founder'?s office|operations|supply chain|logistics|procurement|customer support|customer service|"
+    r"\bhr\b|human resources|people (partner|operations)|recruit|talent acquisition|product owner|program manager|\bux\b|user research",
+    re.I,
+)
+
+
+def wanted_title(title: str) -> bool:
+    return bool(TECH.search(title or "") or BUSINESS.search(title or ""))
 
 
 def _ts(s: str | None) -> float:
@@ -144,7 +158,7 @@ def scan_board(name: str, entry: dict, detail_budget: list[int], pay_cache: dict
     for j in jobs:
         try:
             j.company = name
-            if not TECH.search(j.title or "") or not relevant_location(j):
+            if not wanted_title(j.title) or not relevant_location(j):
                 continue
             if j.raw.get("needs_detail") and detail_budget[0] > 0:
                 detail_budget[0] -= 1
@@ -181,7 +195,7 @@ def scan_aggregator(name: str, cache_dir: Path, now: datetime) -> tuple[list[dic
     recs = []
     for j in jobs:
         try:
-            if j.title and j.url and TECH.search(j.title) and relevant_location(j):
+            if j.title and j.url and wanted_title(j.title) and relevant_location(j):
                 recs.append(to_feed(j, {"category": "remote-board"}, via="board"))
         except Exception:
             continue

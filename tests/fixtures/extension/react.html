@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Apply</title></head>
+<body>
+<h1>Product Analyst</h1>
+<div id="root"></div>
+<script>
+// A tiny stand-in for a React controlled input: state only changes through the input event,
+// and the instance keeps a value tracker that a plain `el.value = x` assignment would update too.
+window.state = {};
+['fullName:Full name', 'email:Email address', 'city:Current location'].forEach(function (pair) {
+  var key = pair.split(':')[0], label = pair.split(':')[1];
+  var wrap = document.createElement('div'); wrap.className = 'field';
+  var l = document.createElement('label'); l.textContent = label; l.htmlFor = key;
+  var el = document.createElement('input'); el.id = key; el.type = 'text';
+  var proto = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  var tracked = '';
+  Object.defineProperty(el, 'value', { configurable: true, get: function () { return proto.get.call(this); }, set: function (v) { tracked = String(v); proto.set.call(this, v); } });
+  el.addEventListener('input', function () { var now = proto.get.call(el); if (now !== tracked) { tracked = now; window.state[key] = now; } });
+  wrap.appendChild(l); wrap.appendChild(el); document.getElementById('root').appendChild(wrap);
+});
+</script>
+</body></html>

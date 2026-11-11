@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Job Application for AI Engineer at Acme</title></head>
+<body>
+<div class="app-title">AI Engineer</div>
+<span class="company-name">at Acme</span>
+<form id="application_form">
+  <div class="field"><label for="first_name">First Name <span>*</span></label><input type="text" id="first_name" name="job_application[first_name]" required></div>
+  <div class="field"><label for="last_name">Last Name <span>*</span></label><input type="text" id="last_name" name="job_application[last_name]" required></div>
+  <div class="field"><label for="email">Email <span>*</span></label><input type="text" id="email" name="job_application[email]" required></div>
+  <div class="field"><label for="phone">Phone</label><input type="text" id="phone" name="job_application[phone]" value="+91 90000 00000"></div>
+  <div class="field"><label for="resume">Resume/CV <span>*</span></label><input type="file" id="resume" name="resume" required></div>
+  <div class="field"><label for="cover">Cover Letter</label><input type="file" id="cover" name="cover_letter"></div>
+  <div class="field"><label for="q1">LinkedIn Profile</label><input type="text" id="q1" name="q1"></div>
+  <div class="field"><label for="q2">Website</label><input type="text" id="q2" name="q2"></div>
+  <div class="field"><label for="q3">Are you legally authorized to work in India? *</label>
+    <select id="q3" name="q3" required><option value="">Select...</option><option value="1">Yes</option><option value="0">No</option></select></div>
+  <fieldset><legend>Will you now or in the future require visa sponsorship? *</legend>
+    <label><input type="radio" name="q4" value="yes" required> Yes</label><label><input type="radio" name="q4" value="no"> No</label></fieldset>
+  <div class="field"><label for="q5">Notice period</label>
+    <select id="q5" name="q5"><option value="">Select...</option><option>Immediate</option><option>15 days</option><option>30 days</option><option>60 days</option><option>90 days</option></select></div>
+  <div class="field"><label for="q6">Expected CTC (LPA)</label><input type="number" id="q6" name="q6"></div>
+  <div class="field"><label for="q7">Why do you want to work at Acme? *</label><textarea id="q7" name="q7" required></textarea></div>
+  <div class="field"><label for="q8">Gender</label><select id="q8" name="q8"><option value="">Select...</option><option>Woman</option><option>Man</option><option>Decline to self-identify</option></select></div>
+  <div class="field"><label for="q9">Referrer name</label><input type="text" id="q9" name="q9"></div>
+  <div class="field"><label for="q10">PAN number *</label><input type="text" id="q10" name="q10" required></div>
+  <div class="field"><label for="q11">Date of birth</label><input type="text" id="q11" name="q11"></div>
+  <div class="field"><label for="pw">Create a password</label><input type="password" id="pw" name="pw"></div>
+  <label><input type="checkbox" id="consent" required> I agree to the privacy notice *</label>
+  <button type="submit" id="submit">Submit Application</button>
+</form>
+<script>window.submitted = false; document.getElementById('application_form').addEventListener('submit', function (e) { e.preventDefault(); window.submitted = true; });</script>
+</body></html>

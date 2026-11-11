@@ -36,6 +36,11 @@ def load_feed(src: str) -> list[dict]:
     return [json.loads(line) for line in io.StringIO(raw.decode("utf-8")) if line.strip()]
 
 
+def tagger_families() -> list[str]:
+    from .tags import FAMILIES
+    return FAMILIES
+
+
 def settings_from_dashboard(doc: dict) -> Settings:
     """Turn the dashboard's settings/profile document into gate settings."""
     s = Settings()
@@ -46,7 +51,12 @@ def settings_from_dashboard(doc: dict) -> Settings:
     floor = doc.get("salaryFloorLpa")
     s.salary_floor_lpa = float(floor) if floor not in (None, "", 0) else None
     s.require_stated_pay = bool(doc.get("requireStatedPay"))
-    if doc.get("targetRoles"):
+    fams = [f for f in (doc.get("families") or []) if f in tagger_families()]
+    if fams:
+        # Families chosen: they decide, plus any target roles typed in (the built-in tech keywords no longer apply).
+        s.families = fams
+        s.role_keywords = [r.lower() for r in doc.get("targetRoles") or []]
+    elif doc.get("targetRoles"):
         s.role_keywords = [r.lower() for r in doc["targetRoles"]] + s.role_keywords
     if doc.get("titleExclude"):
         s.title_exclude = [t.strip().lower() for t in doc["titleExclude"] if str(t).strip()]

@@ -110,7 +110,15 @@ The dashboard is laid out as a personal job-search workspace: a sidebar with Das
 - **Auto-apply**: its own page with the switch, what it still needs (your details, resume and a linked computer, with the steps), the queue, what it sent and the run log. It applies from the Claude desktop app on your computer ([prompts/scheduled-apply.md](../prompts/scheduled-apply.md)).
 - **Inbox**: employers' replies from Gmail, matched to each application, with what they ask, free times from your calendar, and a reply drafted from your profile that you send from Gmail. A scheduled check reads Gmail every 3 hours (read-only), moves each role to its new stage and adds interviews to Google Calendar ([prompts/scheduled-inbox.md](../prompts/scheduled-inbox.md)).
 - **Calendar**: interviews, day 7 and 14 follow-ups, apply-by dates and what you sent, with an "Add" link to Google Calendar.
+- **Resume score**: on an application's Resume and Job posting tabs and in New application, the share of the posting's skills and terms your resume covers, with matched and missing keywords. Add a missing one to your profile only if you've really used it.
+- **Review AI edits**: on the Resume tab, each line the AI changed is shown next to your original. Keep it, or use yours; "Keep all" and "Use all of mine" do the lot.
+- **Writing & interviews**: a cover letter, an email (follow-up, thank-you, referral request, note to a hiring manager, reply to a recruiter) or an answer to an application question, written from your profile with any unknown number flagged; and a five-question mock interview (behavioural, about the role, or technical from your skills) with feedback after each answer. Without AI, templates and a question bank with a STAR checklist.
+- **Job families**: in Settings, pick whole families (Software Engineering, AI & Data, Product & Design, Marketing & Growth, Sales & Accounts, Finance & Strategy, Operations & People). A role in one of them passes the role check even if its title isn't in your target roles.
 - **Your data**: export everything as JSON, import a profile and applications that aren't there yet, or delete everything.
+
+## The browser extension (CareerOS Autofill)
+
+For roles you apply to yourself on company sites. Connect it once with your CareerOS address and a computer key, then press "Fill this form" on an application page. It fills empty fields from your application details, attaches your resume, outlines what it filled and lists what needs you, and "Track this application" adds the role to Applications. It never submits, never fills private numbers or passwords, and doesn't run on LinkedIn, Naukri, Indeed or Wellfound. Details and install steps: [extension/README.md](../extension/README.md).
 
 ## Getting shortlisted
 

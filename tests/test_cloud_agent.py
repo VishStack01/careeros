@@ -164,3 +164,23 @@ def test_scored_evaluation_and_the_apply_line(cloud):
     c.patch("/api/d/jobs/low", json={"scoreOverride": True, "needsYou": "", "needsYouKind": ""})
     assert "low" in [r["id"] for r in k.get("/api/agent/next").json()["roles"]]
     assert k.post("/api/agent/jobs/low/begin").status_code == 200
+
+
+def test_extension_tracks_an_application_once(cloud):
+    c = cloud.user()
+    k = _agent(cloud, c)
+    assert k.post("/api/agent/track", json={"url": "ftp://x", "title": "", "company": ""}).status_code == 400
+    r = k.post("/api/agent/track", json={"url": "https://job-boards.greenhouse.io/acme/jobs/9", "title": "AI Engineer", "company": "Acme"}).json()
+    assert r["created"] and r["stage"] == "applied"
+    d = c.get(f"/api/d/jobs/{r['id']}").json()["data"]
+    assert d["stage"] == "applied" and d["appliedVia"] == "you" and d["via"] == "extension" and d["source"] == "job-boards.greenhouse.io"
+    again = k.post("/api/agent/track", json={"url": "https://job-boards.greenhouse.io/acme/jobs/9", "title": "AI Engineer", "company": "Acme"}).json()
+    assert again["id"] == r["id"] and not again["created"]
+    # A role CareerOS already found is updated, not duplicated.
+    _job(c, "found1", "Beta", stage="found")
+    r2 = k.post("/api/agent/track", json={"url": "https://jobs.example.com/found1", "title": "AI Engineer", "company": "Beta"}).json()
+    assert r2["id"] == "found1" and not r2["created"]
+    d = c.get("/api/d/jobs/found1").json()["data"]
+    assert d["stage"] == "applied" and d["appliedAt"] and "extension" in d["timeline"][-1]["event"]
+    saved = k.post("/api/agent/track", json={"url": "https://jobs.lever.co/gamma/1", "title": "Data Analyst", "company": "Gamma", "applied": False}).json()
+    assert saved["stage"] == "found" and not c.get(f"/api/d/jobs/{saved['id']}").json()["data"].get("appliedAt")

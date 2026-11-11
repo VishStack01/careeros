@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
-from . import extract, geo, signals
+from . import extract, geo, signals, tags
 from .models import Check, Job, iso
 from .settings import Settings
 
@@ -57,8 +57,10 @@ def gate_role(job: Job, s: Settings) -> Check:
     title = job.title or ""
     if s.title_exclude and _kw_regex(s.title_exclude).search(title):
         return Check("Role", False, "The title matches one of your excluded words.", title)
-    if not _kw_regex(s.role_keywords).search(title):
-        return Check("Role", False, "The title isn't one of your target roles.", title)
+    in_family = bool(s.families) and tags.family(title) in s.families
+    if not in_family and not _kw_regex(s.role_keywords).search(title):
+        why = "The title isn't in your job families or target roles." if s.families else "The title isn't one of your target roles."
+        return Check("Role", False, why, title)
     if not s.allow_internships and re.search(r"\bintern(ship)?\b", title, re.I):
         return Check("Role", False, "It's an internship, and internships are switched off.", title)
     return Check("Role", True, "Target role", title)

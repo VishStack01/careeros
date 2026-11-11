@@ -90,7 +90,7 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 
 ## The job board
 
-The hourly scan also publishes a public job board on GitHub Pages ([jobs.html](https://vishstack01.github.io/careeros/jobs.html)), in the spirit of Arbeitnow: search, filters with counts (where you can work from, experience, posted date, contract, category, skills, perks), a page per role with the full posting and the quoted facts, and a page per company. Only roles still open and posted in the last 60 days are listed.
+The hourly scan also publishes a public job board on GitHub Pages ([jobs.html](https://vishstack01.github.io/careeros/jobs.html)), in the spirit of Arbeitnow: seven job families (Software Engineering, AI & Data, Product & Design, Marketing & Growth, Sales & Accounts, Finance & Strategy, Operations & People), quick lists (internships, new grads, remote, 20 LPA and up, last 24 hours), search, filters with counts (where you can work from, experience, posted date, contract, specialty, skills, perks), a page per role with the full posting and the quoted facts, and a page per company. Only roles still open and posted in the last 60 days are listed.
 
 | Endpoint | What |
 |---|---|
@@ -110,6 +110,10 @@ The dashboard has an **Auto-apply** switch. Fill in your application details and
 - it stops and lists the role under **Auto-apply needs you** with the exact reason for a sign-in, captcha, one-time code, assessment or any answer it would have to guess.
 
 It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth, and never applies through LinkedIn, Naukri, Indeed or Wellfound. The run's instructions: [prompts/scheduled-apply.md](prompts/scheduled-apply.md).
+
+## Autofill extension
+
+For roles you apply to yourself, **CareerOS Autofill** ([extension/](extension/README.md)) is a Chrome extension that fills a company's application form from your saved details, attaches your resume, lists the questions only you can answer and tracks the application in CareerOS. You review it and press Submit. It uses the same computer key, runs only when you press its button, and never runs on LinkedIn, Naukri, Indeed or Wellfound.
 
 ## Launch it as a product
 
@@ -214,6 +218,7 @@ careeros/            Python package (standard library only; Playwright optional)
 dashboard/           app.html (single source), demo data, built index.html
 website/             the project website and docs (GitHub Pages)
 mobile/              Android and iOS apps (Capacitor) around the hosted app
+extension/           CareerOS Autofill, the Chrome extension (Manifest V3)
 prompts/             scheduled search and apply prompts
 config/companies/    the company list (curated + moreThanFAANGM + YC), 1,396 companies
 config/platforms.toml  96 job platforms with access and competition

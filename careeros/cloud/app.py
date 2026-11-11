@@ -820,6 +820,44 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             text = c.scalar("SELECT text FROM assets WHERE id = ? AND user_id = ?", (rid, p.uid)) if rid else None
         return {"applicant": doc["data"] if doc else None, "resumeText": text or "", "brain": brain["data"] if brain else None}
 
+    _BIG_BOARDS = re.compile(r"(^|\.)(linkedin\.com|naukri\.com|indeed\.[a-z.]+|wellfound\.com|angel\.co)$", re.I)
+
+    @app.post("/api/agent/track")
+    def agent_track(body: dict = Body(default={}), p: Principal = Depends(principal)):
+        """The autofill extension's "Track it": record a role the user applied to (or is about to)
+        on a company site. Matches an existing role by company and link, so nothing is tracked twice."""
+        url = str(body.get("url", "")).strip()[:600]
+        title = re.sub(r"\s+", " ", str(body.get("title", ""))).strip()[:160]
+        company = re.sub(r"\s+", " ", str(body.get("company", ""))).strip()[:120]
+        applied = body.get("applied") is not False
+        if not re.match(r"^https?://", url) or not title or not company:
+            raise err(400, "Send the role's link, title and company.", "invalid_argument")
+        host = re.sub(r"^www\.", "", re.sub(r"^https?://([^/:]+).*$", r"\1", url).lower())
+        d = {"company": company, "title": title, "url": url}
+        key = _app_key(d)
+        stamp = now_iso()[:19] + "Z"
+        with db.tx() as c:
+            jobs = repo.list_docs(c, p.uid, "jobs")
+            cur = next((j for j in jobs if _app_key(j["data"]) == key), None)
+            if cur:
+                data = cur["data"]
+                if applied and not data.get("appliedAt"):
+                    repo.update_doc(c, p.uid, "jobs", cur["id"], {"stage": "applied", "appliedAt": stamp, "appliedVia": "you", "needsYou": "",
+                                                                    "timeline": repo.append_timeline(data, f"You applied on {host} (tracked by the extension)")})
+                return {"id": cur["id"], "created": False, "stage": "applied" if applied else data.get("stage", "found")}
+            if repo.count_docs(c, p.uid) >= cfg.max_docs_per_user:
+                raise err(400, "Your account has reached its document limit.", "quota")
+            jid = "ext-" + key[:16]
+            doc = {**d, "source": host, "via": "extension", "stage": "applied" if applied else "found", "foundAt": stamp,
+                   "region": "", "checks": [], "timeline": [{"at": stamp, "event": f"Added from {host} by the extension"}]}
+            if applied:
+                doc.update({"appliedAt": stamp, "appliedVia": "you"})
+                doc["timeline"].append({"at": stamp, "event": f"You applied on {host}"})
+            if _BIG_BOARDS.search(host):
+                doc["note"] = "Tracked from a job board CareerOS never fills in."
+            repo.set_doc(c, p.uid, "jobs", jid, doc)
+        return {"id": jid, "created": True, "stage": doc["stage"]}
+
     @app.post("/api/agent/brain")
     def agent_brain(body: dict = Body(default={}), p: Principal = Depends(principal)):
         brain, status = body.get("brain"), body.get("status") or {}

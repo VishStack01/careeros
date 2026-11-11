@@ -68,6 +68,7 @@ def compact(r: dict) -> dict:
         "id": r["id"], "t": r["title"], "c": r["company"], "cs": _slug(r["company"]), "l": r.get("location", ""),
         "m": r.get("workMode", ""), "w": WHERE.get(f.get("loc", ""), "u" if "loc" not in f else ""), "p": r.get("postedAt", ""),
         "sal": _salary(r), "e": f.get("expMin"), "lv": t.get("level", ""), "ty": t.get("type", ""),
+        "fm": t.get("family") or tagger.family(r.get("title", "")),
         "cat": t.get("categories", []), "sk": t.get("skills", []), "pk": t.get("perks", []),
         "ar": t.get("archetype", ""), "lg": (f.get("legit") or {}).get("tier", ""), "rp": (f.get("reposts") or {}).get("count", 0),
         "pt": t.get("payTier", tagger.pay_tier(f)), "ph": f.get("salaryHigh"),
@@ -107,7 +108,7 @@ def detail(r: dict, text: str) -> dict:
 def api_item(r: dict, text: str) -> dict:
     c = compact(r)
     return {"slug": r["id"], "company_name": r["company"], "title": r["title"], "description": text,
-            "remote": c["m"] == "remote", "url": r["url"], "tags": c["cat"] + c["sk"], "job_types": [c["ty"]] if c["ty"] else [],
+            "remote": c["m"] == "remote", "url": r["url"], "category": c["fm"], "tags": c["cat"] + c["sk"], "job_types": [c["ty"]] if c["ty"] else [],
             "level": c["lv"], "location": r.get("location", ""), "where": c["w"], "salary": c["sal"],
             "experience_min_years": c["e"], "source": r.get("source", ""), "created_at": r.get("postedAt", ""),
             "archetype": c["ar"], "legitimacy": c["lg"], "relisted": c["rp"], "pay_tier": c["pt"], "salary_max_lpa": c["ph"]}
