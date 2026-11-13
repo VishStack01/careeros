@@ -17,7 +17,7 @@
   --ink:#151515; --text:#4F4A44; --muted:#6E675D; --ghost:#EDE2D1; --dash:#9F978A;
   --pink:#FF85BA; --orange:#FF7034; --lav:#BDB6FC; --yellow:#FCF15C; --gold:#FCC63E;
   --pink-t:#FFDCEB; --orange-t:#FFE1D2; --lav-t:#E7E3FF; --yellow-t:#FBF6C2;
-  --lede:#2A2622; --on-color:#151515; --btn:#151515; --btn-ink:#FAF3E6;
+  --lede:#2A2622; --mark:#FCF15C; --on-color:#151515; --btn:#151515; --btn-ink:#FAF3E6;
   --font:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --r-card:28px; --r-sm:12px;
   --gutter:32px; --max:1440px;
@@ -28,12 +28,12 @@
   --cream:#12110F; --paper:#1B1916; --sand:#1E1C19; --sand-2:#2A2722; --line:#2F2B26;
   --ink:#F3ECE0; --text:#D6CFC3; --muted:#9C958A; --ghost:#221F1B; --dash:#5E584F;
   --pink-t:#3A2430; --orange-t:#3A271E; --lav-t:#27243A; --yellow-t:#33311C;
-  --btn:#F3ECE0; --btn-ink:#12110F; --lede:#EFE8DC; color-scheme:dark}}
+  --btn:#F3ECE0; --btn-ink:#12110F; --lede:#EFE8DC; --mark:rgba(252,241,92,.32); color-scheme:dark}}
 :root[data-theme="dark"]{
   --cream:#12110F; --paper:#1B1916; --sand:#1E1C19; --sand-2:#2A2722; --line:#2F2B26;
   --ink:#F3ECE0; --text:#D6CFC3; --muted:#9C958A; --ghost:#221F1B; --dash:#5E584F;
   --pink-t:#3A2430; --orange-t:#3A271E; --lav-t:#27243A; --yellow-t:#33311C;
-  --btn:#F3ECE0; --btn-ink:#12110F; --lede:#EFE8DC; color-scheme:dark}
+  --btn:#F3ECE0; --btn-ink:#12110F; --lede:#EFE8DC; --mark:rgba(252,241,92,.32); color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
@@ -101,7 +101,7 @@ ul{padding:0;list-style:none}
 .hero .ghostnum{top:40px}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:64px;align-items:center;margin-top:40px}
 .hero .lede{max-width:none;color:var(--ink);font-size:clamp(34px,3.9vw,60px)}
-mark{background:linear-gradient(transparent 60%,var(--hl,var(--yellow)) 60%,var(--hl,var(--yellow)) 92%,transparent 92%);color:inherit;padding:0 .04em}
+mark{background:linear-gradient(transparent 60%,var(--hl,var(--mark)) 60%,var(--hl,var(--mark)) 92%,transparent 92%);color:inherit;padding:0 .04em}
 .js mark{background-size:0% 100%;background-repeat:no-repeat;transition:background-size 900ms var(--ease) 500ms}
 .js .in mark{background-size:100% 100%}
 .hero-art{position:relative;aspect-ratio:5/4}
