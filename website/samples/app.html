@@ -45,8 +45,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .page{max-width:1440px;margin:0 auto;padding:32px var(--gutter) 96px}
 .hrow{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1.3fr);gap:32px;align-items:center;padding-bottom:24px;border-bottom:1.5px solid var(--line)}
 .icons{display:flex;gap:8px}
+.icons svg{width:24px;height:24px;color:#151515}
 .icons span{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1.5px solid #151515}
-.icons img{width:36px}
 .dtag{justify-self:start;display:inline-flex;align-items:center;height:36px;padding:0 14px;border:1.5px dashed var(--dash);border-radius:12px;font:600 13px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--text)}
 .brow{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1.3fr);gap:32px;padding-top:32px}
 .bignum{font:600 clamp(56px,6vw,88px)/.85 var(--font);letter-spacing:-.05em;color:var(--ghost)}
@@ -54,9 +54,6 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .brow h1 small{display:inline-block;margin-top:12px;padding:5px 10px;border-radius:999px;background:var(--yellow);border:1.5px solid #151515;font:700 11px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;color:#151515}
 .brow p{font-size:clamp(17px,1.4vw,21px);line-height:1.6;max-width:40em}
 .stage{position:relative;display:flex;justify-content:center;margin-top:80px}
-.stage > .deco{position:absolute;pointer-events:none}
-.deco.d1{left:calc(50% - 420px);top:120px;width:200px;rotate:-10deg;animation:bob 7s ease-in-out infinite}
-.deco.d2{left:calc(50% + 250px);top:420px;width:190px;rotate:8deg;animation:bob 7s ease-in-out -3s infinite}
 
 /* ===== Phone ===== */
 .phone{position:relative;width:390px;height:844px;flex:0 0 auto;padding:12px;border-radius:64px;background:#151515;z-index:1;
@@ -75,7 +72,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .avatar{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--lav);border:1.5px solid #151515;font:800 16px/1 var(--font);color:#151515}
 
 .best{position:relative;margin-top:20px;padding:20px;border-radius:28px;background:var(--lav);border:1.5px solid #151515;color:#151515;overflow:hidden;min-height:196px}
-.best > img{position:absolute;right:4px;top:22px;width:146px;animation:bob 6s ease-in-out infinite}
+.best .ring{position:absolute;right:20px;top:50%;width:112px;height:112px;margin-top:-56px}
+.best .ring .arc{transition:stroke-dashoffset 1400ms var(--ease) 400ms}
+.in .ring .arc{stroke-dashoffset:var(--to)}
+@media (prefers-reduced-motion: reduce){.ring .arc{stroke-dashoffset:var(--to)}}
 @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
 .best > :not(img){position:relative;z-index:1}
 .best .k{font:600 12px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;color:rgba(21,21,21,.65)}
@@ -101,14 +101,15 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .tile{position:relative;overflow:hidden;min-height:132px;padding:14px;border-radius:24px;border:1.5px solid #151515;color:#151515;display:flex;flex-direction:column;justify-content:flex-end;
   transition:translate 150ms var(--ease),rotate 150ms var(--ease)}
-.tile img{position:absolute;right:-8px;top:-6px;width:84px;transition:transform 260ms var(--ease)}
+.tile .ic{position:absolute;right:12px;top:12px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.6);transition:transform 260ms var(--ease)}
+.tile .ic svg{width:20px;height:20px}
 .tile:hover{translate:0 -2px}
-.tile:hover img{transform:rotate(-6deg) scale(1.06)}
+.tile:hover .ic{transform:rotate(-8deg) scale(1.08)}
 .tile:active{translate:0 0;scale:.98}
 .tile b{font:700 30px/1 var(--font);letter-spacing:-.04em}
 .tile span{font:600 14px/1.25 var(--font)}
 .tile.wide{grid-column:1 / -1;min-height:116px;flex-direction:row;align-items:center;justify-content:flex-start;gap:14px}
-.tile.wide img{position:static;width:76px;flex:0 0 auto}
+.tile.wide .ic{position:static;flex:0 0 auto;width:52px;height:52px}
 .tile.wide .tx{display:flex;flex-direction:column}
 .tile.wide b{font-size:24px;white-space:nowrap}
 .tile.wide em{margin-left:auto;align-self:flex-start;padding:4px 10px;border-radius:999px;background:#151515;color:#FAF3E6;font:700 11px/1.2 var(--font);font-style:normal;letter-spacing:.04em;text-transform:uppercase}
@@ -139,7 +140,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .sheet button{display:flex;align-items:center;gap:14px;width:100%;padding:8px;border-radius:14px;color:#FAF3E6;font:500 15px/1.2 var(--font);transition:background-color 150ms var(--ease)}
 .sheet button:hover{background:rgba(250,243,230,.08)}
 .sheet .i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%}
-.sheet .i img{width:28px}
+.sheet .i svg{width:20px;height:20px;color:#151515}
 
 .note{max-width:720px;margin:48px auto 0;text-align:center;font-size:14px;color:var(--muted)}
 
@@ -160,8 +161,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   .hrow .dtag:last-child{display:none}
   .brow{grid-template-columns:1fr;gap:16px}
   .stage{margin-top:48px}
-  .stage > .deco{display:none}
-}
+  }
 /* Phone: the app fills the screen, no frame */
 @media (max-width:480px){
   .page{padding:0}
@@ -188,13 +188,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
   <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></symbol>
+  <symbol id="i-reply" viewBox="0 0 24 24"><path d="M10 8L4 13l6 5"/><path d="M4 13h10a6 6 0 016 6"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 4l2.4 5 5.6.6-4.2 3.8 1.2 5.6L12 16.2 7 19l1.2-5.6L4 9.6 9.6 9z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-signal" viewBox="0 0 24 24"><path d="M3 18h2v-3H3zM8 18h2v-6H8zM13 18h2V9h-2zM18 18h2V6h-2z" fill="currentColor"/></symbol>
 </svg>
 
 <div class="page">
   <div class="hrow rv">
-    <div class="icons"><span style="background:var(--pink-t)"><img src="../assets/art/target-cut.webp" alt=""></span><span style="background:var(--lav-t)"><img src="../assets/art/calendar-cut.webp" alt=""></span></div>
+    <div class="icons"><span style="background:var(--pink-t)"><svg class="ln" viewBox="0 0 24 24"><use href="#i-target"/></svg></span><span style="background:var(--lav-t)"><svg class="ln" viewBox="0 0 24 24"><use href="#i-cal"/></svg></span></div>
     <span class="dtag">Screen</span>
     <span class="dtag">What it does</span>
   </div>
@@ -205,8 +211,6 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   </div>
 
   <div class="stage">
-    <img class="deco d1 rv" src="../assets/art/speed-cut.webp" alt="">
-    <img class="deco d2 rv" src="../assets/art/trophy-cut.webp" alt="">
     <div class="phone rv" id="phone">
       <div class="screen">
         <div class="island" aria-hidden="true"></div>
@@ -219,7 +223,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
           </div>
 
           <div class="best" role="group" aria-label="Best fit waiting: 4.6 out of 5">
-            <img src="../assets/art/target-cut.webp" alt="">
+            <svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="none" stroke="rgba(21,21,21,.12)" stroke-width="12"/><circle class="arc" cx="60" cy="60" r="50" fill="none" stroke="#151515" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100" transform="rotate(-90 60 60)" style="--to:8"/></svg>
             <p class="k">Best fit waiting</p>
             <div class="s"><b class="num">4.6</b><small>/ 5</small></div>
             <p class="r">AI engineer<br>Northwind Labs<br><i>Bengaluru · 18 to 24 LPA</i></p>
@@ -234,21 +238,21 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
           <p class="hsub">Two things need you before 6 pm</p>
 
           <div class="grid" id="grid">
-            <button class="tile c-lav" style="--i:0"><img src="../assets/art/speed-cut.webp" alt=""><b class="num">24</b><span>fresh roles</span></button>
-            <button class="tile c-yellow" style="--i:1"><img src="../assets/art/checklist-cut.webp" alt=""><b class="num">3<small style="font-size:16px"> / 10</small></b><span>applied today</span></button>
-            <button class="tile wide c-pink" style="--i:2"><img src="../assets/art/calendar-cut.webp" alt=""><span class="tx"><b>Thu, 10:30</b><span>interview with Northwind Labs</span></span><em>Prep ready</em></button>
-            <button class="tile c-orange" style="--i:3"><img src="../assets/art/laptop-cut.webp" alt=""><b class="num">2</b><span>new replies</span></button>
-            <button class="tile c-paper" style="--i:4"><img src="../assets/art/key-cut.webp" alt=""><b class="num">3</b><span>follow-ups due</span></button>
+            <button class="tile c-lav" style="--i:0"><span class="ic"><svg class="ln" viewBox="0 0 24 24"><use href="#i-bolt"/></svg></span><b class="num">24</b><span>fresh roles</span></button>
+            <button class="tile c-yellow" style="--i:1"><span class="ic"><svg class="ln" viewBox="0 0 24 24"><use href="#i-check"/></svg></span><b class="num">3<small style="font-size:16px"> / 10</small></b><span>applied today</span></button>
+            <button class="tile wide c-pink" style="--i:2"><span class="ic"><svg class="ln" viewBox="0 0 24 24"><use href="#i-cal"/></svg></span><span class="tx"><b>Thu, 10:30</b><span>interview with Northwind Labs</span></span><em>Prep ready</em></button>
+            <button class="tile c-orange" style="--i:3"><span class="ic"><svg class="ln" viewBox="0 0 24 24"><use href="#i-mail"/></svg></span><b class="num">2</b><span>new replies</span></button>
+            <button class="tile c-paper" style="--i:4"><span class="ic"><svg class="ln" viewBox="0 0 24 24"><use href="#i-reply"/></svg></span><b class="num">3</b><span>follow-ups due</span></button>
           </div>
         </main>
 
         <div class="scrim" id="scrim"></div>
         <div class="sheet" id="sheet" role="dialog" aria-label="Add">
           <h3>Add...</h3>
-          <button><span class="i" style="background:var(--lav)"><img src="../assets/art/laptop-cut.webp" alt=""></span>A posting you found</button>
-          <button><span class="i" style="background:var(--yellow)"><img src="../assets/art/checklist-cut.webp" alt=""></span>An application you sent</button>
-          <button><span class="i" style="background:var(--pink)"><img src="../assets/art/key-cut.webp" alt=""></span>A saved answer</button>
-          <button><span class="i" style="background:var(--orange)"><img src="../assets/art/trophy-cut.webp" alt=""></span>A career win</button>
+          <button><span class="i" style="background:var(--lav)"><svg class="ln" viewBox="0 0 24 24"><use href="#i-mail"/></svg></span>A posting you found</button>
+          <button><span class="i" style="background:var(--yellow)"><svg class="ln" viewBox="0 0 24 24"><use href="#i-check"/></svg></span>An application you sent</button>
+          <button><span class="i" style="background:var(--pink)"><svg class="ln" viewBox="0 0 24 24"><use href="#i-reply"/></svg></span>A saved answer</button>
+          <button><span class="i" style="background:var(--orange)"><svg class="ln" viewBox="0 0 24 24"><use href="#i-star"/></svg></span>A career win</button>
         </div>
 
         <nav class="dock" aria-label="App">
