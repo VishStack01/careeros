@@ -17,7 +17,7 @@
   --ink:#151515; --text:#4F4A44; --muted:#6E675D; --ghost:#EDE2D1; --dash:#9F978A;
   --pink:#FF85BA; --orange:#FF7034; --lav:#BDB6FC; --yellow:#FCF15C; --gold:#FCC63E;
   --pink-t:#FFDCEB; --orange-t:#FFE1D2; --lav-t:#E7E3FF; --yellow-t:#FBF6C2;
-  --night:#000; --on-color:#151515; --btn:#151515; --btn-ink:#FAF3E6;
+  --lede:#2A2622; --on-color:#151515; --btn:#151515; --btn-ink:#FAF3E6;
   --font:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
   --r-card:28px; --r-sm:12px;
   --gutter:32px; --max:1440px;
@@ -28,15 +28,15 @@
   --cream:#12110F; --paper:#1B1916; --sand:#1E1C19; --sand-2:#2A2722; --line:#2F2B26;
   --ink:#F3ECE0; --text:#D6CFC3; --muted:#9C958A; --ghost:#221F1B; --dash:#5E584F;
   --pink-t:#3A2430; --orange-t:#3A271E; --lav-t:#27243A; --yellow-t:#33311C;
-  --btn:#F3ECE0; --btn-ink:#12110F; color-scheme:dark}}
+  --btn:#F3ECE0; --btn-ink:#12110F; --lede:#EFE8DC; color-scheme:dark}}
 :root[data-theme="dark"]{
   --cream:#12110F; --paper:#1B1916; --sand:#1E1C19; --sand-2:#2A2722; --line:#2F2B26;
   --ink:#F3ECE0; --text:#D6CFC3; --muted:#9C958A; --ghost:#221F1B; --dash:#5E584F;
   --pink-t:#3A2430; --orange-t:#3A271E; --lav-t:#27243A; --yellow-t:#33311C;
-  --btn:#F3ECE0; --btn-ink:#12110F; color-scheme:dark}
+  --btn:#F3ECE0; --btn-ink:#12110F; --lede:#EFE8DC; color-scheme:dark}
 
 *,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--cream);color:var(--text);font:400 17px/1.6 var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img,svg{display:block;max-width:100%}
 img{height:auto}
@@ -65,7 +65,7 @@ ul{padding:0;list-style:none}
 .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
 .btn.sm{height:44px;padding:0 20px;font-size:14px}
 .ghostnum{position:absolute;right:var(--gutter);font:600 clamp(96px,10.5vw,168px)/.8 var(--font);letter-spacing:-.05em;color:var(--ghost);pointer-events:none;user-select:none;z-index:0}
-.lede{position:relative;z-index:1;font:400 clamp(34px,4.3vw,64px)/1.16 var(--font);letter-spacing:-.035em;color:var(--text);text-indent:1.4em;max-width:68%}
+.lede{position:relative;z-index:1;font:400 clamp(34px,4.3vw,64px)/1.16 var(--font);letter-spacing:-.035em;color:var(--lede);text-indent:1.4em;max-width:68%}
 .lede b{font-weight:600;color:var(--ink)}
 .card{background:var(--sand);border-radius:var(--r-card)}
 .mini-ico{flex:0 0 auto;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1.5px solid #151515}
@@ -73,12 +73,14 @@ ul{padding:0;list-style:none}
 .bg-pink{background:var(--pink)} .bg-orange{background:var(--orange)} .bg-lav{background:var(--lav)} .bg-yellow{background:var(--yellow)} .bg-gold{background:var(--gold)}
 .t-pink{background:var(--pink-t)} .t-orange{background:var(--orange-t)} .t-lav{background:var(--lav-t)} .t-yellow{background:var(--yellow-t)}
 
-/* Stickers (transparent cut-outs) and night tiles (the glowing originals) */
-.sticker{transition:transform 260ms var(--ease)}
-.has-sticker:hover .sticker{transform:rotate(-4deg) scale(1.04)}
-.night{position:relative;overflow:hidden;background:var(--night);border-radius:var(--r-card);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-.night > img.glow{width:100%;height:100%;object-fit:cover;transition:transform 400ms var(--ease)}
-.night:hover > img.glow{transform:scale(1.03)}
+/* Illustrations: transparent stickers on soft tinted stages, always contained and centred */
+.stage-card{position:relative;overflow:hidden;border-radius:var(--r-card);isolation:isolate}
+.stage-card::before{content:"";position:absolute;left:50%;top:50%;width:78%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.75) 0,rgba(255,255,255,.35) 45%,rgba(255,255,255,0) 70%);z-index:-1}
+.art-slot{flex:1 1 auto;min-height:0;display:grid;place-items:center;padding:8px}
+.art-slot img{max-width:min(78%,420px);max-height:100%;object-fit:contain}
+.bob{animation:bob 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -10px}}
 .cap{position:absolute;left:20px;bottom:20px;display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 18px;border-radius:999px;background:#FAF3E6;color:#151515;font:600 15px/1 var(--font)}
 .cap i{width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 1.5px #151515}
 .spark{width:28px;height:28px}
@@ -97,16 +99,23 @@ ul{padding:0;list-style:none}
 /* ===== 01 Hero ===== */
 .hero{position:relative;padding-top:40px;padding-bottom:128px}
 .hero .ghostnum{top:40px}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:48px;align-items:start;margin-top:48px}
-.hero .lede{max-width:none}
-.hero-art{position:relative;aspect-ratio:3/2;margin-top:8px}
-.hero-art .night{position:absolute;inset:0}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:64px;align-items:center;margin-top:40px}
+.hero .lede{max-width:none;color:var(--ink);font-size:clamp(34px,3.9vw,60px)}
+mark{background:linear-gradient(transparent 60%,var(--hl,var(--yellow)) 60%,var(--hl,var(--yellow)) 92%,transparent 92%);color:inherit;padding:0 .04em}
+.js mark{background-size:0% 100%;background-repeat:no-repeat;transition:background-size 900ms var(--ease) 500ms}
+.js .in mark{background-size:100% 100%}
+.hero-art{position:relative;aspect-ratio:5/4}
+.hero-art .stage-card{position:absolute;inset:0;display:grid;place-items:center}
+.hero-art .stage-card img{width:62%}
+.rolechip{position:absolute;right:-12px;top:28px;display:flex;align-items:center;gap:12px;padding:12px 16px 12px 12px;border-radius:18px;background:#FFF9F1;border:1.5px solid #151515;color:#151515;rotate:3deg;z-index:2}
+.rolechip .lg{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--orange);border:1.5px solid #151515;font:800 16px/1 var(--font)}
+.rolechip b{display:block;font:700 15px/1.2 var(--font)}
+.rolechip small{display:block;font:500 12px/1.3 var(--font);color:#6E675D}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:40px}
 .fitchip{position:absolute;left:-20px;bottom:-24px;display:grid;gap:2px;padding:14px 18px;border-radius:20px;background:var(--yellow);border:1.5px solid #151515;color:#151515;rotate:-4deg;z-index:2}
 .fitchip b{font:700 30px/1 var(--font);letter-spacing:-.03em}
 .fitchip span{font:500 13px/1.2 var(--font)}
-.hero-foot{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:48px;align-items:end;margin-top:72px}
-.hero-foot > .btn{justify-self:start}
-.notes{display:grid;gap:40px}
+.notes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;margin-top:96px;padding-top:40px;border-top:1.5px solid var(--line)}
 .note h2{display:flex;align-items:center;gap:16px;font:600 19px/1.2 var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
 .note p{margin-top:16px;font-size:18px;line-height:1.65}
 
@@ -180,10 +189,10 @@ ul{padding:0;list-style:none}
 .fam:hover{translate:0 -2px}
 .fam span{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#151515;color:#FAF3E6}
 .fam svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.tall{aspect-ratio:4/5}
-.tall > img.glow{object-fit:contain;object-position:50% 8%}
-.float{position:absolute;z-index:2;padding:18px 20px;border-radius:20px;background:#FAF3E6;color:#151515;border:1.5px solid #151515}
-.note2{left:20px;right:20px;bottom:20px;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center}
+.tall{display:flex;flex-direction:column;min-height:540px;padding:20px}
+.tall .art-slot img{max-width:72%}
+.float{position:relative;z-index:2;padding:18px 20px;border-radius:20px;background:#FAF3E6;color:#151515;border:1.5px solid #151515}
+.note2{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center}
 .note2 .mini-ico{width:48px;height:48px}
 .note2 b{font:600 16px/1.3 var(--font)}
 .note2 p{font-size:13px;line-height:1.45;color:#4F4A44}
@@ -197,7 +206,7 @@ ul{padding:0;list-style:none}
 .frow:hover{background:var(--paper);translate:4px 0}
 .frow span:nth-child(2){font:500 clamp(17px,1.3vw,21px)/1.3 var(--font);color:var(--ink)}
 .frow em{font:600 clamp(18px,1.5vw,24px)/1 var(--font);font-style:normal;letter-spacing:-.02em;color:var(--muted)}
-.score{left:20px;right:20px;bottom:20px;padding:0;overflow:hidden}
+.score{padding:0;overflow:hidden}
 .score .hd{display:flex;gap:12px;align-items:center;padding:14px 18px;background:var(--yellow);border-bottom:1.5px solid #151515}
 .score .hd b{font:700 17px/1.2 var(--font)}
 .score .hd small{display:block;font:500 12px/1.3 var(--font)}
@@ -214,19 +223,23 @@ ul{padding:0;list-style:none}
 .minic b{font:600 14px/1.35 var(--font);color:var(--ink)}
 .minic small{font:500 12px/1 var(--font);color:var(--muted)}
 
-/* ===== 03 Night board ===== */
-.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:16px;margin-top:64px;height:clamp(560px,52vw,760px)}
-.board .night:nth-child(1){grid-column:1 / 3;grid-row:1 / 3}
-.board .night:nth-child(2){grid-column:3 / 5}
-.board .night > img.glow{position:absolute;left:0;right:0;bottom:0;height:76%;object-fit:contain;object-position:50% 100%}
-.board .night:nth-child(1) > img.glow{height:80%}
-.board .night h3{position:absolute;left:24px;top:24px;right:24px;font:600 clamp(18px,1.6vw,26px)/1.15 var(--font);letter-spacing:-.02em;color:#FAF3E6}
-.board .night h3 small{display:block;margin-top:8px;font:400 15px/1.45 var(--font);letter-spacing:0;color:rgba(250,243,230,.72);max-width:26em}
-.board .night:nth-child(1) h3{font-size:clamp(26px,2.6vw,40px);left:40px;top:40px}
-.board .night:nth-child(1) .cap{left:40px;bottom:40px}
-
+/* ===== 03 Sticker board ===== */
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:16px;margin-top:64px;height:clamp(600px,54vw,780px)}
+.board .stage-card{display:flex;flex-direction:column;padding:28px}
+.board .stage-card:nth-child(1){grid-column:1 / 3;grid-row:1 / 3;padding:40px}
+.board .stage-card:nth-child(2){grid-column:3 / 5;flex-direction:row;align-items:center;gap:16px}
+.board .stage-card:nth-child(2) .art-slot{flex:0 0 52%;height:100%}
+.board h3{font:600 clamp(19px,1.6vw,26px)/1.15 var(--font);letter-spacing:-.02em;color:var(--ink)}
+.board h3 small{display:block;margin-top:8px;font:400 15px/1.45 var(--font);letter-spacing:0;color:var(--text);max-width:26em}
+.board .stage-card:nth-child(1) h3{font-size:clamp(28px,2.8vw,42px)}
+.board .stage-card:nth-child(1) .art-slot img{max-width:min(84%,560px)}
+.board .stage-card:nth-child(n+3) .art-slot img{max-width:78%}
+.board .stage-card .cap{position:static;align-self:flex-start;margin-top:12px;box-shadow:inset 0 0 0 1.5px #151515}
+.has-sticker .art-slot img,.board .art-slot img{transition:transform 300ms var(--ease)}
+.has-sticker:hover .art-slot img,.board .stage-card:hover .art-slot img{transform:rotate(-4deg) scale(1.05)}
 /* ===== CTA + footer ===== */
-.cta{position:relative;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:168px 96px}
+#start{padding-block:168px 96px}
+.cta{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:48px;align-items:end;padding:64px 56px}
 .cta .lede{text-indent:0;max-width:16ch}
 .cta .acts{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}
 .cta > .sticker{position:absolute;right:4%;top:40px;width:min(200px,18vw);rotate:10deg}
@@ -242,16 +255,17 @@ ul{padding:0;list-style:none}
 @media (prefers-reduced-motion: reduce){
   .js .rv,.js .rv.in,.js .pop,.js .pop.in{opacity:1;transform:none;transition:none}
   .js .rv .fill{transform:scaleX(var(--v))}
-  *,*::before,*::after{transition-duration:0ms !important}
+  *,*::before,*::after{transition-duration:0ms !important;animation:none !important}
+  html{scroll-behavior:auto}
+  .js mark{background-size:100% 100%}
 }
 
 /* ===== Tablet ===== */
 @media (max-width:1100px){
   .links a:not(.btn){display:none}
-  .hero-grid,.hero-foot{grid-template-columns:1fr}
-  .hero-art{max-width:640px}
-  .hero-foot{gap:48px}
-  .hero-foot > .btn{order:2}
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .hero-art{max-width:560px;width:100%;justify-self:center}
+  .notes{grid-template-columns:1fr;gap:40px;margin-top:64px}
   .bento{grid-template-columns:1fr}
   .stall{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:24px}
   .prob:nth-child(4){margin-left:0}
@@ -270,7 +284,9 @@ ul{padding:0;list-style:none}
   .hero .ghostnum{top:44px;font-size:72px}
   .sect .ghostnum{top:116px;font-size:72px}
   .hero-grid,.sect .lede{margin-top:32px}
-  .fitchip{right:8px}
+  .fitchip{left:8px}
+  .rolechip{right:8px}
+  .tall{min-height:480px}
   .sources,.features{padding:32px 24px}
   .stat{padding:32px 24px 168px}
   .mini{max-width:none}
@@ -288,14 +304,13 @@ ul{padding:0;list-style:none}
   .three .col:nth-child(2){grid-column:auto}
   .sect{padding-top:112px}
   .board{grid-template-columns:1fr 1fr;grid-template-rows:none;height:auto}
-  .board .night:nth-child(1){grid-column:1 / -1;grid-row:auto;aspect-ratio:1}
-  .board .night:nth-child(2){grid-column:1 / -1;aspect-ratio:3/2}
-  .board .night:nth-child(n+3){aspect-ratio:3/4}
-  .board .night:nth-child(1) h3{left:24px;top:24px}
-  .board .night:nth-child(1) .cap{left:20px;bottom:20px}
-  .board .night h3 small{display:none}
-  .board .night:nth-child(-n+2) h3 small{display:block}
-  .cta{padding-block:120px 64px}
+  .board .stage-card:nth-child(1){grid-column:1 / -1;grid-row:auto;min-height:440px;padding:28px}
+  .board .stage-card:nth-child(2){grid-column:1 / -1;min-height:220px}
+  .board .stage-card:nth-child(n+3){min-height:240px;padding:20px}
+  .board h3 small{display:none}
+  .board .stage-card:nth-child(-n+2) h3 small{display:block}
+  #start{padding-block:112px 64px}
+  .cta{padding:40px 24px}
   .cta > .sticker{top:24px;width:110px}
   .btn{height:52px;padding:0 24px;font-size:15px}
 }
@@ -335,14 +350,20 @@ ul{padding:0;list-style:none}
   <div class="tags rv"><span class="tag pink">Job search</span><span class="tag lav">India first</span></div>
   <span class="ghostnum" aria-hidden="true">01</span>
   <div class="hero-grid">
-    <h1 class="lede rv" id="h-about">Propelo is a job search workspace that finds fresh roles on companies' own career pages, checks every one, and helps you apply in your own words. You stay in charge, and you press Submit.</h1>
+    <div>
+      <h1 class="lede rv" id="h-about">Propelo is a job search workspace that finds <mark>fresh roles</mark> on companies' own career pages, checks every one, and helps you apply in your own words. You stay in charge, and <mark style="--hl:var(--pink-t)">you press Submit.</mark></h1>
+      <div class="hero-ctas rv">
+        <a class="btn go" href="https://careeros-web.onrender.com/signup">Start free<svg><use href="#i-right"/></svg></a>
+        <a class="btn ghost" href="#how">Discover<svg><use href="#i-down"/></svg></a>
+      </div>
+    </div>
     <div class="hero-art pop">
-      <div class="night"><img class="glow" src="../assets/art/target.webp" width="1200" height="800" alt="A bullseye with an arrow in the centre"></div>
-      <div class="fitchip" aria-label="Example fit score: 4.4 out of 5"><b class="num">4.4 / 5</b><span>fit, with the evidence</span></div>
+      <div class="stage-card t-lav has-sticker"><img class="bob" src="../assets/art/target-cut.webp" width="898" height="900" alt="A bullseye with an arrow in the centre"></div>
+      <div class="rolechip pop" aria-label="Example: a new role today"><span class="lg">N</span><span><b>Backend engineer</b><small>New today · 18 to 24 LPA</small></span></div>
+      <div class="fitchip pop" aria-label="Example fit score: 4.4 out of 5"><b class="num">4.4 / 5</b><span>fit, with the evidence</span></div>
     </div>
   </div>
-  <div class="hero-foot">
-    <a class="btn rv" href="#how">Discover<svg><use href="#i-down"/></svg></a>
+  <div>
     <div class="notes">
       <div class="note rv">
         <h2><span class="mini-ico t-lav"><img src="../assets/art/speed-cut.webp" alt=""></span>What it does</h2>
@@ -444,8 +465,8 @@ ul{padding:0;list-style:none}
         <a class="fam bg-lav" href="#features">Product &amp; design<span><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></span></a>
         <a class="fam bg-orange" href="#features">Marketing<span><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></span></a>
       </div>
-      <div class="night tall pop">
-        <img class="glow" src="../assets/art/checklist.webp" width="1200" height="800" alt="A checklist with every box ticked and a pencil">
+      <div class="stage-card tall t-yellow has-sticker pop">
+        <div class="art-slot"><img class="bob" style="--d:-2s" src="../assets/art/checklist-cut.webp" width="900" height="872" alt="A checklist with every box ticked and a pencil"></div>
         <div class="float note2">
           <span class="mini-ico t-pink"><img src="../assets/art/calendar-cut.webp" alt=""></span>
           <div><b>Interview on Thursday</b><p>Your prep pack is ready: three stories from your profile.</p><small>10:30 to 11:15</small></div>
@@ -468,8 +489,8 @@ ul{padding:0;list-style:none}
     </div>
 
     <div class="col">
-      <div class="night tall pop">
-        <img class="glow" src="../assets/art/laptop.webp" width="1200" height="800" alt="A laptop showing code, with a gear">
+      <div class="stage-card tall t-lav has-sticker pop">
+        <div class="art-slot"><img class="bob" style="--d:-4s" src="../assets/art/laptop-cut.webp" width="900" height="738" alt="A laptop showing code, with a gear"></div>
         <div class="float score">
           <div class="hd"><div><b>Resume score</b><small>vs. Backend engineer</small></div><span class="pc num">82%</span></div>
           <dl><dt>Matched</dt><dd>14 of 17 terms</dd><dt>Missing</dt><dd>Kafka, gRPC, Terraform</dd><dt>Edits</dt><dd>6 lines to review</dd><dt>Claims</dt><dd>all from your profile</dd></dl>
@@ -497,25 +518,34 @@ ul{padding:0;list-style:none}
   <span class="ghostnum" aria-hidden="true">03</span>
   <h2 class="lede rv" id="h-night">The search runs every hour, forms fill in one click, and the final Submit always stays yours.</h2>
   <div class="board">
-    <div class="night pop"><img class="glow" src="../assets/art/goggles.webp" width="1200" height="800" alt="Sleepy goggles under two stars">
+    <div class="stage-card t-lav pop">
       <h3>Searches while you sleep<small>About 2,000 company career pages, checked every hour. Wake up to roles that are still open.</small></h3>
-      <span class="cap"><i></i>Hourly scan</span></div>
-    <div class="night pop"><img class="glow" src="../assets/art/calendar.webp" width="1200" height="800" alt="A calendar with ticked days and a clock">
-      <h3>Never miss a follow-up<small>Day 7 and day 14 nudges, interviews in your calendar.</small></h3></div>
-    <div class="night pop"><img class="glow" src="../assets/art/key.webp" width="1200" height="800" alt="An orange key with sparkles">
-      <h3>Your key, your data</h3></div>
-    <div class="night pop"><img class="glow" src="../assets/art/trophy.webp" width="1200" height="800" alt="A trophy with a star">
-      <h3>Celebrate the offer</h3></div>
+      <span class="cap"><i></i>Hourly scan</span>
+      <div class="art-slot"><img class="bob" src="../assets/art/goggles-cut.webp" width="900" height="811" alt="Sleepy goggles under two stars"></div>
+    </div>
+    <div class="stage-card t-pink pop">
+      <div class="art-slot"><img class="bob" style="--d:-1.5s" src="../assets/art/calendar-cut.webp" width="900" height="746" alt="A calendar with ticked days and a clock"></div>
+      <h3>Never miss a follow-up<small>Day 7 and day 14 nudges, and every interview in your calendar.</small></h3>
+    </div>
+    <div class="stage-card t-orange pop">
+      <h3>Your key, your data</h3>
+      <div class="art-slot"><img class="bob" style="--d:-3s" src="../assets/art/key-cut.webp" width="808" height="900" alt="An orange key with sparkles"></div>
+    </div>
+    <div class="stage-card t-yellow pop">
+      <h3>Celebrate the offer</h3>
+      <div class="art-slot"><img class="bob" style="--d:-4.5s" src="../assets/art/trophy-cut.webp" width="812" height="900" alt="A trophy with a star"></div>
+    </div>
   </div>
 </section>
 
-<section class="wrap cta" id="start" aria-labelledby="h-cta">
-  <img class="sticker pop" src="../assets/art/target-cut.webp" width="898" height="900" alt="">
+<section class="wrap" id="start" aria-labelledby="h-cta">
+ <div class="cta stage-card t-yellow rv">
   <h2 class="lede rv" id="h-cta">Start with your resume. <b>Propelo does the searching.</b></h2>
   <div class="acts rv">
     <a class="btn ghost" href="../jobs.html">See today's roles</a>
     <a class="btn go" href="https://careeros-web.onrender.com/signup">Start free<svg><use href="#i-right"/></svg></a>
   </div>
+ </div>
 </section>
 </main>
 

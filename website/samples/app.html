@@ -55,8 +55,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .brow p{font-size:clamp(17px,1.4vw,21px);line-height:1.6;max-width:40em}
 .stage{position:relative;display:flex;justify-content:center;margin-top:80px}
 .stage > .deco{position:absolute;pointer-events:none}
-.deco.d1{left:calc(50% - 420px);top:120px;width:200px;rotate:-10deg}
-.deco.d2{left:calc(50% + 250px);top:420px;width:190px;rotate:8deg}
+.deco.d1{left:calc(50% - 420px);top:120px;width:200px;rotate:-10deg;animation:bob 7s ease-in-out infinite}
+.deco.d2{left:calc(50% + 250px);top:420px;width:190px;rotate:8deg;animation:bob 7s ease-in-out -3s infinite}
 
 /* ===== Phone ===== */
 .phone{position:relative;width:390px;height:844px;flex:0 0 auto;padding:12px;border-radius:64px;background:#151515;z-index:1;
@@ -74,15 +74,16 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .hello b{display:block;font:700 26px/1.15 var(--font);letter-spacing:-.03em;color:var(--ink)}
 .avatar{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--lav);border:1.5px solid #151515;font:800 16px/1 var(--font);color:#151515}
 
-.best{position:relative;margin-top:20px;padding:20px;border-radius:28px;background:#000;color:#FAF3E6;overflow:hidden;min-height:196px}
-.best > img{position:absolute;right:-34px;top:0;width:200px}
+.best{position:relative;margin-top:20px;padding:20px;border-radius:28px;background:var(--lav);border:1.5px solid #151515;color:#151515;overflow:hidden;min-height:196px}
+.best > img{position:absolute;right:4px;top:22px;width:146px;animation:bob 6s ease-in-out infinite}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
 .best > :not(img){position:relative;z-index:1}
-.best .k{font:600 12px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;color:rgba(250,243,230,.7)}
+.best .k{font:600 12px/1 var(--font);letter-spacing:.08em;text-transform:uppercase;color:rgba(21,21,21,.65)}
 .best .s{display:flex;align-items:flex-start;gap:4px;margin-top:10px}
 .best .s b{font:700 76px/.9 var(--font);letter-spacing:-.06em}
-.best .s small{font:600 18px/1 var(--font);margin-top:10px;color:rgba(250,243,230,.75)}
+.best .s small{font:600 18px/1 var(--font);margin-top:10px;color:rgba(21,21,21,.7)}
 .best .r{margin-top:10px;font:500 14px/1.35 var(--font);max-width:56%}
-.best .r i{font-style:normal;color:rgba(250,243,230,.65)}
+.best .r i{font-style:normal;color:rgba(21,21,21,.65)}
 .acts{display:flex;gap:8px;margin-top:16px}
 .pillbtn{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 18px;border-radius:999px;background:var(--pink);color:#151515;border:1.5px solid #151515;font:700 15px/1 var(--font);
   transition:transform 150ms var(--ease)}
@@ -149,7 +150,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .js .grid.in .tile{opacity:1;transform:none;transition:opacity 450ms var(--ease) calc(var(--i) * 70ms + 250ms),transform 550ms var(--ease) calc(var(--i) * 70ms + 250ms),translate 150ms var(--ease)}
 @media (prefers-reduced-motion: reduce){
   .js .rv,.js .grid .tile{opacity:1;transform:none;transition:none}
-  *,*::before,*::after{transition-duration:0ms !important}
+  *,*::before,*::after{transition-duration:0ms !important;animation:none !important}
 }
 
 /* Tablet: header stacks */
@@ -218,7 +219,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
           </div>
 
           <div class="best" role="group" aria-label="Best fit waiting: 4.6 out of 5">
-            <img src="../assets/art/target.webp" alt="">
+            <img src="../assets/art/target-cut.webp" alt="">
             <p class="k">Best fit waiting</p>
             <div class="s"><b class="num">4.6</b><small>/ 5</small></div>
             <p class="r">AI engineer<br>Northwind Labs<br><i>Bengaluru · 18 to 24 LPA</i></p>
