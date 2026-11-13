@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propelo home (sample)</title>
+<meta name="description" content="Sample of the new Propelo home page: a job search workspace that finds fresh roles on company career pages and helps you apply in your own words.">
+<meta name="theme-color" content="#FAF3E6">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== Tokens: colours taken from the Propelo illustrations ===== */
+:root{
+  --cream:#FAF3E6; --paper:#FFF9F1; --sand:#F1E8DA; --sand-2:#E9DECD; --line:#E2D6C4;
+  --ink:#151515; --text:#4F4A44; --muted:#6E675D; --ghost:#EDE2D1; --dash:#9F978A;
+  --pink:#FF85BA; --orange:#FF7034; --lav:#BDB6FC; --yellow:#FCF15C; --gold:#FCC63E;
+  --pink-t:#FFDCEB; --orange-t:#FFE1D2; --lav-t:#E7E3FF; --yellow-t:#FBF6C2;
+  --night:#000; --on-color:#151515; --btn:#151515; --btn-ink:#FAF3E6;
+  --font:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r-card:28px; --r-sm:12px;
+  --gutter:32px; --max:1440px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --cream:#12110F; --paper:#1B1916; --sand:#1E1C19; --sand-2:#2A2722; --line:#2F2B26;
+  --ink:#F3ECE0; --text:#D6CFC3; --muted:#9C958A; --ghost:#221F1B; --dash:#5E584F;
+  --pink-t:#3A2430; --orange-t:#3A271E; --lav-t:#27243A; --yellow-t:#33311C;
+  --btn:#F3ECE0; --btn-ink:#12110F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --cream:#12110F; --paper:#1B1916; --sand:#1E1C19; --sand-2:#2A2722; --line:#2F2B26;
+  --ink:#F3ECE0; --text:#D6CFC3; --muted:#9C958A; --ghost:#221F1B; --dash:#5E584F;
+  --pink-t:#3A2430; --orange-t:#3A271E; --lav-t:#27243A; --yellow-t:#33311C;
+  --btn:#F3ECE0; --btn-ink:#12110F; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--cream);color:var(--text);font:400 17px/1.6 var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{display:block;max-width:100%}
+img{height:auto}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,p,ul{margin:0}
+ul{padding:0;list-style:none}
+.wrap{max-width:var(--max);margin:0 auto;padding-inline:var(--gutter)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:10px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ===== Shared pieces ===== */
+.tags{display:flex;flex-wrap:wrap;gap:12px}
+.tag{display:inline-flex;align-items:center;height:44px;padding:0 22px;border-radius:999px;border:1.5px solid #151515;color:var(--on-color);
+  font:600 15px/1 var(--font);letter-spacing:.04em;text-transform:uppercase}
+.tag.pink{background:var(--pink)} .tag.lav{background:var(--lav)} .tag.yellow{background:var(--yellow)} .tag.orange{background:var(--orange)}
+.dtag{display:inline-flex;align-items:center;height:38px;padding:0 16px;border:1.5px dashed var(--dash);border-radius:var(--r-sm);
+  color:var(--text);font:600 14px/1 var(--font);letter-spacing:.06em;text-transform:uppercase}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;height:56px;padding:0 30px;border-radius:999px;border:0;cursor:pointer;
+  background:var(--btn);color:var(--btn-ink);font:600 16px/1 var(--font);letter-spacing:.05em;text-transform:uppercase;
+  transition:transform 150ms var(--ease),background-color 150ms var(--ease),color 150ms var(--ease)}
+.btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 150ms var(--ease)}
+.btn:hover svg{transform:translateY(2px)}
+.btn.go:hover svg{transform:translateX(3px)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.btn.sm{height:44px;padding:0 20px;font-size:14px}
+.ghostnum{position:absolute;right:var(--gutter);font:600 clamp(96px,10.5vw,168px)/.8 var(--font);letter-spacing:-.05em;color:var(--ghost);pointer-events:none;user-select:none;z-index:0}
+.lede{position:relative;z-index:1;font:400 clamp(34px,4.3vw,64px)/1.16 var(--font);letter-spacing:-.035em;color:var(--text);text-indent:1.4em;max-width:68%}
+.lede b{font-weight:600;color:var(--ink)}
+.card{background:var(--sand);border-radius:var(--r-card)}
+.mini-ico{flex:0 0 auto;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:1.5px solid #151515}
+.mini-ico img{width:34px;height:34px;object-fit:contain}
+.bg-pink{background:var(--pink)} .bg-orange{background:var(--orange)} .bg-lav{background:var(--lav)} .bg-yellow{background:var(--yellow)} .bg-gold{background:var(--gold)}
+.t-pink{background:var(--pink-t)} .t-orange{background:var(--orange-t)} .t-lav{background:var(--lav-t)} .t-yellow{background:var(--yellow-t)}
+
+/* Stickers (transparent cut-outs) and night tiles (the glowing originals) */
+.sticker{transition:transform 260ms var(--ease)}
+.has-sticker:hover .sticker{transform:rotate(-4deg) scale(1.04)}
+.night{position:relative;overflow:hidden;background:var(--night);border-radius:var(--r-card);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.night > img.glow{width:100%;height:100%;object-fit:cover;transition:transform 400ms var(--ease)}
+.night:hover > img.glow{transform:scale(1.03)}
+.cap{position:absolute;left:20px;bottom:20px;display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 18px;border-radius:999px;background:#FAF3E6;color:#151515;font:600 15px/1 var(--font)}
+.cap i{width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 1.5px #151515}
+.spark{width:28px;height:28px}
+.spark path{fill:var(--yellow);stroke:#151515;stroke-width:5;stroke-linejoin:round}
+
+/* ===== Nav ===== */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:24px;height:96px}
+.brand{display:flex;align-items:center;gap:6px;font:800 30px/1 var(--font);letter-spacing:-.05em;color:var(--ink)}
+.brand .spark{width:22px;height:22px;margin-top:-14px}
+.links{display:flex;align-items:center;gap:32px;font:500 16px/1 var(--font);color:var(--text)}
+.links a:not(.btn){position:relative;padding:8px 0}
+.links a:not(.btn)::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:2px;border-radius:2px;background:var(--pink);transform:scaleX(0);transform-origin:left;transition:transform 180ms var(--ease)}
+.links a:not(.btn):hover{color:var(--ink)}
+.links a:not(.btn):hover::after{transform:scaleX(1)}
+
+/* ===== 01 Hero ===== */
+.hero{position:relative;padding-top:40px;padding-bottom:128px}
+.hero .ghostnum{top:40px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:48px;align-items:start;margin-top:48px}
+.hero .lede{max-width:none}
+.hero-art{position:relative;aspect-ratio:3/2;margin-top:8px}
+.hero-art .night{position:absolute;inset:0}
+.fitchip{position:absolute;left:-20px;bottom:-24px;display:grid;gap:2px;padding:14px 18px;border-radius:20px;background:var(--yellow);border:1.5px solid #151515;color:#151515;rotate:-4deg;z-index:2}
+.fitchip b{font:700 30px/1 var(--font);letter-spacing:-.03em}
+.fitchip span{font:500 13px/1.2 var(--font)}
+.hero-foot{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:48px;align-items:end;margin-top:72px}
+.hero-foot > .btn{justify-self:start}
+.notes{display:grid;gap:40px}
+.note h2{display:flex;align-items:center;gap:16px;font:600 19px/1.2 var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.note p{margin-top:16px;font-size:18px;line-height:1.65}
+
+/* ===== Bento: where the roles come from ===== */
+.bento{display:grid;grid-template-columns:minmax(0,.58fr) minmax(0,1fr);gap:16px}
+.sources{padding:40px;display:flex;flex-direction:column}
+.bars{display:grid;gap:30px;margin-top:40px}
+.bar-row{display:grid;grid-template-columns:28px 1fr;column-gap:16px;row-gap:12px;align-items:center}
+.dot{width:28px;height:28px;border-radius:50%;border:1.5px solid #151515}
+.bar-row p{font:500 19px/1.35 var(--font);color:var(--ink)}
+.bar-line{grid-column:1 / -1;display:grid;grid-template-columns:1fr 92px;align-items:center;gap:16px}
+.track{height:22px;border-radius:999px;background:var(--paper);overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--line)}
+.fill{height:100%;border-radius:999px;box-shadow:inset 0 0 0 1.5px #151515;transform-origin:left;transform:scaleX(var(--v))}
+.js .rv .fill{transform:scaleX(0)}
+.js .rv.in .fill{transform:scaleX(var(--v));transition:transform 900ms var(--ease) 250ms}
+.pct{text-align:right;font:600 32px/1 var(--font);letter-spacing:-.03em;color:var(--ink)}
+.foot{margin-top:auto;padding-top:40px;font-size:13px;line-height:1.55;color:var(--muted)}
+.right-col{display:grid;grid-template-rows:minmax(0,1.5fr) auto;gap:16px}
+.fresh{position:relative;overflow:hidden;min-height:420px;border-radius:var(--r-card)}
+.fresh .sticker{position:absolute;right:5%;bottom:-9%;width:33%;max-width:330px}
+.fresh h3{position:absolute;right:6%;top:40px;max-width:40%;text-align:right;font:600 clamp(24px,2.4vw,36px)/1.1 var(--font);letter-spacing:-.03em;color:#151515;z-index:3}
+.role{position:absolute;left:40px;top:40px;width:min(270px,44%);padding:24px;border-radius:24px;background:#FFF9F1;border:1.5px solid #151515;color:#151515;rotate:-2deg;z-index:2}
+.role .top{display:flex;justify-content:space-between;align-items:center}
+.role .lg{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--orange);border:1.5px solid #151515;font:800 18px/1 var(--font)}
+.role .new{padding:4px 10px;border-radius:999px;background:var(--yellow);border:1.5px solid #151515;font:700 11px/1.2 var(--font);letter-spacing:.06em;text-transform:uppercase}
+.role b{display:block;margin-top:20px;font:600 21px/1.2 var(--font)}
+.role .meta{margin-top:6px;font-size:15px;line-height:1.45;color:#4F4A44}
+.role .lbl{margin-top:24px;font:600 12px/1 var(--font);letter-spacing:.06em;text-transform:uppercase;color:#6E675D}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips span{padding:5px 10px;border-radius:999px;border:1.5px solid #151515;font:600 12px/1 var(--font)}
+.role .src{margin-top:18px;padding-top:14px;border-top:1.5px dashed #E2D6C4;font-size:13px;color:#6E675D}
+.stat{position:relative;overflow:hidden;padding:40px 48px;display:flex;flex-direction:column;justify-content:center;min-height:260px}
+.big{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;color:var(--ink)}
+.big b{font:700 clamp(72px,8.6vw,140px)/.9 var(--font);letter-spacing:-.06em}
+.big span{font:500 clamp(22px,2.2vw,32px)/1 var(--font);letter-spacing:-.02em}
+.stat p{margin-top:14px;font-size:19px;max-width:28em}
+.stat .sticker{position:absolute;right:28px;top:50%;width:min(190px,22%);margin-top:-95px}
+.mini{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;max-width:calc(100% - 200px)}
+.mini span{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:999px;background:var(--paper);box-shadow:inset 0 0 0 1.5px var(--line);font-size:14px;color:var(--text)}
+.mini b{color:var(--ink);font-weight:700}
+
+/* ===== Why searches stall: five stickers on the board ===== */
+.stall{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin-top:120px;padding:0 8px}
+.prob{position:relative;margin-left:-14px;min-height:300px;padding:32px 28px;border-radius:var(--r-card);border:1.5px solid #151515;color:#151515;display:flex;flex-direction:column;
+  transition:translate 200ms var(--ease),rotate 200ms var(--ease)}
+.prob:first-child{margin-left:0}
+.prob .n{font:700 clamp(40px,3.6vw,56px)/1 var(--font);letter-spacing:-.05em}
+.prob .d{margin-top:auto;font:500 clamp(16px,1.35vw,20px)/1.35 var(--font)}
+.prob .spark{position:absolute;right:20px;top:24px;width:34px;height:34px}
+.p1{background:var(--yellow);rotate:-3deg;z-index:1}
+.p2{background:var(--lav);rotate:2deg;top:28px;z-index:2}
+.p3{background:var(--pink);rotate:-1.5deg;z-index:3}
+.p4{background:var(--orange);rotate:2.5deg;top:36px;z-index:2}
+.p5{background:#FFF9F1;rotate:-2deg;z-index:1}
+.prob:hover{rotate:0deg;translate:0 -6px;z-index:6}
+.gets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;margin:120px 0 0 auto;width:min(100%,68%)}
+.gets h3{display:flex;align-items:center;gap:16px;font:600 19px/1.2 var(--font);letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.gets ul{margin-top:18px;display:grid;gap:10px}
+.gets li{display:grid;grid-template-columns:22px 1fr;gap:12px;font-size:18px;line-height:1.5}
+.gets li::before{content:"";width:12px;height:12px;margin-top:7px;border-radius:50%;border:1.5px solid #151515;background:var(--c,var(--pink))}
+
+/* ===== 02 Features ===== */
+.sect{position:relative;padding-top:168px}
+.sect .ghostnum{top:160px}
+.sect .lede{margin-top:48px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:64px}
+.col{display:grid;gap:16px;align-content:start}
+.fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fam{display:flex;align-items:center;justify-content:space-between;gap:8px;height:60px;padding:0 10px 0 18px;border-radius:999px;border:1.5px solid #151515;color:#151515;font:600 16px/1.1 var(--font);
+  transition:translate 180ms var(--ease)}
+.fam:hover{translate:0 -2px}
+.fam span{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#151515;color:#FAF3E6}
+.fam svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.tall{aspect-ratio:4/5}
+.tall > img.glow{object-fit:contain;object-position:50% 8%}
+.float{position:absolute;z-index:2;padding:18px 20px;border-radius:20px;background:#FAF3E6;color:#151515;border:1.5px solid #151515}
+.note2{left:20px;right:20px;bottom:20px;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:center}
+.note2 .mini-ico{width:48px;height:48px}
+.note2 b{font:600 16px/1.3 var(--font)}
+.note2 p{font-size:13px;line-height:1.45;color:#4F4A44}
+.note2 small{display:block;margin-top:6px;font:600 12px/1 var(--font);color:#6E675D}
+.features{padding:44px 40px 32px}
+.flist{margin-top:32px;display:grid;gap:4px}
+.frow .mini-ico{width:56px;height:56px}
+.frow .mini-ico img{width:42px;height:42px}
+.frow{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:16px;min-height:88px;padding:0 12px;border-radius:20px;
+  transition:background-color 180ms var(--ease),translate 180ms var(--ease)}
+.frow:hover{background:var(--paper);translate:4px 0}
+.frow span:nth-child(2){font:500 clamp(17px,1.3vw,21px)/1.3 var(--font);color:var(--ink)}
+.frow em{font:600 clamp(18px,1.5vw,24px)/1 var(--font);font-style:normal;letter-spacing:-.02em;color:var(--muted)}
+.score{left:20px;right:20px;bottom:20px;padding:0;overflow:hidden}
+.score .hd{display:flex;gap:12px;align-items:center;padding:14px 18px;background:var(--yellow);border-bottom:1.5px solid #151515}
+.score .hd b{font:700 17px/1.2 var(--font)}
+.score .hd small{display:block;font:500 12px/1.3 var(--font)}
+.score .hd .pc{margin-left:auto;font:700 30px/1 var(--font);letter-spacing:-.04em}
+.score dl{margin:0;padding:14px 18px 6px;display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:13px}
+.score dt{color:#6E675D} .score dd{margin:0;color:#151515;font-weight:500}
+.score .open{display:block;padding:8px 18px 14px;font:700 13px/1 var(--font);color:#151515}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.minic{position:relative;padding:12px 12px 16px;border-radius:20px;background:var(--sand);display:flex;flex-direction:column;gap:10px;transition:translate 180ms var(--ease)}
+.minic:hover{translate:0 -2px}
+.chip{align-self:flex-start;padding:4px 10px;border-radius:999px;border:1.5px solid #151515;font:700 11px/1.2 var(--font);letter-spacing:.04em;text-transform:uppercase;color:#151515}
+.thumb{display:grid;place-items:center;height:96px;border-radius:14px}
+.thumb img{height:78px;width:auto}
+.minic b{font:600 14px/1.35 var(--font);color:var(--ink)}
+.minic small{font:500 12px/1 var(--font);color:var(--muted)}
+
+/* ===== 03 Night board ===== */
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:16px;margin-top:64px;height:clamp(560px,52vw,760px)}
+.board .night:nth-child(1){grid-column:1 / 3;grid-row:1 / 3}
+.board .night:nth-child(2){grid-column:3 / 5}
+.board .night > img.glow{position:absolute;left:0;right:0;bottom:0;height:76%;object-fit:contain;object-position:50% 100%}
+.board .night:nth-child(1) > img.glow{height:80%}
+.board .night h3{position:absolute;left:24px;top:24px;right:24px;font:600 clamp(18px,1.6vw,26px)/1.15 var(--font);letter-spacing:-.02em;color:#FAF3E6}
+.board .night h3 small{display:block;margin-top:8px;font:400 15px/1.45 var(--font);letter-spacing:0;color:rgba(250,243,230,.72);max-width:26em}
+.board .night:nth-child(1) h3{font-size:clamp(26px,2.6vw,40px);left:40px;top:40px}
+.board .night:nth-child(1) .cap{left:40px;bottom:40px}
+
+/* ===== CTA + footer ===== */
+.cta{position:relative;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:168px 96px}
+.cta .lede{text-indent:0;max-width:16ch}
+.cta .acts{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}
+.cta > .sticker{position:absolute;right:4%;top:40px;width:min(200px,18vw);rotate:10deg}
+.foot-nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;padding-block:32px 48px;border-top:1.5px solid var(--line);font-size:15px}
+.foot-nav nav{display:flex;flex-wrap:wrap;gap:24px}
+.foot-nav nav a:hover{color:var(--ink)}
+
+/* ===== Motion: entrance once, transform + opacity only ===== */
+.js .rv{opacity:0;transform:translateY(16px)}
+.js .rv.in{opacity:1;transform:none;transition:opacity 450ms var(--ease) calc(var(--i,0) * 70ms),transform 450ms var(--ease) calc(var(--i,0) * 70ms)}
+.js .pop{opacity:0;transform:translateY(16px) scale(.94)}
+.js .pop.in{opacity:1;transform:none;transition:opacity 450ms var(--ease) calc(var(--i,0) * 70ms + 100ms),transform 600ms var(--ease) calc(var(--i,0) * 70ms + 100ms)}
+@media (prefers-reduced-motion: reduce){
+  .js .rv,.js .rv.in,.js .pop,.js .pop.in{opacity:1;transform:none;transition:none}
+  .js .rv .fill{transform:scaleX(var(--v))}
+  *,*::before,*::after{transition-duration:0ms !important}
+}
+
+/* ===== Tablet ===== */
+@media (max-width:1100px){
+  .links a:not(.btn){display:none}
+  .hero-grid,.hero-foot{grid-template-columns:1fr}
+  .hero-art{max-width:640px}
+  .hero-foot{gap:48px}
+  .hero-foot > .btn{order:2}
+  .bento{grid-template-columns:1fr}
+  .stall{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:24px}
+  .prob:nth-child(4){margin-left:0}
+  .three{grid-template-columns:1fr 1fr}
+  .three .col:nth-child(2){grid-row:1;grid-column:1 / -1}
+  .gets{width:100%}
+  .lede{max-width:100%}
+  .cta{grid-template-columns:1fr}
+  .cta .acts{justify-content:flex-start}
+}
+@media (max-width:820px){
+  :root{--gutter:16px}
+  .nav{height:72px}
+  .brand{font-size:26px}
+  .hero{padding-bottom:96px}
+  .hero .ghostnum{top:44px;font-size:72px}
+  .sect .ghostnum{top:116px;font-size:72px}
+  .hero-grid,.sect .lede{margin-top:32px}
+  .fitchip{right:8px}
+  .sources,.features{padding:32px 24px}
+  .stat{padding:32px 24px 168px}
+  .mini{max-width:none}
+  .stat .sticker{top:auto;bottom:16px;margin-top:0;right:20px;width:140px}
+  .fresh{min-height:540px}
+  .role{left:20px;top:20px;width:min(270px,80%)}
+  .fresh h3{top:auto;bottom:28px;right:auto;left:24px;text-align:left;max-width:50%}
+  .fresh .sticker{width:56%;right:-4%;bottom:-4%}
+  .stall{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:72px;row-gap:20px}
+  .prob{margin-left:0;min-height:220px;top:0 !important;padding:24px 20px}
+  .prob:nth-child(odd){margin-right:-8px}
+  .prob:last-child{grid-column:1 / -1;min-height:170px;margin-right:0}
+  .gets{grid-template-columns:1fr;margin-top:72px;gap:40px}
+  .three{grid-template-columns:1fr}
+  .three .col:nth-child(2){grid-column:auto}
+  .sect{padding-top:112px}
+  .board{grid-template-columns:1fr 1fr;grid-template-rows:none;height:auto}
+  .board .night:nth-child(1){grid-column:1 / -1;grid-row:auto;aspect-ratio:1}
+  .board .night:nth-child(2){grid-column:1 / -1;aspect-ratio:3/2}
+  .board .night:nth-child(n+3){aspect-ratio:3/4}
+  .board .night:nth-child(1) h3{left:24px;top:24px}
+  .board .night:nth-child(1) .cap{left:20px;bottom:20px}
+  .board .night h3 small{display:none}
+  .board .night:nth-child(-n+2) h3 small{display:block}
+  .cta{padding-block:120px 64px}
+  .cta > .sticker{top:24px;width:110px}
+  .btn{height:52px;padding:0 24px;font-size:15px}
+}
+@media (max-width:420px){
+  .ghostnum{display:none}
+  .minis{grid-template-columns:1fr 1fr}
+  .minis .minic:last-child{display:none}
+  .pct{font-size:26px}
+  .bar-line{grid-template-columns:1fr 70px}
+  .fam{font-size:14px;padding-left:14px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="spark" viewBox="0 0 100 100"><path d="M50 4 L58 36 L88 18 L66 44 L96 52 L64 60 L80 90 L52 68 L44 98 L38 66 L8 82 L30 56 L4 46 L36 40 L20 12 L46 32 Z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<header class="wrap nav">
+  <a class="brand" href="./" aria-label="Propelo home">propelo<svg class="spark" viewBox="0 0 100 100" aria-hidden="true"><use href="#spark"/></svg></a>
+  <nav class="links" aria-label="Main">
+    <a href="../jobs.html">Job board</a>
+    <a href="#features">Features</a>
+    <a href="#night">How it works</a>
+    <a href="#start">Pricing</a>
+    <a href="../docs.html">Docs</a>
+    <a class="btn sm" href="https://careeros-web.onrender.com/signup">Start free</a>
+  </nav>
+</header>
+
+<main>
+<!-- 01 · About -->
+<section class="wrap hero" aria-labelledby="h-about">
+  <div class="tags rv"><span class="tag pink">Job search</span><span class="tag lav">India first</span></div>
+  <span class="ghostnum" aria-hidden="true">01</span>
+  <div class="hero-grid">
+    <h1 class="lede rv" id="h-about">Propelo is a job search workspace that finds fresh roles on companies' own career pages, checks every one, and helps you apply in your own words. You stay in charge, and you press Submit.</h1>
+    <div class="hero-art pop">
+      <div class="night"><img class="glow" src="../assets/art/target.webp" width="1200" height="800" alt="A bullseye with an arrow in the centre"></div>
+      <div class="fitchip" aria-label="Example fit score: 4.4 out of 5"><b class="num">4.4 / 5</b><span>fit, with the evidence</span></div>
+    </div>
+  </div>
+  <div class="hero-foot">
+    <a class="btn rv" href="#how">Discover<svg><use href="#i-down"/></svg></a>
+    <div class="notes">
+      <div class="note rv">
+        <h2><span class="mini-ico t-lav"><img src="../assets/art/speed-cut.webp" alt=""></span>What it does</h2>
+        <p>It searches company job boards every hour, keeps the roles that fit your filters and shows why each one passed. It scores your fit with evidence, tailors your resume line by line, and tracks every reply in one place.</p>
+      </div>
+      <div class="note rv">
+        <h2><span class="mini-ico t-orange"><img src="../assets/art/key-cut.webp" alt=""></span>Why it's different</h2>
+        <p>Nothing is invented. Every resume line comes from your profile, every role links to the company's own posting, and nothing is sent without you. It never applies on LinkedIn or Naukri for you, so your accounts stay safe.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bento · where the roles come from -->
+<section class="wrap" id="how" aria-label="Where the roles come from">
+  <div class="bento">
+    <div class="card sources rv">
+      <span class="dtag" style="align-self:flex-start">Where the roles come from</span>
+      <div class="bars">
+        <div class="bar-row"><span class="dot bg-orange" aria-hidden="true"></span><p>Workday career sites</p>
+          <div class="bar-line"><div class="track"><div class="fill bg-orange" style="--v:.31"></div></div><span class="pct num">31%</span></div></div>
+        <div class="bar-row"><span class="dot bg-pink" aria-hidden="true"></span><p>Greenhouse job boards</p>
+          <div class="bar-line"><div class="track"><div class="fill bg-pink" style="--v:.21"></div></div><span class="pct num">21%</span></div></div>
+        <div class="bar-row"><span class="dot bg-lav" aria-hidden="true"></span><p>Ashby job boards</p>
+          <div class="bar-line"><div class="track"><div class="fill bg-lav" style="--v:.14"></div></div><span class="pct num">14%</span></div></div>
+        <div class="bar-row"><span class="dot bg-yellow" aria-hidden="true"></span><p>Lever job boards</p>
+          <div class="bar-line"><div class="track"><div class="fill bg-yellow" style="--v:.12"></div></div><span class="pct num">12%</span></div></div>
+        <div class="bar-row"><span class="dot bg-gold" aria-hidden="true"></span><p>SmartRecruiters and twelve other systems</p>
+          <div class="bar-line"><div class="track"><div class="fill bg-gold" style="--v:.22"></div></div><span class="pct num">22%</span></div></div>
+      </div>
+      <p class="foot">Shares of the 32,776 open roles found in Propelo's scan of 1,830 company job boards on 31 October 2026. On the live site these figures come from the latest scan.</p>
+    </div>
+    <div class="right-col">
+      <div class="fresh t-lav has-sticker rv">
+        <div class="role" role="img" aria-label="Example role card: Backend engineer at Northwind Labs, Bengaluru hybrid, 18 to 24 LPA">
+          <div class="top"><span class="lg">N</span><span class="new">New today</span></div>
+          <b>Backend engineer</b>
+          <p class="meta">Northwind Labs · Bengaluru, hybrid<br>18 to 24 LPA</p>
+          <p class="lbl">Skills you match</p>
+          <div class="chips"><span class="bg-orange">Python</span><span class="bg-pink">Go</span><span class="bg-yellow">SQL</span><span class="bg-lav">+4</span></div>
+          <p class="src">From Greenhouse · checked 2 hours ago</p>
+        </div>
+        <h3>Fresh from career pages, every hour</h3>
+        <img class="sticker" src="../assets/art/speed-cut.webp" width="790" height="900" alt="">
+      </div>
+      <div class="card stat has-sticker rv">
+        <div class="big"><b class="num">32,776</b><span>open roles</span></div>
+        <p>found at 4,678 companies in one scan, each linked to the company's own posting</p>
+        <div class="mini"><span><b class="num">771</b> re-listed roles flagged</span><span><b class="num">1,814</b> marked suspicious</span><span><b class="num">1,291</b> companies with their own logo</span></div>
+        <img class="sticker" src="../assets/art/calculator-cut.webp" width="900" height="852" alt="">
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sr">Why job searches stall</h2>
+  <div class="stall">
+    <div class="prob p1 pop"><span class="n">01</span><p class="d">Roles that closed weeks ago still sitting on big job boards</p></div>
+    <div class="prob p2 pop"><span class="n">02</span><p class="d">Resumes padded with claims you can't defend in an interview</p></div>
+    <div class="prob p3 pop"><svg class="spark" viewBox="0 0 100 100" aria-hidden="true"><use href="#spark"/></svg><span class="n">03</span><p class="d">The same twenty questions on every application form</p></div>
+    <div class="prob p4 pop"><span class="n">04</span><p class="d">Bots that apply everywhere and get your accounts flagged</p></div>
+    <div class="prob p5 pop"><span class="n">05</span><p class="d">No single place that shows which applications are still alive</p></div>
+  </div>
+
+  <div class="gets">
+    <div class="rv">
+      <h3><span class="mini-ico t-yellow"><img src="../assets/art/checklist-cut.webp" alt=""></span>For students and freshers</h3>
+      <ul>
+        <li style="--c:var(--yellow)">internships and new-grad roles in their own lists</li>
+        <li style="--c:var(--yellow)">CGPA, branch and PIN code filled on campus forms</li>
+        <li style="--c:var(--yellow)">mock interviews for campus, HR and technical rounds</li>
+        <li style="--c:var(--yellow)">saved answers reused on every form that asks</li>
+        <li style="--c:var(--yellow)">a resume score against each posting</li>
+      </ul>
+    </div>
+    <div class="rv">
+      <h3><span class="mini-ico t-pink"><img src="../assets/art/trophy-cut.webp" alt=""></span>For working professionals</h3>
+      <ul>
+        <li>roles that state 20 LPA and up, in one tap</li>
+        <li>notice period and expected CTC filled for you</li>
+        <li>follow-ups on day 7 and day 14, drafted</li>
+        <li>offer questions and negotiation emails</li>
+        <li>replies from your inbox matched to each application</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · Features -->
+<section class="wrap sect" id="features" aria-labelledby="h-features">
+  <div class="tags rv"><span class="tag yellow">Workspace</span><span class="tag pink">Features</span></div>
+  <span class="ghostnum" aria-hidden="true">02</span>
+  <h2 class="lede rv" id="h-features">Everything between a fresh posting and a signed offer, in one calm workspace</h2>
+
+  <div class="three">
+    <div class="col">
+      <div class="fams rv" aria-label="Job families">
+        <a class="fam bg-yellow" href="#features">Software<span><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></span></a>
+        <a class="fam bg-pink" href="#features">AI &amp; data<span><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></span></a>
+        <a class="fam bg-lav" href="#features">Product &amp; design<span><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></span></a>
+        <a class="fam bg-orange" href="#features">Marketing<span><svg viewBox="0 0 24 24"><use href="#i-plus"/></svg></span></a>
+      </div>
+      <div class="night tall pop">
+        <img class="glow" src="../assets/art/checklist.webp" width="1200" height="800" alt="A checklist with every box ticked and a pencil">
+        <div class="float note2">
+          <span class="mini-ico t-pink"><img src="../assets/art/calendar-cut.webp" alt=""></span>
+          <div><b>Interview on Thursday</b><p>Your prep pack is ready: three stories from your profile.</p><small>10:30 to 11:15</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card features rv" style="height:100%">
+        <span class="dtag">Key features</span>
+        <ul class="flist">
+          <li class="frow"><span class="mini-ico t-lav"><img src="../assets/art/speed-cut.webp" alt=""></span><span>Fresh roles from career pages</span><em>02.1</em></li>
+          <li class="frow"><span class="mini-ico t-pink"><img src="../assets/art/target-cut.webp" alt=""></span><span>Fit score with the evidence</span><em>02.1</em></li>
+          <li class="frow"><span class="mini-ico t-yellow"><img src="../assets/art/checklist-cut.webp" alt=""></span><span>Resume tailored line by line</span><em>02.2</em></li>
+          <li class="frow"><span class="mini-ico t-lav"><img src="../assets/art/laptop-cut.webp" alt=""></span><span>Autofill for company forms</span><em>02.2</em></li>
+          <li class="frow"><span class="mini-ico t-pink"><img src="../assets/art/calendar-cut.webp" alt=""></span><span>Replies and interviews tracked</span><em>02.3</em></li>
+          <li class="frow"><span class="mini-ico t-yellow"><img src="../assets/art/trophy-cut.webp" alt=""></span><span>Interview and offer coach</span><em>02.3</em></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="night tall pop">
+        <img class="glow" src="../assets/art/laptop.webp" width="1200" height="800" alt="A laptop showing code, with a gear">
+        <div class="float score">
+          <div class="hd"><div><b>Resume score</b><small>vs. Backend engineer</small></div><span class="pc num">82%</span></div>
+          <dl><dt>Matched</dt><dd>14 of 17 terms</dd><dt>Missing</dt><dd>Kafka, gRPC, Terraform</dd><dt>Edits</dt><dd>6 lines to review</dd><dt>Claims</dt><dd>all from your profile</dd></dl>
+          <a class="open" href="#features">Open review ↗</a>
+        </div>
+      </div>
+      <div class="minis">
+        <a class="minic has-sticker rv" href="#features"><span class="chip bg-pink">Interview</span>
+          <span class="thumb t-pink"><img class="sticker" src="../assets/art/target-cut.webp" alt=""></span>
+          <b>Mock HR round, five questions</b><small>12 min</small></a>
+        <a class="minic has-sticker rv" href="#features"><span class="chip bg-lav">Email</span>
+          <span class="thumb t-lav"><img class="sticker" src="../assets/art/calendar-cut.webp" alt=""></span>
+          <b>Ask for more time on an assessment</b><small>2 min</small></a>
+        <a class="minic has-sticker rv" href="#features"><span class="chip bg-yellow">Offer</span>
+          <span class="thumb t-yellow"><img class="sticker" src="../assets/art/calculator-cut.webp" alt=""></span>
+          <b>Negotiate an offer, politely</b><small>4 min</small></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 · Night board -->
+<section class="wrap sect" id="night" aria-labelledby="h-night">
+  <div class="tags rv"><span class="tag orange">While you sleep</span><span class="tag lav">Extension</span></div>
+  <span class="ghostnum" aria-hidden="true">03</span>
+  <h2 class="lede rv" id="h-night">The search runs every hour, forms fill in one click, and the final Submit always stays yours.</h2>
+  <div class="board">
+    <div class="night pop"><img class="glow" src="../assets/art/goggles.webp" width="1200" height="800" alt="Sleepy goggles under two stars">
+      <h3>Searches while you sleep<small>About 2,000 company career pages, checked every hour. Wake up to roles that are still open.</small></h3>
+      <span class="cap"><i></i>Hourly scan</span></div>
+    <div class="night pop"><img class="glow" src="../assets/art/calendar.webp" width="1200" height="800" alt="A calendar with ticked days and a clock">
+      <h3>Never miss a follow-up<small>Day 7 and day 14 nudges, interviews in your calendar.</small></h3></div>
+    <div class="night pop"><img class="glow" src="../assets/art/key.webp" width="1200" height="800" alt="An orange key with sparkles">
+      <h3>Your key, your data</h3></div>
+    <div class="night pop"><img class="glow" src="../assets/art/trophy.webp" width="1200" height="800" alt="A trophy with a star">
+      <h3>Celebrate the offer</h3></div>
+  </div>
+</section>
+
+<section class="wrap cta" id="start" aria-labelledby="h-cta">
+  <img class="sticker pop" src="../assets/art/target-cut.webp" width="898" height="900" alt="">
+  <h2 class="lede rv" id="h-cta">Start with your resume. <b>Propelo does the searching.</b></h2>
+  <div class="acts rv">
+    <a class="btn ghost" href="../jobs.html">See today's roles</a>
+    <a class="btn go" href="https://careeros-web.onrender.com/signup">Start free<svg><use href="#i-right"/></svg></a>
+  </div>
+</section>
+</main>
+
+<footer class="wrap foot-nav">
+  <a class="brand" href="./" style="font-size:24px">propelo<svg class="spark" viewBox="0 0 100 100" aria-hidden="true" style="width:18px;height:18px;margin-top:-10px"><use href="#spark"/></svg></a>
+  <nav aria-label="Footer">
+    <a href="../jobs.html">Job board</a>
+    <a href="../docs.html">Docs</a>
+    <a href="https://github.com/VishStack01/careeros">GitHub</a>
+    <a href="https://careeros-web.onrender.com/terms">Terms</a>
+    <a href="https://careeros-web.onrender.com/privacy">Privacy</a>
+  </nav>
+</footer>
+
+<script>
+(function(){
+  // Entrance: stagger siblings by 70 ms, play once.
+  var els = [].slice.call(document.querySelectorAll('.rv,.pop')), groups = new Map();
+  els.forEach(function(el){ var p = el.parentElement, n = groups.get(p) || 0; el.style.setProperty('--i', Math.min(n, 6)); groups.set(p, n + 1); });
+  if (!('IntersectionObserver' in window)) { els.forEach(function(el){ el.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:0.06});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
