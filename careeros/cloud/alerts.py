@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from . import repo
-from .db import Database, now_iso
+from .db import Database
 
 EVERY = {"daily": timedelta(hours=23), "weekly": timedelta(days=6, hours=23)}
 MAX_ROLES = 10

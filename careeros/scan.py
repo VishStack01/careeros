@@ -29,7 +29,7 @@ from pathlib import Path
 from . import extract, geo, paydata, signals, tags
 from .dedupe import canonical_url, fingerprint, job_id
 from .models import Job, iso
-from .sources import SCOUTS, FetchError, greenhouse, smartrecruiters
+from .sources import SCOUTS, greenhouse, smartrecruiters
 from .sources.aggregators import AGGREGATORS, MIN_HOURS
 
 TECH = re.compile(

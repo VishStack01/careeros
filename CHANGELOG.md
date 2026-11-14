@@ -25,6 +25,14 @@ All notable changes to CareerOS. The format follows [Keep a Changelog](https://k
 - The privacy notice covers Dodo Payments, contacts, the Gmail permission (with Google's Limited Use statement) and cookies; the terms cover Ultra, dollar billing and emails sent for you.
 - Website source bars reveal with a clipped edge instead of stretching, so their ends stay round.
 
+### Fixed (verification pass)
+- **The app version.** Inside the Android and iOS apps, Settings shows only your own plan, with no prices, other plans, currency switch or purchase buttons, as the stores require. "Continue with LinkedIn" is hidden there and Gmail is connected from the website, because both sign-ins would finish in the phone's browser instead of the app. Calendar events and stage dots have their colours back (they had all turned to ink). The writing tools menu is one scrolling row, the Gmail sending row stacks on phones, the role page title no longer starts a line with a dot, page header buttons start on the left, and in dark mode the bottom dock and "Your plan" badge have their own surface. The native shells are versioned 2.0.0.
+- Billing webhooks failed on PostgreSQL (a boolean `CASE`); caught by CI before release.
+- Recruiter emails go out during the sender's own working hours (the browser's time zone is saved when sending is set up), and odd documents, line breaks in a subject or a malformed address can no longer stop the queue.
+- A copilot question or mock interview isn't counted when the AI call fails.
+- `careeros cloud serve` and the worker exit at once when migrations are pending, instead of hanging; `careeros cloud check` catches a malformed or console `SMTP_URL` in production and half-configured Google or Ultra settings.
+- The website's plan cards are generated from the plan catalog, with a test that keeps them identical.
+
 ## [1.4.0] - 2026-11-14
 
 ### Changed

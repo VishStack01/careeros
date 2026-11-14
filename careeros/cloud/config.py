@@ -167,16 +167,25 @@ class Config:
             problems.append("PUBLIC_URL must be an https:// address in staging and production.")
         if not self.smtp_url:
             problems.append("SMTP_URL is required: sign-up and password reset send email.")
+        elif not self.smtp_url.startswith(("smtp://", "smtps://", "console://")):
+            problems.append("SMTP_URL must start with smtp://, smtps:// or console:// (for example smtps://user:password@smtp.example.com:465).")
+        elif self.smtp_url.startswith("console://") and self.app_env == "production":
+            problems.append("SMTP_URL is console:// in production: emails would only be printed to the log, so nobody could confirm their account.")
         if self.password_iterations < 310_000:
             problems.append("PASSWORD_ITERATIONS must be at least 310000.")
         if self.signup_mode not in ("open", "allowlist", "closed"):
             problems.append("SIGNUP_MODE must be open, allowlist or closed.")
         if len(self.secrets_key) < 32:
             problems.append("SECRETS_KEY must be a random string of at least 32 characters (it encrypts users' AI keys).")
-        if any((self.razorpay_key_id, self.razorpay_key_secret, self.razorpay_webhook_secret, self.razorpay_plan_pro)) and not self.razorpay_enabled:
+        if any((self.razorpay_key_id, self.razorpay_key_secret, self.razorpay_webhook_secret, self.razorpay_plan_pro, self.razorpay_plan_ultra)) and not self.razorpay_enabled:
             problems.append("Billing is half set up: set all of RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET and RAZORPAY_PLAN_PRO, or none.")
         if any((self.dodo_api_key, self.dodo_webhook_secret, self.dodo_product_pro)) and not self.dodo_enabled:
             problems.append("Dodo Payments is half set up: set all of DODO_API_KEY, DODO_WEBHOOK_SECRET and DODO_PRODUCT_PRO, or none.")
+        if any((self.dodo_api_key, self.dodo_webhook_secret, self.dodo_product_pro, self.dodo_product_ultra)) and not self.dodo_enabled:
+            if "Dodo Payments is half set up" not in " ".join(problems):
+                problems.append("Dodo Payments is half set up: set all of DODO_API_KEY, DODO_WEBHOOK_SECRET and DODO_PRODUCT_PRO, or none.")
+        if (self.google_client_id or self.google_client_secret) and not (self.google_client_id and self.google_client_secret):
+            problems.append("Gmail sending is half set up: set both GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET, or neither.")
         if self.billing_enabled and not self.support_email:
             problems.append("SUPPORT_EMAIL is required when payments are on: the refund and contact pages show it.")
         if "change_me" in self.database_url.lower():

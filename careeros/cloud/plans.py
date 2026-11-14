@@ -82,7 +82,7 @@ def catalog(cfg: Config) -> list[dict]:
                       "Matching every hour, so you see roles first",
                       f"{cfg.pro_ai_credits} AI actions a month: tailored resumes, cover letters, fit scores",
                       "Auto-apply up to 500 a month (25 a day), with a receipt for each",
-                      "Ask Propelo, the copilot, up to 60 questions a day",
+                      "Ask Propelo, the copilot, 60 questions a day, and 20 mock interviews a month",
                       "Recruiter emails sent from your Gmail, up to 10 a day, when you turn it on",
                       "Priority support"]},
         {"id": "ultra", "name": "Ultra", "priceInr": cfg.ultra_price_inr, "priceUsd": usd(cfg.ultra_price_usd_cents), "aiCredits": cfg.ultra_ai_credits,
@@ -175,6 +175,13 @@ def take_feature(c: Conn, cfg: Config, uid: str, plan: str, feature: str) -> tup
         nxt = "Ultra has no limit" if plan == "pro" else "Pro and Ultra allow more"
         return False, f"You've used your {limit} {noun}. {nxt}, or add your own AI key in Settings."
     return True, ""
+
+
+def refund_feature(c: Conn, uid: str, feature: str) -> None:
+    """Give back one use when the AI call behind it failed."""
+    if feature in FEATURES:
+        c.execute("UPDATE feature_usage SET count = count - 1 WHERE user_id = ? AND period = ? AND feature = ? AND count > 0",
+                  (uid, feature_period(FEATURES[feature][1]), feature))
 
 
 def feature_usage(c: Conn, cfg: Config, uid: str, plan: str) -> dict:

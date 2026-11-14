@@ -1,6 +1,6 @@
 {
   "name": "careeros-mobile",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Propelo for Android and iOS: the hosted Propelo web app in a native shell (Capacitor).",
   "license": "MIT",

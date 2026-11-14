@@ -204,6 +204,7 @@ def main(cfg: Config | None = None) -> None:
     logging.basicConfig(level=logging.INFO, format='{"t":"%(asctime)s","level":"%(levelname)s","logger":"%(name)s","msg":%(message)r}')
     db = Database(cfg.database_url, cfg.db_pool_min, cfg.db_pool_max)
     if db.pending_migrations():
+        db.close()
         raise SystemExit("Database migrations are pending. Run `careeros cloud migrate` first.")
     w = Worker(cfg, db)
     stop = threading.Event()

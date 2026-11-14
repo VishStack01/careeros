@@ -141,3 +141,37 @@ def test_security_txt_and_admin_audit(cloud):
 def test_privacy_page_covers_gmail_and_cookies(cloud):
     t = cloud.client().get("/privacy").text
     assert "Limited Use" in t and "Cookies" in t and "Dodo Payments" in t
+
+
+def test_website_plan_cards_match_the_catalog():
+    import html as h
+    from careeros.cloud.config import Config
+    from careeros.cloud.plans import catalog
+    page = (ROOT / "website" / "index.html").read_text(encoding="utf-8")
+    for cls, plan in (("", "free"), (" pro", "pro"), (" ultra", "ultra")):
+        block = re.search(r'<article class="price%s reveal">.*?<ul>(.*?)</ul>' % cls, page, re.S).group(1)
+        assert [h.unescape(x) for x in re.findall(r"<li>(.*?)</li>", block)] == catalog(Config())[["free", "pro", "ultra"].index(plan)]["features"]
+    for price in ("₹499", "₹1,199", "$22.50", "$48.50"):
+        assert price in page
+
+
+def test_app_version_shows_no_prices_or_outside_sign_ins():
+    app = (ROOT / "dashboard" / "app.html").read_text(encoding="utf-8")
+    assert ".in-app .curseg,.in-app .plan:not(.current),.in-app .plan .price,.in-app .web-only{display:none!important}" in app
+    assert "class=\"btn solid web-only\" href=\"api/mailbox/google/start\"" in app
+    auth = (ROOT / "careeros" / "cloud" / "static" / "auth.html").read_text(encoding="utf-8")
+    assert "if (!inApp) fetch('/api/auth/providers')" in auth
+
+
+def test_failed_ai_calls_give_the_use_back(cloud, monkeypatch):
+    from careeros import llm
+    monkeypatch.setenv("CAREEROS_LLM", "anthropic")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-server-key-0000")
+    monkeypatch.delenv("CAREEROS_LLM_FALLBACK", raising=False)
+
+    def boom(*a, **k):
+        raise llm.LLMError("overloaded")
+    monkeypatch.setattr(llm, "complete_json", boom)
+    c = cloud.user()
+    assert c.post("/api/ai", json={"prompt": "q", "json": True, "feature": "copilot"}).status_code == 502
+    assert c.get("/api/billing").json()["features"]["copilot"]["used"] == 0

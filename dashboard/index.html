@@ -1134,6 +1134,33 @@ input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb,var(--ink
 .tiles4 .ctile{animation:rise 420ms var(--ease) both}
 .tiles4 .ctile:nth-child(2){animation-delay:60ms} .tiles4 .ctile:nth-child(3){animation-delay:120ms} .tiles4 .ctile:nth-child(4){animation-delay:180ms}
 @media (prefers-reduced-motion: reduce){.enter,.tiles4 .ctile{animation:none}}
+
+/* ---------- 2.0: colours that carry meaning, and the app version ---------- */
+/* Stages and calendar events use the pastels again (the 1.4 pass had turned them all to ink). */
+.stage-dot,.bdot,.evk{box-shadow:inset 0 0 0 1px rgba(21,21,21,.55)}
+.stage-dot.ready,.stage-dot.approved,.bd-ready{background:var(--yellow)}
+.stage-dot.applied,.stage-dot.assessment,.bd-applied{background:var(--pink)}
+.stage-dot.screen,.stage-dot.interview,.bd-screen,.bd-interview{background:var(--orange)}
+.stage-dot.offer,.bd-offer{background:var(--gold,#FCC63E)}
+.evk.interview{background:var(--orange)}.evk.follow{background:var(--lav)}.evk.deadline{background:var(--yellow)}.evk.applied{background:var(--pink)}
+.cev.interview{background:var(--orange);color:#151515}.cev.follow{background:var(--lav);color:#151515}.cev.deadline{background:var(--yellow);color:#151515}.cev.applied{background:var(--pink);color:#151515}
+/* Writing tools: one scrolling row of pills instead of a wrapped block */
+.toolseg{display:flex;flex-wrap:nowrap;width:100%;border-radius:999px}
+.toolseg button{white-space:nowrap;border-radius:999px}
+/* Rows with a label and buttons stack on phones */
+@media (max-width:560px){.keyrow{grid-template-columns:minmax(0,1fr)}.keyrow .btns{justify-content:flex-start}}
+/* The app version: stores require their own billing, so the app shows your plan only, with no prices or other plans */
+.in-app .curseg,.in-app .plan:not(.current),.in-app .plan .price,.in-app .web-only{display:none!important}
+.app-only{display:none}.in-app .app-only{display:block}
+/* Dark mode: the dock and badges need their own surface on a near-black page */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .dock{background:#2A2622;box-shadow:inset 0 0 0 1px rgba(243,236,224,.10),0 10px 30px rgba(0,0,0,.45)}}
+:root[data-theme="dark"] .dock{background:#2A2622;box-shadow:inset 0 0 0 1px rgba(243,236,224,.10),0 10px 30px rgba(0,0,0,.45)}
+.plan .pill.mine{background:var(--ink);color:var(--page)}
+/* Applications header on phones: actions start on the left and wrap evenly */
+@media (max-width:640px){.phead .ract,#p-contacts .hero .ract{justify-content:flex-start;width:100%}}
+/* Role page title: the company never starts a line with a dot; on phones it gets its own line */
+.appco{white-space:nowrap}
+@media (max-width:640px){.apptitle .appco{display:block;white-space:normal;font-size:.62em;font-weight:500;color:var(--ink-2);margin-top:6px;letter-spacing:-.01em}.apptitle .appco .muted{display:none}}
 </style>
 </head>
 <body>
@@ -2851,7 +2878,7 @@ function renderOutreach(){
     if (obj(o.linkedin).status === 'sent') sent.push({j, c, ch:'LinkedIn note', at: obj(o.linkedin).sentAt});
   }
   sent.sort((a, b) => (toDate(b.at) || 0) - (toDate(a.at) || 0));
-  return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Referral notes, and messages to hiring managers and recruiters. Propelo drafts them; you send them, or turn on automatic recruiter emails below.</p></div></div>` + renderAutoSend() +
+  return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Referral notes, and messages to hiring managers and recruiters. Propelo drafts them; you send them${cloud() ? ', or turn on automatic recruiter emails below' : ''}.</p></div></div>` + renderAutoSend() +
     groups.map(([k, title, sub]) => { const items = todos.filter(t => t.kind === k); return `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">${title}</h2><p>${items.length ? items.length + ' to send' : sub}</p></div>${items.length ? `<div class="panel"><div class="rows">${items.map(todoRow).join('')}</div></div>` : ''}</div>`; }).join('') +
     renderWarm() +
     `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">Sent</h2><p>${sent.length ? sent.length + ' sent' : 'Nothing sent yet.'}</p></div>${sent.length ? `<div class="panel"><div class="rows">${sent.slice(0, 40).map(s => `<div class="todo"><span class="ic">${I.check.replace('<svg', '<svg class="i"')}</span><div class="tx">${esc(s.ch)} to ${s.c.name ? esc(s.c.name) : 'contact'} at <b>${esc(s.j.company)}</b><small>${esc(when(s.at)) || 'Sent'}</small></div><div class="ract"><button class="btn sm ghost" data-act="open" data-id="${esc(s.j.id)}">Open</button></div></div>`).join('')}</div></div>` : ''}</div>`;
@@ -3058,13 +3085,13 @@ function renderAutoSend(){
   const say = state.acctMsg && state.acctMsgWhere === 'autosend' ? `<p class="acctmsg${state.acctMsgErr ? ' err' : ''}" role="status">${esc(state.acctMsg)}</p>` : '';
   const head = `<div class="sh"><h2 style="font-size:24px">Automatic recruiter emails</h2><p>After you apply, Propelo can email the recruiter for that role from your own Gmail, with follow-ups on day 7 and 14 if you want them. It's off until you turn it on, and only uses addresses found on a public page.</p></div>`;
   if (!v.perDay) return `<div class="section" style="padding-top:28px">${head}<div class="panel"><p class="small">Part of Pro and Ultra. On Free, every email is drafted for you to send.</p><div><button class="btn sm" data-act="tab" data-tab="setup">See plans</button></div></div></div>`;
-  if (!v.mailbox) return `<div class="section" style="padding-top:28px">${head}<div class="panel">${say}<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><a class="btn solid" href="api/mailbox/google/start">Connect Gmail</a><span class="small">Propelo asks only for permission to send email. It can't read your mailbox.</span></div></div></div>`;
+  if (!v.mailbox) return `<div class="section" style="padding-top:28px">${head}<div class="panel">${say}<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><a class="btn solid web-only" href="api/mailbox/google/start">Connect Gmail</a><span class="small web-only">Propelo asks only for permission to send email. It can't read your mailbox.</span><span class="small app-only">Connect Gmail from Propelo in your web browser, signed in to this account. Once it's connected, you can manage sending here.</span></div></div></div>`;
   const t = obj(v.template), ro = wr();
   const sends = arr(v.sends);
   const rows = sends.map(x => { const j = state.jobs.get(x.jobId); return `<div class="todo"><span class="ic fu">${I.loop}</span><div class="tx"><b>${esc(j ? j.company + ' · ' + j.title : x.subject)}</b><small>${esc(AS_KIND[x.kind] || x.kind)} to ${esc(x.to)}${x.at ? ' · ' + esc(when(x.at)) : ''}${x.error ? ' · ' + esc(x.error) : ''}${x.source ? ` · <a href="${esc(safeUrl(x.source) || '#')}" target="_blank" rel="noopener">where the address came from</a>` : ''}</small></div><div class="ract"><span class="pill${x.status === 'sent' ? ' strong' : ''}">${esc(AS_STATUS[x.status] || x.status)}</span>${x.status === 'queued' ? `<button class="btn sm ghost" data-act="as-cancel" data-sid="${esc(x.id)}"${ro}>Cancel</button>` : ''}</div></div>`; }).join('');
   return `<div class="section" style="padding-top:28px">${head}<div class="panel acct">${say}
     ${v.mailbox.error ? `<p class="acctmsg err">Gmail stopped accepting sends: ${esc(v.mailbox.error)}. Connect it again.</p>` : ''}
-    <div class="keyrow"><span><b>Sending from ${esc(v.mailbox.address)}</b><br><span class="small">${esc(v.last24h)} of ${esc(v.perDay)} in the last 24 hours · weekdays 09:00 to 18:00 your time</span></span><span class="btns"><button class="btn sm${v.on ? ' solid' : ''}" data-act="as-toggle" aria-pressed="${v.on}"${ro}>${v.on ? 'On' : 'Off'}</button><button class="btn sm ghost" data-act="as-disconnect"${ro}>Disconnect</button></span></div>
+    <div class="keyrow"><span><b>Sending from ${esc(v.mailbox.address)}</b><br><span class="small">${esc(v.last24h)} of ${esc(v.perDay)} in the last 24 hours · weekdays 09:00 to 18:00${v.timezone ? ' (' + esc(v.timezone.replace(/_/g, ' ')) + ')' : ' your time'}</span></span><span class="btns"><button class="btn sm${v.on ? ' solid' : ''}" data-act="as-toggle" aria-pressed="${v.on}"${ro}>${v.on ? 'On' : 'Off'}</button><button class="btn sm ghost" data-act="as-disconnect"${ro}>Disconnect</button></span></div>
     ${v.on && !v.approved ? '<p class="acctmsg err">Nothing is sent until you approve the template below.</p>' : ''}
     <details${v.approved ? '' : ' open'}><summary>Template${v.approved ? ' (approved)' : ' (needs your approval)'}</summary>
       <form id="as-form" class="acct-form" novalidate>
@@ -3088,7 +3115,8 @@ function printReceipt(j){
 }
 async function saveAutoSend(patch, msg){
   const v = obj(state.autosend), t = obj(v.template);
-  const doc = Object.assign({autoSend: !!v.on, followUps: !!v.followUps, approvedAt: v.approved ? v.templateHash : '', template: {subject: t.subject, body: t.body, followUp: t.followUp}}, patch);
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e){}
+  const doc = Object.assign({autoSend: !!v.on, followUps: !!v.followUps, approvedAt: v.approved ? v.templateHash : '', timezone: tz, template: {subject: t.subject, body: t.body, followUp: t.followUp}}, patch);
   try { await enqueue('settings/outreach', () => state.db.doc('settings/outreach').set(doc)); await loadAutoSend(); acctSay(msg, false, 'autosend'); }
   catch(e){ acctSay('Could not save. Try again.', true, 'autosend'); }
 }
@@ -3194,7 +3222,7 @@ function renderPlan(){
       else if (!cur && b.checkoutEnabled) action = `<button class="btn ${pl.id === 'ultra' || !paid ? 'solid' : ''} buy" data-act="upgrade" data-plan="${esc(pl.id)}">${paid && pl.id === 'pro' ? 'Switch to Pro' : 'Upgrade to ' + name}</button><p class="small buy">${prov} Cancel any time.</p>`;
       else if (!cur) action = `<p class="small buy">Paid plans open soon.${b.supportEmail ? ` Write to <a href="mailto:${esc(b.supportEmail)}">${esc(b.supportEmail)}</a> for early access.` : ''}</p>`;
     }
-    return `<article class="plan ${pl.id}"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:22px">${name}</h3>${cur ? '<span class="pill" style="background:#151515;color:#FAF3E6">Your plan</span>' : ''}</div>
+    return `<article class="plan ${pl.id}${cur ? ' current' : ''}"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:22px">${name}</h3>${cur ? '<span class="pill mine">Your plan</span>' : ''}</div>
       <div class="price">${price(pl)}${pl.priceInr ? '<small> / month</small>' : ''}</div>
       <ul>${arr(pl.features).map(f => `<li>${esc(f)}</li>`).join('')}</ul>${action}</article>`;
   }).join('');
@@ -3212,7 +3240,7 @@ function renderPlan(){
         <input type="url" class="plain" name="baseUrl" placeholder="OpenAI-compatible address (optional), e.g. https://openrouter.ai/api/v1" aria-label="OpenAI-compatible address">
         <div><button class="btn sm solid" type="submit">Save key</button></div>
         <p class="small">Stored encrypted. Only its last four characters are ever shown, and only your account uses it.</p></form>`;
-  return `<div class="planwrap"><div id="plan"><div class="sh"><h2 style="font-size:24px">Plan</h2><p>${paid ? 'Thanks for supporting Propelo.' : 'Everything that finds and checks roles is free.'}</p>${curSwitch}</div>${say('plan')}
+  return `<div class="planwrap"><div id="plan"><div class="sh"><h2 style="font-size:24px">Plan</h2><p class="web-only">${paid ? 'Thanks for supporting Propelo.' : 'Everything that finds and checks roles is free.'}</p><p class="app-only">Your plan and what it includes. Plans are managed in Propelo on the web.</p>${curSwitch}</div>${say('plan')}
     <div class="plans">${cards}</div></div>
   <div id="ai"><div class="sh"><h2 style="font-size:24px">AI</h2><p>Reading postings, scoring fit and tailoring resumes and cover letters use a model. Every answer is checked against your own profile before you see it.</p></div>
     <div class="panel acct">${say('ai')}${meter}<details${own ? '' : ' open'}><summary>Use your own key</summary>${keyBox}</details></div></div></div>`;
@@ -4216,7 +4244,7 @@ function renderApp(){
     <section class="card"><div class="chead"><h2>The posting</h2>${url ? `<a class="btn sm" href="${esc(url)}" target="_blank" rel="noopener">${I.link}Open original</a>` : ''}</div>${postingText(j) ? `<div class="jdtext">${esc(postingText(j))}</div>` : '<p class="muted">The full text is saved once the search reads it, or when you paste it into a new application.</p>'}</section></div>`;
   else body = `<div class="narrow"><section class="card"><h2>Your notes</h2><textarea id="notes-${esc(j.id)}" data-act="notes" data-id="${esc(j.id)}" rows="8" placeholder="Anything to remember about this one"${wr()} style="margin-top:12px">${esc(j.notes || '')}</textarea><p class="muted" style="margin-top:8px">Saves when you click away.</p></section>${parts.timeline ? `<section class="card"><h2>Timeline</h2><div style="margin-top:12px">${parts.timeline}</div></section>` : ''}</div>`;
   return `<div class="apphead"><div class="crumbs"><button class="linkish" data-act="tab" data-tab="pipeline">Applications</button> /</div>
-    <div class="phead" style="padding-top:6px"><h1 class="apptitle">${esc(j.title)} <span class="muted">·</span> ${esc(j.company)}</h1>
+    <div class="phead" style="padding-top:6px"><h1 class="apptitle">${esc(j.title)}<span class="appco"><span class="muted"> · </span>${esc(j.company)}</span></h1>
     <div class="ract appact"><label class="stagepick"><span class="stage-dot ${esc(j.stage || 'found')}"></span><select data-act="stage" data-id="${esc(j.id)}" aria-label="Stage"${wr()}>${parts.stageOpts}</select></label>${parts.actions}${t.resume ? `<button class="btn" data-act="dl-resume" data-id="${esc(j.id)}">${NI.down}Resume</button>` : ''}</div></div>
     <p class="appmeta">${meta.map(x => `<span>${esc(x)}</span>`).join('')}${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">Posting</a>` : ''}${j.applyTo ? (/@/.test(j.applyTo) && !/^https?:/i.test(j.applyTo) ? `<a href="mailto:${esc(j.applyTo)}">Apply by email: ${esc(j.applyTo)}</a>` : safeUrl(j.applyTo) ? `<a href="${esc(safeUrl(j.applyTo))}" target="_blank" rel="noopener">Where to apply</a>` : '') : ''}</p>
     <div class="atabs" role="tablist">${tabs}</div></div><div class="appbody">${body}</div>`;

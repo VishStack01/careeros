@@ -243,7 +243,9 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 45%,transparent) 
   let mode = location.pathname.replace(/^\/+|\/+$/g, '') || 'login';
   let lastEmail = '';
   // Sign in with LinkedIn, when this server has it set up (name and email only; nothing is posted or sent).
-  fetch('/api/auth/providers').then(r => r.ok ? r.json() : {}).then(p => { if (p && p.linkedin) document.querySelectorAll('.li-btn').forEach(b => { b.hidden = false; }); }).catch(() => {});
+  // Inside the phone app, LinkedIn's sign-in would open and finish in the phone's browser, not the app: offer email there.
+  const inApp = /CareerOSApp/.test(navigator.userAgent || '');
+  if (!inApp) fetch('/api/auth/providers').then(r => r.ok ? r.json() : {}).then(p => { if (p && p.linkedin) document.querySelectorAll('.li-btn').forEach(b => { b.hidden = false; }); }).catch(() => {});
   const liErr = {linkedin_cancelled: 'LinkedIn sign-in was cancelled.', linkedin_state: 'That sign-in link expired. Try again.', linkedin_failed: "LinkedIn didn't confirm the sign-in. Try again.",
                  linkedin_no_email: "LinkedIn didn't share a confirmed email address, which Propelo needs.", closed: 'Sign-up is by invitation right now.', disabled: 'This account is disabled.'}[new URLSearchParams(location.hash.slice(1)).get('error') || ''];
 

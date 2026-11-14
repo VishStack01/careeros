@@ -29,9 +29,9 @@ def setup(cloud):
     return cloud, c
 
 
-def _role(c, jid, applied, to="priya@northwind.example", source="https://northwind.example/team", stage="applied", **extra):
+def _role(c, jid, applied, to="priya@northwind.example", source="https://northwind.example/team", stage="applied", outreach_stopped=False, **extra):
     doc = {"company": "Northwind", "title": "AI Engineer", "stage": stage, "appliedAt": _iso(applied),
-           "outreach": {"contact": {"name": "Priya Nair", "role": "Recruiter"}, "email": {"to": to, "source": source}}, **extra}
+           "outreach": {"contact": {"name": "Priya Nair", "role": "Recruiter"}, "email": {"to": to, "source": source}, **({"stopped": True} if outreach_stopped else {})}, **extra}
     assert c.put(f"/api/d/jobs/{jid}", json=doc).status_code == 200
 
 
@@ -183,3 +183,39 @@ def test_gmail_connect_and_disconnect(setup, monkeypatch):
     revoked = []
     monkeypatch.setattr(mailbox, "revoke", lambda token, post=None: revoked.append(token))
     assert c.delete("/api/mailbox").json()["mailbox"] is None and revoked == ["1//new"]
+
+
+def test_sending_hours_follow_the_senders_time_zone(setup):
+    cloud, c = setup
+    _role(c, "r1", MONDAY_1030_IST - timedelta(hours=5))
+    v = c.get("/api/autosend").json()
+    c.put("/api/d/settings/outreach", json={"autoSend": True, "approvedAt": v["templateHash"], "timezone": "America/New_York"})
+    assert c.get("/api/autosend").json()["timezone"] == "America/New_York"
+    assert _plan(cloud, c.uid) == []  # 10:30 in India is 00:00 in New York
+    assert len(_plan(cloud, c.uid, MONDAY_1030_IST + timedelta(hours=10))) == 1  # 10:00 in New York
+
+
+def test_odd_documents_never_break_planning(setup):
+    cloud, c = setup
+    _turn_on(c)
+    c.put("/api/d/jobs/odd", json={"company": "X", "title": "Y", "stage": "applied", "appliedAt": _iso(MONDAY_1030_IST - timedelta(hours=5)),
+                                   "evidence": ["not a dict"], "outreach": {"email": "not a dict", "contact": "nobody"}})
+    _role(c, "stopped", MONDAY_1030_IST - timedelta(hours=5), to="a@b.example", outreach_stopped=True)
+    assert _plan(cloud, c.uid) == []  # the odd one is skipped, and Stop before the first email holds
+
+
+def test_bad_subjects_and_addresses_never_jam_the_queue(setup):
+    from careeros.cloud import autosend
+    cloud, c = setup
+    _turn_on(c)
+    assert not autosend.EMAIL.match("priya@northwind.example\n")
+    _role(c, "r1", MONDAY_1030_IST - timedelta(hours=5), to="priya@northwind.example")
+    c.patch("/api/d/jobs/r1", json={"outreach": {"contact": {"name": "Priya"}, "email": {"to": "priya@northwind.example", "source": "https://northwind.example/team",
+                                                                                         "status": "drafted", "subject": "Hello\nthere", "body": "Hi Priya"}}})
+    _role(c, "r2", MONDAY_1030_IST - timedelta(hours=5), to="ravi@acme.example")
+    rows = _plan(cloud, c.uid)
+    assert sorted(r["subject"] for r in rows)[0] == "Hello there"
+    with cloud.db.tx() as t:  # a row that can't be built (simulated) fails alone; the rest still go
+        t.execute("UPDATE outreach_sends SET to_addr = ? WHERE job_id = 'r1'", ("bad\r\naddress@x.example",))
+    res = autosend.deliver(cloud.db, cloud.cfg, c.uid, send=lambda tok, raw, thread_id="": {"id": "m", "threadId": "t"}, token=lambda *a: "tok")
+    assert res == {"sent": 1, "failed": 1}

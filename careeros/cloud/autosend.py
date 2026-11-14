@@ -32,7 +32,7 @@ from .config import Config
 from .db import Conn, Database, now_iso
 
 FREE_MAIL = re.compile(r"@(gmail|googlemail|yahoo|ymail|outlook|hotmail|live|rediffmail|proton|protonmail|icloud|aol|zoho)\.", re.I)
-EMAIL = re.compile(r"^[A-Za-z0-9._%+'-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+EMAIL = re.compile(r"^[A-Za-z0-9._%+'-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\Z")
 FIRST_WINDOW = timedelta(days=3)
 FIRST_DELAY = timedelta(hours=2)
 SAME_PERSON = timedelta(days=30)
@@ -107,6 +107,7 @@ def settings(c: Conn, uid: str) -> dict:
     d = (repo.get_doc(c, uid, "settings", "outreach") or {"data": {}})["data"]
     t = d.get("template") if isinstance(d.get("template"), dict) else {}
     return {"on": d.get("autoSend") is True, "followUps": d.get("followUps") is True, "approvedAt": str(d.get("approvedAt") or ""),
+            "timezone": str(d.get("timezone") or "")[:64],
             "subject": str(t.get("subject") or DEFAULT_TEMPLATE["subject"])[:200],
             "body": str(t.get("body") or DEFAULT_TEMPLATE["body"])[:4000],
             "followUp": str(t.get("followUp") or DEFAULT_TEMPLATE["followUp"])[:3000]}
@@ -117,7 +118,10 @@ def template_hash(s: dict) -> str:
 
 
 def fill(text: str, values: dict) -> str:
-    return re.sub(r"\{(\w+)\}", lambda m: str(values.get(m.group(1), m.group(0))), text)
+    out = re.sub(r"\{(\w+)\}", lambda m: str(values.get(m.group(1), m.group(0))), text)
+    # An empty value (no highlight, say) mustn't leave stray spaces or blank-line runs behind.
+    out = "\n".join(line.rstrip() for line in out.split("\n"))
+    return re.sub(r"\n{3,}", "\n\n", out).strip()
 
 
 def footer(cfg: Config, name: str, to: str) -> str:
@@ -177,8 +181,9 @@ def plan_user(c: Conn, cfg: Config, user: dict, now: datetime | None = None) -> 
     cap = plans.plan_info(cfg, plan)["autoEmailsPerDay"]
     if not (s["on"] and box and cap and s["approvedAt"] == template_hash(s)):
         return []
+    # The time zone the browser reported when sending was set up, else the search settings', else India.
     prof = repo.get_doc(c, uid, "settings", "profile")
-    tz = str(((prof or {}).get("data") or {}).get("timezone") or "Asia/Kolkata")
+    tz = s["timezone"] or str(((prof or {}).get("data") or {}).get("timezone") or "Asia/Kolkata")
     if not _business_hours(now, tz):
         return []
     day = now_iso(timedelta(hours=-24))
@@ -200,21 +205,23 @@ def plan_user(c: Conn, cfg: Config, user: dict, now: datetime | None = None) -> 
         if why_not(d, addr, src) or opted_out(c, addr):
             continue
         o = d.get("outreach") if isinstance(d.get("outreach"), dict) else {}
-        if (o.get("email") or {}).get("status") in ("sent", "replied", "stopped") and (jid, "first") not in sent:
-            continue  # the person sent or stopped this one themselves
+        em0 = o.get("email") if isinstance(o.get("email"), dict) else {}
+        if o.get("stopped") or (em0.get("status") in ("sent", "replied", "stopped") and (jid, "first") not in sent):
+            continue  # the person stopped it, or sent this one themselves
+        ev0 = d.get("evidence")[0] if isinstance(d.get("evidence"), list) and d.get("evidence") else {}
+        hl = str(ev0.get("evidence") or "").strip() if isinstance(ev0, dict) else ""
         values = dict(me, first_name=first or "there", role=str(d.get("title") or "the role"), company=str(d.get("company") or "your team"),
-                      highlight=str((d.get("evidence") or [{}])[0].get("evidence") or "") if isinstance(d.get("evidence"), list) and d.get("evidence") else "")
-        values["highlight"] = values["highlight"].strip() and f"One thing relevant to the role: {values['highlight'].strip().rstrip('.')}."
+                      highlight=f"One thing relevant to the role: {hl.rstrip('.')}." if hl else "")
         applied = _ts(d.get("appliedAt"))
         if (jid, "first") not in sent:
             if d.get("stage") != "applied" or not applied or not (now - FIRST_WINDOW <= applied <= now - FIRST_DELAY) or addr in recent_to:
                 continue
-            em = o.get("email") if isinstance(o.get("email"), dict) else {}
-            subject = str(em.get("subject") or fill(s["subject"], values))[:200] if em.get("status") == "drafted" and em.get("body") else fill(s["subject"], values)[:200]
-            body = str(em["body"]) if em.get("status") == "drafted" and em.get("body") else fill(s["body"], values)
+            drafted = em0.get("status") == "drafted" and bool(em0.get("body"))
+            subject = str(em0.get("subject") or fill(s["subject"], values))[:200] if drafted else fill(s["subject"], values)[:200]
+            body = str(em0["body"]) if drafted else fill(s["body"], values)
             kind = "first"
         else:
-            if not s["followUps"] or d.get("stage") != "applied" or addr in inbox_from or o.get("stopped"):
+            if not s["followUps"] or d.get("stage") != "applied" or addr in inbox_from:
                 continue
             kind = next((k for k, (prev, days) in FOLLOW.items() if (jid, k) not in sent and (jid, prev) in sent
                          and sent[(jid, prev)]["status"] == "sent" and (_ts(sent[(jid, "first")]["sent_at"]) or now) <= now - timedelta(days=days)), "")
@@ -222,7 +229,8 @@ def plan_user(c: Conn, cfg: Config, user: dict, now: datetime | None = None) -> 
                 continue
             subject = "Re: " + sent[(jid, "first")]["subject"]
             body = fill(s["followUp"], values)
-        if re.search(r"\{\w+\}", subject + body):
+        subject = re.sub(r"\s+", " ", subject).strip()  # a header can't hold line breaks
+        if re.search(r"\{\w+\}", subject + body) or not subject:
             continue  # a placeholder had no value: don't send a half-filled email
         row = {"id": repo.new_id(), "user_id": uid, "job_id": jid, "kind": kind, "to_addr": addr, "to_source": src[:500],
                "subject": subject, "body": body + footer(cfg, me["my_name"], addr), "status": "queued", "created_at": now_iso()}
@@ -264,8 +272,14 @@ def deliver(db: Database, cfg: Config, uid: str, send=mailbox.send, token=mailbo
         if not claimed:
             continue
         first = firsts.get(r["job_id"]) if r["kind"] != "first" else None
-        raw, mid = mailbox.build(box["address"], (user or {}).get("name") or "", r["to_addr"], r["subject"], r["body"],
-                                 unsubscribe=optout_url(cfg, r["to_addr"]), in_reply_to=(first or {}).get("message_id") or "")
+        try:
+            raw, mid = mailbox.build(box["address"], (user or {}).get("name") or "", r["to_addr"], r["subject"], r["body"],
+                                     unsubscribe=optout_url(cfg, r["to_addr"]), in_reply_to=(first or {}).get("message_id") or "")
+        except Exception as e:  # noqa: BLE001 - nothing was sent; record it and carry on with the rest
+            with db.tx() as c:
+                c.execute("UPDATE outreach_sends SET status = 'failed', error = ? WHERE id = ?", (f"Couldn't build the email: {e}"[:300], r["id"]))
+            out["failed"] += 1
+            continue
         try:
             res = send(access, raw, (first or {}).get("thread_id") or "")
         except mailbox.MailError as e:
@@ -316,7 +330,7 @@ def view(c: Conn, cfg: Config, user: dict) -> dict:
                  "WHERE user_id = ? ORDER BY created_at DESC LIMIT 60", (uid,))
     day = now_iso(timedelta(hours=-24))
     return {"available": cfg.gmail_enabled, "mailbox": {"address": box["address"], "connectedAt": box["connected_at"], "error": box["last_error"]} if box else None,
-            "on": s["on"], "followUps": s["followUps"], "approved": s["approvedAt"] == template_hash(s), "templateHash": template_hash(s),
+            "on": s["on"], "followUps": s["followUps"], "timezone": s["timezone"], "approved": s["approvedAt"] == template_hash(s), "templateHash": template_hash(s),
             "template": {k: s[k] for k in ("subject", "body", "followUp")}, "defaults": DEFAULT_TEMPLATE,
             "perDay": plans.plan_info(cfg, plan)["autoEmailsPerDay"],
             "last24h": sum(1 for r in rows if r["status"] in ("sent", "sending", "queued") and r["created_at"] > day),

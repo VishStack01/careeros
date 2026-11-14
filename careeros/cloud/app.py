@@ -116,8 +116,11 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
     problems = cfg.check()
     if problems:
         raise RuntimeError("Unsafe configuration:\n- " + "\n- ".join(problems))
+    own_db = db is None
     db = db or Database(cfg.database_url, cfg.db_pool_min, cfg.db_pool_max)
     if cfg.is_production and db.pending_migrations():
+        if own_db:
+            db.close()  # exit at once instead of waiting on the pool's threads
         raise RuntimeError("Database migrations are pending. Run `careeros cloud migrate` before starting the app.")
     if not cfg.is_production:
         db.migrate(log=log.info)
@@ -1203,6 +1206,8 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
     async def billing_webhook(request: Request):
         """Razorpay."""
         body = await request.body()
+        if len(body) > 256_000:
+            raise err(413, "Too large.")
         if not plans.verify_signature(body, request.headers.get("x-razorpay-signature", ""), cfg.razorpay_webhook_secret):
             raise err(400, "Bad signature.", "signature")
         try:
@@ -1432,6 +1437,8 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         except llm.LLMError as e:
             with db.tx() as c:
                 plans.refund_credit(c, p.uid, kind)
+                if kind == "hosted":
+                    plans.refund_feature(c, p.uid, feature)
             msg = str(e) if kind == "own" else "The AI model didn't answer. Your action wasn't counted; try again."
             raise err(502, msg, "llm_error")
         return dict(out, source=kind)
