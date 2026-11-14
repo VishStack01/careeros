@@ -11,7 +11,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Check the manifest and scripts
         run: |
           python3 -c "import json; m = json.load(open('extension/manifest.json')); assert m['manifest_version'] == 3; print(m['name'], m['version'])"
@@ -22,7 +22,7 @@ jobs:
           v=$(python3 -c "import json; print(json.load(open('extension/manifest.json'))['version'])")
           cd extension && zip -r -X "../careeros-autofill-$v.zip" . -x "*.DS_Store" && cd ..
           echo "ZIP=careeros-autofill-$v.zip" >> "$GITHUB_ENV"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: careeros-autofill
           path: ${{ env.ZIP }}
