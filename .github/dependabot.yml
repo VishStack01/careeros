@@ -1,6 +1,19 @@
 version: 2
 updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule: { interval: weekly }
+    open-pull-requests-limit: 5
+    groups:
+      python: { patterns: ["*"] }
   - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: monthly
+    directory: "/"
+    schedule: { interval: weekly }
+    groups:
+      actions: { patterns: ["*"] }
+  - package-ecosystem: docker
+    directory: "/"
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: "/mobile"
+    schedule: { interval: monthly }

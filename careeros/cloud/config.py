@@ -48,6 +48,7 @@ class Config:
     linkedin_client_id: str = ""  # "Sign in with LinkedIn using OpenID Connect": name, email, photo only
     linkedin_client_secret: str = ""
     # Google OAuth for sending recruiter emails from the person's own Gmail (scope gmail.send only).
+    security_email: str = ""  # shown in /.well-known/security.txt; falls back to SUPPORT_EMAIL
     google_client_id: str = ""
     google_client_secret: str = ""
     # Plans and billing. Prices are in rupees per month; credits are AI actions per calendar month (UTC).
@@ -102,6 +103,7 @@ class Config:
             max_doc_kb=_int("MAX_DOC_KB", 512),
             linkedin_client_id=e("LINKEDIN_CLIENT_ID", "").strip(),
             linkedin_client_secret=e("LINKEDIN_CLIENT_SECRET", "").strip(),
+            security_email=e("SECURITY_EMAIL", "").strip(),
             google_client_id=e("GOOGLE_CLIENT_ID", "").strip(),
             google_client_secret=e("GOOGLE_CLIENT_SECRET", "").strip(),
             secrets_key=e("SECRETS_KEY", "").strip(),

@@ -76,7 +76,9 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 45%,transparent) 
     <li><b>Your account:</b> name, email, a salted hash of your password (never the password itself), sign-in sessions and security events such as sign-ins and password changes.</li>
     <li><b>Your job search:</b> the filters you set, the roles matched to you and what you did with them, notes, and the history of each application.</li>
     <li><b>Your application details:</b> what you enter on the setup page (contact details, links, experience, notice period, pay expectations, education, work authorization) and the resume files you upload.</li>
-    <li><b>Your plan:</b> which plan you're on, your subscription's status and renewal date, and the payment provider's subscription reference. We never see or store card, UPI or bank details; Razorpay handles payment and holds them under its own privacy policy.</li>
+    <li><b>Your plan:</b> which plan you're on, your subscription's status and renewal date, the currency, and the payment provider's subscription and customer references. We never see or store card, UPI or bank details. Payments in rupees go through Razorpay; payments in dollars go through Dodo Payments, which acts as the merchant of record and handles tax. Each holds payment details under its own privacy policy.</li>
+    <li><b>Contacts:</b> the recruiters, hiring managers and other people you add, with your notes about them. Add only details they shared with you or published themselves.</li>
+    <li><b>Gmail, if you connect it:</b> your Gmail address and an encrypted permission that lets Propelo send email as you. We ask Google only for permission to send; Propelo can't read, search or delete your mail. We keep a copy of each email Propelo sent for you, with where the recipient's address came from.</li>
     <li><b>AI usage:</b> how many AI actions you used each month. If you save your own model key, it's encrypted, and only its last four characters are ever shown.</li>
   </ul>
   <p>We never ask for or store passwords to job sites, one-time codes, Aadhaar, PAN, passport or bank details, or your date of birth.</p>
@@ -84,6 +86,9 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 45%,transparent) 
   <p>Only to run your job search: matching roles to your filters, showing your pipeline, preparing applications, and giving your own apply agent (on your computer, with a key you create) the details it puts into application forms. We don't sell your data or use it for advertising.</p>
   <h3>AI actions</h3>
   <p>When you use an AI action (reading a posting, scoring fit, tailoring a resume or cover letter), the text needed for that action is sent to the model provider: the service's provider on your plan's allowance, or the provider of your own key. Providers process it to answer the request under their API terms. We don't use your data to train models.</p>
+  <h3>Emails sent for you</h3>
+  <p>Automatic recruiter emails are off until you turn them on and approve a template. Propelo then sends from your own Gmail, only to addresses found on a public page, within your plan's daily limit, and never to anyone who opted out. Every email says it was sent with Propelo and links to a page where the recipient can stop emails from all Propelo users. We keep only a one-way hash of opted-out addresses. Disconnecting Gmail in Settings revokes the permission at Google.</p>
+  <p>Propelo's use of information received from Google APIs follows the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including its Limited Use requirements. We use the Gmail permission only to send the emails you set up, never for advertising, and we don't let people read your Gmail data.</p>
   <h3>Where applications go</h3>
   <p>Applications are submitted from your computer's browser, by an agent you set up, to the employer's own application page. The employer then holds what you sent under their own privacy policy.</p>
   <h3>Your choices</h3>
@@ -92,6 +97,8 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 45%,transparent) 
     <li><b>Delete:</b> deleting your account removes your account, documents, files, keys and sessions right away. Encrypted backups roll over within 30 days.</li>
     <li><b>Correct:</b> edit your details at any time.</li>
   </ul>
+  <h3>Cookies</h3>
+  <p>Propelo sets one cookie to keep you signed in, and short-lived ones while you sign in with LinkedIn or connect Gmail. They're HttpOnly and used only by Propelo. There are no advertising or tracking cookies and no third-party analytics. The pricing page remembers the currency you picked in your browser's storage.</p>
   <h3>Security</h3>
   <p>Data travels over HTTPS. Sessions are HttpOnly cookies, sign-in attempts are rate limited, and every request for your data is checked against your account. No system is perfectly secure; tell us right away if you think your account was misused.</p>
 
@@ -101,16 +108,17 @@ input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 45%,transparent) 
     <li>You're responsible for what's submitted in your name. Only enter true information, and only queue or allow applications you actually want to send.</li>
     <li>Don't use Propelo to break any website's terms, to apply through sites that forbid automation, or to send spam.</li>
     <li>Keep your computer keys and model keys secret. Remove a key in Settings if it may have leaked.</li>
-    <li><b>Plans.</b> The Free plan costs nothing. Pro is billed monthly in Indian rupees, in advance, through Razorpay, and renews automatically until you cancel. Prices include any taxes shown at checkout. If a renewal payment fails, Razorpay retries it for a few days; if it still fails, your account moves to Free and keeps all your data.</li>
+    <li><b>Plans.</b> The Free plan costs nothing. Pro and Ultra are billed monthly, in advance, and renew automatically until you cancel: in Indian rupees through Razorpay, or in US dollars through Dodo Payments, the merchant of record for those sales. Prices include any taxes shown at checkout. If a renewal payment fails, the provider retries it for a few days; if it still fails, your account moves to Free and keeps all your data. Switching plans takes effect when the new payment goes through, and the old plan stops then.</li>
+    <li><b>Emails sent for you.</b> If you turn on automatic recruiter emails, you're the sender. Send only true statements, respect anyone who asks you to stop, and follow the email laws that apply to you and the recipient.</li>
     <li><b>AI allowance.</b> Each plan includes a number of AI actions per calendar month on the service's model. Unused actions don't carry over. AI actions on your own key don't count toward it.</li>
     <li>We may suspend accounts that abuse the service, and we may change these terms or prices; we'll tell you by email at least 14 days before a material change or a price rise takes effect.</li>
   </ul>
 
   <h2 id="refunds">Refunds and cancellation</h2>
   <div class="box">
-    <p><b>Cancel any time</b> in Settings, Plan. Cancelling stops future charges; you keep Pro until the end of the month you've paid for, then your account moves to Free with all your data.</p>
-    <p><b>Refunds.</b> If you were charged by mistake (a duplicate charge, or a renewal after you cancelled), write to us within 7 days and we refund it in full to the original payment method. If Pro didn't work for you in your first 7 days, ask and we'll refund that first payment. Refunds reach you in 5 to 7 working days, depending on your bank.</p>
-    <p><b>Delivery.</b> Propelo is an online service; nothing is shipped. Pro features switch on as soon as the payment is confirmed, usually within a minute.</p>
+    <p><b>Cancel any time</b> in Settings, Plan. Cancelling stops future charges; you keep your plan until the end of the month you've paid for, then your account moves to Free with all your data.</p>
+    <p><b>Refunds.</b> If you were charged by mistake (a duplicate charge, or a renewal after you cancelled), write to us within 7 days and we refund it in full to the original payment method. If a paid plan didn't work for you in your first 7 days, ask and we'll refund that first payment. Dollar payments are refunded through Dodo Payments. Refunds reach you in 5 to 7 working days, depending on your bank.</p>
+    <p><b>Delivery.</b> Propelo is an online service; nothing is shipped. Paid features switch on as soon as the payment is confirmed, usually within a minute.</p>
   </div>
 
   <h2 id="contact">Contact</h2>

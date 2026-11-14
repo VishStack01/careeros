@@ -18,6 +18,7 @@ import hashlib
 from html import escape as html_escape
 import json
 import logging
+import os
 import re
 import secrets
 import time
@@ -87,6 +88,29 @@ def err(status: int, message: str, code: str = "") -> HTTPException:
     return HTTPException(status_code=status, detail={"error": message, "code": code} if code else {"error": message})
 
 
+def _init_error_reporting(cfg: Config) -> None:
+    """Optional error reporting (SENTRY_DSN, with `pip install sentry-sdk`). No request bodies, cookies,
+    headers or user details are sent: only the error, its stack and the route."""
+    dsn = os.environ.get("SENTRY_DSN", "").strip()
+    if not dsn:
+        return
+    try:
+        import sentry_sdk
+    except ImportError:
+        log.warning("SENTRY_DSN is set but sentry-sdk isn't installed; errors stay in the logs only.")
+        return
+
+    def scrub(event, hint):
+        req = event.get("request") or {}
+        for k in ("data", "cookies", "headers", "query_string", "env"):
+            req.pop(k, None)
+        event["request"] = req
+        event.pop("user", None)
+        return event
+    sentry_sdk.init(dsn=dsn, environment=cfg.app_env, release=f"propelo@{__version__}", send_default_pii=False,
+                    traces_sample_rate=float(os.environ.get("SENTRY_TRACES", "0") or 0), before_send=scrub, max_breadcrumbs=20)
+
+
 def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI:
     cfg = cfg or Config.from_env()
     problems = cfg.check()
@@ -99,6 +123,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         db.migrate(log=log.info)
     storage = LocalStorage(cfg.upload_dir)
     mailer = Mailer(cfg.smtp_url, cfg.mail_from)
+    _init_error_reporting(cfg)
     app = FastAPI(title="Propelo Cloud", version=__version__, docs_url=None, redoc_url=None, openapi_url=None)
     app.state.cfg, app.state.db, app.state.storage, app.state.mailer = cfg, db, storage, mailer
     hits: dict[str, deque] = defaultdict(deque)  # per-process API rate limiter
@@ -287,6 +312,15 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         text = (STATIC / "pricing.html").read_text(encoding="utf-8").replace("<!--PLANS-->", "".join(cards)) \
             .replace('<body data-cur="INR">', f'<body data-cur="{cur}">', 1).replace("<script>", f'<script nonce="{request.state.nonce}">')
         return HTMLResponse(text)
+
+    @app.get("/.well-known/security.txt", include_in_schema=False)
+    def security_txt():
+        contact = f"mailto:{cfg.security_email or cfg.support_email}" if (cfg.security_email or cfg.support_email) else \
+            "https://github.com/VishStack01/careeros/security/advisories/new"
+        expires = (datetime.now(timezone.utc) + timedelta(days=180)).strftime("%Y-%m-%dT00:00:00.000Z")
+        body = (f"Contact: {contact}\nExpires: {expires}\nPreferred-Languages: en\n"
+                f"Policy: https://github.com/VishStack01/careeros/blob/main/SECURITY.md\nCanonical: {cfg.public_url}/.well-known/security.txt\n")
+        return Response(body, media_type="text/plain", headers={"Cache-Control": "public, max-age=86400"})
 
     # The installable app: manifest, service worker, icons and the offline page.
     APP_STATIC = STATIC / "app"
@@ -1382,11 +1416,19 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 if not plans.take_credit(c, p.uid, "hosted", limit):
                     hint = "Upgrade to Pro or add your own key in Settings." if plan == "free" else "Add your own key in Settings to keep going."
                     raise err(402, f"You've used this month's {limit} AI actions. {hint}", "ai_quota")
-        try:
+        def call(m):
             if body.get("json"):
-                out = {"json": await run_in_threadpool(lambda: llm.complete_json(prompt, tier=tier, max_tokens=8000, cfg=model))}
-            else:
-                out = {"text": await run_in_threadpool(lambda: llm.complete(prompt, tier=tier, max_tokens=8000, cfg=model))}
+                return {"json": llm.complete_json(prompt, tier=tier, max_tokens=8000, cfg=m)}
+            return {"text": llm.complete(prompt, tier=tier, max_tokens=8000, cfg=m)}
+        try:
+            try:
+                out = await run_in_threadpool(call, model)
+            except llm.LLMError:
+                backup = plans.hosted_fallback() if kind == "hosted" else None
+                if not backup:
+                    raise
+                log.warning(json.dumps({"event": "llm-fallback", "from": model.provider, "to": backup.provider}))
+                out = await run_in_threadpool(call, backup)
         except llm.LLMError as e:
             with db.tx() as c:
                 plans.refund_credit(c, p.uid, kind)
@@ -1414,6 +1456,16 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 plans.grant(c, u["id"], p.uid, until + "T23:59:59Z" if until else None, plan)
             repo.audit(c, u["id"], "plan-granted", client_ip(request), {"by": p.uid, "until": until, "plan": plan})
             return {"ok": True, "plan": plans.plan_of(c, repo.user_by_id(c, u["id"]))}
+
+    @app.get("/api/admin/audit")
+    def admin_audit(kind: str = "", limit: int = 100, p: Principal = Depends(admin_only)):
+        """Recent security and billing events across accounts, for operators. Details hold no secrets."""
+        limit = max(1, min(int(limit), 500))
+        with db.tx() as c:
+            rows = c.all("SELECT a.at, a.kind, a.detail, u.email FROM audit_events a LEFT JOIN users u ON u.id = a.user_id "
+                         + ("WHERE a.kind = ? " if kind else "") + "ORDER BY a.at DESC LIMIT ?", ((kind, limit) if kind else (limit,)))
+            repo.audit(c, p.uid, "admin-audit-read", "", {"kind": kind[:40]})
+        return {"events": [dict(r, detail=json.loads(r["detail"] or "{}")) for r in rows]}
 
     @app.get("/api/admin/overview")
     def admin_overview(p: Principal = Depends(admin_only)):

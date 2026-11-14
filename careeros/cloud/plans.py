@@ -277,6 +277,24 @@ def hosted_config(env: dict | None = None) -> llm.Config | None:
     return cfg if cfg and cfg.provider != "ollama" else None
 
 
+def hosted_fallback(env: dict | None = None) -> llm.Config | None:
+    """A second provider for the service's model (CAREEROS_LLM_FALLBACK plus that provider's key), used
+    once when the first fails, so one provider's outage doesn't stop everyone's AI actions."""
+    env = dict(os.environ if env is None else env)
+    name = (env.get("CAREEROS_LLM_FALLBACK") or "").strip().lower()
+    if not name or name == "ollama":
+        return None
+    env["CAREEROS_LLM"] = name
+    for k in ("CAREEROS_MODEL", "CAREEROS_MODEL_QUICK"):
+        env.pop(k, None)
+    if env.get("CAREEROS_FALLBACK_MODEL"):
+        env["CAREEROS_MODEL"] = env["CAREEROS_FALLBACK_MODEL"]
+    try:
+        return llm.config(env)
+    except llm.LLMError:
+        return None
+
+
 def ai_status(c: Conn, cfg: Config, user: dict, env: dict | None = None) -> dict:
     plan = plan_of(c, user)
     limit = plan_info(cfg, plan)["aiCredits"]

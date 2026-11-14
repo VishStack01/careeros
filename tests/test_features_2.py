@@ -104,3 +104,40 @@ def test_ultra_auto_apply_month_cap(cloud):
     admin.post("/api/admin/grant", json={"email": "asha@example.com", "plan": "ultra"})
     nxt = k.get("/api/agent/next").json()
     assert nxt["monthCap"] == 1000 and nxt["appliedThisMonth"] == 0
+
+
+def test_hosted_ai_falls_back_to_a_second_provider(cloud, monkeypatch):
+    from careeros import llm
+    monkeypatch.setenv("CAREEROS_LLM", "anthropic")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-server-key-0000")
+    monkeypatch.setenv("CAREEROS_LLM_FALLBACK", "openai")
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-proj-fallback-0000")
+    seen = []
+
+    def complete(prompt, tier="default", system="", max_tokens=4096, json_mode=False, cfg=None, timeout=180, env=None):
+        seen.append(cfg.provider)
+        if cfg.provider == "anthropic":
+            raise llm.LLMError("overloaded")
+        return "OK"
+    monkeypatch.setattr(llm, "complete", complete)
+    c = cloud.user()
+    r = c.post("/api/ai", json={"prompt": "hi"})
+    assert r.status_code == 200 and r.json()["text"] == "OK" and seen == ["anthropic", "openai"]
+
+
+def test_security_txt_and_admin_audit(cloud):
+    cloud.cfg.support_email = "help@example.com"
+    t = cloud.client().get("/.well-known/security.txt")
+    assert t.status_code == 200 and "Contact: mailto:help@example.com" in t.text and "Expires:" in t.text
+    c = cloud.user()
+    admin = cloud.user("admin@example.com")
+    assert c.get("/api/admin/audit").status_code == 404  # admin routes stay hidden from other accounts
+    admin.post("/api/admin/grant", json={"email": "asha@example.com", "plan": "pro"})
+    ev = admin.get("/api/admin/audit?kind=plan-granted").json()["events"]
+    assert ev and ev[0]["email"] == "asha@example.com" and ev[0]["detail"]["plan"] == "pro"
+    assert (ROOT / "website" / ".well-known" / "security.txt").read_text().startswith("Contact: ")
+
+
+def test_privacy_page_covers_gmail_and_cookies(cloud):
+    t = cloud.client().get("/privacy").text
+    assert "Limited Use" in t and "Cookies" in t and "Dodo Payments" in t
