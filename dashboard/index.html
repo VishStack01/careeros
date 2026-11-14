@@ -887,6 +887,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);box-shadow:0 0 0
 
 /* plan and AI cards in Settings */
 .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:12px}
+.riskbox{border:1.5px solid #151515;border-radius:16px;padding:14px 16px;display:grid;gap:6px;background:var(--yellow);color:#151515}
+.riskbox.high{background:var(--orange)}
+.riskbox ul{margin:0;padding-left:18px;display:grid;gap:4px}.riskbox .muted,.riskbox .small{color:#3b3832}
+.receipt{display:grid;gap:10px;border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.rtab td{font-size:13.5px;vertical-align:top}.rtab td:first-child{color:var(--ink-2);width:42%}
 .curseg{display:inline-flex;gap:2px;margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
 .curseg button{border:0;background:none;border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;font-weight:500;color:var(--ink-2);cursor:pointer}
 .curseg button.on{background:var(--ink);color:var(--page)}
@@ -2825,10 +2830,57 @@ function renderOutreach(){
     if (obj(o.linkedin).status === 'sent') sent.push({j, c, ch:'LinkedIn note', at: obj(o.linkedin).sentAt});
   }
   sent.sort((a, b) => (toDate(b.at) || 0) - (toDate(a.at) || 0));
-  return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Referral notes, and messages to hiring managers and recruiters. Claude drafts them; you send them.</p></div></div>` +
+  return `<div class="hero" style="padding-bottom:6px"><div><h1>Outreach</h1><p class="sub">Referral notes, and messages to hiring managers and recruiters. Propelo drafts them; you send them, or turn on automatic recruiter emails below.</p></div></div>` + renderAutoSend() +
     groups.map(([k, title, sub]) => { const items = todos.filter(t => t.kind === k); return `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">${title}</h2><p>${items.length ? items.length + ' to send' : sub}</p></div>${items.length ? `<div class="panel"><div class="rows">${items.map(todoRow).join('')}</div></div>` : ''}</div>`; }).join('') +
     renderWarm() +
     `<div class="section" style="padding-top:28px"><div class="sh"><h2 style="font-size:24px">Sent</h2><p>${sent.length ? sent.length + ' sent' : 'Nothing sent yet.'}</p></div>${sent.length ? `<div class="panel"><div class="rows">${sent.slice(0, 40).map(s => `<div class="todo"><span class="ic">${I.check.replace('<svg', '<svg class="i"')}</span><div class="tx">${esc(s.ch)} to ${s.c.name ? esc(s.c.name) : 'contact'} at <b>${esc(s.j.company)}</b><small>${esc(when(s.at)) || 'Sent'}</small></div><div class="ract"><button class="btn sm ghost" data-act="open" data-id="${esc(s.j.id)}">Open</button></div></div>`).join('')}</div></div>` : ''}</div>`;
+}
+
+/* ---------- Automatic recruiter emails (cloud): from the person's own Gmail, off until they turn it on ---------- */
+const AS_STATUS = {queued: 'Waiting to send', sending: 'Sending', sent: 'Sent', failed: 'Not sent', unknown: 'Check your Gmail', cancelled: 'Cancelled'};
+const AS_KIND = {first: 'First email', follow1: 'Day 7 follow-up', follow2: 'Day 14 follow-up'};
+function loadAutoSend(){ if (!cloud()) return Promise.resolve(); return api('api/autosend').then(r => r.ok ? r.json() : null).then(v => { if (v){ state.autosend = v; render(); } }).catch(() => {}); }
+function renderAutoSend(){
+  if (!cloud()) return '';
+  const v = state.autosend;
+  if (!v){ if (!state.asLoading){ state.asLoading = true; loadAutoSend(); } return ''; }
+  if (!v.available) return '';
+  const say = state.acctMsg && state.acctMsgWhere === 'autosend' ? `<p class="acctmsg${state.acctMsgErr ? ' err' : ''}" role="status">${esc(state.acctMsg)}</p>` : '';
+  const head = `<div class="sh"><h2 style="font-size:24px">Automatic recruiter emails</h2><p>After you apply, Propelo can email the recruiter for that role from your own Gmail, with follow-ups on day 7 and 14 if you want them. It's off until you turn it on, and only uses addresses found on a public page.</p></div>`;
+  if (!v.perDay) return `<div class="section" style="padding-top:28px">${head}<div class="panel"><p class="small">Part of Pro and Ultra. On Free, every email is drafted for you to send.</p><div><button class="btn sm" data-act="tab" data-tab="setup">See plans</button></div></div></div>`;
+  if (!v.mailbox) return `<div class="section" style="padding-top:28px">${head}<div class="panel">${say}<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><a class="btn solid" href="api/mailbox/google/start">Connect Gmail</a><span class="small">Propelo asks only for permission to send email. It can't read your mailbox.</span></div></div></div>`;
+  const t = obj(v.template), ro = wr();
+  const sends = arr(v.sends);
+  const rows = sends.map(x => { const j = state.jobs.get(x.jobId); return `<div class="todo"><span class="ic fu">${I.loop}</span><div class="tx"><b>${esc(j ? j.company + ' · ' + j.title : x.subject)}</b><small>${esc(AS_KIND[x.kind] || x.kind)} to ${esc(x.to)}${x.at ? ' · ' + esc(when(x.at)) : ''}${x.error ? ' · ' + esc(x.error) : ''}${x.source ? ` · <a href="${esc(safeUrl(x.source) || '#')}" target="_blank" rel="noopener">where the address came from</a>` : ''}</small></div><div class="ract"><span class="pill${x.status === 'sent' ? ' strong' : ''}">${esc(AS_STATUS[x.status] || x.status)}</span>${x.status === 'queued' ? `<button class="btn sm ghost" data-act="as-cancel" data-sid="${esc(x.id)}"${ro}>Cancel</button>` : ''}</div></div>`; }).join('');
+  return `<div class="section" style="padding-top:28px">${head}<div class="panel acct">${say}
+    ${v.mailbox.error ? `<p class="acctmsg err">Gmail stopped accepting sends: ${esc(v.mailbox.error)}. Connect it again.</p>` : ''}
+    <div class="keyrow"><span><b>Sending from ${esc(v.mailbox.address)}</b><br><span class="small">${esc(v.last24h)} of ${esc(v.perDay)} in the last 24 hours · weekdays 09:00 to 18:00 your time</span></span><span class="btns"><button class="btn sm${v.on ? ' solid' : ''}" data-act="as-toggle" aria-pressed="${v.on}"${ro}>${v.on ? 'On' : 'Off'}</button><button class="btn sm ghost" data-act="as-disconnect"${ro}>Disconnect</button></span></div>
+    ${v.on && !v.approved ? '<p class="acctmsg err">Nothing is sent until you approve the template below.</p>' : ''}
+    <details${v.approved ? '' : ' open'}><summary>Template${v.approved ? ' (approved)' : ' (needs your approval)'}</summary>
+      <form id="as-form" class="acct-form" novalidate>
+        <input type="text" class="plain" name="subject" value="${esc(t.subject)}" aria-label="Subject" maxlength="200"${ro}>
+        <textarea name="body" rows="8" aria-label="First email"${ro}>${esc(t.body)}</textarea>
+        <label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="followUps"${v.followUps ? ' checked' : ''}${ro}> Send follow-ups on day 7 and 14 if nothing has moved</label>
+        <textarea name="followUp" rows="5" aria-label="Follow-up email"${ro}>${esc(t.followUp)}</textarea>
+        <p class="small">Fills in {first_name}, {role}, {company}, {highlight} (one line of your evidence for the role), {my_name} and {my_link}. When Propelo has already drafted an email for a role, that draft is sent instead. Every email ends with a line the recipient can use to stop emails from Propelo users.</p>
+        <div class="btns"><button class="btn sm" type="submit"${ro}>Save</button>${v.approved ? '' : `<button class="btn sm solid" type="button" data-act="as-approve"${ro}>Approve and use this template</button>`}</div>
+      </form></details>
+    ${rows ? `<div class="rows" style="margin-top:6px">${rows}</div>` : '<p class="small">Nothing sent yet. The first email goes about two hours after you apply to a role with a public recruiter address.</p>'}
+  </div></div>`;
+}
+function printReceipt(j){
+  const a = obj(j.application), w = window.open('', '_blank', 'noopener=no');
+  if (!w){ toast('Allow pop-ups to print the receipt.'); return; }
+  const rows = arr(a.fields).map(f => `<tr><td>${esc(f.label)}</td><td>${esc(f.value || '(left for you)')}</td></tr>`).join('');
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>Receipt: ${esc(j.company)}, ${esc(j.title)}</title><style>body{font:14px/1.5 system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 16px;color:#151515}h1{font-weight:500;font-size:22px}td{border-top:1px solid #ddd;padding:6px 8px;vertical-align:top}td:first-child{color:#555;width:40%}</style>
+    <h1>Application receipt</h1><p><b>${esc(j.title)}</b> at <b>${esc(j.company)}</b><br>Sent ${a.at ? esc(new Date(a.at).toLocaleString('en-IN')) : ''} on ${esc(a.form || hostOf(safeUrl(j.url) || ''))}${a.confirmation ? `<br>Confirmation: “${esc(a.confirmation)}”` : ''}</p><table>${rows}</table><p style="color:#777">Kept by Propelo. The posting as you applied to it is saved on the role.</p>`);
+  w.document.close(); w.focus(); setTimeout(() => w.print(), 300);
+}
+async function saveAutoSend(patch, msg){
+  const v = obj(state.autosend), t = obj(v.template);
+  const doc = Object.assign({autoSend: !!v.on, followUps: !!v.followUps, approvedAt: v.approved ? v.templateHash : '', template: {subject: t.subject, body: t.body, followUp: t.followUp}}, patch);
+  try { await enqueue('settings/outreach', () => state.db.doc('settings/outreach').set(doc)); await loadAutoSend(); acctSay(msg, false, 'autosend'); }
+  catch(e){ acctSay('Could not save. Try again.', true, 'autosend'); }
 }
 
 function renderWarm(){
@@ -3019,6 +3071,31 @@ function renderFoot(){
 }
 
 /* ---------- Drawer ---------- */
+/* ---------- Scam check: the same rules as careeros/data/scam_rules.json (a test keeps them identical) ---------- */
+const SCAM_RULES = [{"id": "fee", "level": "high", "pattern": "\\b(registration|training|security|processing|joining|onboarding|kit|verification|interview)\\s+(fee|fees|deposit|charges?|amount)\\b", "why": "Asks you to pay a fee or deposit. Real employers never charge to hire you."}, {"id": "pay-to-start", "level": "high", "pattern": "\\b(pay|deposit|transfer)\\s+(?:rs\\.?|inr|₹|\\$)?\\s?\\d[\\d,]*\\s*(?:/-)?\\s*(?:to|for|as|before)\\b", "why": "Asks for money before you start."}, {"id": "ids-upfront", "level": "high", "pattern": "\\b(send|share|submit|upload)\\b[^.\\n]{0,60}\\b(aadhaa?r|pan card|bank (account|details|statement)|otp|cvv|atm pin|upi pin)\\b", "why": "Wants ID numbers, bank details or codes before any interview."}, {"id": "chat-only", "level": "caution", "pattern": "\\b(whats\\s?app|telegram)\\b[^.\\n]{0,40}\\b(only|to apply|for (the )?interview|hr|recruiter)\\b|\\b(apply|contact|message|ping)\\b[^.\\n]{0,30}\\b(on|via|at)\\s+(whats\\s?app|telegram)\\b", "why": "Recruiting happens only over WhatsApp or Telegram."}, {"id": "free-mail", "level": "caution", "pattern": "\\b[a-z0-9._%+-]+@(gmail|yahoo|outlook|hotmail|rediffmail|ymail|proton(mail)?)\\.(com|in|me)\\b", "why": "The contact address is a free personal email, not the company's."}, {"id": "no-interview", "level": "caution", "pattern": "\\b(no interview|without (any )?interview|direct (joining|selection)|instant (joining|selection)|spot (offer|selection)|100% (job|placement) guarantee(d)?|guaranteed (job|placement))\\b", "why": "Promises a job without an interview or with a guarantee."}, {"id": "easy-money", "level": "caution", "pattern": "\\b(earn|make|income of)\\b[^.\\n]{0,25}(₹|rs\\.?|inr|\\$)\\s?\\d[\\d,]*\\s*(per|a|/)\\s*(day|hour|week)\\b|\\b(part[- ]time|home[- ]based)\\b[^.\\n]{0,40}\\b(typing|data entry|like|review|liking)\\b[^.\\n]{0,40}\\b(earn|income|payment)\\b", "why": "Pay quoted per day for simple tasks, a common pattern in task scams."}, {"id": "shortener", "level": "caution", "pattern": "https?://(bit\\.ly|tinyurl\\.com|t\\.ly|cutt\\.ly|rb\\.gy|shorturl\\.at|is\\.gd|ow\\.ly)/", "why": "The apply link is hidden behind a link shortener."}, {"id": "form-site", "level": "caution", "pattern": "https?://(forms\\.gle|docs\\.google\\.com/forms|[a-z0-9-]+\\.wixsite\\.com|sites\\.google\\.com|[a-z0-9-]+\\.blogspot\\.com|[a-z0-9-]+\\.weebly\\.com|form\\.jotform\\.com)", "why": "Applications go to a free form or site builder instead of a careers page."}, {"id": "urgency", "level": "caution", "pattern": "\\b(urgent(ly)? hiring|limited (seats|slots)|only \\d+ (seats|slots) left|apply (within|in) \\d+ (hours|hrs|minutes))\\b", "why": "Pushes you to act within hours."}, {"id": "crypto-pay", "level": "caution", "pattern": "\\b(paid|salary|payment)\\b[^.\\n]{0,30}\\b(in )?(usdt|bitcoin|btc|crypto|gift cards?)\\b", "why": "Offers pay in crypto or gift cards."}];
+const SCAM_RX = SCAM_RULES.map(r => Object.assign({rx: new RegExp(r.pattern, 'i')}, r));
+function scamCheck(j){
+  if (j && j.risk && j.risk.level) return j.risk;
+  const text = ['title','jd','posting','description','salary','url','applyUrl','note'].map(k => j && j[k] ? String(j[k]) : '').filter(Boolean).join('\n').slice(0, 80000);
+  const reasons = [];
+  if (text) for (const r of SCAM_RX){ const m = text.match(r.rx); if (!m) continue; const q = m[0].trim(); if (r.id === 'free-mail' && /@(greenhouse|lever|ashbyhq|workday|smartrecruiters|workable|recruitee|teamtailor|icims|jobvite)\./i.test(q)) continue; reasons.push({id: r.id, level: r.level, why: r.why, quote: q.slice(0, 120)}); }
+  let level = reasons.some(r => r.level === 'high') ? 'high' : reasons.length ? 'caution' : 'ok';
+  if (level === 'caution' && reasons.length >= 3) level = 'high';
+  return {level, reasons};
+}
+function riskHtml(j){
+  const r = scamCheck(j);
+  if (r.level === 'ok') return '';
+  return `<div class="riskbox ${r.level}"><b>${r.level === 'high' ? 'This posting looks unsafe. Auto-apply won\'t send it.' : 'Check this posting before you apply'}</b><ul>${arr(r.reasons).slice(0, 5).map(x => `<li>${esc(x.why)} <span class="muted">“${esc(x.quote)}”</span></li>`).join('')}</ul><p class="small">A rule-based check, not a verdict: open the company's own careers page to confirm the role.</p></div>`;
+}
+function receiptHtml(j){
+  const a = obj(j.application), fields = arr(a.fields);
+  if (!isApplied(j) || !(a.at || a.confirmation || fields.length)) return '';
+  return `<div class="receipt"><div class="contact"><b style="font-size:14.5px">Application receipt</b><button class="btn sm ghost" data-act="receipt-print" data-id="${esc(j.id)}">Print or save</button></div>
+    <dl class="kv"><dt>Sent</dt><dd>${a.at ? esc(new Date(a.at).toLocaleString('en-IN')) : '—'}</dd><dt>Where</dt><dd>${esc(a.form || hostOf(safeUrl(j.url) || '') || 'The company site')}</dd>${a.confirmation ? `<dt>Confirmation</dt><dd>“${esc(a.confirmation)}”</dd>` : ''}</dl>
+    ${fields.length ? `<details><summary>${fields.length} fields filled</summary><table class="grid rtab"><tbody>${fields.map(f => `<tr><td>${esc(f.label)}</td><td>${esc(f.value || '(left for you)')}</td></tr>`).join('')}</tbody></table></details>` : ''}</div>`;
+}
+
 function jobParts(j){
   const url = safeUrl(j.url);
   const brief = obj(j.brief), o = obj(j.outreach), c = obj(o.contact), em = obj(o.email), li = obj(o.linkedin), sk = obj(j.skip);
@@ -3050,7 +3127,7 @@ function jobParts(j){
   const appl = obj(j.application);
   const applHtml = isApplied(j) && (appl.confirmation || j.appliedVia === 'careeros') ? `<p class="muted" style="font-size:14px">Submitted by auto-apply${appl.at ? ' ' + esc(when(appl.at)) : ''}.${appl.confirmation ? ' Confirmation: “' + esc(appl.confirmation) + '”' : ''}</p>` : '';
   const kos = arr(j.knockouts).length ? `<div style="display:grid;gap:10px"><b style="font-size:14.5px">Screening checks</b>${arr(j.knockouts).map(k => `<div class="ko"><span class="ck${k.ok === false ? ' no' : ''}">${k.ok === false ? I.cross : I.check}</span><span>${esc(k.q)}${k.a ? `<br><span class="muted" style="font-size:13.5px">${esc(k.a)}</span>` : ''}</span></div>`).join('')}</div>` : '';
-  const pkg = applHtml + (resUrl ? `<div class="contact"><a class="btn" href="${esc(resUrl)}" target="_blank" rel="noopener">${esc(res.label || 'Tailored resume')}</a>${res.version ? `<span class="muted" style="font-size:13px">${esc(res.version)}</span>` : ''}</div>` : '')
+  const pkg = (receiptHtml(j) || applHtml) + (resUrl ? `<div class="contact"><a class="btn" href="${esc(resUrl)}" target="_blank" rel="noopener">${esc(res.label || 'Tailored resume')}</a>${res.version ? `<span class="muted" style="font-size:13px">${esc(res.version)}</span>` : ''}</div>` : '')
     + (j.coverNote ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Cover note</b>${copy(j.coverNote)}</div>` : '')
     + kos
     + (arr(j.screening).length ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Screening answers</b>${arr(j.screening).map(x => copy(x.a, x.q)).join('')}</div>` : '');
@@ -3058,7 +3135,7 @@ function jobParts(j){
   const warm = warmFor(j.company, 4);
   const outreach = (warm.length ? `<div style="display:grid;gap:6px"><b style="font-size:14.5px">People you know here</b><div class="rows">${warmList(warm)}</div><p class="muted" style="font-size:13px">Ask one of them for a referral before applying. Check anyone marked "similar name" first.</p></div>` : '')
     + (j.stage !== 'skipped' ? referralHtml(j, copy) : '') + (c.name || c.role ? `<div class="contact"><b>${esc(c.name || 'Hiring contact')}</b>${c.role ? `<span class="muted">${esc(c.role)}</span>` : ''}${safeUrl(c.url) ? `<a href="${esc(safeUrl(c.url))}" target="_blank" rel="noopener">Profile</a>` : ''}</div>` : '')
-    + (em.body ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">Email</b><span class="pill${em.status === 'sent' ? ' strong' : ''}">${em.status === 'sent' ? 'Sent' : 'In your Gmail drafts'}</span>${em.to ? `<span class="muted" style="font-size:13px">to ${esc(em.to)}</span>` : ''}</div>${em.subject ? `<span class="muted" style="font-size:14px">Subject: ${esc(em.subject)}</span>` : ''}${copy(em.body)}${em.status !== 'sent' ? `<div><button class="btn sm" data-act="email-sent" data-id="${esc(j.id)}"${ro}>Mark email sent</button></div>` : ''}</div>` : '')
+    + (em.body ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">Email</b><span class="pill${em.status === 'sent' ? ' strong' : ''}">${em.status === 'sent' ? (em.auto ? 'Sent automatically' : 'Sent') : 'In your Gmail drafts'}</span>${em.auto && !o.stopped && cloud() && obj(state.autosend).on ? `<button class="btn sm ghost" data-act="as-stop" data-id="${esc(j.id)}">Stop follow-ups</button>` : ''}${em.to ? `<span class="muted" style="font-size:13px">to ${esc(em.to)}</span>` : ''}</div>${em.subject ? `<span class="muted" style="font-size:14px">Subject: ${esc(em.subject)}</span>` : ''}${copy(em.body)}${em.status !== 'sent' ? `<div><button class="btn sm" data-act="email-sent" data-id="${esc(j.id)}"${ro}>Mark email sent</button></div>` : ''}</div>` : '')
     + (li.note ? `<div style="display:grid;gap:8px"><div class="contact"><b style="font-size:14.5px">LinkedIn note</b><span class="pill${li.status === 'sent' ? ' strong' : ''}">${li.status === 'sent' ? 'Sent' : 'You send this'}</span></div>${copy(li.note)}${li.status !== 'sent' ? `<div class="ract" style="justify-content:flex-start">${liUrl ? `<a class="btn sm" href="${esc(liUrl)}" target="_blank" rel="noopener">Open profile</a>` : ''}<button class="btn sm" data-act="li-sent" data-id="${esc(j.id)}"${ro}>Mark note sent</button></div>` : ''}</div>` : '')
     + (o.recruiterNote ? `<div style="display:grid;gap:8px"><b style="font-size:14.5px">Recruiter note</b>${copy(o.recruiterNote)}</div>` : '');
   const tl = arr(j.timeline).slice(-30).reverse();
@@ -3077,6 +3154,7 @@ function jobParts(j){
       + (j.needsYou ? `<button class="btn solid" data-act="applied" data-id="${esc(j.id)}"${ro}>I applied</button>` : q ? `<button class="btn ghost" data-act="unqueue" data-id="${esc(j.id)}"${ro}>Remove from auto-apply</button>` : belowLine(j) ? `<button class="btn" data-act="apply-anyway" data-id="${esc(j.id)}"${ro} title="Scored under the 4.0 apply line">Auto-apply anyway</button>` : `<button class="btn solid" data-act="queue" data-id="${esc(j.id)}"${ro}>Auto-apply</button>`);
   }
   const body = `
+      ${riskHtml(j) ? `<div class="dsec">${riskHtml(j)}</div>` : ''}
       ${needBox ? `<div class="dsec">${needBox}</div>` : ''}
       ${sec('Decision', skipBox + decision)}
       ${sec('Score', evalHtml(j))}
@@ -4696,7 +4774,14 @@ document.addEventListener('click', e => {
   else if (act === 'signout-all'){ api('api/me/logout-all', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
   else if (act === 'key-hide'){ state.newKey = null; render(); }
   else if (act === 'upgrade'){ el.disabled = true; const b = obj(state.billing), cs = arr(b.currencies); const cur = cs.includes(state.planCur) ? state.planCur : (cs.includes(guessCur()) ? guessCur() : cs[0]); cloudPost('api/billing/checkout', {plan: el.dataset.plan || 'pro', currency: cur}).then(d => { location.href = d.url; }).catch(d => { el.disabled = false; acctSay(d.error || 'Could not start the payment.', true, 'plan'); }); }
+  else if (act === 'receipt-print'){ const j = state.jobs.get(el.dataset.id); if (j) printReceipt(j); }
   else if (act === 'plan-cur'){ state.planCur = el.dataset.cur; render(); }
+  else if (act === 'as-toggle'){ const v = obj(state.autosend); saveAutoSend({autoSend: !v.on}, !v.on ? (v.approved ? 'Automatic emails are on.' : 'On. Approve the template and sending starts.') : 'Automatic emails are off. Nothing more is sent.'); }
+  else if (act === 'as-approve'){ const f = $('#as-form'); const t = f ? {subject: f.subject.value.trim(), body: f.body.value, followUp: f.followUp.value} : obj(obj(state.autosend).template);
+    saveAutoSend({template: t, followUps: f ? f.followUps.checked : !!obj(state.autosend).followUps, approvedAt: ''}, '').then(() => saveAutoSend({approvedAt: obj(state.autosend).templateHash}, 'Template approved.')); }
+  else if (act === 'as-cancel'){ cloudPost('api/autosend/' + encodeURIComponent(el.dataset.sid) + '/cancel').then(v => { state.autosend = v; acctSay('Cancelled. That email won\'t be sent.', false, 'autosend'); }).catch(d => acctSay(d.error || 'Could not cancel.', true, 'autosend')); }
+  else if (act === 'as-stop'){ cloudPost('api/autosend/stop/' + encodeURIComponent(el.dataset.id)).then(v => { state.autosend = v; toast('No more automatic emails for this role.'); }).catch(d => toast(d.error || 'Could not stop it.')); }
+  else if (act === 'as-disconnect'){ if (!confirm('Disconnect Gmail? Emails waiting to send are cancelled.')) return; api('api/mailbox', {method: 'DELETE'}).then(r => r.json()).then(v => { state.autosend = v; acctSay('Gmail disconnected. Propelo can no longer send from it.', false, 'autosend'); }).catch(() => {}); }
   else if (act === 'plan-portal'){ el.disabled = true; cloudPost('api/billing/portal').then(d => { location.href = d.url; }).catch(d => { el.disabled = false; acctSay(d.error || 'Could not open invoices.', true, 'plan'); }); }
   else if (act === 'plan-cancel'){ if (!confirm('Cancel Pro? You keep it until the end of the period you paid for.')) return; cloudPost('api/billing/cancel').then(b => { state.billing = Object.assign({}, state.billing, b); acctSay('Cancelled. Nothing more will be charged.', false, 'plan'); }).catch(d => acctSay(d.error || 'Could not cancel. Try again.', true, 'plan')); }
   else if (act === 'aikey-test'){ el.disabled = true; cloudPost('api/me/ai-key/test').then(d => acctSay(d.ok ? `Your key works (${d.model}).` : `Your key didn't work: ${d.error}`, !d.ok, 'ai')).catch(d => acctSay(d.error || 'Could not test the key.', true, 'ai')).finally(() => { el.disabled = false; }); }
@@ -4739,6 +4824,15 @@ document.addEventListener('submit', e => {
     e.preventDefault(); const name = e.target.name.value.trim() || 'My computer';
     cloudPost('api/tokens', {name}).then(k => { state.newKey = k.key; state.keys = (state.keys || []).concat([{id: k.id, name: k.name, prefix: k.prefix, createdAt: k.createdAt}]); acctSay('', false, 'key'); })
       .catch(d => acctSay(d.error || 'Could not create a key.', true, 'key'));
+    return;
+  }
+  if (e.target.id === 'as-form'){
+    e.preventDefault(); const f = e.target;
+    if (!f.subject.value.trim() || !f.body.value.trim()) return acctSay('Add a subject and a message.', true, 'autosend');
+    const v = obj(state.autosend), t = obj(v.template);
+    const changed = f.subject.value.trim() !== t.subject || f.body.value !== t.body || f.followUp.value !== t.followUp;
+    saveAutoSend({template: {subject: f.subject.value.trim(), body: f.body.value, followUp: f.followUp.value}, followUps: f.followUps.checked, approvedAt: changed ? '' : (v.approved ? v.templateHash : '')},
+      changed ? 'Saved. Approve it before anything is sent with it.' : 'Saved.');
     return;
   }
   if (e.target.id === 'aikey-form'){
@@ -4913,6 +5007,8 @@ let lastY = -1;
 window.addEventListener('scroll', () => { const y = window.scrollY > 4; if (y !== lastY){ lastY = y; $('#nav').classList.toggle('scrolled', y); } }, {passive: true});
 
 /* ---------- boot ---------- */
+(function mailReturn(){ try { const q = new URLSearchParams(location.search), m = q.get('mail'); if (!m) return; q.delete('mail'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash);
+  setTimeout(() => toast({connected: 'Gmail connected. Approve your template, then switch automatic emails on.', cancelled: 'Gmail wasn\'t connected.', failed: 'Google didn\'t give permission to send. Try again and tick the box for sending email.', state: 'That sign-in took too long. Try connecting again.'}[m] || 'Gmail wasn\'t connected.'), 600); } catch(e){} })();
 (function initTab(){ const h = (location.hash || '').slice(1); if (TABS.includes(h) && h !== 'app') state.tab = h; else if (h.startsWith('app/')){ state.tab = 'app'; state.appId = decodeURIComponent(h.slice(4)); }
 window.addEventListener('hashchange', () => { const h = (location.hash || '').slice(1); if (TABS.includes(h) && h !== 'app' && h !== state.tab){ closeSheetsUI(); setTab(h); } else if (h.startsWith('app/') && decodeURIComponent(h.slice(4)) !== state.appId){ state.appId = decodeURIComponent(h.slice(4)); state.tab = 'app'; render(); } });
   try { const t = localStorage.getItem('careeros-theme'); if (t === 'dark' || t === 'light') state.theme = t; } catch(e){}

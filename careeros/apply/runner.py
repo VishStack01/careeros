@@ -209,7 +209,11 @@ def run(
                     result.errors.append(f"The form reported {invalid} invalid field(s) after submit.")
                 page.screenshot(path=str(rdir / "after-submit.png"), full_page=True)
                 if store is not None and key:
-                    receipt = {"job_id": job_id, "url": url, "at": stamp, "confirmed": result.confirmed, "dir": str(rdir)}
+                    m = CONFIRM.search(body)
+                    line = body[max(0, body.rfind("\n", 0, m.start()) + 1): (body.find("\n", m.end()) if body.find("\n", m.end()) > 0 else m.end())] if m else ""
+                    receipt = {"job_id": job_id, "url": url, "at": stamp, "confirmed": result.confirmed, "dir": str(rdir),
+                               "confirmation": line.strip()[:300], "fields": receipt_fields(result.resolutions),
+                               "screenshots": ["filled.png", "after-submit.png"]}
                     # Unconfirmed submits stay "submitting" so nothing retries blindly.
                     if result.confirmed:
                         store.finish_submit(key, True, receipt)
@@ -217,3 +221,15 @@ def run(
             (rdir / "result.json").write_text(json.dumps(result.__dict__ | {"status": result.status}, indent=2, default=str), encoding="utf-8")
             browser.close()
     return result
+
+
+def receipt_fields(resolutions: list[dict]) -> list[dict]:
+    """What went into the form, for the application receipt. Files are named, long answers trimmed;
+    anything without a value (left for the user) is listed as such."""
+    out = []
+    for r in resolutions[:80]:
+        v = r.get("value")
+        if r.get("type") == "file":
+            v = Path(str(v)).name if v else ""
+        out.append({"label": str(r.get("label") or "")[:160], "value": str(v if v is not None else "")[:300], "source": str(r.get("source") or "")[:40]})
+    return out

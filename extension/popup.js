@@ -52,12 +52,17 @@
     app.innerHTML = parts.join("");
   }
   function trackCard() {
-    if (S.tracked) return '<div class="good">Tracked in Propelo as <b>' + esc(S.tracked.stage === "applied" ? "Applied" : "Saved") + '</b>.</div>';
+    if (S.tracked) return '<div class="good">Saved to Propelo as <b>' + esc(S.tracked.stage === "applied" ? "Applied" : "To apply") + '</b>.</div>' + riskView(S.tracked.risk);
     var p = S.page || {};
-    return '<details class="card"' + (S.report ? " open" : "") + '><summary>Track this application</summary>' +
+    return '<details class="card"' + (S.report ? " open" : "") + '><summary>Save to Propelo</summary>' + (p.jd ? '<p class="muted">The posting\'s full text comes along, so Propelo can score it.</p>' : '') + '' +
       '<label>Role<input type="text" id="tr-title" value="' + esc(p.title || "") + '" maxlength="160"></label>' +
       '<label>Company<input type="text" id="tr-company" value="' + esc(p.company || "") + '" maxlength="120"></label>' +
-      '<div class="row"><button class="btn solid" data-act="track" data-applied="1"' + (S.busy ? " disabled" : "") + '>I submitted it</button><button class="btn" data-act="track" data-applied="0"' + (S.busy ? " disabled" : "") + '>Save for later</button></div></details>';
+      '<div class="row"><button class="btn solid" data-act="track" data-applied="1"' + (S.busy ? " disabled" : "") + '>I submitted it</button><button class="btn" data-act="track" data-applied="0"' + (S.busy ? " disabled" : "") + '>Save to apply later</button></div></details>';
+  }
+  function riskView(r) {
+    if (!r || r.level === "ok" || !r.reasons) return "";
+    return '<div class="note"><b>' + (r.level === "high" ? "This posting looks unsafe." : "Check this posting.") + '</b><ul>' +
+      r.reasons.slice(0, 4).map(function (x) { return '<li><span>' + esc(x.why) + ' “' + esc(x.quote) + '”</span></li>'; }).join("") + '</ul></div>';
   }
   function reportView(r) {
     var out = [];
@@ -110,6 +115,8 @@
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       S.tab = tabs && tabs[0]; S.page = null;
       if (!S.tab || !/^https?:/.test(S.tab.url || "")) return render();
+      // On the big boards Propelo reads nothing from the page: only the link and the tab's title.
+      if (BLOCKED.test(hostOf(S.tab.url))) { S.page = { title: String(S.tab.title || "").split(/ [|\-–] /)[0].slice(0, 160), company: "" }; S.framesOk = true; return render(); }
       exec(S.tab.id, false, function () {
         var r = window.__careerosRead();
         r.frames = Array.prototype.slice.call(document.querySelectorAll("iframe[src]")).map(function (f) { return f.src; })
@@ -158,7 +165,9 @@
     var title = (document.getElementById("tr-title") || {}).value || "", company = (document.getElementById("tr-company") || {}).value || "";
     if (!title.trim() || !company.trim()) return say("Add the role and the company first.", true);
     S.busy = "track"; render();
-    api("/api/agent/track", { method: "POST", body: { url: S.tab.url, title: title.trim(), company: company.trim(), applied: applied } })
+    var p = S.page || {}, body = { url: S.tab.url, title: title.trim(), company: company.trim(), applied: applied };
+    ["jd", "location", "salary", "employmentType", "postedAt", "validThrough"].forEach(function (k) { if (p[k]) body[k] = p[k]; });
+    api("/api/agent/track", { method: "POST", body: body })
       .then(function (d) { S.busy = ""; S.tracked = d; say(d.created ? "Added to your applications." : "Updated the role you already had."); },
             function (err) { S.busy = ""; say(err.message, true); });
   }

@@ -47,12 +47,15 @@ class Config:
     max_doc_kb: int = 512
     linkedin_client_id: str = ""  # "Sign in with LinkedIn using OpenID Connect": name, email, photo only
     linkedin_client_secret: str = ""
+    # Google OAuth for sending recruiter emails from the person's own Gmail (scope gmail.send only).
+    google_client_id: str = ""
+    google_client_secret: str = ""
     # Plans and billing. Prices are in rupees per month; credits are AI actions per calendar month (UTC).
     secrets_key: str = ""  # encrypts users' own AI keys at rest; any long random string
     # India pays in rupees through Razorpay; everyone else pays in US dollars through Dodo Payments
     # (merchant of record: it handles VAT and sales tax). USD prices are in cents.
-    pro_price_inr: int = 299
-    ultra_price_inr: int = 799
+    pro_price_inr: int = 499
+    ultra_price_inr: int = 1199
     pro_price_usd_cents: int = 2250
     ultra_price_usd_cents: int = 4850
     free_ai_credits: int = 15
@@ -99,9 +102,11 @@ class Config:
             max_doc_kb=_int("MAX_DOC_KB", 512),
             linkedin_client_id=e("LINKEDIN_CLIENT_ID", "").strip(),
             linkedin_client_secret=e("LINKEDIN_CLIENT_SECRET", "").strip(),
+            google_client_id=e("GOOGLE_CLIENT_ID", "").strip(),
+            google_client_secret=e("GOOGLE_CLIENT_SECRET", "").strip(),
             secrets_key=e("SECRETS_KEY", "").strip(),
-            pro_price_inr=_int("PRO_PRICE_INR", 299),
-            ultra_price_inr=_int("ULTRA_PRICE_INR", 799),
+            pro_price_inr=_int("PRO_PRICE_INR", 499),
+            ultra_price_inr=_int("ULTRA_PRICE_INR", 1199),
             pro_price_usd_cents=_int("PRO_PRICE_USD_CENTS", 2250),
             ultra_price_usd_cents=_int("ULTRA_PRICE_USD_CENTS", 4850),
             free_ai_credits=_int("FREE_AI_CREDITS", 15),
@@ -136,6 +141,10 @@ class Config:
     @property
     def linkedin_enabled(self) -> bool:
         return bool(self.linkedin_client_id and self.linkedin_client_secret)
+
+    @property
+    def gmail_enabled(self) -> bool:
+        return bool(self.google_client_id and self.google_client_secret and self.secrets_key)
 
     @property
     def secure_cookies(self) -> bool:

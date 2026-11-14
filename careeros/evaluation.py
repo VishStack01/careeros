@@ -272,7 +272,12 @@ def apply_gate(job: dict, chosen_by_user: bool) -> tuple[bool, str]:
 
     Roles you queued or approved without a score may go ahead (you chose them).
     Roles auto-apply picked itself need a score. Any role scored under the apply
-    line waits for you to press "Apply anyway" (scoreOverride)."""
+    line waits for you to press "Apply anyway" (scoreOverride). A posting that looks like
+    a scam (asks for a fee, for ID numbers up front, and the like) is never sent automatically."""
+    from .scamcheck import check as scam_check
+    risk = scam_check(job)
+    if risk["level"] == "high":
+        return False, "This posting looks unsafe: " + risk["reasons"][0]["why"] + " Check it yourself before applying."
     ev = job.get("evaluation") or {}
     s = _num(ev.get("score")) if ev else _num(job.get("score"))
     if s is None:

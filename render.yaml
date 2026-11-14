@@ -46,7 +46,9 @@ services:
       - key: SECRETS_KEY
         generateValue: true
       - key: PRO_PRICE_INR
-        value: "299"
+        value: "499"
+      - key: ULTRA_PRICE_INR
+        value: "1199"
       - key: FREE_AI_CREDITS
         value: "15"
       - key: PRO_AI_CREDITS

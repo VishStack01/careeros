@@ -8,6 +8,7 @@ Scheduled work:
   ingest       every INGEST_EVERY_MINUTES (15): read the scan into the shared inventory, then
                queue matches by plan: Ultra every ingest, Pro hourly, Free daily
   billing_cancel  cancel a subscription that a paid plan change replaced
+  autosend     every 15 minutes: recruiter emails from connected Gmail accounts (see autosend.py)
   match_user   one account's filters against the inventory (also queued when settings change)
   alerts       hourly: queue the opt-in job alert digests that are due (see alerts.py)
   send_email   verification, reset and notice emails, with retries
@@ -24,7 +25,7 @@ import threading
 import time
 from datetime import timedelta
 
-from . import plans, repo
+from . import autosend, plans, repo
 from .config import Config
 from .db import Database, now_iso
 from .ingest import IngestError, ingest
@@ -59,6 +60,8 @@ class Worker:
                 repo.enqueue(c, "cleanup", dedupe_key="cleanup", max_attempts=2)
             if self._due(c, "next_alerts_at", timedelta(hours=1)):
                 repo.enqueue(c, "alerts", dedupe_key="alerts", max_attempts=2)
+            if self.cfg.gmail_enabled and self._due(c, "next_autosend_at", timedelta(minutes=15)):
+                repo.enqueue(c, "autosend", dedupe_key="autosend", max_attempts=1)
 
     # ------------------------------------------------------------ queue
     def claim(self) -> dict | None:
@@ -99,6 +102,8 @@ class Worker:
                 self.mailer.send(payload["to"], payload["subject"], payload["text"])
             elif task["kind"] == "cleanup":
                 cleanup(self.db)
+            elif task["kind"] == "autosend":
+                log.info("autosend %s", autosend.run(self.db, self.cfg, log=log.info))
             elif task["kind"] == "billing_cancel":
                 cancel_superseded(self.cfg, payload)
             elif task["kind"] == "alerts":

@@ -176,8 +176,58 @@
     var m = location.pathname.match(/^\/([^/]+)\//);
     if (!company && /greenhouse\.io|lever\.co|ashbyhq\.com/.test(location.hostname) && m) company = m[1].replace(/[-_]+/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
     if (!company) company = location.hostname.replace(/^(www|careers|jobs|apply)\./, "").split(".")[0].replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-    return { url: location.href, title: title.slice(0, 160), company: company.slice(0, 120), host: location.hostname };
+    var out = { url: location.href, title: title.slice(0, 160), company: company.slice(0, 120), host: location.hostname };
+    var jp = jobPosting();
+    if (jp) {
+      if (jp.title) out.title = clean(jp.title).slice(0, 160);
+      var org = jp.hiringOrganization && (jp.hiringOrganization.name || jp.hiringOrganization);
+      if (typeof org === "string" && clean(org)) out.company = clean(org).slice(0, 120);
+      out.jd = htmlText(jp.description || "").slice(0, 60000);
+      out.location = placeOf(jp).slice(0, 160);
+      out.salary = payOf(jp.baseSalary).slice(0, 120);
+      out.employmentType = [].concat(jp.employmentType || []).join(", ").slice(0, 60);
+      out.postedAt = String(jp.datePosted || "").slice(0, 40);
+      out.validThrough = String(jp.validThrough || "").slice(0, 40);
+    }
+    return out;
   };
+
+  // schema.org JobPosting, which most career sites publish for search engines. Read as data only.
+  function jobPosting() {
+    var nodes = document.querySelectorAll('script[type="application/ld+json"]');
+    for (var i = 0; i < nodes.length; i++) {
+      var data;
+      try { data = JSON.parse(nodes[i].textContent || "null"); } catch (e) { continue; }
+      var queue = [].concat(data || []);
+      while (queue.length) {
+        var x = queue.shift();
+        if (!x || typeof x !== "object") continue;
+        var t = [].concat(x["@type"] || []);
+        if (t.indexOf("JobPosting") >= 0) return x;
+        if (x["@graph"]) queue = queue.concat(x["@graph"]);
+      }
+    }
+    return null;
+  }
+  function htmlText(h) {
+    var d = new DOMParser().parseFromString("<div>" + String(h) + "</div>", "text/html");
+    d.querySelectorAll("br,p,li,h1,h2,h3,h4,div").forEach(function (n) { n.insertAdjacentText("afterend", "\n"); });
+    return (d.body.textContent || "").replace(/[ \t]+/g, " ").replace(/\n\s*\n+/g, "\n\n").trim();
+  }
+  function placeOf(jp) {
+    if (/telecommute/i.test(String(jp.jobLocationType || ""))) return "Remote";
+    var l = [].concat(jp.jobLocation || [])[0], a = l && l.address;
+    if (!a) return "";
+    if (typeof a === "string") return clean(a);
+    return [a.addressLocality, a.addressRegion, a.addressCountry && (a.addressCountry.name || a.addressCountry)].filter(Boolean).map(clean).join(", ");
+  }
+  function payOf(s) {
+    if (!s || typeof s !== "object") return "";
+    var v = s.value || {}, cur = s.currency || v.currency || "", unit = (v.unitText || "").toLowerCase();
+    var lo = v.minValue || v.value, hi = v.maxValue;
+    if (!lo) return "";
+    return cur + " " + lo + (hi && hi !== lo ? "–" + hi : "") + (unit ? " per " + unit : "");
+  }
 
   window.__careerosFill = function (data) {
     var out = { host: location.hostname, filled: [], needs: [], skippedSensitive: 0, resume: "", blocked: false };

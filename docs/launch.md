@@ -35,7 +35,7 @@ Set `CAREEROS_LLM=anthropic` and `ANTHROPIC_API_KEY` on `careeros-web` (or `open
 1. Sign up and complete activation (KYC). Razorpay reviews your website: give it your app's address and these pages, which the app already serves:
    - Terms: `/terms`, Privacy: `/privacy`, Refunds and cancellation: `/refunds`, Contact: `/contact`, Pricing: `/pricing`
    Have the policy text reviewed for your situation first (it's a plain-language starting point, not legal advice).
-2. Start in **Test mode**. Under Subscriptions > Plans, create a monthly plan at your Pro price (default ₹299). Copy its `plan_...` id.
+2. Start in **Test mode**. Under Subscriptions > Plans, create a monthly plan at your Pro price (default ₹499). Copy its `plan_...` id.
 3. Settings > API Keys: generate a key id and secret.
 4. Settings > Webhooks: add `https://<your-app>/api/billing/webhook`, choose a secret, and select the `subscription.*` events (activated, charged, pending, halted, cancelled, completed, paused, resumed).
 5. Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` and `RAZORPAY_PLAN_PRO` on `careeros-web` and redeploy. The Upgrade button appears in Settings.

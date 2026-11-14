@@ -195,7 +195,7 @@ def test_plan_caps_auto_apply_and_match_cadence(cloud):
 def test_public_pages_and_installable_app(cloud):
     c = cloud.client()
     cloud.cfg.support_email = "help@example.com"
-    for path, text in [("/pricing", "₹299"), ("/refunds", "Refunds and cancellation"), ("/contact", "help@example.com"), ("/terms", "Terms of use")]:
+    for path, text in [("/pricing", "₹499"), ("/refunds", "Refunds and cancellation"), ("/contact", "help@example.com"), ("/terms", "Terms of use")]:
         r = c.get(path)
         assert r.status_code == 200 and text in r.text, path
     assert "{{" not in c.get("/privacy").text
@@ -270,7 +270,7 @@ def _dodo_event(kind, uid, sub="sub_dodo_1", product="pdt_ULTRA", at=None, **dat
 def test_catalog_has_three_plans_in_two_currencies(cloud):
     cat = cloud.client().get("/api/plans").json()
     pro, ultra = cat["plans"][1], cat["plans"][2]
-    assert (pro["priceInr"], pro["priceUsd"], ultra["priceInr"], ultra["priceUsd"]) == (299, "22.50", 799, "48.50")
+    assert (pro["priceInr"], pro["priceUsd"], ultra["priceInr"], ultra["priceUsd"]) == (499, "22.50", 1199, "48.50")
     assert ultra["aiCredits"] == 1500 and ultra["autoApplyPerDay"] == 60 and ultra["matchEveryMinutes"] == 15
     assert ultra["copilotPerDay"] is None and ultra["linkedinReview"] is True
     assert cloud.client().get("/api/plans", headers={"CF-IPCountry": "US"}).json()["currency"] == "USD"
@@ -377,7 +377,7 @@ def test_admin_can_grant_ultra(cloud):
 def test_pricing_page_shows_both_currencies(cloud):
     c = cloud.client()
     r = c.get("/pricing", headers={"CF-IPCountry": "DE"})
-    assert '<body data-cur="USD">' in r.text and "$48.50" in r.text and "₹799" in r.text and "Ultra" in r.text
+    assert '<body data-cur="USD">' in r.text and "$48.50" in r.text and "₹1,199" in r.text and "Ultra" in r.text
     assert 'body[data-cur="INR"] .usd' in r.text  # the switch's CSS survives
     nonce = r.headers["content-security-policy"].split("'nonce-")[1].split("'")[0]
     assert f'<script nonce="{nonce}">' in r.text

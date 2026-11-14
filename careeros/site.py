@@ -178,7 +178,7 @@ def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = N
     if total and len(top) > 4:
         rest = sum(v for _, v in top[4:])
         others = len(top) - 5
-        shares.append({"label": f"{top[4][0]} and {others} other system{'' if others == 1 else 's'}" if others else f"{top[4][0]} job boards", "share": round(rest / total, 4)})
+        shares.append({"label": f"{top[4][0]} and {others} more" if others else f"{top[4][0]} job boards", "share": round(rest / total, 4)})
     stats = {"feedAt": summary.get("generatedAt", ""), "openings": summary.get("openings", 0), "companies": summary.get("companies", 0),
              "boards": summary.get("boards", 0), "relisted": summary.get("relisted", 0), "byAts": shares}
     (out / "data" / "stats.json").write_text(json.dumps(stats, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

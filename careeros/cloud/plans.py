@@ -68,31 +68,33 @@ def usd(cents: int) -> str:
 def catalog(cfg: Config) -> list[dict]:
     return [
         {"id": "free", "name": "Free", "priceInr": 0, "priceUsd": "0", "aiCredits": cfg.free_ai_credits,
-         "matchEveryMinutes": 24 * 60, "matchEveryHours": 24, "autoApplyPerDay": 5, "storageMb": min(cfg.user_storage_mb, 10),
-         "copilotPerDay": 10, "mockInterviews": 2, "linkedinReview": False,
+         "matchEveryMinutes": 24 * 60, "matchEveryHours": 24, "autoApplyPerDay": 5, "autoApplyPerMonth": 100, "storageMb": min(cfg.user_storage_mb, 10),
+         "copilotPerDay": 10, "mockInterviews": 2, "autoEmailsPerDay": 0, "linkedinReview": False,
          "features": ["Fresh roles from company career pages, matched daily",
                       "Every keep or skip with the quote that decided it",
                       "Pipeline, contacts, follow-ups, calendar and referral drafts",
                       f"{cfg.free_ai_credits} AI actions a month, unlimited with your own key",
                       "Autofill extension, and auto-apply from your own computer up to 5 a day"]},
         {"id": "pro", "name": "Pro", "priceInr": cfg.pro_price_inr, "priceUsd": usd(cfg.pro_price_usd_cents), "aiCredits": cfg.pro_ai_credits,
-         "matchEveryMinutes": 60, "matchEveryHours": 1, "autoApplyPerDay": 25, "storageMb": cfg.user_storage_mb,
-         "copilotPerDay": 60, "mockInterviews": 20, "linkedinReview": False,
+         "matchEveryMinutes": 60, "matchEveryHours": 1, "autoApplyPerDay": 25, "autoApplyPerMonth": 500, "storageMb": cfg.user_storage_mb,
+         "copilotPerDay": 60, "mockInterviews": 20, "autoEmailsPerDay": 10, "linkedinReview": False,
          "features": ["Everything in Free",
                       "Matching every hour, so you see roles first",
                       f"{cfg.pro_ai_credits} AI actions a month: tailored resumes, cover letters, fit scores",
-                      "Auto-apply up to 25 a day, with a receipt for each",
+                      "Auto-apply up to 500 a month (25 a day), with a receipt for each",
                       "Ask Propelo, the copilot, up to 60 questions a day",
+                      "Recruiter emails sent from your Gmail, up to 10 a day, when you turn it on",
                       "Priority support"]},
         {"id": "ultra", "name": "Ultra", "priceInr": cfg.ultra_price_inr, "priceUsd": usd(cfg.ultra_price_usd_cents), "aiCredits": cfg.ultra_ai_credits,
-         "matchEveryMinutes": 15, "matchEveryHours": 0.25, "autoApplyPerDay": 60, "storageMb": max(cfg.user_storage_mb, 100),
-         "copilotPerDay": None, "mockInterviews": None, "linkedinReview": True,
+         "matchEveryMinutes": 15, "matchEveryHours": 0.25, "autoApplyPerDay": 60, "autoApplyPerMonth": 1000, "storageMb": max(cfg.user_storage_mb, 100),
+         "copilotPerDay": None, "mockInterviews": None, "autoEmailsPerDay": 25, "linkedinReview": True,
          "features": ["Everything in Pro",
                       "New roles matched within 15 minutes of each scan",
                       f"{cfg.ultra_ai_credits:,} AI actions a month",
-                      "Auto-apply up to 60 a day",
+                      "Auto-apply up to 1,000 a month (60 a day), every one above your apply line",
                       "Unlimited copilot questions and mock interviews",
                       "LinkedIn profile review",
+                      "Recruiter emails from your Gmail, up to 25 a day, with day 7 and 14 follow-ups",
                       "Fastest support"]},
     ]
 
@@ -141,6 +143,46 @@ def plan_of(c: Conn, user: dict) -> str:
 def usage(c: Conn, uid: str) -> dict:
     r = c.one("SELECT hosted, own FROM ai_usage WHERE user_id = ? AND period = ?", (uid, period()))
     return {"period": period(), "hosted": int(r["hosted"]) if r else 0, "own": int(r["own"]) if r else 0}
+
+
+FEATURES = {
+    # feature: (catalog field with the allowance, "day" or "month", what it's called in messages)
+    "copilot": ("copilotPerDay", "day", "copilot questions today"),
+    "mock": ("mockInterviews", "month", "mock interviews this month"),
+}
+
+
+def feature_period(span: str, now: datetime | None = None) -> str:
+    return (now or datetime.now(timezone.utc)).strftime("%Y-%m-%d" if span == "day" else "%Y-%m")
+
+
+def take_feature(c: Conn, cfg: Config, uid: str, plan: str, feature: str) -> tuple[bool, str]:
+    """Count one use of a metered feature. (allowed, message when not)."""
+    if feature == "linkedin":
+        return (True, "") if plan_info(cfg, plan)["linkedinReview"] else (False, "LinkedIn profile review is part of Ultra. Add your own AI key to use it on any plan.")
+    if feature not in FEATURES:
+        return True, ""
+    field, span, noun = FEATURES[feature]
+    limit = plan_info(cfg, plan)[field]
+    if limit is None:
+        return True, ""
+    per = feature_period(span)
+    c.execute("INSERT INTO feature_usage(user_id, period, feature, count) VALUES (?, ?, ?, 1) "
+              "ON CONFLICT (user_id, period, feature) DO UPDATE SET count = feature_usage.count + 1", (uid, per, feature))
+    n = int(c.scalar("SELECT count FROM feature_usage WHERE user_id = ? AND period = ? AND feature = ?", (uid, per, feature)) or 0)
+    if n > limit:
+        c.execute("UPDATE feature_usage SET count = count - 1 WHERE user_id = ? AND period = ? AND feature = ?", (uid, per, feature))
+        nxt = "Ultra has no limit" if plan == "pro" else "Pro and Ultra allow more"
+        return False, f"You've used your {limit} {noun}. {nxt}, or add your own AI key in Settings."
+    return True, ""
+
+
+def feature_usage(c: Conn, cfg: Config, uid: str, plan: str) -> dict:
+    out = {}
+    for feature, (field, span, _) in FEATURES.items():
+        r = c.one("SELECT count FROM feature_usage WHERE user_id = ? AND period = ? AND feature = ?", (uid, feature_period(span), feature))
+        out[feature] = {"used": int(r["count"]) if r else 0, "limit": plan_info(cfg, plan)[field], "per": span}
+    return out
 
 
 def take_credit(c: Conn, uid: str, kind: str, limit: int | None = None) -> bool:

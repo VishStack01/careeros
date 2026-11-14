@@ -92,5 +92,5 @@ def test_site_stats_for_the_home_page(tmp_path):
     site.build(feed, tmp_path / "out", log=lambda *a: None)
     st = json.loads((tmp_path / "out" / "data" / "stats.json").read_text())
     assert st["openings"] == 1000 and st["companies"] == 1396 and st["boards"] == 306 and st["relisted"] == 12
-    assert [b["label"] for b in st["byAts"]] == ["Workday career sites", "Greenhouse job boards", "Lever job boards", "Ashby job boards", "Workable and 1 other system"]
+    assert [b["label"] for b in st["byAts"]] == ["Workday career sites", "Greenhouse job boards", "Lever job boards", "Ashby job boards", "Workable and 1 more"]
     assert abs(sum(b["share"] for b in st["byAts"]) - 1) < 0.01

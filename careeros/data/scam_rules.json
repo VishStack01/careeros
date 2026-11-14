@@ -1,0 +1,16 @@
+{
+  "about": "Signs that a posting may be a scam or a bad-faith listing. Shared by careeros/scamcheck.py and the dashboard (a test keeps the two copies identical). Each rule is a case-insensitive regular expression over the posting's text, title and links; level 'high' stops auto-apply, 'caution' only warns.",
+  "rules": [
+    {"id": "fee", "level": "high", "pattern": "\\b(registration|training|security|processing|joining|onboarding|kit|verification|interview)\\s+(fee|fees|deposit|charges?|amount)\\b", "why": "Asks you to pay a fee or deposit. Real employers never charge to hire you."},
+    {"id": "pay-to-start", "level": "high", "pattern": "\\b(pay|deposit|transfer)\\s+(?:rs\\.?|inr|₹|\\$)?\\s?\\d[\\d,]*\\s*(?:/-)?\\s*(?:to|for|as|before)\\b", "why": "Asks for money before you start."},
+    {"id": "ids-upfront", "level": "high", "pattern": "\\b(send|share|submit|upload)\\b[^.\\n]{0,60}\\b(aadhaa?r|pan card|bank (account|details|statement)|otp|cvv|atm pin|upi pin)\\b", "why": "Wants ID numbers, bank details or codes before any interview."},
+    {"id": "chat-only", "level": "caution", "pattern": "\\b(whats\\s?app|telegram)\\b[^.\\n]{0,40}\\b(only|to apply|for (the )?interview|hr|recruiter)\\b|\\b(apply|contact|message|ping)\\b[^.\\n]{0,30}\\b(on|via|at)\\s+(whats\\s?app|telegram)\\b", "why": "Recruiting happens only over WhatsApp or Telegram."},
+    {"id": "free-mail", "level": "caution", "pattern": "\\b[a-z0-9._%+-]+@(gmail|yahoo|outlook|hotmail|rediffmail|ymail|proton(mail)?)\\.(com|in|me)\\b", "why": "The contact address is a free personal email, not the company's."},
+    {"id": "no-interview", "level": "caution", "pattern": "\\b(no interview|without (any )?interview|direct (joining|selection)|instant (joining|selection)|spot (offer|selection)|100% (job|placement) guarantee(d)?|guaranteed (job|placement))\\b", "why": "Promises a job without an interview or with a guarantee."},
+    {"id": "easy-money", "level": "caution", "pattern": "\\b(earn|make|income of)\\b[^.\\n]{0,25}(₹|rs\\.?|inr|\\$)\\s?\\d[\\d,]*\\s*(per|a|/)\\s*(day|hour|week)\\b|\\b(part[- ]time|home[- ]based)\\b[^.\\n]{0,40}\\b(typing|data entry|like|review|liking)\\b[^.\\n]{0,40}\\b(earn|income|payment)\\b", "why": "Pay quoted per day for simple tasks, a common pattern in task scams."},
+    {"id": "shortener", "level": "caution", "pattern": "https?://(bit\\.ly|tinyurl\\.com|t\\.ly|cutt\\.ly|rb\\.gy|shorturl\\.at|is\\.gd|ow\\.ly)/", "why": "The apply link is hidden behind a link shortener."},
+    {"id": "form-site", "level": "caution", "pattern": "https?://(forms\\.gle|docs\\.google\\.com/forms|[a-z0-9-]+\\.wixsite\\.com|sites\\.google\\.com|[a-z0-9-]+\\.blogspot\\.com|[a-z0-9-]+\\.weebly\\.com|form\\.jotform\\.com)", "why": "Applications go to a free form or site builder instead of a careers page."},
+    {"id": "urgency", "level": "caution", "pattern": "\\b(urgent(ly)? hiring|limited (seats|slots)|only \\d+ (seats|slots) left|apply (within|in) \\d+ (hours|hrs|minutes))\\b", "why": "Pushes you to act within hours."},
+    {"id": "crypto-pay", "level": "caution", "pattern": "\\b(paid|salary|payment)\\b[^.\\n]{0,30}\\b(in )?(usdt|bitcoin|btc|crypto|gift cards?)\\b", "why": "Offers pay in crypto or gift cards."}
+  ]
+}

@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 
 from .. import feed
 from . import repo
+from ..scamcheck import check as scam_check
 from .db import Database, now_iso
 from .ingest import feed_state
 
@@ -47,6 +48,9 @@ def match_user(db: Database, uid: str, now: datetime | None = None, log=print) -
             for did, doc in res[sub]:
                 if did in known_ids or not _ID.match(did) or repo.get_doc(c, uid, "jobs", did):
                     continue
+                risk = scam_check(doc)
+                if risk["level"] != "ok":
+                    doc = dict(doc, risk=risk)
                 repo.set_doc(c, uid, "jobs", did, doc)
                 added += sub == "kept"
                 skipped += sub == "skipped"

@@ -37,9 +37,10 @@ from .. import __version__
 from .. import evaluation as evaluation_mod
 from .. import followups, llm
 from ..dedupe import canonical_url, company_key
+from ..scamcheck import check as scam_check
 from . import mailer as mail
 from . import linkedin as li_auth
-from . import plans, repo, security
+from . import autosend, mailbox, plans, repo, security
 from .config import Config
 from .db import Database, now_iso
 from .ingest import feed_state
@@ -588,6 +589,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 "plan": {k: v for k, v in plans.billing_view(c, cfg, p.user).items() if k != "plans"},
                 "aiKey": plans.public_key(c, p.uid),
                 "aiUsage": c.all("SELECT period, hosted, own FROM ai_usage WHERE user_id = ? ORDER BY period", (p.uid,)),
+                "featureUsage": c.all("SELECT period, feature, count FROM feature_usage WHERE user_id = ? ORDER BY period", (p.uid,)),
             }
             repo.audit(c, p.uid, "export", client_ip(request))
         return JSONResponse(data, headers={"Content-Disposition": 'attachment; filename="careeros-export.json"'})
@@ -776,11 +778,14 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             except (ValueError, AttributeError):
                 return None
         with db.tx() as c:
-            plan_cap = plans.plan_info(cfg, plans.plan_of(c, p.user))["autoApplyPerDay"]
+            info = plans.plan_info(cfg, plans.plan_of(c, p.user))
+        plan_cap, month_cap = info["autoApplyPerDay"], info["autoApplyPerMonth"]
         cap = min(int(settings.get("dailyCap") or 8), plan_cap)
         done_today = sum(1 for j in jobs if local_day(j["data"].get("appliedAt") or "") == today)
+        month = [d for d in (local_day(j["data"].get("appliedAt") or "") for j in jobs if j["data"].get("appliedVia") == "careeros") if d]
+        done_month = sum(1 for d in month if (d.year, d.month) == (today.year, today.month))
         recent |= {company_key(j["data"].get("company", "")) for j in jobs if j["data"].get("appliedAt")}
-        left = max(0, cap - done_today)
+        left = max(0, min(cap - done_today, month_cap - done_month))
         auto = settings.get("approvalMode") == "auto-when-clear"
         order = {"remote-global": 0, "remote-india": 1, "south-india": 2}
         groups = {"queued": [], "approved": [], "auto": []}
@@ -808,15 +813,16 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 ck = company_key(j["data"].get("company", ""))
                 if ck in companies or (g != "queued" and ck in recent):
                     continue
-                if evaluation_mod.apply_gate(j["data"], chosen_by_user=g != "auto")[1].startswith("Scored"):
-                    continue  # under the apply line and the user hasn't said "apply anyway"
+                ok, why = evaluation_mod.apply_gate(j["data"], chosen_by_user=g != "auto")
+                if not ok and not why.startswith("Not scored"):
+                    continue  # under the apply line without "apply anyway", or a posting that looks unsafe
                 companies.add(ck)
                 picked.append({"id": j["id"], "version": j["version"], "group": g, **{k: j["data"].get(k) for k in (
                     "company", "title", "url", "region", "postedAt", "location", "workMode", "stage", "checks", "brief", "evidence", "gaps", "score", "scoreOverride")},
                     "needsScore": g == "auto" and not (j["data"].get("evaluation") or {}).get("score")})
         n = min(left, max(0, min(int(limit), 25)))
         res = (applicant or {"data": {}})["data"].get("resume") or {}
-        return {"dailyCap": cap, "appliedToday": done_today, "left": left, "approvalMode": settings.get("approvalMode"), "applyLine": evaluation_mod.APPLY_LINE,
+        return {"dailyCap": cap, "appliedToday": done_today, "monthCap": month_cap, "appliedThisMonth": done_month, "left": left, "approvalMode": settings.get("approvalMode"), "applyLine": evaluation_mod.APPLY_LINE,
                 "paused": settings.get("approvalMode") == "paused", "roles": picked[:n],
                 "applicantReady": bool(applicant), "resume": {"id": res.get("id"), "name": res.get("name")} if res.get("id") else None}
 
@@ -830,6 +836,19 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         return {"applicant": doc["data"] if doc else None, "resumeText": text or "", "brain": brain["data"] if brain else None}
 
     _BIG_BOARDS = re.compile(r"(^|\.)(linkedin\.com|naukri\.com|indeed\.[a-z.]+|wellfound\.com|angel\.co)$", re.I)
+
+    def _posting_extras(body: dict) -> dict:
+        """What the extension read from the page's JobPosting data. Posting text is kept as data for scoring;
+        it is never treated as instructions."""
+        out = {}
+        jd = str(body.get("jd") or "").strip()
+        if jd:
+            out["jd"], out["jdArchivedAt"] = jd[:60000], now_iso()
+        for k, n in (("location", 160), ("salary", 120), ("employmentType", 60), ("postedAt", 40), ("validThrough", 40)):
+            v = re.sub(r"\s+", " ", str(body.get(k) or "")).strip()[:n]
+            if v:
+                out[k] = v
+        return out
 
     @app.post("/api/agent/track")
     def agent_track(body: dict = Body(default={}), p: Principal = Depends(principal)):
@@ -864,8 +883,12 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 doc["timeline"].append({"at": stamp, "event": f"You applied on {host}"})
             if _BIG_BOARDS.search(host):
                 doc["note"] = "Tracked from a job board Propelo never fills in."
+            doc.update(_posting_extras(body))
+            risk = scam_check(doc)
+            if risk["level"] != "ok":
+                doc["risk"] = risk
             repo.set_doc(c, p.uid, "jobs", jid, doc)
-        return {"id": jid, "created": True, "stage": doc["stage"]}
+        return {"id": jid, "created": True, "stage": doc["stage"], "risk": doc.get("risk") or {"level": "ok", "reasons": []}}
 
     @app.post("/api/agent/brain")
     def agent_brain(body: dict = Body(default={}), p: Principal = Depends(principal)):
@@ -955,6 +978,20 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                       (p.uid, key, jid, company_key(d.get("company", "")), now, now))
         return {"ok": True, "key": key}
 
+    _SENSITIVE_LABEL = re.compile(r"password|otp|one[- ]time|aadhaa?r|\bpan\b|passport|bank|account number|ifsc|date of birth|\bdob\b|cvv|card number", re.I)
+
+    def _receipt_fields(raw) -> list[dict]:
+        """The fields auto-apply filled, for the receipt. Sensitive labels are never stored, even if sent."""
+        out = []
+        for f in (raw if isinstance(raw, list) else [])[:80]:
+            if not isinstance(f, dict):
+                continue
+            label = re.sub(r"\s+", " ", str(f.get("label") or "")).strip()[:160]
+            if not label or _SENSITIVE_LABEL.search(label):
+                continue
+            out.append({"label": label, "value": str(f.get("value") or "")[:300], "source": str(f.get("source") or "")[:40]})
+        return out
+
     @app.post("/api/agent/jobs/{jid}/finish")
     def agent_finish(jid: str, body: dict = Body(default={}), p: Principal = Depends(principal)):
         ok = body.get("confirmed") is True
@@ -967,7 +1004,9 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 raise err(409, "Call begin before submitting.", "not_started")
             host = str(body.get("form", ""))[:200]
             if ok:
-                receipt = {"confirmation": str(body.get("confirmation", ""))[:500], "form": host, "at": now_iso()}
+                receipt = {"confirmation": str(body.get("confirmation", ""))[:500], "form": host, "at": now_iso(), "fields": _receipt_fields(body.get("fields"))}
+                if re.match(r"^[A-Za-z0-9_-]{8,64}$", str(body.get("screenshotAsset") or "")):
+                    receipt["screenshot"] = str(body["screenshotAsset"])
                 c.execute("UPDATE applications SET state = 'submitted', receipt = ?, updated_at = ? WHERE user_id = ? AND key = ?",
                           (json.dumps(receipt), now_iso(), p.uid, key))
                 patch = {"stage": "applied", "appliedAt": now_iso()[:19] + "Z", "appliedVia": "careeros", "autoApply": "done", "needsYou": "", "needsYouKind": "",
@@ -1041,7 +1080,8 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
     @app.get("/api/billing")
     def billing(p: Principal = Depends(session_only)):
         with db.tx() as c:
-            return dict(plans.billing_view(c, cfg, p.user), ai=plans.ai_status(c, cfg, p.user))
+            return dict(plans.billing_view(c, cfg, p.user), ai=plans.ai_status(c, cfg, p.user),
+                        features=plans.feature_usage(c, cfg, p.uid, plans.plan_of(c, p.user)))
 
     @app.post("/api/billing/checkout")
     async def checkout(request: Request, body: dict = Body(default={}), p: Principal = Depends(session_only)):
@@ -1165,6 +1205,115 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         log.info(json.dumps({"event": "billing-webhook", "provider": "dodo", "kind": ev["kind"][:60], "result": result}))
         return {"ok": True, "result": result}
 
+    # ------------------------------------------------------------ recruiter emails from the person's Gmail
+    GM_STATE = "propelo_gm_state"
+
+    def gm_redirect_uri() -> str:
+        return f"{cfg.public_url}/api/mailbox/google/callback"
+
+    @app.get("/api/autosend")
+    def autosend_view(p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            return autosend.view(c, cfg, p.user)
+
+    @app.get("/api/mailbox/google/start")
+    def mailbox_start(p: Principal = Depends(session_only)):
+        if not cfg.gmail_enabled:
+            raise err(404, "Sending from Gmail isn't set up on this server.", "not_configured")
+        state = secrets.token_urlsafe(24)
+        resp = RedirectResponse(mailbox.authorize_url(cfg.google_client_id, gm_redirect_uri(), state, p.user["email"]), status_code=303)
+        resp.set_cookie(GM_STATE, f"{state}.{p.uid}", max_age=600, httponly=True, secure=cfg.secure_cookies, samesite="lax", path="/api/mailbox/google")
+        return resp
+
+    @app.get("/api/mailbox/google/callback")
+    def mailbox_callback(request: Request, code: str = "", state: str = "", error: str = "", p: Principal = Depends(session_only)):
+        def back(msg: str):
+            resp = RedirectResponse(f"/app?mail={msg}#outreach", status_code=303)
+            resp.delete_cookie(GM_STATE, path="/api/mailbox/google")
+            return resp
+        if not cfg.gmail_enabled:
+            raise err(404, "Sending from Gmail isn't set up on this server.", "not_configured")
+        expected = request.cookies.get(GM_STATE, "")
+        if error or not code or not expected or not secrets.compare_digest(expected, f"{state}.{p.uid}"):
+            return back("cancelled" if error else "state")
+        with db.tx() as c:
+            limited(c, f"gmail:{p.uid}", 10, 3600)
+        try:
+            got = mailbox.exchange(code, gm_redirect_uri(), cfg.google_client_id, cfg.google_client_secret)
+        except mailbox.MailError as e:
+            log.warning(json.dumps({"event": "gmail-connect-failed", "error": str(e)[:200]}))
+            return back("failed")
+        with db.tx() as c:
+            autosend.save_mailbox(c, cfg, p.uid, got["address"], got["refresh_token"])
+            repo.audit(c, p.uid, "gmail-connected", client_ip(request))
+        return back("connected")
+
+    @app.delete("/api/mailbox")
+    async def mailbox_remove(request: Request, p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            row = autosend.mailbox_row(c, p.uid)
+        if row:
+            try:
+                await run_in_threadpool(mailbox.revoke, autosend.refresh_token(cfg, row))
+            except Exception:  # noqa: BLE001 - unreadable or already revoked: removing it here is what matters
+                pass
+        with db.tx() as c:
+            c.execute("DELETE FROM mailboxes WHERE user_id = ?", (p.uid,))
+            c.execute("UPDATE outreach_sends SET status = 'cancelled', error = 'Gmail was disconnected.' WHERE user_id = ? AND status = 'queued'", (p.uid,))
+            repo.audit(c, p.uid, "gmail-disconnected", client_ip(request))
+            return autosend.view(c, cfg, p.user)
+
+    @app.post("/api/autosend/{sid}/cancel")
+    def autosend_cancel(sid: str, p: Principal = Depends(session_only)):
+        with db.tx() as c:
+            n = c.execute("UPDATE outreach_sends SET status = 'cancelled', error = 'Cancelled by you.' WHERE id = ? AND user_id = ? AND status = 'queued'",
+                          (sid, p.uid)).rowcount
+            if not n:
+                raise err(404, "That email isn't waiting to be sent.")
+            return autosend.view(c, cfg, p.user)
+
+    @app.post("/api/autosend/stop/{jid}")
+    def autosend_stop(jid: str, p: Principal = Depends(session_only)):
+        """No more automatic emails about this role: cancels anything queued and stops follow-ups."""
+        check_col("jobs", jid)
+        with db.tx() as c:
+            d = _job(c, p.uid, jid)["data"]
+            c.execute("UPDATE outreach_sends SET status = 'cancelled', error = 'Stopped by you.' WHERE user_id = ? AND job_id = ? AND status = 'queued'", (p.uid, jid))
+            o = dict(d.get("outreach") or {})
+            repo.update_doc(c, p.uid, "jobs", jid, {"outreach": dict(o, stopped=True),
+                                                     "timeline": repo.append_timeline(d, "Automatic emails stopped for this role")})
+            return autosend.view(c, cfg, p.user)
+
+    @app.get("/optout", include_in_schema=False)
+    def optout_page(request: Request, a: str = "", s: str = ""):
+        addr = autosend.read_optout(cfg, a, s)
+        nonce = request.state.nonce
+        if not addr:
+            body = "<h1>This link isn't valid</h1><p>Reply \"stop\" to the email instead, and the sender will see it.</p>"
+        else:
+            body = (f"<h1>Stop emails from Propelo users</h1><p>Emails sent with Propelo will no longer go to <b>{html_escape(addr)}</b>, from anyone.</p>"
+                    f'<form method="post" action="/optout?a={html_escape(a)}&amp;s={html_escape(s)}"><button type="submit">Stop these emails</button></form>')
+        page = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+                '<title>Propelo email preferences</title><style>body{font:17px/1.6 system-ui,sans-serif;background:#FAF3E6;color:#151515;max-width:560px;margin:12vh auto;padding:0 20px}'
+                'h1{font-weight:500;letter-spacing:-.02em}button{font:inherit;background:#151515;color:#FAF3E6;border:0;border-radius:999px;padding:12px 22px;cursor:pointer}</style></head>'
+                f"<body>{body}</body></html>")
+        return HTMLResponse(page.replace("<script>", f'<script nonce="{nonce}">'))
+
+    @app.post("/optout", include_in_schema=False)
+    def optout_post(request: Request, a: str = "", s: str = ""):
+        """The page's button, and mail apps' one-click unsubscribe (RFC 8058)."""
+        addr = autosend.read_optout(cfg, a, s)
+        if not addr:
+            raise err(400, "This link isn't valid.")
+        with db.tx() as c:
+            limited(c, "optout:" + security.ip_key(client_ip(request)), 60, 3600)
+            autosend.opt_out(c, addr)
+        if "text/html" in request.headers.get("accept", ""):
+            return HTMLResponse('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+                                '<title>Done</title><body style="font:17px/1.6 system-ui,sans-serif;background:#FAF3E6;max-width:560px;margin:12vh auto;padding:0 20px">'
+                                '<h1 style="font-weight:500">Done</h1><p>You won\'t get emails sent with Propelo at this address again.</p></body>')
+        return {"ok": True}
+
     # ------------------------------------------------------------ AI actions
     @app.put("/api/me/ai-key")
     def save_ai_key(request: Request, body: dict = Body(default={}), p: Principal = Depends(session_only)):
@@ -1211,6 +1360,7 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         if len(prompt) > llm.MAX_PROMPT:
             raise err(413, "That's too long for one AI action.", "too_large")
         tier = body.get("tier") if body.get("tier") in llm.TIERS else "default"
+        feature = str(body.get("feature") or "")[:20]
         with db.tx() as c:
             limited(c, f"ai:{p.uid}", 40, 600)
             try:
@@ -1225,6 +1375,9 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
                 if not model:
                     raise err(503, "AI isn't available on this server. Add your own key in Settings.", "ai_off")
                 plan = plans.plan_of(c, p.user)
+                ok, why = plans.take_feature(c, cfg, p.uid, plan, feature)
+                if not ok:
+                    raise err(402, why, "plan_limit")
                 limit = plans.plan_info(cfg, plan)["aiCredits"]
                 if not plans.take_credit(c, p.uid, "hosted", limit):
                     hint = "Upgrade to Pro or add your own key in Settings." if plan == "free" else "Add your own key in Settings to keep going."
