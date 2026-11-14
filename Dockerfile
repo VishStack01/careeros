@@ -3,7 +3,7 @@
 #   docker run careeros careeros cloud serve --host 0.0.0.0     (web, the default)
 #   docker run careeros careeros cloud worker                   (background worker)
 #   docker run careeros careeros cloud migrate                  (release step)
-FROM python:3.12-slim
+FROM python:3.15-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1 \
     UPLOAD_DIR=/data/uploads
