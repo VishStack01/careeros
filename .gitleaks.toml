@@ -1,0 +1,10 @@
+# Secret scanning (see .github/workflows/security.yml). The default rules apply everywhere,
+# except the test suite, whose keys and secrets are all made-up placeholders.
+title = "Propelo"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake credentials in tests"
+paths = ['''^tests/''']
