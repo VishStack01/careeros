@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY pyproject.toml README.md ./
 COPY careeros ./careeros
-RUN pip install ".[cloud]" \
+RUN pip install ".[cloud,monitoring]" \
  && useradd --create-home --uid 10001 careeros \
  && mkdir -p /data/uploads && chown -R careeros /data
 

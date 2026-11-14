@@ -199,6 +199,8 @@ def cleanup(db: Database) -> dict:
 
 def main(cfg: Config | None = None) -> None:
     cfg = cfg or Config.from_env()
+    from .app import _init_error_reporting
+    _init_error_reporting(cfg)
     logging.basicConfig(level=logging.INFO, format='{"t":"%(asctime)s","level":"%(levelname)s","logger":"%(name)s","msg":%(message)r}')
     db = Database(cfg.database_url, cfg.db_pool_min, cfg.db_pool_max)
     if db.pending_migrations():

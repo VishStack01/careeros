@@ -78,7 +78,8 @@ Most job bots optimise the weakest variable: volume. They read job cards instead
 - **It scores before it applies.** Each role gets a 1–5 score against your Career Brain, requirement by requirement, with the gaps and how to handle them. Under 4.0, auto-apply waits for you.
 - **It applies only when it can answer everything.** Each form answer has a confidence. Sensitive fields, essays nobody wrote, captchas and logins go to you.
 - **One submit per role, ever.** An idempotent state machine, receipts with screenshots, and a kill switch.
-- **Platform-safe.** No LinkedIn, Naukri, Indeed or Wellfound automation, no account creation, no captcha solving. Outreach is drafted; you send it.
+- **Platform-safe.** No LinkedIn, Naukri, Indeed or Wellfound automation, no account creation, no captcha solving. Outreach is drafted for you to send, or, if you turn it on in Propelo Cloud, recruiter emails go from your own Gmail with limits and an opt-out.
+- **Scam-aware.** Postings that ask for fees, deposits or ID numbers up front are flagged with the words that triggered it, and never auto-applied.
 - **Where the openings are first.** About 1,400 product companies' career pages, read straight from their hiring systems every hour, before roles reach the big boards.
 
 ## Coverage
@@ -115,17 +116,24 @@ It never stores passwords, Aadhaar, PAN, bank details, passport or date of birth
 
 ## Autofill extension
 
-For roles you apply to yourself, **Propelo Autofill** ([extension/](extension/README.md)) is a Chrome extension that fills a company's application form from your saved details, attaches your resume, lists the questions only you can answer and tracks the application in Propelo. You review it and press Submit. It uses the same computer key, runs only when you press its button, and never runs on LinkedIn, Naukri, Indeed or Wellfound.
+For roles you apply to yourself, **Propelo Autofill** ([extension/](extension/README.md)) is a Chrome extension that fills a company's application form from your saved details, attaches your resume, lists the questions only you can answer and saves roles to Propelo from any careers page with the posting's details. You review it and press Submit. It uses the same computer key, runs only when you press its button, and never runs on LinkedIn, Naukri, Indeed or Wellfound.
 
 ## Launch it as a product
 
-Propelo Cloud is the hosted version people sign up for, on the web, as an installable app, or as the Android and iOS apps in [`mobile/`](mobile/). It has Free and Pro plans with Razorpay subscriptions, a monthly AI allowance on your model (or the user's own key, encrypted), and pricing, terms, privacy and refund pages. **[docs/launch.md](docs/launch.md)** walks through every account and setting, from Render to the app stores.
+Propelo Cloud is the hosted version people sign up for, on the web, as an installable app, or as the Android and iOS apps in [`mobile/`](mobile/). It has Free, Pro and Ultra plans, billed in rupees through Razorpay in India and in dollars through Dodo Payments elsewhere, a monthly AI allowance on your model (or the user's own key, encrypted), and pricing, terms, privacy and refund pages. **[docs/launch.md](docs/launch.md)** is the owner's to-do list, from Render to the app stores; **[docs/runbook.md](docs/runbook.md)** covers incidents and backups.
 
-| Free | Pro |
-|---|---|
-| Fresh roles matched daily, with quotes | Matching every hour |
-| 15 AI actions a month, unlimited with your own key | 400 AI actions a month |
-| Auto-apply up to 5 a day | Auto-apply up to 25 a day |
+| | Free | Pro | Ultra |
+|---|---|---|---|
+| Price | ₹0 / $0 | ₹499 / $22.50 a month | ₹1,199 / $48.50 a month |
+| Matching | Daily | Every hour | Within 15 minutes of each scan |
+| AI actions | 15 a month, unlimited with your own key | 400 a month | 1,500 a month |
+| Auto-apply | 5 a day | 500 a month (25 a day) | 1,000 a month (60 a day) |
+| Ask Propelo copilot | 10 a day | 60 a day | Unlimited |
+| Mock interviews | 2 a month | 20 a month | Unlimited |
+| Recruiter emails from your Gmail | Drafts | Up to 10 a day | Up to 25 a day, with follow-ups |
+| LinkedIn profile review | | | Yes |
+
+Every plan has Contacts, interview prep sheets, application receipts, the scam check and the autofill extension. [How it compares with Simplify, Teal, Jobright and Salvo](docs/competitors.md).
 
 ## Propelo Cloud: for many job seekers
 
@@ -227,7 +235,7 @@ config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume, an application package, a posting and its evaluation
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               292 tests, including real browser form fills, every LLM provider
+tests/               326 tests, including real browser form fills, every LLM provider
                      (mocked), and the cloud service on SQLite and PostgreSQL
 ```
 
@@ -244,7 +252,7 @@ tests/               292 tests, including real browser form fills, every LLM pro
 - [Data model](docs/data-model.md)
 - [Propelo Cloud (multi-user)](docs/cloud.md) and its [release checklist](docs/cloud-release-checklist.md)
 - [Build your own](docs/build-your-own.md)
-- [Launch it as a product](docs/launch.md)
+- [Launch it as a product](docs/launch.md), the [runbook](docs/runbook.md) and [how Propelo compares](docs/competitors.md)
 - [Design rules](docs/design.md)
 - [Bring your own key](https://vishstack01.github.io/careeros/docs.html#key)
 - [Responsible use](docs/responsible-use.md)

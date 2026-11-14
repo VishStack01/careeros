@@ -79,6 +79,14 @@ services:
         sync: false
       - key: DODO_MODE
         value: test
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: CAREEROS_LLM_FALLBACK
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
 
   - type: worker
     name: careeros-worker
@@ -109,6 +117,22 @@ services:
           type: web
           name: careeros-web
           envVarKey: SECRETS_KEY
+      # The worker sends automatic recruiter emails, so it needs the Google client too.
+      - key: GOOGLE_CLIENT_ID
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: GOOGLE_CLIENT_ID
+      - key: GOOGLE_CLIENT_SECRET
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: GOOGLE_CLIENT_SECRET
+      - key: SENTRY_DSN
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: SENTRY_DSN
       # The worker cancels a replaced subscription after a plan change, so it needs the payment keys too.
       - key: RAZORPAY_KEY_ID
         fromService:

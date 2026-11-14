@@ -907,6 +907,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);box-shadow:0 0 0
 .plan.pro,.plan.pro .muted{color:var(--on-pastel)}
 .plan .price{font-family:var(--serif);font-size:40px;font-weight:600;letter-spacing:-.04em;line-height:1}
 .plan .price small{font-size:15px;font-family:var(--f);font-weight:500;letter-spacing:0}
+.plan .price{white-space:nowrap}
+#as-form{max-width:none}
+#as-form textarea,#as-form input.plain{width:100%}
 .plan ul{margin:0;padding:0;list-style:none;display:grid;gap:7px;font-size:14px}
 .plan li{display:grid;grid-template-columns:18px 1fr;gap:8px}
 .plan li::before{content:"";width:14px;height:14px;margin-top:3px;border-radius:50%;background:var(--bgreen)}
@@ -914,8 +917,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);box-shadow:0 0 0
 .meter{height:10px;border-radius:999px;background:var(--sand-2);overflow:hidden}
 .meter i{display:block;height:100%;background:var(--ink);border-radius:999px}
 .in-app .buy{display:none!important}
-.planwrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;margin:18px 0 10px}
-@media (max-width:1100px){.planwrap{grid-template-columns:minmax(0,1fr)}}
+.planwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;margin:18px 0 10px}
+.planwrap #ai{max-width:760px}
 .topbar{flex-wrap:nowrap}
 .topbar #notice-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topact{flex:none}

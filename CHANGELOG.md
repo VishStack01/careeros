@@ -2,6 +2,29 @@
 
 All notable changes to CareerOS. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [2.0.0] - 2026-11-14
+
+### Added
+- **Ultra plan and dollar pricing.** Free, Pro and Ultra at ₹0 / ₹499 / ₹1,199 a month in India (Razorpay) and $0 / $22.50 / $48.50 everywhere else (Dodo Payments, the merchant of record abroad). The pricing pages pick the currency from the visitor's country or time zone, with a switch. Ultra matches new roles within 15 minutes of each scan, allows 1,500 AI actions and up to 1,000 applications a month (60 a day), unlimited copilot questions and mock interviews, and LinkedIn profile review.
+- **Safe plan changes.** A new plan waits as pending until it's paid; only then is the old subscription cancelled (by a worker task), so an abandoned checkout never takes a plan away. Dodo webhooks are verified with Standard Webhooks signatures and a 5-minute window; stale and duplicate events from either provider are ignored. Dollar customers get an **Invoices and card** button.
+- **Automatic recruiter emails**, off until you turn them on: Propelo sends from your own Gmail (permission to send only), using a template you approve, to recruiter addresses found on a public page, up to 10 a day on Pro and 25 on Ultra, on weekdays during working hours. Follow-ups go on day 7 and 14 in the same thread and stop when they reply or you press Stop. Every email has an opt-out link and one-click unsubscribe header that every Propelo user honours, and every send is logged on the role.
+- **Scam check.** Rule-based warnings with the words that triggered them (fees, deposits, ID numbers up front, WhatsApp-only hiring, free-mail contacts, link shorteners, task-pay patterns). The same rules run on the server and in the app. Auto-apply never sends a posting marked unsafe.
+- **Contacts**: the people in your search with their roles, last contact and follow-up dates, added by hand or in one click from your roles.
+- **Ask Propelo**, a copilot that answers from your profile, pipeline and filters (10 questions a day on Free, 60 on Pro, unlimited on Ultra).
+- **Interview prep sheets**: likely questions mapped to the story from your profile that answers each, honest answers for gaps and questions to ask. Saved on the role and printable.
+- **LinkedIn profile review** from text you paste (Propelo never opens LinkedIn).
+- **Application receipts**: auto-apply keeps the confirmation and the fields it filled (never sensitive ones), printable from the role.
+- **Save to Propelo** in the extension reads a careers page's JobPosting data (description, location, pay) so a saved role can be scored. On LinkedIn, Naukri, Indeed and Wellfound it reads nothing from the page.
+- Operators: `/api/admin/audit`, `/.well-known/security.txt`, optional error reporting (`SENTRY_DSN`, nothing personal sent), a second AI provider used when the first fails (`CAREEROS_LLM_FALLBACK`), and a k6 load test (`scripts/loadtest.js`).
+- Repository: CodeQL, pip-audit, gitleaks, a private-file guard and Dependabot.
+- Docs: [launch guide with the owner's to-do list](docs/launch.md), [runbook](docs/runbook.md) and [how Propelo compares](docs/competitors.md).
+
+### Changed
+- The worker ingests every 15 minutes and matches each account at its plan's pace (Free daily, Pro hourly, Ultra every ingest).
+- Copilot questions and mock interviews on the service's model are counted per plan; with your own key they stay unlimited.
+- The privacy notice covers Dodo Payments, contacts, the Gmail permission (with Google's Limited Use statement) and cookies; the terms cover Ultra, dollar billing and emails sent for you.
+- Website source bars reveal with a clipped edge instead of stretching, so their ends stay round.
+
 ## [1.4.0] - 2026-11-14
 
 ### Changed
