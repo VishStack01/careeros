@@ -203,4 +203,18 @@
     }, { rootMargin: "-20% 0px -70% 0px" });
     $$(".doc h2[id]").forEach(function (h) { tio.observe(h); });
   }
+  // Pricing: rupees in India, dollars elsewhere; the visitor can switch, and the choice is remembered.
+  var prices = document.querySelector(".prices[data-cur]"), curBtns = $$(".cur button");
+  if (prices && curBtns.length) {
+    var setCur = function (c) {
+      prices.setAttribute("data-cur", c);
+      curBtns.forEach(function (x) { x.setAttribute("aria-pressed", String(x.getAttribute("data-c") === c)); });
+      try { localStorage.setItem("propelo-cur", c); } catch (e) {}
+    };
+    var savedCur = null, tz = "";
+    try { savedCur = localStorage.getItem("propelo-cur"); } catch (e) {}
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+    setCur(savedCur === "INR" || savedCur === "USD" ? savedCur : (/^Asia\/(Kolkata|Calcutta)$/.test(tz) || !tz ? "INR" : "USD"));
+    curBtns.forEach(function (x) { x.addEventListener("click", function () { setCur(x.getAttribute("data-c")); }); });
+  }
 })();

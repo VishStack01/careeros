@@ -39,8 +39,8 @@ person's pipeline, and refuse a second submission for any role.
 
 | | How |
 |---|---|
-| Plans | `careeros/cloud/plans.py`: Free and Pro, with limits for matching cadence, AI actions per month, auto-apply per day and storage. Prices and allowances come from `PRO_PRICE_INR`, `FREE_AI_CREDITS` and `PRO_AI_CREDITS`. |
-| Payments | Razorpay subscriptions. `/api/billing/checkout` creates a subscription and returns Razorpay's hosted payment page, so card and UPI details never reach this service. `/api/billing/webhook` checks the `X-Razorpay-Signature` HMAC, stores each event once by its id, and updates the subscription's status. Cancelling keeps Pro until the paid period ends. |
+| Plans | `careeros/cloud/plans.py`: Free, Pro and Ultra, with limits for matching cadence (daily, hourly, every 15 minutes), AI actions per month, auto-apply per day, copilot questions, mock interviews and storage. Prices: ₹0 / ₹299 / ₹799 in India and $0 / $22.50 / $48.50 elsewhere, from `PRO_PRICE_INR`, `ULTRA_PRICE_INR`, `PRO_PRICE_USD_CENTS` and `ULTRA_PRICE_USD_CENTS`; allowances from `FREE_AI_CREDITS`, `PRO_AI_CREDITS` and `ULTRA_AI_CREDITS`. |
+| Payments | Rupees through Razorpay subscriptions, dollars through Dodo Payments (merchant of record, so it charges and files VAT and sales tax abroad). `/api/billing/checkout {plan, currency}` returns the provider's hosted page, so card and UPI details never reach this service. `/api/billing/webhook` (Razorpay) checks the `X-Razorpay-Signature` HMAC; `/api/billing/dodo-webhook` checks the Standard Webhooks signature and a 5-minute timestamp window. Every event is stored once by its id, and events older than the last one applied are ignored. A plan change waits as pending until the new subscription is paid; then the old one is cancelled by a `billing_cancel` task, so an abandoned checkout never removes a plan. Cancelling keeps the plan until the paid period ends. `/api/billing/portal` opens Dodo's invoice page. |
 | AI actions | `/api/ai` (signed-in sessions only, never computer keys) runs on the user's own key when one is saved, otherwise on the service's model within the plan's monthly allowance. A failed model call isn't counted. |
 | Own keys | Encrypted with `SECRETS_KEY` (Fernet). Only the last four characters are shown or exported. OpenAI-compatible addresses must be https on a list of known providers, so the server can't be pointed at internal addresses. |
 | Phone apps | `mobile/` wraps the hosted app (Capacitor). The apps hide the Upgrade button because app stores require their own billing for in-app subscriptions. |
@@ -178,7 +178,7 @@ Every setting is an environment variable; see `.env.example`. In `staging` and
 | `BOOTSTRAP_ADMIN_EMAIL` | | That account can read `/api/admin/overview` |
 | `TRUST_PROXY` | `0` | `1` only behind your own reverse proxy, so client IPs come from `X-Forwarded-For` |
 | `MAX_UPLOAD_MB`, `USER_STORAGE_MB` | 5, 25 | Per file and per account |
-| `FEED_URL`, `INGEST_EVERY_MINUTES` | upstream feed, 60 | |
+| `FEED_URL`, `INGEST_EVERY_MINUTES` | upstream feed, 15 | |
 | `DB_POOL_MIN`, `DB_POOL_MAX` | 1, 10 | Per process. Keep `processes × DB_POOL_MAX` under the database's connection limit |
 
 ## Operate

@@ -28,7 +28,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0
 .pill{display:inline-block;background:var(--pink);color:#151515;border-radius:999px;padding:8px 20px;font-size:14px;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
 .lede{font-family:var(--d);font-weight:400;color:#57534D;font-size:clamp(32px,5vw,58px);line-height:1.12;letter-spacing:-.03em;text-indent:1.4em;max-width:900px;margin:24px 0 0}
 .lede b{color:var(--ink);font-weight:500}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:48px 0 24px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:32px 0 24px}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
 .plan{border-radius:28px;padding:32px;display:flex;flex-direction:column;gap:16px;background:var(--sand);position:relative;overflow:hidden;animation:rise 280ms var(--ease) both}
 .plan.pro{background:var(--pink);color:#151515;animation-delay:40ms}
 .plan.pro .btn{background:#151515;color:#FAF3E6}
@@ -76,23 +77,41 @@ h3{font-weight:600}
 .promises li{background:rgba(255,252,247,.6);box-shadow:inset 0 0 0 1px rgba(21,21,21,.12)}
 .plan.pro{background:var(--yellow) !important;box-shadow:inset 0 0 0 1.5px #151515}
 .plan li::before{background:currentColor !important;opacity:.45;width:8px !important;height:8px !important;margin-top:8px !important}
+.plan.ultra{background:var(--lav) !important;color:#151515;box-shadow:inset 0 0 0 1.5px #151515}
+.plan.ultra h2,.plan.ultra .price,.plan.ultra li{color:#151515}
+.plan.pro .btn,.plan.ultra .btn{background:#151515;color:#FAF3E6}
+.cur{display:inline-flex;gap:2px;margin-top:36px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
+.cur button{border:0;background:none;border-radius:999px;padding:8px 16px;font:inherit;font-size:15px;font-weight:500;color:var(--ink-2);cursor:pointer}
+.cur button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+body[data-cur="INR"] .usd,body[data-cur="USD"] .inr{display:none}
+.note{color:var(--muted);font-size:14px;margin:0}
 input:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 45%,transparent) !important}
 </style>
 </head>
-<body>
+<body data-cur="INR">
 <div class="wrap">
   <nav><a class="brand" href="/">propelo<span class="dot" aria-hidden="true"></span></a><a class="btn light" href="/login">Sign in</a></nav>
   <span class="pill">Pricing</span>
-  <p class="lede">Finding and checking roles is <b>free for everyone</b>. Pro is for when you want them <b>every hour</b>, with AI that writes from your real experience.</p>
+  <p class="lede">Finding and checking roles is <b>free for everyone</b>. Pro and Ultra are for when you want them <b>first</b>, with AI that writes from your real experience.</p>
+  <div class="cur" role="group" aria-label="Currency"><button type="button" data-c="INR" aria-pressed="false">₹ INR</button><button type="button" data-c="USD" aria-pressed="false">$ USD</button></div>
   <div class="grid" id="plans"><!--PLANS--></div>
+  <p class="note">Rupee prices include GST where it applies. Dollar prices are charged by Dodo Payments, our merchant of record outside India, which adds sales tax or VAT where your country requires it.</p>
   <div class="faq">
     <div><h3>Can I use my own AI key?</h3><p>Yes, on any plan. Save an Anthropic, OpenAI-compatible or Gemini key in Settings and AI actions run on it without counting toward your allowance. It's stored encrypted.</p></div>
-    <div><h3>How do I pay?</h3><p>UPI, cards or netbanking through Razorpay. We never see your card or bank details. Pro renews monthly until you cancel.</p></div>
-    <div><h3>Can I cancel?</h3><p>Any time, in Settings. You keep Pro until the end of the month you paid for, then move to Free with all your data. See <a href="/refunds">refunds</a>.</p></div>
+    <div><h3>How do I pay?</h3><p>In India, UPI, cards or netbanking through Razorpay. Everywhere else, cards, Apple Pay or Google Pay through Dodo Payments. We never see your card or bank details. Plans renew monthly until you cancel.</p></div>
+    <div><h3>Can I cancel or switch?</h3><p>Any time, in Settings. You keep your plan until the end of the month you paid for, then move to Free with all your data. Switching plans takes effect once the new payment goes through. See <a href="/refunds">refunds</a>.</p></div>
     <div><h3>Does Propelo apply on LinkedIn or Naukri?</h3><p>No. It reads company career pages and applies from your own computer only where it can answer every question truthfully. Roles listed only on the big boards are marked "Apply yourself".</p></div>
   </div>
   <footer><span>Propelo · open source under the MIT licence</span><span><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/refunds">Refunds</a> · <a href="/contact">Contact</a></span></footer>
 </div>
-
+<script>
+(function(){
+  var b = document.body, btns = document.querySelectorAll('.cur button');
+  function set(c){ b.setAttribute('data-cur', c); btns.forEach(function(x){ x.setAttribute('aria-pressed', String(x.getAttribute('data-c') === c)); }); try { localStorage.setItem('propelo-cur', c); } catch (e) {} }
+  var saved = null; try { saved = localStorage.getItem('propelo-cur'); } catch (e) {}
+  set(saved === 'INR' || saved === 'USD' ? saved : b.getAttribute('data-cur'));
+  btns.forEach(function(x){ x.addEventListener('click', function(){ set(x.getAttribute('data-c')); }); });
+})();
+</script>
 </body>
 </html>

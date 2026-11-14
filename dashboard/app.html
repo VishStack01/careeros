@@ -879,7 +879,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);box-shadow:0 0 0
    like the final layout, and the content replaces it in place: no entrance on top of that. */
 
 /* plan and AI cards in Settings */
-.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:12px}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:12px}
+.curseg{display:inline-flex;gap:2px;margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
+.curseg button{border:0;background:none;border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;font-weight:500;color:var(--ink-2);cursor:pointer}
+.curseg button.on{background:var(--ink);color:var(--page)}
+.plan .btns{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:1100px){.plans{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .plan{border-radius:var(--r-xl);padding:22px;display:grid;gap:10px;align-content:start;background:var(--page)}
 .plan.pro{background:var(--pink)}
 .plan.pro,.plan.pro .muted{color:var(--on-pastel)}
@@ -1968,6 +1973,8 @@ function renderCloud(){
 /* ---------- Cloud: plan, AI allowance and your own model key ---------- */
 const inApp = /CareerOSApp/.test(navigator.userAgent || '');
 function inr(n){ return '₹' + Number(n || 0).toLocaleString('en-IN'); }
+function capMax(){ const p = state.me && state.me.plan; return p === 'ultra' ? 60 : 25; }
+function guessCur(){ try { return /Asia\/(Kolkata|Calcutta)/.test(Intl.DateTimeFormat().resolvedOptions().timeZone) ? 'INR' : 'USD'; } catch (e) { return 'INR'; } }
 function refreshBilling(){ return api('api/billing').then(r => r.json()).then(b => { state.billing = b; if (state.me) state.me.ai = b.ai; state.sample = b.ai && b.ai.available ? makeServerSample() : null; render(); }).catch(() => {}); }
 function renderPlan(){
   const b = state.billing;
@@ -1975,20 +1982,27 @@ function renderPlan(){
   const sub = b.subscription, ai = obj(b.ai), own = ai.ownKey;
   const say = where => state.acctMsg && state.acctMsgWhere === where ? `<p class="acctmsg${state.acctMsgErr ? ' err' : ''}" role="status">${esc(state.acctMsg)}</p>` : '';
   const until = sub && sub.currentEnd ? fDate.format(new Date(sub.currentEnd)) : '';
+  const curs = arr(b.currencies).length ? arr(b.currencies) : ['INR'];
+  const cur$ = curs.includes(state.planCur) ? state.planCur : (sub && sub.currency && curs.includes(sub.currency) ? sub.currency : (curs.includes(guessCur()) ? guessCur() : curs[0]));
+  const price = pl => cur$ === 'USD' ? (Number(pl.priceUsd) ? '$' + pl.priceUsd : '$0') : inr(pl.priceInr);
+  const paid = b.plan === 'pro' || b.plan === 'ultra';
+  const prov = cur$ === 'USD' ? 'Secure checkout by Dodo Payments: cards, Apple Pay and Google Pay. Prices include tax where it applies.' : 'Secure checkout by Razorpay: UPI, cards and netbanking.';
   const cards = arr(b.plans).map(pl => {
-    const cur = pl.id === b.plan;
+    const cur = pl.id === b.plan, name = esc(pl.name);
     let action = '';
-    if (pl.id === 'pro'){
-      if (cur && sub && sub.granted) action = `<p class="small">Pro is on for your account${until ? ' until ' + esc(until) : ''}.</p>`;
-      else if (cur && sub && sub.cancelAtPeriodEnd) action = `<p class="small">Cancelled. You keep Pro until ${esc(until || 'the end of this cycle')}.</p>`;
-      else if (cur && sub && sub.provider === 'razorpay') action = `<button class="btn sm buy" data-act="plan-cancel">Cancel plan</button>${until ? `<p class="small">Renews ${esc(until)}</p>` : ''}`;
-      else if (!cur && b.checkoutEnabled) action = `<button class="btn solid buy" data-act="upgrade">Upgrade to Pro</button><p class="small buy">Secure checkout by Razorpay: UPI, cards and netbanking. Cancel any time.</p>`;
+    if (pl.id !== 'free'){
+      if (cur && sub && sub.granted) action = `<p class="small">${name} is on for your account${until ? ' until ' + esc(until) : ''}.</p>`;
+      else if (cur && sub && sub.cancelAtPeriodEnd) action = `<p class="small">Cancelled. You keep ${name} until ${esc(until || 'the end of this cycle')}.</p>`;
+      else if (cur && sub && (sub.provider === 'razorpay' || sub.provider === 'dodo')) action = `<div class="btns"><button class="btn sm buy" data-act="plan-cancel">Cancel plan</button>${sub.portal ? '<button class="btn sm ghost buy" data-act="plan-portal">Invoices and card</button>' : ''}</div>${until ? `<p class="small">Renews ${esc(until)}</p>` : ''}`;
+      else if (sub && sub.pendingPlan === pl.id) action = `<p class="small buy">Waiting for the payment to finish. Your current plan stays on until it does.</p><button class="btn sm buy" data-act="upgrade" data-plan="${esc(pl.id)}">Open checkout again</button>`;
+      else if (!cur && b.checkoutEnabled) action = `<button class="btn ${pl.id === 'ultra' || !paid ? 'solid' : ''} buy" data-act="upgrade" data-plan="${esc(pl.id)}">${paid && pl.id === 'pro' ? 'Switch to Pro' : 'Upgrade to ' + name}</button><p class="small buy">${prov} Cancel any time.</p>`;
       else if (!cur) action = `<p class="small buy">Paid plans open soon.${b.supportEmail ? ` Write to <a href="mailto:${esc(b.supportEmail)}">${esc(b.supportEmail)}</a> for early access.` : ''}</p>`;
     }
-    return `<article class="plan ${pl.id}"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:22px">${esc(pl.name)}</h3>${cur ? '<span class="pill" style="background:#151515;color:#FAF3E6">Your plan</span>' : ''}</div>
-      <div class="price">${inr(pl.priceInr)}${pl.priceInr ? '<small> / month</small>' : ''}</div>
+    return `<article class="plan ${pl.id}"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="font-size:22px">${name}</h3>${cur ? '<span class="pill" style="background:#151515;color:#FAF3E6">Your plan</span>' : ''}</div>
+      <div class="price">${price(pl)}${pl.priceInr ? '<small> / month</small>' : ''}</div>
       <ul>${arr(pl.features).map(f => `<li>${esc(f)}</li>`).join('')}</ul>${action}</article>`;
   }).join('');
+  const curSwitch = curs.length > 1 ? `<div class="curseg" role="group" aria-label="Currency">${curs.map(x => `<button type="button" class="${x === cur$ ? 'on' : ''}" aria-pressed="${x === cur$}" data-act="plan-cur" data-cur="${x}">${x === 'INR' ? '₹ INR' : '$ USD'}</button>`).join('')}</div>` : '';
   const pct = ai.limit ? Math.min(100, Math.round(ai.used / ai.limit * 100)) : 0;
   const meter = own ? `<p class="small">AI actions run on your own ${esc(own.provider)} key: ${esc(ai.ownUsed || 0)} this month, no limit from us.</p>`
     : ai.hostedAvailable ? `<div style="display:grid;gap:8px"><div style="display:flex;justify-content:space-between;font-size:14px"><span><b>${esc(ai.used)}</b> of ${esc(ai.limit)} AI actions used this month</span><span class="muted">${esc(ai.left)} left</span></div><div class="meter" role="img" aria-label="${esc(pct)}% used"><i style="width:${pct}%"></i></div></div>`
@@ -2002,7 +2016,7 @@ function renderPlan(){
         <input type="url" class="plain" name="baseUrl" placeholder="OpenAI-compatible address (optional), e.g. https://openrouter.ai/api/v1" aria-label="OpenAI-compatible address">
         <div><button class="btn sm solid" type="submit">Save key</button></div>
         <p class="small">Stored encrypted. Only its last four characters are ever shown, and only your account uses it.</p></form>`;
-  return `<div class="planwrap"><div id="plan"><div class="sh"><h2 style="font-size:24px">Plan</h2><p>${b.plan === 'pro' ? 'Thanks for supporting Propelo.' : 'Everything that finds and checks roles is free.'}</p></div>${say('plan')}
+  return `<div class="planwrap"><div id="plan"><div class="sh"><h2 style="font-size:24px">Plan</h2><p>${paid ? 'Thanks for supporting Propelo.' : 'Everything that finds and checks roles is free.'}</p>${curSwitch}</div>${say('plan')}
     <div class="plans">${cards}</div></div>
   <div id="ai"><div class="sh"><h2 style="font-size:24px">AI</h2><p>Reading postings, scoring fit and tailoring resumes and cover letters use a model. Every answer is checked against your own profile before you see it.</p></div>
     <div class="panel acct">${say('ai')}${meter}<details${own ? '' : ' open'}><summary>Use your own key</summary>${keyBox}</details></div></div></div>`;
@@ -2026,7 +2040,7 @@ function renderSetup(){
   const form = `<form id="settings-form" class="formgrid" novalidate>
     <div class="full" role="group" aria-labelledby="s-exp-l"><span id="s-exp-l" class="groupl">Experience the role may ask for</span><div class="checks">${EXPERIENCE.map(([l], i) => `<label for="s-exp-${i}"><input type="checkbox" id="s-exp-${i}" value="${esc(l)}" ${arr(s.experienceLevels).includes(l) ? 'checked' : ''}${ro}>${esc(l)}</label>`).join('')}</div></div>
     <label class="f" for="s-age">Posted within<select id="s-age"${ro}>${AGES.map(([d, l]) => `<option value="${d}"${Number(s.maxPostingAgeDays) === d ? ' selected' : ''}>${l}</option>`).join('')}</select></label>
-    <label class="f" for="s-cap">Applications prepared per day<input type="number" id="s-cap" min="1" max="25" value="${esc(s.dailyCap)}"${ro}></label>
+    <label class="f" for="s-cap">Applications prepared per day<input type="number" id="s-cap" min="1" max="${capMax()}" value="${esc(s.dailyCap)}"${ro}></label>
     ${cloud() ? `<label class="f" for="s-alerts">Job alerts by email <small>New roles that pass your filters</small><select id="s-alerts"${ro}>${[['off','Off'],['daily','Daily'],['weekly','Weekly']].map(([v, l]) => `<option value="${v}"${(s.alerts || 'off') === v ? ' selected' : ''}>${l}</option>`).join('')}</select></label>` : ''}
     <label class="f full" for="s-mode">How applications go out<select id="s-mode"${ro}><option value="auto-when-clear"${s.approvalMode === 'auto-when-clear' ? ' selected' : ''}>Auto-apply when every answer comes from my profile</option><option value="daily-batch"${s.approvalMode !== 'auto-when-clear' ? ' selected' : ''}>Daily batch: I approve each one</option></select></label>
     <div class="full" role="group" aria-labelledby="s-loc-l"><span id="s-loc-l" class="groupl">Locations</span><div class="checks">${LOCATIONS.map((l, i) => `<label for="s-loc-${i}"><input type="checkbox" id="s-loc-${i}" value="${esc(l)}" ${arr(s.locations).includes(l) ? 'checked' : ''}${ro}>${esc(l)}</label>`).join('')}</div></div>
@@ -3747,7 +3761,9 @@ document.addEventListener('click', e => {
   else if (act === 'signout'){ api('api/auth/logout', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
   else if (act === 'signout-all'){ api('api/me/logout-all', {method: 'POST'}).catch(() => {}).finally(() => { location.href = 'login'; }); }
   else if (act === 'key-hide'){ state.newKey = null; render(); }
-  else if (act === 'upgrade'){ el.disabled = true; cloudPost('api/billing/checkout').then(d => { location.href = d.url; }).catch(d => { el.disabled = false; acctSay(d.error || 'Could not start the payment.', true, 'plan'); }); }
+  else if (act === 'upgrade'){ el.disabled = true; const b = obj(state.billing), cs = arr(b.currencies); const cur = cs.includes(state.planCur) ? state.planCur : (cs.includes(guessCur()) ? guessCur() : cs[0]); cloudPost('api/billing/checkout', {plan: el.dataset.plan || 'pro', currency: cur}).then(d => { location.href = d.url; }).catch(d => { el.disabled = false; acctSay(d.error || 'Could not start the payment.', true, 'plan'); }); }
+  else if (act === 'plan-cur'){ state.planCur = el.dataset.cur; render(); }
+  else if (act === 'plan-portal'){ el.disabled = true; cloudPost('api/billing/portal').then(d => { location.href = d.url; }).catch(d => { el.disabled = false; acctSay(d.error || 'Could not open invoices.', true, 'plan'); }); }
   else if (act === 'plan-cancel'){ if (!confirm('Cancel Pro? You keep it until the end of the period you paid for.')) return; cloudPost('api/billing/cancel').then(b => { state.billing = Object.assign({}, state.billing, b); acctSay('Cancelled. Nothing more will be charged.', false, 'plan'); }).catch(d => acctSay(d.error || 'Could not cancel. Try again.', true, 'plan')); }
   else if (act === 'aikey-test'){ el.disabled = true; cloudPost('api/me/ai-key/test').then(d => acctSay(d.ok ? `Your key works (${d.model}).` : `Your key didn't work: ${d.error}`, !d.ok, 'ai')).catch(d => acctSay(d.error || 'Could not test the key.', true, 'ai')).finally(() => { el.disabled = false; }); }
   else if (act === 'aikey-remove'){ if (!confirm('Remove your key? AI actions go back to your plan allowance.')) return; api('api/me/ai-key', {method: 'DELETE'}).then(() => { acctSay('Key removed.', false, 'ai'); refreshBilling(); }); }
@@ -3837,7 +3853,7 @@ document.addEventListener('submit', e => {
   const roles = $('#s-roles').value.split(',').map(s => s.trim()).filter(Boolean);
   const locs = LOCATIONS.filter((l, i) => $('#s-loc-' + i).checked);
   const fams = FAMILIES.filter((f, i) => $('#s-fam-' + i) && $('#s-fam-' + i).checked);
-  const cap = Math.max(1, Math.min(25, parseInt($('#s-cap').value, 10) || DEFAULTS.dailyCap));
+  const cap = Math.max(1, Math.min(capMax(), parseInt($('#s-cap').value, 10) || DEFAULTS.dailyCap));
   const sal = $('#s-sal').value.trim();
   const next = Object.assign({}, settings(), {
     experienceLevels: exp.map(x => x[0]), maxRequiredYears: exp.length ? Math.max.apply(null, exp.map(x => x[1])) : 99,

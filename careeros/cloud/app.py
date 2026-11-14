@@ -4,7 +4,7 @@ Pages: /login /signup /forgot /reset /verify (sign-in), / (the dashboard), /pric
        /privacy /terms /refunds /contact, plus the installable app's manifest, service worker and icons.
 API:   /api/auth/*  /api/me*  /api/tokens*  /api/c/<collection>  /api/d/<collection>/<id>
        /api/assets*  /_blob/<id>  /api/agent/*  /api/admin/*  /api/health  /api/ready
-       /api/billing* (plans, Razorpay checkout and webhook)  /api/ai (AI actions, metered by plan)
+       /api/billing* (plans; Razorpay for INR and Dodo Payments for USD: checkout, portal, webhooks)  /api/ai (AI actions, metered by plan)
 
 Browser requests are authenticated by an HttpOnly session cookie and must send
 the X-CareerOS-CSRF header on writes. The user's apply agent authenticates with
@@ -232,6 +232,16 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
         body = exc.detail if isinstance(exc.detail, dict) else {"error": str(exc.detail)}
         return JSONResponse(body, status_code=exc.status_code, headers=getattr(exc, "headers", None))
 
+    def guess_currency(request: Request) -> str:
+        q = (request.query_params.get("currency") or "").upper()
+        if q in plans.CURRENCIES:
+            return q
+        country = request.headers.get("cf-ipcountry", "") or request.headers.get("x-country", "")
+        if country and country.upper() not in ("XX", "T1"):
+            return plans.currency_for(country)
+        # No country from the edge: rupees, unless only dollar payments are switched on.
+        return "USD" if cfg.dodo_enabled and not cfg.razorpay_enabled else "INR"
+
     # ------------------------------------------------------------ pages
     @app.get("/", include_in_schema=False)
     def home(request: Request):
@@ -263,17 +273,18 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
     @app.get("/pricing", include_in_schema=False)
     def pricing(request: Request):
         # Rendered on the server from the live plan settings, so the page never waits on a fetch.
-        star = ('<span class="shape" style="right:-26px;top:-26px;width:130px;height:130px" aria-hidden="true"><svg viewBox="0 0 100 100" '
-                'fill="#B6CAEB"><path d="M50 0 L62.6 19.5 L85.4 14.6 L80.5 37.4 L100 50 L80.5 62.6 L85.4 85.4 L62.6 80.5 L50 100 L37.4 80.5 '
-                'L14.6 85.4 L19.5 62.6 L0 50 L19.5 37.4 L14.6 14.6 L37.4 19.5 Z"/></svg></span>')
+        cur = guess_currency(request)
         cards = []
         for pl in plans.catalog(cfg):
-            price = f"₹{pl['priceInr']:,}" + ("<small> / month</small>" if pl["priceInr"] else "")
+            per = "<small> / month</small>" if pl["priceInr"] else ""
+            price = (f'<span class="inr">₹{pl["priceInr"]:,}{per}</span>'
+                     f'<span class="usd">${pl["priceUsd"] if pl["priceInr"] else "0"}{per}</span>')
             items = "".join(f"<li>{html_escape(f)}</li>" for f in pl["features"])
-            cls = "btn" if pl["id"] == "pro" else "btn light"
-            cards.append(f'<article class="plan {pl["id"]}">{star if pl["id"] == "pro" else ""}<h2>{html_escape(pl["name"])}</h2>'
+            cls = "btn" if pl["id"] != "free" else "btn light"
+            cards.append(f'<article class="plan {pl["id"]}"><h2>{html_escape(pl["name"])}</h2>'
                          f'<div class="price">{price}</div><ul>{items}</ul><a class="{cls}" href="/signup">Start free</a></article>')
-        text = (STATIC / "pricing.html").read_text(encoding="utf-8").replace("<!--PLANS-->", "".join(cards))
+        text = (STATIC / "pricing.html").read_text(encoding="utf-8").replace("<!--PLANS-->", "".join(cards)) \
+            .replace('<body data-cur="INR">', f'<body data-cur="{cur}">', 1).replace("<script>", f'<script nonce="{request.state.nonce}">')
         return HTMLResponse(text)
 
     # The installable app: manifest, service worker, icons and the offline page.
@@ -1017,10 +1028,15 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
 
     # ------------------------------------------------------------ plans and billing
     app.state.razorpay = plans.Razorpay(cfg)
+    app.state.dodo = plans.Dodo(cfg)
+
+    def provider_for(currency: str):
+        return app.state.razorpay if currency == "INR" else app.state.dodo
 
     @app.get("/api/plans")
-    def plan_catalog():
-        return {"plans": plans.catalog(cfg), "checkoutEnabled": cfg.billing_enabled, "currency": "INR"}
+    def plan_catalog(request: Request):
+        return {"plans": plans.catalog(cfg), "checkoutEnabled": cfg.billing_enabled, "currency": guess_currency(request),
+                "currencies": {"INR": cfg.razorpay_enabled, "USD": cfg.dodo_enabled}}
 
     @app.get("/api/billing")
     def billing(p: Principal = Depends(session_only)):
@@ -1028,44 +1044,90 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             return dict(plans.billing_view(c, cfg, p.user), ai=plans.ai_status(c, cfg, p.user))
 
     @app.post("/api/billing/checkout")
-    async def checkout(request: Request, p: Principal = Depends(session_only)):
-        if not cfg.billing_enabled:
-            raise err(503, "Payments aren't switched on yet. Write to support to get Pro.", "billing_off")
+    async def checkout(request: Request, body: dict = Body(default={}), p: Principal = Depends(session_only)):
+        plan = str(body.get("plan") or "pro").lower()
+        currency = str(body.get("currency") or "").upper() or guess_currency(request)
+        if plan not in plans.PAID:
+            raise err(400, "Pick Pro or Ultra.", "bad_plan")
+        if currency not in plans.CURRENCIES:
+            raise err(400, "Pay in INR or USD.", "bad_currency")
+        provider = provider_for(currency)
+        if not provider.offers(plan):
+            other = "USD" if currency == "INR" else "INR"
+            hint = f" Try paying in {other}." if provider_for(other).offers(plan) else " Write to support and we'll set it up."
+            raise err(503, f"Payments in {currency} aren't switched on yet.{hint}", "billing_off")
         with db.tx() as c:
             limited(c, f"checkout:{p.uid}", 10, 3600)
             s = plans.subscription(c, p.uid)
-            if plans.plan_of(c, p.user) == "pro" and not (s and s["status"] == "cancelled"):
-                raise err(409, "You're already on Pro.", "already_pro")
+            current = plans.plan_of(c, p.user) if not p.user.get("is_admin") else plans._paid_plan(s)
+            if current == plan and not (s and (s["status"] == "cancelled" or s["cancel_at_period_end"])):
+                raise err(409, f"You're already on {plan.title()}.", "already_on_plan")
         try:
-            sub = await run_in_threadpool(app.state.razorpay.create_subscription, p.uid, p.user["email"])
+            sub = await run_in_threadpool(provider.create_subscription, p.uid, p.user["email"], plan)
         except plans.BillingError as e:
-            log.warning(json.dumps({"event": "checkout-failed", "error": str(e)[:200]}))
+            log.warning(json.dumps({"event": "checkout-failed", "provider": provider.name, "error": str(e)[:200]}))
             raise err(502, "We couldn't start the payment. Try again in a minute.", "billing")
         with db.tx() as c:
-            plans.start_checkout(c, p.uid, sub)
-            repo.audit(c, p.uid, "checkout-started", client_ip(request))
-        return {"url": sub["short_url"]}
+            plans.start_checkout(c, p.uid, sub, plan, provider.name, currency)
+            repo.audit(c, p.uid, "checkout-started", client_ip(request), {"plan": plan, "provider": provider.name, "currency": currency})
+        return {"url": sub["url"]}
 
     @app.post("/api/billing/cancel")
     async def cancel_plan(request: Request, p: Principal = Depends(session_only)):
         with db.tx() as c:
             s = plans.subscription(c, p.uid)
-        if not s or s["provider"] != "razorpay" or s["status"] not in plans.PRO_STATUSES | {"created"}:
+        if not s or s["provider"] not in ("razorpay", "dodo") or s["status"] not in plans.PRO_STATUSES | {"created"}:
             raise err(400, "There's no paid plan to cancel.", "no_subscription")
+        client = app.state.razorpay if s["provider"] == "razorpay" else app.state.dodo
+        unpaid = s["status"] == "created"
         try:
-            await run_in_threadpool(app.state.razorpay.cancel, s["provider_sub_id"], s["status"] != "created")
+            if not (unpaid and s["provider"] == "dodo"):  # an unpaid Dodo checkout is only a session: nothing to cancel
+                await run_in_threadpool(client.cancel, s["provider_sub_id"], not unpaid)
         except plans.BillingError:
             raise err(502, "We couldn't reach the payment provider. Try again in a minute.", "billing")
         with db.tx() as c:
-            if s["status"] == "created":
+            if unpaid:
                 c.execute("UPDATE subscriptions SET status = 'cancelled', updated_at = ? WHERE user_id = ?", (now_iso(), p.uid))
             else:
-                c.execute("UPDATE subscriptions SET cancel_at_period_end = 1, updated_at = ? WHERE user_id = ?", (now_iso(), p.uid))
-            repo.audit(c, p.uid, "plan-cancelled", client_ip(request))
+                c.execute("UPDATE subscriptions SET cancel_at_period_end = 1, pending_plan = NULL, pending_provider = NULL, "
+                          "pending_sub_id = NULL, updated_at = ? WHERE user_id = ?", (now_iso(), p.uid))
+            repo.audit(c, p.uid, "plan-cancelled", client_ip(request), {"provider": s["provider"], "plan": s["plan"]})
             return plans.billing_view(c, cfg, p.user)
+
+    @app.post("/api/billing/portal")
+    async def billing_portal(request: Request, p: Principal = Depends(session_only)):
+        """Dodo's hosted page for invoices and the card on file. Razorpay sends receipts by email."""
+        with db.tx() as c:
+            limited(c, f"portal:{p.uid}", 20, 3600)
+            s = plans.subscription(c, p.uid)
+        if not s or s["provider"] != "dodo" or not s["provider_customer_id"]:
+            raise err(400, "Invoices for rupee payments arrive by email from Razorpay.", "no_portal")
+        try:
+            url = await run_in_threadpool(app.state.dodo.portal, s["provider_customer_id"])
+        except plans.BillingError:
+            raise err(502, "We couldn't reach the payment provider. Try again in a minute.", "billing")
+        return {"url": url}
+
+    def record_billing(c, eid: str, ev: dict, event: dict) -> str:
+        result, old = plans.apply(c, eid, ev, event)
+        row = c.one("SELECT u.id, u.email FROM users u JOIN subscriptions s ON s.user_id = u.id WHERE s.provider_sub_id = ?", (ev["sub_id"],)) \
+            if ev["sub_id"] else None
+        if old and old.get("sub_id"):
+            repo.enqueue(c, "billing_cancel", old, user_id=row["id"] if row else None, dedupe_key=f"bcancel:{old['sub_id']}", max_attempts=8)
+        if not row:
+            return result
+        started = result == "active" and ev["kind"] in ("subscription.activated", "subscription.active")
+        if started or old:
+            plan = (c.one("SELECT plan FROM subscriptions WHERE user_id = ?", (row["id"],)) or {}).get("plan", "pro")
+            send(c, row["email"], mail.pro_welcome(cfg.public_url, plan))
+            repo.audit(c, row["id"], "plan-activated", "", {"plan": plan, "provider": ev["provider"]})
+        elif result in ("halted", "cancelled", "expired"):
+            repo.audit(c, row["id"], f"plan-{result}", "", {"provider": ev["provider"]})
+        return result
 
     @app.post("/api/billing/webhook", include_in_schema=False)
     async def billing_webhook(request: Request):
+        """Razorpay."""
         body = await request.body()
         if not plans.verify_signature(body, request.headers.get("x-razorpay-signature", ""), cfg.razorpay_webhook_secret):
             raise err(400, "Bad signature.", "signature")
@@ -1075,16 +1137,32 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             raise err(400, "Bad JSON.")
         if not isinstance(event, dict):
             raise err(400, "Bad JSON.")
-        eid = (request.headers.get("x-razorpay-event-id") or hashlib.sha256(body).hexdigest())[:100]
+        eid = "rzp:" + (request.headers.get("x-razorpay-event-id") or hashlib.sha256(body).hexdigest())[:100]
+        ev = plans.razorpay_event(cfg, event)
         with db.tx() as c:
-            result = plans.apply_event(c, eid, event)
-            if event.get("event") == "subscription.activated" and result == "active":
-                ent = event["payload"]["subscription"]["entity"]
-                row = c.one("SELECT u.id, u.email FROM users u JOIN subscriptions s ON s.user_id = u.id WHERE s.provider_sub_id = ?", (ent["id"],))
-                if row:
-                    send(c, row["email"], mail.pro_welcome(cfg.public_url))
-                    repo.audit(c, row["id"], "plan-activated")
-        log.info(json.dumps({"event": "billing-webhook", "kind": str(event.get("event", ""))[:60], "result": result}))
+            result = record_billing(c, eid, ev, event)
+        log.info(json.dumps({"event": "billing-webhook", "provider": "razorpay", "kind": ev["kind"][:60], "result": result}))
+        return {"ok": True, "result": result}
+
+    @app.post("/api/billing/dodo-webhook", include_in_schema=False)
+    async def dodo_webhook(request: Request):
+        """Dodo Payments (Standard Webhooks)."""
+        body = await request.body()
+        if len(body) > 256_000:
+            raise err(413, "Too large.")
+        headers = {k: request.headers.get(k, "") for k in ("webhook-id", "webhook-timestamp", "webhook-signature")}
+        if not plans.verify_standard_webhook(body, headers, cfg.dodo_webhook_secret):
+            raise err(400, "Bad signature.", "signature")
+        try:
+            event = json.loads(body)
+        except ValueError:
+            raise err(400, "Bad JSON.")
+        if not isinstance(event, dict):
+            raise err(400, "Bad JSON.")
+        ev = plans.dodo_event(cfg, event)
+        with db.tx() as c:
+            result = record_billing(c, "dodo:" + headers["webhook-id"][:100], ev, event)
+        log.info(json.dumps({"event": "billing-webhook", "provider": "dodo", "kind": ev["kind"][:60], "result": result}))
         return {"ok": True, "result": result}
 
     # ------------------------------------------------------------ AI actions
@@ -1174,11 +1252,14 @@ def create_app(cfg: Config | None = None, db: Database | None = None) -> FastAPI
             u = repo.user_by_email(c, email)
             if not u:
                 raise err(404, "No account with that email.")
-            if body.get("plan", "pro") == "free":
+            plan = str(body.get("plan") or "pro").lower()
+            if plan not in plans.PLAN_IDS:
+                raise err(400, "Plan must be free, pro or ultra.")
+            if plan == "free":
                 c.execute("DELETE FROM subscriptions WHERE user_id = ? AND provider = 'manual'", (u["id"],))
             else:
-                plans.grant(c, u["id"], p.uid, until + "T23:59:59Z" if until else None)
-            repo.audit(c, u["id"], "plan-granted", client_ip(request), {"by": p.uid, "until": until})
+                plans.grant(c, u["id"], p.uid, until + "T23:59:59Z" if until else None, plan)
+            repo.audit(c, u["id"], "plan-granted", client_ip(request), {"by": p.uid, "until": until, "plan": plan})
             return {"ok": True, "plan": plans.plan_of(c, repo.user_by_id(c, u["id"]))}
 
     @app.get("/api/admin/overview")

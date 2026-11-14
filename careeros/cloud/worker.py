@@ -5,8 +5,9 @@ single-writer transaction on SQLite), retried with exponential backoff, and
 deduplicated while queued or running. Several workers can run at once.
 
 Scheduled work:
-  ingest       every INGEST_EVERY_MINUTES: read the hourly scan into the shared inventory,
-               then queue a match for every verified account
+  ingest       every INGEST_EVERY_MINUTES (15): read the scan into the shared inventory, then
+               queue matches by plan: Ultra every ingest, Pro hourly, Free daily
+  billing_cancel  cancel a subscription that a paid plan change replaced
   match_user   one account's filters against the inventory (also queued when settings change)
   alerts       hourly: queue the opt-in job alert digests that are due (see alerts.py)
   send_email   verification, reset and notice emails, with retries
@@ -98,6 +99,8 @@ class Worker:
                 self.mailer.send(payload["to"], payload["subject"], payload["text"])
             elif task["kind"] == "cleanup":
                 cleanup(self.db)
+            elif task["kind"] == "billing_cancel":
+                cancel_superseded(self.cfg, payload)
             elif task["kind"] == "alerts":
                 alerts.send_due(self.db, self.cfg.public_url, log=log.info)
             else:
@@ -113,15 +116,17 @@ class Worker:
         self.finish(task)
 
     def queue_matches(self) -> int:
-        """After each ingest: Pro accounts are matched every time, Free accounts once a day.
-        Saving new filters still queues a match straight away for everyone (see the API)."""
+        """After each ingest, match each account at its plan's pace: Ultra every ingest (15 minutes),
+        Pro hourly, Free daily. Saving new filters still queues a match straight away for everyone."""
         n = 0
-        day_ago = now_iso(timedelta(hours=-23))
         with self.db.tx() as c:
             users = c.all("SELECT u.id, u.is_admin, m.last_match_at, m.last_feed_at FROM users u LEFT JOIN match_state m ON m.user_id = u.id "
                           "WHERE u.email_verified_at IS NOT NULL AND u.disabled_at IS NULL")
             for u in users:
-                if plans.plan_of(c, u) == "free" and u["last_feed_at"] and u["last_match_at"] and u["last_match_at"] > day_ago:
+                every = plans.plan_info(self.cfg, plans.plan_of(c, u))["matchEveryMinutes"]
+                # A little slack so an ingest that lands a minute early doesn't skip a cycle.
+                since = now_iso(timedelta(minutes=-(every - min(5, every // 4))))
+                if u["last_feed_at"] and u["last_match_at"] and u["last_match_at"] > since:
                     continue
                 n += repo.enqueue(c, "match_user", user_id=u["id"], dedupe_key=f"match:{u['id']}", max_attempts=3)
         return n
@@ -152,6 +157,23 @@ class Worker:
                 busy = False
             if not busy:
                 stop.wait(self.cfg.worker_poll_seconds)
+
+
+def cancel_superseded(cfg: Config, payload: dict) -> None:
+    """A plan change was paid for: stop the old subscription now so nobody pays twice."""
+    provider, sub_id = payload.get("provider"), str(payload.get("sub_id") or "")
+    if not sub_id:
+        return
+    client = plans.Razorpay(cfg) if provider == "razorpay" else plans.Dodo(cfg) if provider == "dodo" else None
+    if client is None:
+        return
+    try:
+        client.cancel(sub_id, at_cycle_end=False)
+    except plans.BillingError as e:
+        if " 400" in str(e) or " 404" in str(e):  # already cancelled or gone
+            log.info("billing_cancel %s: %s", provider, e)
+            return
+        raise
 
 
 def cleanup(db: Database) -> dict:

@@ -1,8 +1,8 @@
 # One-click deploy on Render: a PostgreSQL database, the web app and the worker.
 # After the first deploy, set PUBLIC_URL (your https://...onrender.com or custom domain),
 # SMTP_URL, MAIL_FROM, SUPPORT_EMAIL and BOOTSTRAP_ADMIN_EMAIL in the dashboard, then redeploy.
-# Optional: CAREEROS_LLM + a provider key for the hosted AI allowance, and the four RAZORPAY_*
-# values to take payments. The full walk-through is docs/launch.md.
+# Optional: CAREEROS_LLM + a provider key for the hosted AI allowance, the RAZORPAY_* values to take
+# rupee payments and the DODO_* values to take dollar payments. The full walk-through is docs/launch.md.
 # Check plan names and prices on render.com before you deploy.
 databases:
   - name: careeros-db
@@ -51,6 +51,8 @@ services:
         value: "15"
       - key: PRO_AI_CREDITS
         value: "400"
+      - key: ULTRA_AI_CREDITS
+        value: "1500"
       - key: CAREEROS_LLM
         sync: false
       - key: ANTHROPIC_API_KEY
@@ -63,6 +65,18 @@ services:
         sync: false
       - key: RAZORPAY_PLAN_PRO
         sync: false
+      - key: RAZORPAY_PLAN_ULTRA
+        sync: false
+      - key: DODO_API_KEY
+        sync: false
+      - key: DODO_WEBHOOK_SECRET
+        sync: false
+      - key: DODO_PRODUCT_PRO
+        sync: false
+      - key: DODO_PRODUCT_ULTRA
+        sync: false
+      - key: DODO_MODE
+        value: test
 
   - type: worker
     name: careeros-worker
@@ -93,5 +107,46 @@ services:
           type: web
           name: careeros-web
           envVarKey: SECRETS_KEY
+      # The worker cancels a replaced subscription after a plan change, so it needs the payment keys too.
+      - key: RAZORPAY_KEY_ID
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: RAZORPAY_KEY_ID
+      - key: RAZORPAY_KEY_SECRET
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: RAZORPAY_KEY_SECRET
+      - key: RAZORPAY_PLAN_PRO
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: RAZORPAY_PLAN_PRO
+      - key: RAZORPAY_PLAN_ULTRA
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: RAZORPAY_PLAN_ULTRA
+      - key: DODO_API_KEY
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: DODO_API_KEY
+      - key: DODO_PRODUCT_PRO
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: DODO_PRODUCT_PRO
+      - key: DODO_PRODUCT_ULTRA
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: DODO_PRODUCT_ULTRA
+      - key: DODO_MODE
+        fromService:
+          type: web
+          name: careeros-web
+          envVarKey: DODO_MODE
       - key: SUPPORT_EMAIL
         sync: false

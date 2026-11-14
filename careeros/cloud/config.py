@@ -37,7 +37,7 @@ class Config:
     signup_mode: str = "open"  # open | allowlist | closed
     signup_allowlist: list[str] = field(default_factory=list)  # emails or @domains
     feed_url: str = DEFAULT_FEED
-    ingest_every_minutes: int = 60
+    ingest_every_minutes: int = 15
     worker_poll_seconds: int = 5
     worker_lease_minutes: int = 10
     db_pool_min: int = 1
@@ -49,13 +49,25 @@ class Config:
     linkedin_client_secret: str = ""
     # Plans and billing. Prices are in rupees per month; credits are AI actions per calendar month (UTC).
     secrets_key: str = ""  # encrypts users' own AI keys at rest; any long random string
+    # India pays in rupees through Razorpay; everyone else pays in US dollars through Dodo Payments
+    # (merchant of record: it handles VAT and sales tax). USD prices are in cents.
     pro_price_inr: int = 299
+    ultra_price_inr: int = 799
+    pro_price_usd_cents: int = 2250
+    ultra_price_usd_cents: int = 4850
     free_ai_credits: int = 15
     pro_ai_credits: int = 400
+    ultra_ai_credits: int = 1500
     razorpay_key_id: str = ""
     razorpay_key_secret: str = ""
     razorpay_webhook_secret: str = ""
     razorpay_plan_pro: str = ""  # plan_... created in the Razorpay dashboard at pro_price_inr per month
+    razorpay_plan_ultra: str = ""  # plan_... at ultra_price_inr per month
+    dodo_api_key: str = ""
+    dodo_webhook_secret: str = ""  # whsec_... from Dodo's webhook settings
+    dodo_product_pro: str = ""  # pdt_... a monthly subscription product at pro_price_usd_cents
+    dodo_product_ultra: str = ""  # pdt_... at ultra_price_usd_cents
+    dodo_live: bool = False  # False uses Dodo's test mode
     support_email: str = ""
     company_name: str = "Propelo"
 
@@ -77,7 +89,7 @@ class Config:
             signup_mode=e("SIGNUP_MODE", "open").lower(),
             signup_allowlist=_list("SIGNUP_ALLOWLIST"),
             feed_url=e("FEED_URL", DEFAULT_FEED),
-            ingest_every_minutes=_int("INGEST_EVERY_MINUTES", 60),
+            ingest_every_minutes=_int("INGEST_EVERY_MINUTES", 15),
             worker_poll_seconds=_int("WORKER_POLL_SECONDS", 5),
             worker_lease_minutes=_int("WORKER_LEASE_MINUTES", 10),
             db_pool_min=_int("DB_POOL_MIN", 1),
@@ -89,19 +101,37 @@ class Config:
             linkedin_client_secret=e("LINKEDIN_CLIENT_SECRET", "").strip(),
             secrets_key=e("SECRETS_KEY", "").strip(),
             pro_price_inr=_int("PRO_PRICE_INR", 299),
+            ultra_price_inr=_int("ULTRA_PRICE_INR", 799),
+            pro_price_usd_cents=_int("PRO_PRICE_USD_CENTS", 2250),
+            ultra_price_usd_cents=_int("ULTRA_PRICE_USD_CENTS", 4850),
             free_ai_credits=_int("FREE_AI_CREDITS", 15),
             pro_ai_credits=_int("PRO_AI_CREDITS", 400),
+            ultra_ai_credits=_int("ULTRA_AI_CREDITS", 1500),
             razorpay_key_id=e("RAZORPAY_KEY_ID", "").strip(),
             razorpay_key_secret=e("RAZORPAY_KEY_SECRET", "").strip(),
             razorpay_webhook_secret=e("RAZORPAY_WEBHOOK_SECRET", "").strip(),
             razorpay_plan_pro=e("RAZORPAY_PLAN_PRO", "").strip(),
+            razorpay_plan_ultra=e("RAZORPAY_PLAN_ULTRA", "").strip(),
+            dodo_api_key=e("DODO_API_KEY", "").strip(),
+            dodo_webhook_secret=e("DODO_WEBHOOK_SECRET", "").strip(),
+            dodo_product_pro=e("DODO_PRODUCT_PRO", "").strip(),
+            dodo_product_ultra=e("DODO_PRODUCT_ULTRA", "").strip(),
+            dodo_live=e("DODO_MODE", "test").strip().lower() == "live",
             support_email=e("SUPPORT_EMAIL", "").strip(),
             company_name=e("COMPANY_NAME", "Propelo").strip() or "Propelo",
         )
 
     @property
-    def billing_enabled(self) -> bool:
+    def razorpay_enabled(self) -> bool:
         return bool(self.razorpay_key_id and self.razorpay_key_secret and self.razorpay_webhook_secret and self.razorpay_plan_pro)
+
+    @property
+    def dodo_enabled(self) -> bool:
+        return bool(self.dodo_api_key and self.dodo_webhook_secret and self.dodo_product_pro)
+
+    @property
+    def billing_enabled(self) -> bool:
+        return self.razorpay_enabled or self.dodo_enabled
 
     @property
     def linkedin_enabled(self) -> bool:
@@ -132,8 +162,10 @@ class Config:
             problems.append("SIGNUP_MODE must be open, allowlist or closed.")
         if len(self.secrets_key) < 32:
             problems.append("SECRETS_KEY must be a random string of at least 32 characters (it encrypts users' AI keys).")
-        if any((self.razorpay_key_id, self.razorpay_key_secret, self.razorpay_webhook_secret, self.razorpay_plan_pro)) and not self.billing_enabled:
+        if any((self.razorpay_key_id, self.razorpay_key_secret, self.razorpay_webhook_secret, self.razorpay_plan_pro)) and not self.razorpay_enabled:
             problems.append("Billing is half set up: set all of RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET and RAZORPAY_PLAN_PRO, or none.")
+        if any((self.dodo_api_key, self.dodo_webhook_secret, self.dodo_product_pro)) and not self.dodo_enabled:
+            problems.append("Dodo Payments is half set up: set all of DODO_API_KEY, DODO_WEBHOOK_SECRET and DODO_PRODUCT_PRO, or none.")
         if self.billing_enabled and not self.support_email:
             problems.append("SUPPORT_EMAIL is required when payments are on: the refund and contact pages show it.")
         if "change_me" in self.database_url.lower():

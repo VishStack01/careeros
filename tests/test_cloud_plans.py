@@ -62,7 +62,7 @@ def test_new_accounts_are_free_and_see_the_catalog(cloud):
     me = c.get("/api/me").json()
     assert me["plan"] == "free" and me["ai"]["source"] == "none" and me["ai"]["available"] is False
     cat = cloud.client().get("/api/plans").json()
-    assert [p["id"] for p in cat["plans"]] == ["free", "pro"] and cat["plans"][1]["priceInr"] == cloud.cfg.pro_price_inr
+    assert [p["id"] for p in cat["plans"]] == ["free", "pro", "ultra"] and cat["plans"][1]["priceInr"] == cloud.cfg.pro_price_inr
     assert cat["checkoutEnabled"] is False
     assert c.post("/api/billing/checkout").status_code == 503
 
@@ -163,15 +163,33 @@ def test_plan_caps_auto_apply_and_match_cadence(cloud):
     k = cloud.client()
     k.headers["Authorization"] = "Bearer " + c.post("/api/tokens", json={"name": "pc"}).json()["key"]
     assert k.get("/api/agent/next").json()["dailyCap"] == 5
-    with cloud.db.tx() as t:
-        t.execute("DELETE FROM tasks")
-        t.execute("DELETE FROM match_state")
-        t.execute("INSERT INTO match_state(user_id, settings_hash, last_match_at, last_feed_at) VALUES (?, '', ?, ?)", (c.uid, now_iso(), now_iso()))
+    from datetime import timedelta
+
+    def matched(minutes_ago):
+        with cloud.db.tx() as t:
+            t.execute("DELETE FROM tasks")
+            t.execute("DELETE FROM match_state")
+            t.execute("INSERT INTO match_state(user_id, settings_hash, last_match_at, last_feed_at) VALUES (?, '', ?, ?)",
+                      (c.uid, now_iso(timedelta(minutes=-minutes_ago)), now_iso()))
+
+    def queued():
+        with cloud.db.tx() as t:
+            return t.scalar("SELECT COUNT(*) AS n FROM tasks WHERE kind = 'match_user' AND user_id = ?", (c.uid,))
+
     w = Worker(cloud.cfg, cloud.db, cloud.app.state.mailer, worker_id="w1")
-    assert w.queue_matches() == 0  # Free: already matched today
+    matched(70)
+    w.queue_matches()
+    assert queued() == 0  # Free: already matched today
     admin = cloud.user("admin@example.com")
     admin.post("/api/admin/grant", json={"email": "asha@example.com"})
-    assert w.queue_matches() >= 1 and k.get("/api/agent/next").json()["dailyCap"] == 20
+    w.queue_matches()
+    assert queued() == 1 and k.get("/api/agent/next").json()["dailyCap"] == 20  # Pro: hourly
+    matched(20)
+    w.queue_matches()
+    assert queued() == 0
+    admin.post("/api/admin/grant", json={"email": "asha@example.com", "plan": "ultra"})
+    w.queue_matches()
+    assert queued() == 1 and k.get("/api/agent/next").json()["dailyCap"] == 20  # Ultra: every 15 minutes; own cap 20 < 60
 
 
 def test_public_pages_and_installable_app(cloud):
@@ -211,3 +229,156 @@ def test_webhooks_out_of_order_and_older_checkout_links(cloud):
     assert r.json()["result"] == "active" and c.get("/api/me").json()["plan"] == "pro"
     # a signed event naming an account that doesn't exist changes nothing
     assert _hook(cloud, _sub_event("subscription.activated", "active", sub_id="sub_STRANGER000001", notes={"user_id": "nope"}), eid="e4").json()["result"] == "unknown"
+
+
+# ---------------------------------------------------------------- 2.0: Ultra, dollars and Dodo Payments
+import base64  # noqa: E402
+
+DODO_SECRET = "whsec_" + base64.b64encode(b"dodo-test-secret-0123456789").decode()
+
+
+def _dodo_on(cloud, calls):
+    cloud.cfg.dodo_api_key, cloud.cfg.dodo_webhook_secret = "dodo_test_key", DODO_SECRET
+    cloud.cfg.dodo_product_pro, cloud.cfg.dodo_product_ultra = "pdt_PRO", "pdt_ULTRA"
+
+    def call(method, url, body, key):
+        calls.append((method, url, body, key))
+        if url.endswith("/checkouts"):
+            return {"session_id": "cks_1", "checkout_url": "https://test.checkout.dodopayments.com/cks_1"}
+        if "customer-portal" in url:
+            return {"link": "https://test.customer.dodopayments.com/p/1"}
+        return {"subscription_id": url.rsplit("/", 1)[-1]}
+    cloud.app.state.dodo.call = call
+
+
+def _dodo_hook(cloud, event, wid="msg_1", secret=DODO_SECRET, ts=None):
+    body = json.dumps(event).encode()
+    ts = str(ts or int(time.time()))
+    key = base64.b64decode(secret[6:])
+    sig = base64.b64encode(hmac.new(key, f"{wid}.{ts}.".encode() + body, hashlib.sha256).digest()).decode()
+    return cloud.client().post("/api/billing/dodo-webhook", content=body, headers={
+        "Content-Type": "application/json", "webhook-id": wid, "webhook-timestamp": ts, "webhook-signature": f"v1,{sig}"})
+
+
+def _dodo_event(kind, uid, sub="sub_dodo_1", product="pdt_ULTRA", at=None, **data):
+    d = {"subscription_id": sub, "status": kind.split(".")[1], "product_id": product, "metadata": {"user_id": uid, "plan": "ultra"},
+         "customer": {"customer_id": "cus_1", "email": "asha@example.com"}, "next_billing_date": "2099-01-01T00:00:00Z", **data}
+    stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(at or time.time()))
+    return {"business_id": "bus_1", "type": kind, "timestamp": stamp, "data": d}
+
+
+def test_catalog_has_three_plans_in_two_currencies(cloud):
+    cat = cloud.client().get("/api/plans").json()
+    pro, ultra = cat["plans"][1], cat["plans"][2]
+    assert (pro["priceInr"], pro["priceUsd"], ultra["priceInr"], ultra["priceUsd"]) == (299, "22.50", 799, "48.50")
+    assert ultra["aiCredits"] == 1500 and ultra["autoApplyPerDay"] == 60 and ultra["matchEveryMinutes"] == 15
+    assert ultra["copilotPerDay"] is None and ultra["linkedinReview"] is True
+    assert cloud.client().get("/api/plans", headers={"CF-IPCountry": "US"}).json()["currency"] == "USD"
+    assert cloud.client().get("/api/plans", headers={"CF-IPCountry": "IN"}).json()["currency"] == "INR"
+    assert cloud.client().get("/api/plans?currency=usd").json()["currency"] == "USD"
+
+
+def test_standard_webhook_signature():
+    from careeros.cloud import plans
+    body, wid, ts = b'{"a":1}', "msg_x", "1700000000"
+    key = base64.b64decode(DODO_SECRET[6:])
+    sig = base64.b64encode(hmac.new(key, f"{wid}.{ts}.".encode() + body, hashlib.sha256).digest()).decode()
+    h = {"webhook-id": wid, "webhook-timestamp": ts, "webhook-signature": f"v1,bad v1,{sig}"}
+    assert plans.verify_standard_webhook(body, h, DODO_SECRET, now=1700000100)
+    assert not plans.verify_standard_webhook(body, h, DODO_SECRET, now=1700000000 + 301)  # too old
+    assert not plans.verify_standard_webhook(body + b" ", h, DODO_SECRET, now=1700000100)
+    assert not plans.verify_standard_webhook(body, dict(h, **{"webhook-id": "msg_y"}), DODO_SECRET, now=1700000100)
+    assert not plans.verify_standard_webhook(body, h, "", now=1700000100)
+
+
+def test_dollar_checkout_through_dodo(cloud):
+    calls = []
+    _dodo_on(cloud, calls)
+    c = cloud.user()
+    r = c.post("/api/billing/checkout", json={"plan": "ultra", "currency": "USD"})
+    assert r.status_code == 200 and r.json()["url"].startswith("https://test.checkout.dodopayments.com/")
+    method, url, body, key = calls[0]
+    assert url == "https://test.dodopayments.com/checkouts" and body["product_cart"] == [{"product_id": "pdt_ULTRA", "quantity": 1}]
+    assert body["metadata"] == {"user_id": c.uid, "plan": "ultra"} and key == "dodo_test_key"
+    assert c.get("/api/me").json()["plan"] == "free"
+    # INR isn't switched on in this test
+    assert c.post("/api/billing/checkout", json={"plan": "pro", "currency": "INR"}).status_code == 503
+
+    assert _dodo_hook(cloud, _dodo_event("subscription.active", c.uid), secret="whsec_" + base64.b64encode(b"other").decode()).status_code == 400
+    assert _dodo_hook(cloud, _dodo_event("subscription.active", c.uid)).json()["result"] == "active"
+    assert _dodo_hook(cloud, _dodo_event("subscription.active", c.uid)).json()["result"] == "duplicate"
+    me = c.get("/api/me").json()
+    assert me["plan"] == "ultra"
+    b = c.get("/api/billing").json()
+    assert b["subscription"]["currency"] == "USD" and b["subscription"]["provider"] == "dodo" and b["subscription"]["portal"] is True
+    assert c.post("/api/billing/portal").json()["url"].startswith("https://test.customer.dodopayments.com/")
+    # an older event arriving late doesn't undo a newer one
+    assert _dodo_hook(cloud, _dodo_event("subscription.on_hold", c.uid, at=time.time() - 3600), wid="msg_old").json()["result"] == "stale"
+    assert c.post("/api/billing/checkout", json={"plan": "ultra", "currency": "USD"}).status_code == 409
+
+    v = c.post("/api/billing/cancel").json()
+    assert calls[-1][0] == "PATCH" and calls[-1][1].endswith("/subscriptions/sub_dodo_1") and calls[-1][2] == {"cancel_at_next_billing_date": True}
+    assert v["subscription"]["cancelAtPeriodEnd"] is True and v["plan"] == "ultra"
+    assert _dodo_hook(cloud, _dodo_event("subscription.expired", c.uid), wid="msg_exp").json()["result"] == "expired"
+    assert c.get("/api/me").json()["plan"] == "free"
+
+
+def test_dodo_ignores_events_for_unknown_accounts(cloud):
+    _dodo_on(cloud, [])
+    assert _dodo_hook(cloud, _dodo_event("subscription.active", "usr_nobody")).json()["result"] == "unknown"
+
+
+def test_upgrade_keeps_pro_until_ultra_is_paid(cloud):
+    posts = []
+    _billing_on(cloud, posts)
+    cloud.cfg.razorpay_plan_ultra = "plan_ULTRA0000000000"
+    c = cloud.user()
+    assert c.post("/api/billing/checkout", json={"plan": "pro", "currency": "INR"}).status_code == 200
+    assert _hook(cloud, _sub_event("subscription.activated", "active")).json()["result"] == "active"
+    assert c.get("/api/me").json()["plan"] == "pro"
+
+    new = {"id": "sub_ULTRA000000001", "short_url": "https://rzp.io/i/ultra", "status": "created"}
+    cloud.app.state.razorpay.post = lambda url, body, kid, ksec: (posts.append((url, body, kid)), dict(new))[1]
+    r = c.post("/api/billing/checkout", json={"plan": "ultra", "currency": "INR"})
+    assert r.status_code == 200 and posts[-1][1]["plan_id"] == "plan_ULTRA0000000000" and posts[-1][1]["notes"]["plan"] == "ultra"
+    b = c.get("/api/billing").json()
+    assert b["plan"] == "pro" and b["subscription"]["pendingPlan"] == "ultra"  # an abandoned checkout takes nothing away
+
+    ev = _sub_event("subscription.activated", "active", sub_id=new["id"], notes={"user_id": c.uid, "plan": "ultra"})
+    ev["payload"]["subscription"]["entity"]["plan_id"] = "plan_ULTRA0000000000"
+    assert _hook(cloud, ev, eid="evt_ultra").json()["result"] == "active"
+    b = c.get("/api/billing").json()
+    assert b["plan"] == "ultra" and b["subscription"]["pendingPlan"] is None
+    with cloud.db.tx() as t:
+        task = t.one("SELECT kind, payload FROM tasks WHERE kind = 'billing_cancel'")
+    assert json.loads(task["payload"]) == {"provider": "razorpay", "sub_id": SUB["id"]}
+
+    from careeros.cloud.worker import cancel_superseded
+    seen = []
+    cloud.app.state.razorpay.post = None
+    from careeros.cloud import plans
+    orig = plans._post
+    plans._post = lambda url, body, kid, ksec: (seen.append((url, body)), {})[1]
+    try:
+        cancel_superseded(cloud.cfg, json.loads(task["payload"]))
+    finally:
+        plans._post = orig
+    assert seen == [(f"https://api.razorpay.com/v1/subscriptions/{SUB['id']}/cancel", {"cancel_at_cycle_end": 0})]
+
+
+def test_admin_can_grant_ultra(cloud):
+    c = cloud.user()
+    admin = cloud.user("admin@example.com")
+    assert admin.post("/api/admin/grant", json={"email": "asha@example.com", "plan": "ultra"}).json()["plan"] == "ultra"
+    assert admin.post("/api/admin/grant", json={"email": "asha@example.com", "plan": "gold"}).status_code == 400
+    assert c.get("/api/me").json()["plan"] == "ultra"
+
+
+def test_pricing_page_shows_both_currencies(cloud):
+    c = cloud.client()
+    r = c.get("/pricing", headers={"CF-IPCountry": "DE"})
+    assert '<body data-cur="USD">' in r.text and "$48.50" in r.text and "₹799" in r.text and "Ultra" in r.text
+    assert 'body[data-cur="INR"] .usd' in r.text  # the switch's CSS survives
+    nonce = r.headers["content-security-policy"].split("'nonce-")[1].split("'")[0]
+    assert f'<script nonce="{nonce}">' in r.text
+    assert '<body data-cur="INR">' in c.get("/pricing", headers={"CF-IPCountry": "IN"}).text

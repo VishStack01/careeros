@@ -72,8 +72,9 @@ def password_changed() -> tuple[str, str]:
             "If this wasn't you, reset your password now from the sign-in page.\n")
 
 
-def pro_welcome(public_url: str) -> tuple[str, str]:
-    return ("You're on Propelo Pro",
-            "Thanks for upgrading. Your account now matches new roles every hour and has a larger monthly AI allowance.\n\n"
+def pro_welcome(public_url: str, plan: str = "pro") -> tuple[str, str]:
+    name, pace = ("Ultra", "within 15 minutes of each scan") if plan == "ultra" else ("Pro", "every hour")
+    return (f"You're on Propelo {name}",
+            f"Thanks for upgrading. Your account now matches new roles {pace} and has a larger monthly AI allowance.\n\n"
             f"Open your dashboard: {public_url}/\n\n"
-            "You can cancel any time under Settings, Plan. You keep Pro until the end of the month you paid for.\n")
+            f"You can cancel any time under Settings, Plan. You keep {name} until the end of the month you paid for.\n")
