@@ -534,7 +534,7 @@ def apply(c: Conn, event_id: str, ev: dict, payload: dict) -> tuple[str, dict | 
     if ev["at"] and int(row["last_event_at"] or 0) > ev["at"]:
         return "stale", None  # providers don't promise order; a newer event already set the state
     c.execute("UPDATE subscriptions SET status = ?, plan = COALESCE(?, plan), current_end = COALESCE(?, current_end), "
-              "provider_customer_id = COALESCE(?, provider_customer_id), cancel_at_period_end = CASE WHEN ? THEN 1 ELSE cancel_at_period_end END, "
+              "provider_customer_id = COALESCE(?, provider_customer_id), cancel_at_period_end = CASE WHEN ? = 1 THEN 1 ELSE cancel_at_period_end END, "
               "last_event_at = ?, updated_at = ? WHERE provider_sub_id = ?",
               (status, ev["plan"] or None, ev["end"], ev["customer"] or None, 1 if ev["scheduled_cancel"] else 0,
                max(ev["at"], int(row["last_event_at"] or 0)), now, sub_id))

@@ -235,7 +235,7 @@ config/platforms.toml  96 job platforms with access and competition
 config/, brain/      example settings, watchlist, profile and brain
 examples/            a tailored resume, an application package, a posting and its evaluation
 docs/                architecture, how it works, accuracy, apply agent, data model, guides
-tests/               326 tests, including real browser form fills, every LLM provider
+tests/               405 tests, including real browser form fills, every LLM provider
                      (mocked), and the cloud service on SQLite and PostgreSQL
 ```
 
