@@ -14,6 +14,13 @@ updates:
   - package-ecosystem: docker
     directory: "/"
     schedule: { interval: weekly }
+    ignore:
+      # Move to a new Python release on purpose, after the test suite runs on it.
+      - dependency-name: python
+        update-types: ["version-update:semver-minor"]
   - package-ecosystem: npm
     directory: "/mobile"
     schedule: { interval: monthly }
+    groups:
+      # The Capacitor packages must stay on the same version, so they update together.
+      capacitor: { patterns: ["@capacitor/*"] }
