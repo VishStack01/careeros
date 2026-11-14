@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://vishstack01.github.io/careeros/"><img src="website/assets/og.png" alt="Propelo: an open-source AI agent for the job search" width="820"></a>
+  <a href="https://vishstack01.github.io/careeros/"><img src="website/assets/og.png" alt="Propelo: find the roles you qualify for, apply with only what's true" width="820"></a>
 </p>
 
 <h1 align="center">Propelo</h1>
@@ -12,10 +12,10 @@
 
 <p align="center">
   <a href="https://github.com/VishStack01/careeros/actions/workflows/tests.yml"><img alt="tests" src="https://github.com/VishStack01/careeros/actions/workflows/tests.yml/badge.svg"></a>
-  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-9AAB63"></a>
-  <img alt="Python 3.11 to 3.13" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-B6CAEB">
-  <img alt="Bring your own key" src="https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Gemini%20%7C%20Ollama-F5B8DB">
-  <img alt="No runtime dependencies" src="https://img.shields.io/badge/core-standard%20library%20only-F5D867">
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-FF7034"></a>
+  <img alt="Python 3.11 to 3.13" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-BDB6FC">
+  <img alt="Bring your own key" src="https://img.shields.io/badge/LLM-Anthropic%20%7C%20OpenAI%20%7C%20Gemini%20%7C%20Ollama-FF85BA">
+  <img alt="No runtime dependencies" src="https://img.shields.io/badge/core-standard%20library%20only-FCF15C">
 </p>
 
 <p align="center">

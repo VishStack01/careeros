@@ -6,14 +6,17 @@
 <title>Propelo · Offline</title>
 <meta name="theme-color" content="#FAF3E6">
 <style>
-:root{--cream:#FAF3E6;--ink:#151515;--pink:#F5B8DB;--green:#9AAB63;--blue:#B6CAEB;--yellow:#F5D867}
+:root{--cream:#FAF3E6;--ink:#151515;--text:#4F4A44;--pink:#FF85BA}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{background:var(--cream);color:var(--ink);font-family:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;display:grid;place-items:center;overflow:hidden}
-main{text-align:center;padding:24px;position:relative;z-index:1;margin-top:-18vh}
-h1{font-family:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;font-size:52px;letter-spacing:-.04em;margin:0}
-p{margin:6px 0 22px;color:#47433D}
-a{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--cream);border-radius:999px;padding:12px 24px;font-weight:600;text-decoration:none}
+main{text-align:center;padding:24px;margin-top:-8vh}
+h1{font-size:40px;font-weight:500;letter-spacing:-.04em;margin:0}
+.brand{display:inline-flex;align-items:baseline;gap:2px;margin-bottom:24px;font-size:24px;font-weight:600;letter-spacing:-.05em}
+.brand i{width:7px;height:7px;border-radius:50%;background:var(--pink)}
+p{margin:8px 0 24px;color:var(--text)}
+a{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--cream);border-radius:999px;padding:12px 24px;font-weight:500;text-decoration:none}
+a:active{transform:scale(.98)}
 a svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .s{position:fixed}
 .s svg{width:100%;height:100%}
@@ -21,16 +24,10 @@ a svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke
 </style>
 </head>
 <body>
-<span class="s" style="left:16%;top:14%;width:90px;height:90px"><svg viewBox="0 0 100 100" fill="#F5D867"><path d="M64 2 A48 48 0 1 0 98 56 A38 38 0 1 1 64 2 Z"/></svg></span>
-<span class="s" style="right:14%;top:56%;width:54px;height:54px"><svg viewBox="0 0 100 100" fill="#9AAB63"><path d="M8 50 L96 6 L76 96 Z"/></svg></span>
-<span class="s" style="left:6%;bottom:16%;width:60px;height:60px"><svg viewBox="0 0 100 100" fill="#B6CAEB"><path d="M36 0 H64 V36 H100 V64 H64 V100 H36 V64 H0 V36 H36 Z"/></svg></span>
-<span class="s" style="left:22%;bottom:-6%;width:300px;height:300px"><svg viewBox="0 0 100 100" fill="#9AAB63"><path d="M6 20 A44 44 0 0 0 94 20 L72 20 A22 22 0 0 1 28 20 Z" transform="rotate(200 50 50)"/></svg></span>
-<span class="s" style="left:40%;bottom:12%;width:110px;height:110px"><svg viewBox="0 0 100 100" fill="#F5D867"><path d="M50 2 C58 2 62 12 68 14 C75 16 84 10 90 16 C96 22 90 31 92 38 C94 45 100 50 100 50 C100 50 94 55 92 62 C90 69 96 78 90 84 C84 90 75 84 68 86 C62 88 58 98 50 98 C42 98 38 88 32 86 C25 84 16 90 10 84 C4 78 10 69 8 62 C6 55 0 50 0 50 C0 50 6 45 8 38 C10 31 4 22 10 16 C16 10 25 16 32 14 C38 12 42 2 50 2 Z"/></svg></span>
-<span class="s" style="right:22%;bottom:22%;width:110px;height:110px"><svg viewBox="0 0 100 100" fill="#F5B8DB"><path d="M50 92 C22 72 2 54 2 32 C2 16 14 6 28 6 C38 6 46 11 50 19 C54 11 62 6 72 6 C86 6 98 16 98 32 C98 54 78 72 50 92 Z"/></svg></span>
-<span class="s" style="right:2%;bottom:2%;width:150px;height:150px"><svg viewBox="0 0 100 100" fill="#B6CAEB"><path d="M50 0 L62.6 19.5 L85.4 14.6 L80.5 37.4 L100 50 L80.5 62.6 L85.4 85.4 L62.6 80.5 L50 100 L37.4 80.5 L14.6 85.4 L19.5 62.6 L0 50 L19.5 37.4 L14.6 14.6 L37.4 19.5 Z"/></svg></span>
 <main>
-  <h1>Ooops!</h1>
-  <p>Connection failed</p>
+  <div class="brand">propelo<i></i></div>
+  <h1>You're offline</h1>
+  <p>Propelo will load again when your connection is back</p>
   <a href="/">Retry <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.3-5.6M20 4v5h-5"/></svg></a>
 </main>
 </body>

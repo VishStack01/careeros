@@ -6,4 +6,4 @@ the claims checker and the form-answer resolver. Judgement work (research,
 tailoring, review) is done by the agent skills in `.claude/skills/`.
 """
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"

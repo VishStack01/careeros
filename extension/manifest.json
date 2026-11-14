@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Propelo Autofill",
   "short_name": "Propelo",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Fills job application forms from your Propelo profile. You review every answer and press Submit yourself.",
   "action": {
     "default_title": "Propelo Autofill",

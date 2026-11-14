@@ -171,6 +171,17 @@ def build(feed_dir: str | Path, out_dir: str | Path, demo: str | Path | None = N
     meta = {"generatedAt": iso(now), "feedAt": summary.get("generatedAt", ""), "jobs": len(compacts),
             "companyBoards": summary.get("boards", 0), "companiesTracked": summary.get("companies", 0),
             "remoteBoards": len(summary.get("remoteBoards") or {}), "companies": len(companies)}
+    by_ats = summary.get("byAts") or {}
+    total = sum(by_ats.values()) or 0
+    top = sorted(by_ats.items(), key=lambda kv: -kv[1])
+    shares = [{"label": f"{k} job boards" if k not in ("Workday",) else "Workday career sites", "share": round(v / total, 4)} for k, v in top[:4]] if total else []
+    if total and len(top) > 4:
+        rest = sum(v for _, v in top[4:])
+        others = len(top) - 5
+        shares.append({"label": f"{top[4][0]} and {others} other system{'' if others == 1 else 's'}" if others else f"{top[4][0]} job boards", "share": round(rest / total, 4)})
+    stats = {"feedAt": summary.get("generatedAt", ""), "openings": summary.get("openings", 0), "companies": summary.get("companies", 0),
+             "boards": summary.get("boards", 0), "relisted": summary.get("relisted", 0), "byAts": shares}
+    (out / "data" / "stats.json").write_text(json.dumps(stats, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (out / "data" / "jobs.json").write_text(json.dumps({"meta": meta, "jobs": compacts}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (out / "data" / "companies.json").write_text(json.dumps(sorted(companies.values(), key=lambda x: (-x["jobs"], x["name"].lower())),
                                                             ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

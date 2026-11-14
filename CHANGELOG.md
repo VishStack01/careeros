@@ -2,6 +2,24 @@
 
 All notable changes to CareerOS. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [1.4.0] - 2026-11-14
+
+### Changed
+- **New look across Propelo**: the website, docs, job board, dashboard and app, sign-in, pricing and legal pages, offline screen and extension popup now share one design. It is cream and ink with one pink accent (`#FF85BA`), Figtree at weights 400 to 600, sentence-case labels and fully round buttons. Colour lives in a few moments: the role card with its fit score, the five principle notes, the best-fit card and the four Home tiles, drawn like notes on a board with an ink outline. The pass followed [unslop](https://github.com/heydamir/unslop) (CC BY 4.0); the rules are in [docs/design.md](docs/design.md).
+- **Website rebuilt**: a role card with quoted checks in the hero, live numbers from the latest scan, the principles as notes, a dashboard preview, the app on two phones, pricing and a clean footer with link columns. On phones the links fold into a menu.
+- **Motion**: the home page opens with the wordmark on pink, which lifts away with a curved edge (once per visit). Headlines arrive letter by letter and a highlighter stroke draws under the key phrase; panels open from the bottom with a curved edge; the source bars fill and the step line follows the scroll. The hero's dot grid reacts to the cursor. Nothing loops, and Reduce Motion shows every page at rest.
+- **Brand**: the logo is the word `propelo` with a pink dot. The app, extension and phone icons are a lowercase `p` on a pink tile, and the phone app's splash is the wordmark.
+- The role sheet in the dashboard takes its stage colour as pastel paper with ink text.
+- Illustrations are removed for now; the prompts stay in [docs/illustrations.md](docs/illustrations.md) for later.
+
+### Added
+- `careeros site` writes `data/stats.json` (openings, companies, boards, re-listed roles and the share of each hiring system) so the website shows live numbers.
+
+### Fixed
+- Opening a role's package in the dashboard failed with an error before the sheet appeared.
+- The sign-in, pricing and legal pages still said "careeros" in their logo.
+- On phones, a role's pay and age on the job board could push the page sideways.
+
 ## [1.3.0] - 2026-11-11
 
 ### Changed

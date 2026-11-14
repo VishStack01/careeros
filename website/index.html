@@ -1,29 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Propelo: open-source AI job-search agent</title>
-<meta name="description" content="Propelo is an open-source AI agent that finds fresh roles, checks every one against your rules with quotes from the posting, writes truthful applications from your real experience, and runs on your own API key.">
-<meta property="og:title" content="Propelo: open-source AI job-search agent">
-<meta property="og:description" content="Fresh roles, honest checks, truthful applications. Bring your own model and API key.">
+<title>Propelo: find roles you qualify for, apply with only what's true</title>
+<meta name="description" content="Propelo reads company career pages across India every hour, checks each role against your rules with a quote from the posting, and prepares applications from your real experience. Open source, and free to start.">
+<meta property="og:title" content="Propelo: find roles you qualify for, apply with only what's true">
+<meta property="og:description" content="Fresh roles from company career pages, honest checks with quotes, and applications built only from your real experience.">
 <meta property="og:image" content="assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="careeros-app" content="https://careeros-web.onrender.com">
 <meta name="theme-color" content="#FAF3E6">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="home">
+<div class="intro" id="intro" aria-hidden="true"><b>propelo</b></div>
 <a class="skip" href="#main">Skip to content</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
+</svg>
 
 <nav class="top" aria-label="Main">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="Propelo home"><svg><use href="assets/shapes.svg#mark"/></svg>propelo</a>
-    <div class="links">
+    <a class="brand" href="./" aria-label="Propelo home">propelo<i></i></a>
+    <div class="links" id="links">
       <a href="#approach">Approach</a>
       <a href="#product">Product</a>
       <a href="#app">App</a>
@@ -31,414 +37,313 @@
       <a href="docs.html">Docs</a>
       <a href="jobs.html">Job board</a>
       <a href="https://github.com/VishStack01/careeros">GitHub</a>
-      <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a>
+      <a class="btn sm" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a>
     </div>
+    <button class="menu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="links"><svg><use href="#i-menu"/></svg></button>
   </div>
 </nav>
 
 <main id="main">
-
-<!-- 01 -->
-<section class="hero" data-art="assets/art/hero-scene.webp" data-art-dark="assets/art/hero-scene-dark.webp">
-  <div class="wrap hero-split">
-    <div class="hero-copy">
-      <h1>Find the roles you qualify for. Apply with only what's true.</h1>
-      <p class="sub">Propelo reads company career pages across India every hour, checks each role against your rules with a quote from the posting, and prepares applications from your real experience. Open source, and free to start.</p>
-      <div class="ctas">
-        <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a>
-        <a class="btn light" href="jobs.html">Browse open roles</a>
-      </div>
-    </div>
-    <div class="notice" role="img" aria-label="Example role in Propelo: AI Engineer at Northwind Labs, fit 4.4 out of 5, with the quotes behind each check">
-      <div class="nhead">
-        <span class="nlogo" aria-hidden="true">N</span>
-        <div><b>AI Engineer</b><span>Northwind Labs · Bengaluru, hybrid</span></div>
-        <span class="nfit"><b>4.4</b>/5 fit</span>
-      </div>
-      <dl class="nfacts">
-        <div><dt>Experience</dt><dd>0 to 2 years<q>“Freshers and engineers with up to 2 years are welcome.”</q></dd></div>
-        <div><dt>Pay</dt><dd>14 to 18 LPA<q>“Compensation: ₹14–18 LPA.”</q></dd></div>
-        <div><dt>Where</dt><dd>Bengaluru, 3 days in office<q>“Hybrid, Indiranagar office.”</q></dd></div>
-      </dl>
-      <div class="nmatch"><span class="ok">Python, from your RAG project</span><span class="ok">FastAPI, from Acme Labs</span><span class="gap">Kubernetes: not in your profile</span></div>
-      <p class="nsrc">boards.greenhouse.io/northwind · posted 2 h ago · checked 14 min ago</p>
-      <span class="nart" data-art="assets/art/stamp.webp" aria-hidden="true"></span>
-    </div>
-  </div>
-  <div class="wrap notes">
-    <div class="note reveal">
-      <h3>Main goal</h3>
-      <p>Get people interviews, not application counts. Propelo reads company career pages directly, filters by rules you set, and only prepares applications it can back up with evidence from your own work.</p>
-    </div>
-    <div class="note reveal">
-      <h3>Why it's different</h3>
-      <p>Every keep or skip records the exact sentence that decided it. A code gate blocks resume lines your experience can't support, and messages are drafted for you to send. Run it on your own machine with your own API key.</p>
-    </div>
-  </div>
-</section>
-
-<div class="marquee" aria-label="Hiring systems Propelo reads">
-  <div class="track">
-    <span>Greenhouse <svg fill="#F5B8DB"><use href="assets/shapes.svg#star"/></svg> Lever <svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg> Ashby <svg fill="#B6CAEB"><use href="assets/shapes.svg#heart"/></svg> Workable <svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg> SmartRecruiters <svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg> Recruitee <svg fill="#9AAB63"><use href="assets/shapes.svg#star"/></svg> Breezy <svg fill="#B6CAEB"><use href="assets/shapes.svg#plus"/></svg> Personio <svg fill="#F5D867"><use href="assets/shapes.svg#heart"/></svg></span>
-    <span aria-hidden="true">Greenhouse <svg fill="#F5B8DB"><use href="assets/shapes.svg#star"/></svg> Lever <svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg> Ashby <svg fill="#B6CAEB"><use href="assets/shapes.svg#heart"/></svg> Workable <svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg> SmartRecruiters <svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg> Recruitee <svg fill="#9AAB63"><use href="assets/shapes.svg#star"/></svg> Breezy <svg fill="#B6CAEB"><use href="assets/shapes.svg#plus"/></svg> Personio <svg fill="#F5D867"><use href="assets/shapes.svg#heart"/></svg></span>
-  </div>
-</div>
-
-<!-- bento -->
-<section>
+<!-- 01 Hero -->
+<section class="hero">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">Sources</span><span class="pill">Checks</span><span class="pill">Colours</span></div>
-    <div class="bento" data-stagger=".07">
-      <div class="tile reveal">
-        <span class="tag">Hiring systems</span>
-        <div class="big">8</div>
-        <small>ATS feeds read every hour</small>
+    <div class="pills reveal"><span class="pill">Job search</span><span class="pill">India first</span><span class="pill">Open source</span></div>
+    <div class="hero-split">
+      <div>
+        <h1 class="split" data-wave>Find the roles you qualify for. Apply with only <mark>what's true</mark>.</h1>
+        <p class="sub reveal">Propelo reads company career pages across India every hour, checks each role against your rules with a quote from the posting, and prepares applications from your real experience. Open source, and free to start.</p>
+        <div class="ctas reveal">
+          <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free<svg><use href="#i-right"/></svg></a>
+          <a class="btn light" href="jobs.html">Browse open roles</a>
+        </div>
+        <p class="facts-line reveal"><span><b data-stat="openings">32,776</b> open roles in the last scan</span><span><b data-stat="companies">4,678</b> companies</span><span><b>₹0</b> to start</span></p>
       </div>
-      <div class="tile reveal">
-        <span class="tag">Gates</span>
-        <div class="chips"><span class="chip">Role</span><span class="chip" style="background:var(--yellow)">Experience</span><span class="chip" style="background:var(--blue)">Posted</span><span class="chip" style="background:var(--green)">Pay</span></div>
-      </div>
-      <div class="span2 brandset reveal">
-        <div class="marks">
-          <div class="tile mark-grid" aria-hidden="true">
-            <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" style="color:var(--line)" stroke-width="1"><g style="transform-origin:100px 100px"><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="52"/><path d="M20 20L180 180M180 20L20 180M100 0V200M0 100H200"/></g><path d="M60 0V200M140 0V200M0 60H200M0 140H200"/><svg x="40" y="40" width="120" height="120" fill="#151515" stroke="none"><use href="assets/shapes.svg#mark"/></svg></svg>
+      <div class="panel curv" aria-hidden="false">
+        <canvas id="dots" aria-hidden="true"></canvas>
+        <div class="notice" role="img" aria-label="Example role in Propelo: AI Engineer at Northwind Labs, fit 4.4 out of 5, with the quotes behind each check">
+          <div class="nhead">
+            <span class="nlogo" aria-hidden="true">N</span>
+            <div><b>AI Engineer</b><span>Northwind Labs · Bengaluru, hybrid</span></div>
+            <span class="nfit"><b>4.4</b> / 5 fit</span>
           </div>
-          <div class="tile mark-pink" aria-hidden="true"><svg fill="#FAF3E6"><use href="assets/shapes.svg#mark"/></svg></div>
-        </div>
-        <div class="swatches">
-          <div class="sw" style="background:var(--pink)"><span>#F5B8DB</span></div>
-          <div class="sw" style="background:var(--green)"><span>#9AAB63</span></div>
-          <div class="sw" style="background:var(--blue)"><span>#B6CAEB</span></div>
-          <div class="sw" style="background:var(--yellow)"><span>#F5D867</span></div>
-        </div>
-      </div>
-      <div class="tile reveal">
-        <span class="tag">Stages</span>
-        <div class="icons">
-          <span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-search"/></svg></span>
-          <span class="ic" style="background:var(--pink)"><svg><use href="assets/shapes.svg#i-doc"/></svg></span>
-          <span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-check"/></svg></span>
-          <span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-mail"/></svg></span>
-          <span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-cal"/></svg></span>
+          <dl class="nfacts">
+            <div><dt>Experience</dt><dd>0 to 2 years<q>“Freshers and engineers with up to 2 years are welcome.”</q></dd></div>
+            <div><dt>Pay</dt><dd>14 to 18 LPA<q>“Compensation: ₹14–18 LPA.”</q></dd></div>
+            <div><dt>Where</dt><dd>Bengaluru, 3 days in office<q>“Hybrid, Indiranagar office.”</q></dd></div>
+          </dl>
+          <div class="nmatch"><span class="ok">Python, from your RAG project</span><span class="ok">FastAPI, from Acme Labs</span><span class="gap">Kubernetes: not in your profile</span></div>
+          <p class="nsrc"><i></i>Greenhouse · posted 2 h ago · checked 14 min ago</p>
         </div>
       </div>
-      <div class="tile reveal">
-        <span class="tag">Tests</span>
-        <div class="big">264</div>
-        <small>pytest, with Postgres</small>
+    </div>
+    <div class="notes">
+      <div class="note reveal">
+        <h3>Main goal</h3>
+        <p>Get people interviews, not application counts. Propelo reads company career pages directly, filters by rules you set, and only prepares applications it can back up with evidence from your own work.</p>
       </div>
+      <div class="note reveal">
+        <h3>Why it's different</h3>
+        <p>Every keep or skip records the exact sentence that decided it. A code gate blocks resume lines your experience can't support, and messages are drafted for you to send. Run it on your own machine with your own API key.</p>
+      </div>
+    </div>
+    <div class="sources reveal" aria-label="Hiring systems Propelo reads">
+      <span>Roles straight from</span>
+      <ul><li>Workday</li><li>Greenhouse</li><li>Ashby</li><li>Lever</li><li>SmartRecruiters</li><li>Workable</li></ul>
+    </div>
+  </div>
+</section>
 
-      <div class="tile span2 scene wide reveal" aria-hidden="true">
-        <div class="shape sq" style="left:6%;top:10%;width:60%"><svg fill="#F5B8DB"><use href="assets/shapes.svg#blob"/></svg></div>
-        <div class="shape sq" style="right:8%;top:6%;width:16%"><svg fill="#F5D867"><use href="assets/shapes.svg#cross"/></svg></div>
-        <div class="shape sq" style="left:4%;bottom:4%;width:36%"><svg fill="#B6CAEB"><use href="assets/shapes.svg#spark"/></svg></div>
-        <div class="shape sq" style="right:6%;bottom:8%;width:38%"><svg fill="#9AAB63"><use href="assets/shapes.svg#heart"/></svg></div>
-        <span class="label" style="left:32%;top:18%">Find fresh roles</span>
-        <span class="label" style="left:40%;top:46%">Check every claim</span>
-        <span class="label" style="left:12%;top:74%">Track every reply</span>
+<!-- Where the roles come from -->
+<section style="padding-top:64px" aria-label="Where the roles come from">
+  <div class="wrap bento">
+    <div class="card where reveal">
+      <span class="label" style="align-self:flex-start">Where the roles come from</span>
+      <div class="bars" id="bars">
+        <div class="bar" style="--n:0"><i style="background:var(--orange)"></i><p data-ats="0">Workday career sites</p><b data-pct="0">31%</b><div class="tr"><div class="fl" style="--v:.31;background:var(--orange)"></div></div></div>
+        <div class="bar" style="--n:1"><i style="background:var(--pink)"></i><p data-ats="1">Greenhouse job boards</p><b data-pct="1">21%</b><div class="tr"><div class="fl" style="--v:.21;background:var(--pink)"></div></div></div>
+        <div class="bar" style="--n:2"><i style="background:var(--lav)"></i><p data-ats="2">Ashby job boards</p><b data-pct="2">14%</b><div class="tr"><div class="fl" style="--v:.14;background:var(--lav)"></div></div></div>
+        <div class="bar" style="--n:3"><i style="background:var(--yellow)"></i><p data-ats="3">Lever job boards</p><b data-pct="3">12%</b><div class="tr"><div class="fl" style="--v:.12;background:var(--yellow)"></div></div></div>
+        <div class="bar" style="--n:4"><i style="background:var(--gold)"></i><p data-ats="4">SmartRecruiters and 15 other systems</p><b data-pct="4">22%</b><div class="tr"><div class="fl" style="--v:.22;background:var(--gold)"></div></div></div>
       </div>
-      <div class="tile span2 mock-wrap wide reveal">
-        <div class="mock" role="img" aria-label="Example role card: AI Engineer at Northwind Labs, fit score 4.4, posted 2 hours ago">
-          <div class="bar"><span class="time">9:41</span><span class="sub">Find jobs</span></div>
-          <div class="row">
-            <div class="logo"><svg fill="#FAF3E6"><use href="assets/shapes.svg#mark"/></svg></div>
-            <div>
-              <h4>AI Engineer at Northwind Labs</h4>
-              <div class="sub">Remote, India · posted 2 h ago</div>
-              <span class="open">Prepare</span>
-            </div>
-          </div>
-          <div class="stats">
-            <div><b>4.4</b><span>Fit score</span></div>
-            <div><b>0 to 1 yr</b><span>Experience</span></div>
-            <div><b>18 LPA</b><span>Stated pay</span></div>
-          </div>
+      <p class="fineprint">Share of the <span data-stat="openings">32,776</span> open roles in the scan of <span data-stat="boards">1,830</span> company job boards on <span data-stat="date">31 October 2026</span>.</p>
+    </div>
+    <div class="rcol">
+      <div class="fresh reveal">
+        <h3>Fresh from career pages, every hour</h3>
+        <p>Each role links to the company's own posting, with when it was last checked.</p>
+        <div class="rows">
+          <div class="row"><span class="lg" style="background:var(--orange)">N</span><span><b>Backend engineer</b><small>Northwind Labs · Bengaluru, hybrid</small></span><em>2 h ago</em></div>
+          <div class="row"><span class="lg" style="background:var(--yellow)">K</span><span><b>Data analyst</b><small>Kestrel Pay · Remote, India</small></span><em>5 h ago</em></div>
+          <div class="row"><span class="lg" style="background:var(--pink)">A</span><span><b>Product designer</b><small>Aster Health · Pune</small></span><em>9 h ago</em></div>
         </div>
       </div>
-      <div class="tile span2 scene wide reveal" aria-hidden="true">
-        <div class="shape sq" style="left:8%;top:8%;width:14%"><svg fill="#F5B8DB"><use href="assets/shapes.svg#triangle"/></svg></div>
-        <div class="shape sq" style="left:22%;top:20%;width:58%"><svg fill="#F5D867"><use href="assets/shapes.svg#moon"/></svg></div>
-        <div class="shape sq" style="right:6%;top:5%;width:13%"><svg fill="#B6CAEB"><use href="assets/shapes.svg#cross"/></svg></div>
-        <div class="shape sq" style="right:6%;bottom:5%;width:30%"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg></div>
-        <div class="shape sq" style="left:8%;bottom:4%;width:28%"><svg fill="#9AAB63"><use href="assets/shapes.svg#arch"/></svg></div>
-        <span class="label" style="left:8%;top:38%">Drafts, never spam</span>
-        <span class="label" style="right:8%;top:20%">You send</span>
-        <span class="label" style="left:30%;top:64%">Your key, your data</span>
+      <div class="card stat reveal">
+        <div class="big"><b data-stat="openings" data-count>32,776</b><span>open roles</span></div>
+        <p>found at <span data-stat="companies">4,678</span> companies in one scan, each linked to the company's own posting</p>
+        <div class="minis"><span><b data-stat="relisted">771</b> re-listed roles flagged</span><span><b>Hourly</b> scans</span></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 02 -->
+<!-- 02 Approach -->
 <section id="approach">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">Problem</span><span class="pill">Approach</span><span class="pill">Principles</span></div>
     <div class="head">
-      <h2 class="lede split-words">Most job bots optimise the weakest variable: <b>volume</b>. They read job cards instead of postings, invent resume lines and guess form answers. Propelo is built the other way round.</h2>
+      <div>
+        <div class="pills reveal"><span class="pill">Problem</span><span class="pill">Approach</span><span class="pill">Principles</span></div>
+        <h2 class="lede split" style="margin-top:32px">Most job bots optimise the weakest variable: <mark>volume</mark>. They read job cards instead of postings, invent resume lines and guess form answers. Propelo is built the other way round.</h2>
+      </div>
       <div class="ghost" aria-hidden="true">02</div>
     </div>
-
-    <div class="split">
-      <div class="checks reveal">
-        <span class="tag">Every role, every check</span>
-        <div style="margin-top:14px">
-          <div class="check"><span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-user"/></svg></span><div><b>Role</b><span>Title fits your target roles and none of your excluded ones</span></div><span class="tick" style="background:var(--green)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
-          <div class="check"><span class="ic" style="background:var(--pink)"><svg><use href="assets/shapes.svg#i-doc"/></svg></span><div><b>Experience</b><span>The whole posting is read; the higher figure wins</span><q>0 to 1 years of experience with Python</q></div><span class="tick" style="background:var(--pink)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
-          <div class="check"><span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-clock"/></svg></span><div><b>Posted</b><span>Inside your window; listings open 60+ days are flagged as ghosts</span></div><span class="tick" style="background:var(--yellow)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
-          <div class="check"><span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-pin"/></svg></span><div><b>Location</b><span>Work mode and who can apply, not just "remote" in passing</span></div><span class="tick" style="background:var(--blue)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
-          <div class="check"><span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-coin"/></svg></span><div><b>Pay</b><span>Stated range, or public fresher pay data, against your floor</span></div><span class="tick" style="background:var(--green)"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L19 7"/></svg></span></div>
-        </div>
-      </div>
-      <div class="right-col">
-        <div class="feed reveal">
-          <div>
-            <span class="tag" style="border-color:#7E8FB3;color:#3F4A66">Hourly scan</span>
-            <p style="margin-top:14px;color:#3F4A66;font-size:16px">Postings are read straight from companies' hiring systems on GitHub Actions, before they reach the big job boards.</p>
-          </div>
-          <div class="ev">
-            <b><span class="dot"></span>Scan finished</b>
-            <p>Greenhouse · Lever · Ashby · Workable · SmartRecruiters · Recruitee · Breezy · Personio</p>
-            <div class="avs"><i style="background:#F5B8DB">GH</i><i style="background:#9AAB63">LV</i><i style="background:#F5D867">AS</i><i style="background:#fff">+5</i></div>
-          </div>
-        </div>
-        <div class="stat reveal">
-          <div class="shape sq" style="right:-36px;top:-36px;width:230px"><svg fill="#F5D867"><use href="assets/shapes.svg#spark"/></svg></div>
-          <div class="num"><span>1,396</span><em>companies</em></div>
-          <p>Product companies' career pages read every hour: Indian product companies, India engineering centres and YC companies hiring remotely.</p>
-        </div>
-      </div>
+    <div class="principles" id="principles" aria-label="Principles">
+      <div class="pr" style="--n:0"><b>01</b><p>Your key, your data. It runs on your machine with your own AI provider.</p></div>
+      <div class="pr" style="--n:1"><b>02</b><p>Never invents a claim. Every resume line cites your own work.</p></div>
+      <div class="pr" style="--n:2"><b>03</b><p>Shows its work: the sentence behind every decision.</p></div>
+      <div class="pr" style="--n:3"><b>04</b><p>Messages are drafted. You send them.</p></div>
+      <div class="pr" style="--n:4"><b>05</b><p>Platform-safe: no LinkedIn bots and no captcha solving.</p></div>
     </div>
-
-    <div class="principles" aria-label="Principles">
-      <div class="pr circle"><svg class="bg" fill="#F5D867" aria-hidden="true"><use href="assets/shapes.svg#circle"/></svg><div class="tx"><b>01</b>Your key, your data. It runs on your machine with your own AI provider.</div></div>
-      <div class="pr blob"><svg class="bg" fill="#9AAB63" aria-hidden="true"><use href="assets/shapes.svg#blob"/></svg><div class="tx"><b>02</b>Never invents a claim. Every resume line cites your own work.</div></div>
-      <div class="pr star"><svg class="bg" fill="#B6CAEB" aria-hidden="true"><use href="assets/shapes.svg#star"/></svg><div class="tx"><b>03</b>Shows its work: the sentence behind every decision.</div></div>
-      <div class="pr heart"><svg class="bg" fill="#F5B8DB" aria-hidden="true"><use href="assets/shapes.svg#heart"/></svg><div class="tx"><b>04</b>Messages are drafted. You send them.</div></div>
-      <div class="pr flower"><svg class="bg" fill="#F5D867" aria-hidden="true"><use href="assets/shapes.svg#flower"/></svg><div class="tx"><b>05</b>Platform-safe: no LinkedIn bots and no captcha solving.</div></div>
-    </div>
-
-    <div class="opps" data-stagger=".15">
+    <div class="audiences">
       <div class="reveal">
-        <h4><svg width="24" height="24" fill="#9AAB63" aria-hidden="true"><use href="assets/shapes.svg#plus"/></svg>For job seekers</h4>
-        <ul><li>Fresh roles before the big boards</li><li>Honest skips with the reason quoted</li><li>Tailored resumes you can defend in interviews</li><li>Follow-ups on day 7 and 14, drafted for you</li></ul>
+        <h3>For job seekers</h3>
+        <ul><li style="--c:var(--yellow)">Fresh roles before the big boards</li><li style="--c:var(--yellow)">Honest skips with the reason quoted</li><li style="--c:var(--yellow)">Tailored resumes you can defend in interviews</li><li style="--c:var(--yellow)">Follow-ups on day 7 and 14, drafted for you</li><li style="--c:var(--yellow)">Campus details and saved answers filled on company forms</li></ul>
       </div>
       <div class="reveal">
-        <h4><svg width="24" height="24" fill="#F5D867" aria-hidden="true"><use href="assets/shapes.svg#spark"/></svg>For developers</h4>
+        <h3>For developers</h3>
         <ul><li>MIT licensed Python, no SDK lock-in</li><li>Bring your own model: Anthropic, OpenAI, Gemini or Ollama</li><li>Free hourly job feed with a JSON API and RSS</li><li>Agent skills for Claude Code, Codex and others</li></ul>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 03 -->
+<!-- 03 Product -->
 <section id="product">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">Dashboard</span><span class="pill">Workflow</span></div>
     <div class="head">
-      <h2 class="lede split-words">One dashboard for the whole search: <b>fresh roles</b>, a daily batch to approve, tailored applications, replies from your inbox and interviews on your calendar.</h2>
+      <div>
+        <div class="pills reveal"><span class="pill">Dashboard</span><span class="pill">Workflow</span></div>
+        <h2 class="lede split" style="margin-top:32px">One dashboard for the whole search: <mark>fresh roles</mark>, a daily batch to approve, tailored applications, replies from your inbox and interviews on your calendar.</h2>
+      </div>
       <div class="ghost" aria-hidden="true">03</div>
     </div>
-
     <div class="dash-head">
-      <div class="features reveal">
-        <span class="tag">Key features</span>
-        <div style="margin-top:10px">
-          <div class="feat"><span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-search"/></svg></span>Fresh roles, filtered with quotes<span class="no">03.1</span></div>
-          <div class="feat"><span class="ic" style="background:var(--pink)"><svg><use href="assets/shapes.svg#i-doc"/></svg></span>Truthful tailored resumes<span class="no">03.1</span></div>
-          <div class="feat"><span class="ic" style="background:var(--green)"><svg><use href="assets/shapes.svg#i-bolt"/></svg></span>Fit score before applying<span class="no">03.2</span></div>
-          <div class="feat"><span class="ic" style="background:var(--yellow)"><svg><use href="assets/shapes.svg#i-mail"/></svg></span>Inbox replies and follow-ups<span class="no">03.2</span></div>
-          <div class="feat"><span class="ic" style="background:var(--blue)"><svg><use href="assets/shapes.svg#i-chat"/></svg></span>Referral notes, drafted<span class="no">03.3</span></div>
-        </div>
-      </div>
-      <p class="reveal" style="color:var(--text);font-size:19px;align-self:center">The dashboard runs on your machine with <code>careeros serve</code>. It tracks every role from found to offer, shows why each one was kept or skipped, and puts anything that needs a person (a sign-in, an essay, a referral) in one place. With your API key set, its AI buttons use your model.</p>
+      <ul class="feats reveal">
+        <li class="feat"><i style="background:var(--lav)"></i>Fresh roles, filtered with quotes<em>03.1</em></li>
+        <li class="feat"><i style="background:var(--pink)"></i>Truthful tailored resumes<em>03.1</em></li>
+        <li class="feat"><i style="background:var(--yellow)"></i>Fit score before applying<em>03.2</em></li>
+        <li class="feat"><i style="background:var(--orange)"></i>Inbox replies and follow-ups<em>03.2</em></li>
+        <li class="feat"><i style="background:var(--lav)"></i>Referral notes, drafted<em>03.3</em></li>
+      </ul>
+      <p class="sub reveal">The dashboard runs on your machine with <code>careeros serve</code>, or in your Propelo account. It tracks every role from found to offer, shows why each one was kept or skipped, and puts anything that needs you at the top.</p>
     </div>
-
-    <div class="screen reveal" role="img" aria-label="Propelo dashboard with fictional example data">
+    <div class="screen curv" role="img" aria-label="Propelo dashboard with fictional example data">
       <div class="app">
         <aside class="side" aria-hidden="true">
-          <div class="brand"><svg><use href="assets/shapes.svg#mark"/></svg>propelo</div>
+          <div class="brand">propelo<i></i></div>
           <div class="grp">General</div>
-          <span class="it on"><svg><use href="assets/shapes.svg#i-grid"/></svg>Dashboard</span>
-          <span class="it"><svg><use href="assets/shapes.svg#i-search"/></svg>Find jobs</span>
-          <span class="it"><svg><use href="assets/shapes.svg#i-doc"/></svg>Applications</span>
-          <span class="it"><svg><use href="assets/shapes.svg#i-cal"/></svg>Calendar</span>
+          <span class="it on">Home</span><span class="it">Find jobs</span><span class="it">Applications</span><span class="it">Calendar</span>
           <div class="grp">Tools</div>
-          <span class="it"><svg><use href="assets/shapes.svg#i-mail"/></svg>Inbox</span>
-          <span class="it"><svg><use href="assets/shapes.svg#i-chat"/></svg>Outreach</span>
-          <span class="it"><svg><use href="assets/shapes.svg#i-key"/></svg>API key</span>
+          <span class="it">Inbox</span><span class="it">Writing and interviews</span><span class="it">Settings</span>
         </aside>
         <div class="mainp">
-          <div class="search"><svg><use href="assets/shapes.svg#i-search"/></svg>AI engineer<span class="seg"><span class="on">Roles</span><span>Companies</span><span>Replies</span></span></div>
           <h5>Wednesday 11 November</h5>
-          <p class="sub">12 fresh roles passed your checks overnight. 3 replies need you today.</p>
-          <div class="cards">
-            <div class="mc" style="background:var(--yellow)">
-              <h6>Fresh roles</h6>
-              <div class="nums"><div><b>12</b><span>new</span></div><div><b>5</b><span>remote</span></div><div><b>3</b><span>&lt;48 h</span></div></div>
-              <div class="bars"><i style="height:40%"></i><i style="height:70%;transition-delay:.05s"></i><i class="k" style="height:30%;transition-delay:.1s"></i><i style="height:55%;transition-delay:.15s"></i><i class="k" style="height:90%;transition-delay:.2s"></i><i style="height:45%;transition-delay:.25s"></i><i class="k" style="height:60%;transition-delay:.3s"></i><i style="height:35%;transition-delay:.35s"></i><i style="height:75%;transition-delay:.4s"></i></div>
-            </div>
-            <div class="mc" style="background:var(--pink)">
-              <h6>Funnel</h6>
-              <div class="nums"><div><b>24</b><span>applied</span></div><div><b>6</b><span>screens</span></div><div><b>2</b><span>interviews</span></div></div>
-              <svg class="line" viewBox="0 0 300 70" style="width:100%;height:66px;margin-top:8px" fill="none" stroke="#151515" stroke-width="2"><path d="M0 50 C30 60 40 30 70 40 S110 60 130 30 160 10 180 20 210 50 240 34 270 30 300 26"/></svg>
-            </div>
-            <div class="mc" style="background:var(--green)">
-              <h6>Checks</h6>
-              <div class="nums"><div><b>12</b><span>kept</span></div><div><b>41</b><span>skipped</span></div><div><b>0</b><span>guessed</span></div></div>
-            </div>
-            <div class="mc" style="background:var(--blue)">
-              <h6>Follow-ups</h6>
-              <div class="nums"><div><b>4</b><span>due</span></div><div><b>2</b><span>referrals</span></div><div><b>1</b><span>thank-you</span></div></div>
-            </div>
+          <p class="s">12 fresh roles passed your checks overnight. 3 replies need you today</p>
+          <div class="mcards">
+            <div class="mc hl"><h6>Best fit</h6><b>4.6</b><span>AI Engineer, Northwind</span></div>
+            <div class="mc"><h6>Fresh roles</h6><b>12</b><span>5 remote</span></div>
+            <div class="mc"><h6>Applied</h6><b>24</b><span>6 screens</span></div>
+            <div class="mc"><h6>Follow-ups</h6><b>4</b><span>due this week</span></div>
           </div>
           <div class="list">
-            <div class="li hot"><span class="ic"><svg><use href="assets/shapes.svg#i-bolt"/></svg></span><div><b>AI Engineer · Northwind Labs</b><small>Fit 4.4 · remote, India</small></div><span class="t">Prepare</span></div>
-            <div class="li"><span class="ic"><svg><use href="assets/shapes.svg#i-doc"/></svg></span><div><b>Backend SDE 1 · Lumen Pay</b><small>Fit 4.1 · Bengaluru</small></div><span class="t">Approve</span></div>
-            <div class="li"><span class="ic"><svg><use href="assets/shapes.svg#i-mail"/></svg></span><div><b>Recruiter reply · Harbor AI</b><small>Asks for availability</small></div><span class="t">Reply</span></div>
+            <div class="li"><i style="background:var(--lav)"></i><div><b>AI Engineer · Northwind Labs</b><small>Fit 4.4 · remote, India</small></div><span class="t">Prepare</span></div>
+            <div class="li"><i style="background:var(--yellow)"></i><div><b>Backend SDE 1 · Lumen Pay</b><small>Fit 4.1 · Bengaluru</small></div><span class="t">Approve</span></div>
+            <div class="li"><i style="background:var(--pink)"></i><div><b>Recruiter reply · Harbor AI</b><small>Asks for your availability</small></div><span class="t">Reply</span></div>
+            <div class="li"><i style="background:var(--orange)"></i><div><b>Online assessment · Kestrel Pay</b><small>Due Friday, 90 minutes</small></div><span class="t">Open</span></div>
           </div>
         </div>
         <div class="cal" aria-hidden="true">
           <h6>November</h6>
           <div class="days">
-            <span class="h">MO</span><span class="h">TU</span><span class="h">WE</span><span class="h">TH</span><span class="h">FR</span><span class="h">SA</span><span class="h">SU</span>
+            <span class="h">Mo</span><span class="h">Tu</span><span class="h">We</span><span class="h">Th</span><span class="h">Fr</span><span class="h">Sa</span><span class="h">Su</span>
             <span></span><span></span><span></span><span></span><span></span><span>1</span><span>2</span>
             <span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
             <span>10</span><span>11</span><span class="on">12</span><span>13</span><span>14</span><span>15</span><span>16</span>
           </div>
-          <div class="tl">
-            <div class="ev2 y"><b>Interview · Harbor AI</b><span>11:00 to 11:45 · video call</span></div>
-            <div class="ev2"><b>Follow-up · Lumen Pay</b><span>Day 7: add a new result</span></div>
-            <div class="ev2"><b>Thank-you note</b><span>Due tomorrow</span></div>
+          <div class="evs">
+            <div class="ev y"><b>Interview · Harbor AI</b><span>11:00 to 11:45 · video call</span></div>
+            <div class="ev"><b>Follow-up · Lumen Pay</b><span>Day 7: add a new result</span></div>
+            <div class="ev"><b>Thank-you note</b><span>Due tomorrow</span></div>
           </div>
         </div>
       </div>
     </div>
-    <p class="reveal" style="color:var(--muted);font-size:13px;margin-top:12px">Example data. Companies and people shown are fictional. <a href="https://vishstack01.github.io/careeros/demo/">Try the demo ↗</a></p>
-    <div class="toolgrid" data-stagger>
-      <div class="tile reveal"><span class="tag">Browser extension</span><h3>Autofill, you press Submit</h3><p>Propelo Autofill fills company application forms from your profile, attaches your resume and lists the questions only you can answer. It never submits, never fills passwords or ID numbers, and stays off LinkedIn, Naukri, Indeed and Wellfound.</p></div>
-      <div class="tile reveal" style="background:var(--pink)"><span class="tag">Resume score</span><h3>See the gaps, accept edits line by line</h3><p>Each posting gets a score for how much of its language your resume already covers, with the missing keywords listed. Review every AI edit and keep it or switch back to your own line.</p></div>
-      <div class="tile reveal" style="background:var(--blue)"><span class="tag">Job board</span><h3>Seven job families and quick lists</h3><p>Browse by Software, AI and Data, Product and Design, Marketing, Sales, Finance or Operations, with lists for internships, new grads, remote, 20 LPA and up, and roles from the last day.</p></div>
-      <div class="tile reveal" style="background:var(--yellow)"><span class="tag">Writing and interviews</span><h3>Cover letters, emails, mock interviews</h3><p>Drafts are written only from your profile, and any number that isn't in it is flagged before you send. Practise five questions for the role and get feedback on every answer.</p></div>
+    <p class="caption">Example data. Companies and people shown are fictional. <a href="https://vishstack01.github.io/careeros/demo/">Try the demo</a></p>
+    <div class="tools">
+      <article class="tool reveal"><i style="background:var(--lav)"></i><small>Browser extension</small><h3>Autofill, you press Submit</h3><p>Propelo Autofill fills company application forms from your profile, attaches your resume and lists the questions only you can answer. It never submits.</p></article>
+      <article class="tool reveal"><i style="background:var(--pink)"></i><small>Resume score</small><h3>See the gaps, accept edits line by line</h3><p>Each posting gets a score for how much of its language your resume covers, with missing keywords listed and every edit yours to keep or undo.</p></article>
+      <article class="tool reveal"><i style="background:var(--yellow)"></i><small>Job board</small><h3>Seven job families and quick lists</h3><p>Browse by Software, AI and Data, Product and Design, Marketing, Sales, Finance or Operations, with lists for internships, freshers and remote roles.</p></article>
+      <article class="tool reveal"><i style="background:var(--orange)"></i><small>Writing and interviews</small><h3>Cover letters, emails, mock interviews</h3><p>Drafts are written only from your profile, and any number that isn't in it is flagged before you send anything.</p></article>
     </div>
   </div>
 </section>
 
-<!-- 04 -->
+<!-- 04 How it works -->
 <section id="how">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">How it works</span><span class="pill">Four steps</span></div>
     <div class="head">
-      <h2 class="lede split-words">From a posting to an interview, with <b>a person deciding</b> at every step that matters.</h2>
+      <div>
+        <div class="pills reveal"><span class="pill">How it works</span><span class="pill">Four steps</span></div>
+        <h2 class="lede split" style="margin-top:32px">From a posting to an interview, with <mark>a person deciding</mark> at every step that matters.</h2>
+      </div>
       <div class="ghost" aria-hidden="true">04</div>
     </div>
-    <div class="steps" data-stagger=".12">
-      <div class="step reveal"><div class="n">01</div><h3>Find</h3><p>An hourly scan reads company hiring systems, verifies each role and keeps only those inside your rules, with quotes.</p><div class="shape sq"><svg fill="#F5D867"><use href="assets/shapes.svg#circle"/></svg></div></div>
-      <div class="step reveal"><div class="n">02</div><h3>Score</h3><p>Your model scores fit 1 to 5, requirement by requirement. Code checks every quote; under 4.0 waits for you.</p><div class="shape sq"><svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg></div></div>
-      <div class="step reveal"><div class="n">03</div><h3>Tailor</h3><p>A resume and note built only from claims in your Career Brain. Anything it can't back up is blocked.</p><div class="shape sq"><svg fill="#B6CAEB"><use href="assets/shapes.svg#star"/></svg></div></div>
-      <div class="step reveal"><div class="n">04</div><h3>Track</h3><p>Replies from your inbox move each role along. Follow-ups, referral notes and thank-yous are drafted for you to send.</p><div class="shape sq"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg></div></div>
-    </div>
+    <ol class="steps" id="steps">
+      <li class="step reveal"><span class="n">01</span><h3>Find</h3><p>An hourly scan reads company hiring systems, verifies each role and keeps only those inside your rules, with quotes.</p></li>
+      <li class="step reveal"><span class="n">02</span><h3>Score</h3><p>Your model scores fit 1 to 5, requirement by requirement. Code checks every quote, and anything under 4.0 waits for you.</p></li>
+      <li class="step reveal"><span class="n">03</span><h3>Tailor</h3><p>A resume and note built only from claims in your Career Brain. Anything it can't back up is blocked.</p></li>
+      <li class="step reveal"><span class="n">04</span><h3>Track</h3><p>Replies from your inbox move each role along. Follow-ups, referral notes and thank-yous are drafted for you to send.</p></li>
+    </ol>
   </div>
 </section>
 
-<!-- 05 -->
+<!-- 05 Bring your own key -->
 <section id="byok">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">Open source</span><span class="pill">Bring your own key</span></div>
     <div class="head">
-      <h2 class="lede split-words">Clone it, add <b>your own API key</b>, and run the whole agent on your machine. Your resume and search history never leave it.</h2>
+      <div>
+        <div class="pills reveal"><span class="pill">Open source</span><span class="pill">Bring your own key</span></div>
+        <h2 class="lede split" style="margin-top:32px">Clone it, add <mark>your own API key</mark>, and run the whole agent on your machine. Your resume and search history never leave it.</h2>
+      </div>
       <div class="ghost" aria-hidden="true">05</div>
     </div>
     <div class="byok">
-      <div class="term" aria-label="Terminal: install and run Propelo">
-        <div class="dots"><i style="background:#F5B8DB"></i><i style="background:#F5D867"></i><i style="background:#9AAB63"></i></div>
+      <div class="term curv" aria-label="Terminal: install and run Propelo">
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="ln"><span class="c"># install</span></div>
         <div class="ln"><span class="p">$</span> git clone https://github.com/VishStack01/careeros && cd careeros</div>
         <div class="ln"><span class="p">$</span> pip install -e .</div>
         <div class="ln"><span class="c"># your model, your key (or put them in .env)</span></div>
         <div class="ln"><span class="p">$</span> <span class="k">export</span> CAREEROS_LLM=<span class="g">anthropic</span>   <span class="c"># openai, gemini, ollama</span></div>
         <div class="ln"><span class="p">$</span> <span class="k">export</span> ANTHROPIC_API_KEY=<span class="g">sk-ant-...</span></div>
-        <div class="ln"><span class="p">$</span> careeros llm test</div>
+        <div class="ln"><span class="p">$</span> propelo llm test</div>
         <div class="ln"><span class="c"># go</span></div>
-        <div class="ln"><span class="p">$</span> careeros init && careeros serve   <span class="c"># http://127.0.0.1:8765</span></div>
+        <div class="ln"><span class="p">$</span> propelo init && propelo serve   <span class="c"># http://127.0.0.1:8765</span></div>
       </div>
       <div class="reveal">
-        <span class="tag">Providers</span>
-        <p style="color:var(--text);margin-top:14px;font-size:18px">The AI steps (reading your resume, scoring fit, tailoring applications, drafting notes) call the model you choose with your key. Scanning, filtering and tracking run without any model at all, and Ollama runs everything locally for free.</p>
-        <div class="providers"><span>Anthropic</span><span>OpenAI</span><span>Gemini</span><span>Ollama (local)</span><span>Any OpenAI-compatible API</span></div>
-        <div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
-          <a class="btn" href="docs.html">Read the docs</a>
-          <a class="btn light" href="https://vishstack01.github.io/careeros/demo/">Try the demo ↗</a>
-        </div>
+        <span class="label">Providers</span>
+        <p class="sub" style="margin-top:16px">The AI steps (reading your resume, scoring fit, tailoring applications, drafting notes) call the model you choose with your key. Scanning, filtering and tracking run without any model at all, and Ollama runs everything locally for free.</p>
+        <div class="providers"><span>Anthropic</span><span>OpenAI</span><span>Gemini</span><span>Ollama, local</span><span>Any OpenAI-compatible API</span></div>
+        <div class="ctas" style="margin-top:28px"><a class="btn" href="docs.html">Read the docs<svg><use href="#i-right"/></svg></a><a class="btn light" href="https://vishstack01.github.io/careeros/demo/">Try the demo</a></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- 06 App -->
 <section id="app">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">Web</span><span class="pill">Android</span><span class="pill">iOS</span></div>
     <div class="head">
-      <h2 class="lede split-words">Your whole search <b>in your pocket</b>. One number to start the day, today's roles, replies and follow-ups in one list, and a plus for anything new.</h2>
+      <div>
+        <div class="pills reveal"><span class="pill">Web</span><span class="pill">Android</span><span class="pill">iOS</span></div>
+        <h2 class="lede split" style="margin-top:32px">Your whole search <mark>in your pocket</mark>. One number to start the day, then today's roles, replies and follow-ups in one place.</h2>
+      </div>
       <div class="ghost" aria-hidden="true">06</div>
     </div>
     <div class="phones">
-      <div class="phone reveal">
-        <div class="pst"><span>9:41</span><span class="isl"></span><span>●●●</span></div>
-        <p class="pq">Wednesday 11 November</p>
-        <div class="pnum">4.6<small>/5</small></div>
-        <p class="plab">Best fit waiting for you</p>
-        <div class="pacts"><span class="pb">Review batch (2)</span><span class="pc"><svg><use href="assets/shapes.svg#i-search"/></svg></span><span class="pc"><svg><use href="assets/shapes.svg#i-doc"/></svg></span></div>
-        <div class="phh"><b>Today</b><span>All applications</span></div>
-        <div class="plist">
-          <span><i style="background:#B6CAEB"></i>Fresh roles<b>5</b></span>
-          <span><i style="background:#F5B8DB"></i>Applied<b>6</b></span>
-          <span><i style="background:#9AAB63"></i>Replies<b>2</b></span>
-          <span><i style="background:#F5B8DB"></i>Interviews<b>2</b></span>
-          <span><i style="background:#F5D867"></i>Follow-ups<b>1</b></span>
+      <div class="phone reveal" role="img" aria-label="Propelo app home screen with example data">
+        <div class="ps">
+          <div class="pst"><span>9:41</span><i></i><span>5G</span></div>
+          <p class="ph">Wednesday 11 November<b>Today</b></p>
+          <div class="pbest"><small>Best fit waiting</small><b>4.6</b><span>AI Engineer · Northwind Labs</span></div>
+          <div class="pbtn">Review batch (6)</div>
+          <div class="pgrid">
+            <div class="pt" style="background:var(--lav)"><b>24</b><span>fresh roles</span></div>
+            <div class="pt" style="background:var(--yellow)"><b>3</b><span>applied today</span></div>
+            <div class="pt" style="background:var(--pink)"><b>2</b><span>new replies</span></div>
+            <div class="pt" style="background:#FFFCF7"><b>3</b><span>follow-ups</span></div>
+          </div>
+          <div class="pdock" aria-hidden="true"><i></i><i></i><i class="add"></i><i></i><i></i></div>
         </div>
-        <div class="pdock"><i><svg><use href="assets/shapes.svg#heart"/></svg></i><i><svg><use href="assets/shapes.svg#i-search"/></svg></i><b>+</b><i><svg><use href="assets/shapes.svg#i-chat"/></svg></i><i><svg><use href="assets/shapes.svg#i-user"/></svg></i></div>
       </div>
-      <div class="phone y reveal">
-        <div class="pst"><span>9:41</span><span class="isl"></span><span>●●●</span></div>
-        <div class="pbar"><span class="pback">←</span><span>Fresh roles</span><span></span></div>
-        <div class="pdays"><span>MO<b>3</b></span><span>TU<b>4</b></span><span class="on">WE<b>5</b></span><span>TH<b>6</b></span><span>FR<b>7</b></span><span>SA<b>8</b></span></div>
-        <div class="pbig"><svg fill="rgba(255,255,255,.35)"><use href="assets/shapes.svg#blob"/></svg><span>Matched today</span><b>12</b><small>from 1,396 career pages</small></div>
-        <div class="pstats"><span><b>5</b>remote</span><span><b>3</b>under 48 h</span><span><b>41</b>skipped</span></div>
-        <div class="pacts"><span class="pb">Review batch</span><span class="pc"><svg><use href="assets/shapes.svg#i-check"/></svg></span></div>
-        <p class="psum">Summary:</p>
-        <div class="pbars"><i style="height:30%"></i><i style="height:55%"></i><i style="height:40%"></i><i class="k" style="height:70%"></i><i style="height:35%"></i><i style="height:88%"></i><i class="k" style="height:100%"></i><i style="height:50%"></i><i style="height:62%"></i></div>
-        <div class="pdock"><i><svg><use href="assets/shapes.svg#heart"/></svg></i><i><svg><use href="assets/shapes.svg#i-search"/></svg></i><b>+</b><i><svg><use href="assets/shapes.svg#i-chat"/></svg></i><i><svg><use href="assets/shapes.svg#i-user"/></svg></i></div>
+      <div class="phone reveal" role="img" aria-label="Propelo app fresh roles screen with example data">
+        <div class="ps">
+          <div class="pst"><span>9:41</span><i></i><span>5G</span></div>
+          <p class="ph">From 1,830 career pages<b>Fresh roles</b></p>
+          <div class="pbig"><small>Matched today</small><b>12</b><span>5 remote · 3 under 48 hours</span></div>
+          <div class="prow"><i style="background:var(--orange)">N</i><span><b>AI Engineer</b><small>Northwind Labs</small></span><em>4.4</em></div>
+          <div class="prow"><i style="background:var(--yellow)">L</i><span><b>Backend SDE 1</b><small>Lumen Pay</small></span><em>4.1</em></div>
+          <div class="prow"><i style="background:var(--lav)">K</i><span><b>Data analyst</b><small>Kestrel Pay</small></span><em>3.9</em></div>
+          <div class="pdock" aria-hidden="true"><i></i><i></i><i class="add"></i><i></i><i></i></div>
+        </div>
       </div>
       <div class="appcopy reveal">
-        <span class="tag">Get the app</span>
-        <p>Open Propelo on your phone and add it to your home screen: it installs like an app, with its own icon, and works offline. The Android and iOS apps use the same screens.</p>
-        <ul class="applist">
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Installable today from any modern browser</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Android and iOS builds included in the repo</li>
-          <li><span class="tick"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Your data stays in your account; export or delete it any time</li>
-        </ul>
-        <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a><a class="btn light" href="https://vishstack01.github.io/careeros/demo/">Try the demo ↗</a></div>
+        <span class="label">Get the app</span>
+        <p style="margin-top:16px">Open Propelo on your phone and add it to your home screen: it installs like an app, with its own icon, and works offline. The Android and iOS apps use the same screens.</p>
+        <ul class="ticks"><li>Installable today from any modern browser</li><li>Android and iOS builds included in the repo</li><li>Your data stays in your account; export or delete it any time</li></ul>
+        <div class="ctas" style="margin-top:28px"><a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free<svg><use href="#i-right"/></svg></a><a class="btn light" href="https://vishstack01.github.io/careeros/demo/">Try the demo</a></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- 07 Pricing -->
 <section id="pricing">
   <div class="wrap">
-    <div class="pills reveal" data-stagger><span class="pill">Pricing</span><span class="pill">Cancel any time</span></div>
     <div class="head">
-      <h2 class="lede split-words">Finding and checking roles is <b>free for everyone</b>. Pro is for when you want them every hour, with AI that writes from your real experience.</h2>
+      <div>
+        <div class="pills reveal"><span class="pill">Pricing</span><span class="pill">Cancel any time</span></div>
+        <h2 class="lede split" style="margin-top:32px">Finding and checking roles is <mark>free for everyone</mark>. Pro is for when you want them every hour, with AI that writes from your real experience.</h2>
+      </div>
       <div class="ghost" aria-hidden="true">07</div>
     </div>
     <div class="prices">
       <article class="price reveal"><h3>Free</h3><div class="amt">₹0</div>
-        <ul><li>Fresh roles from about 1,400 company career pages, matched daily</li><li>Every keep or skip with the quote that decided it</li><li>Pipeline, follow-ups, calendar and referral drafts</li><li>15 AI actions a month, unlimited with your own key</li><li>Auto-apply from your own computer, up to 5 a day</li></ul>
+        <ul><li>Fresh roles from about 1,400 company career pages, matched daily</li><li>Every keep or skip with the quote that decided it</li><li>Pipeline, follow-ups, calendar and referral drafts</li><li>15 AI actions a month, unlimited with your own key</li><li>Auto-apply from your own computer, with your approval</li></ul>
         <a class="btn light" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a></article>
-      <article class="price pro reveal"><div class="shape sq" style="right:-24px;top:-24px;width:120px"><svg fill="#B6CAEB"><use href="assets/shapes.svg#star"/></svg></div>
-        <h3>Pro</h3><div class="amt">₹299<small> / month</small></div>
+      <article class="price pro reveal"><h3>Pro</h3><div class="amt">₹299<small> / month</small></div>
         <ul><li>Everything in Free</li><li>Matching every hour, so you see roles first</li><li>400 AI actions a month: tailored resumes, cover letters, fit scores</li><li>Auto-apply up to 25 a day</li><li>Priority support</li></ul>
         <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a></article>
-      <article class="price self reveal"><h3>Self-hosted</h3><div class="amt">Your key</div>
+      <article class="price reveal"><h3>Self-hosted</h3><div class="amt">Your key</div>
         <ul><li>The whole agent on your machine, MIT licensed</li><li>Anthropic, OpenAI, Gemini or Ollama with your own key</li><li>Your resume and search history never leave it</li></ul>
         <a class="btn light" href="docs.html">Read the docs</a></article>
     </div>
@@ -446,30 +351,27 @@
   </div>
 </section>
 
-<section style="padding-top:20px">
+<section style="padding-top:96px">
   <div class="wrap">
-    <div class="cta reveal">
-      <div class="shape sq" style="left:-40px;top:-30px;width:180px"><svg fill="#F5D867"><use href="assets/shapes.svg#moon"/></svg></div>
-      <div class="shape sq" style="right:6%;top:14%;width:60px"><svg fill="#B6CAEB"><use href="assets/shapes.svg#cross"/></svg></div>
-      <div class="shape sq" style="right:-20px;bottom:-34px;width:160px"><svg fill="#F5B8DB"><use href="assets/shapes.svg#heart"/></svg></div>
-      <div class="shape sq" style="left:10%;bottom:-30px;width:110px"><svg fill="#9AAB63"><use href="assets/shapes.svg#flower"/></svg></div>
-      <h2>Fewer, better applications. Every claim one you can defend.</h2>
+    <div class="cta curv">
+      <h2>Fewer, better applications. <b>Every claim one you can defend.</b></h2>
       <div class="btns">
-        <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free</a>
-        <a class="btn light" href="https://github.com/VishStack01/careeros"><svg aria-hidden="true"><use href="assets/shapes.svg#i-github"/></svg>Self-host it</a>
+        <a class="btn" data-app="/signup" href="https://careeros-web.onrender.com/signup">Start free<svg><use href="#i-right"/></svg></a>
+        <a class="btn light" href="https://github.com/VishStack01/careeros">Self-host it</a>
       </div>
     </div>
   </div>
 </section>
-
-<div class="art-band" data-art="assets/art/footer-scene.webp" data-art-dark="assets/art/footer-scene-dark.webp" aria-hidden="true"></div>
 </main>
 
 <footer>
-  <div class="wrap">
-    <span>Propelo · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
-    <span><a href="#pricing">Pricing</a> · <a data-app="/terms" href="https://careeros-web.onrender.com/terms">Terms</a> · <a data-app="/privacy" href="https://careeros-web.onrender.com/privacy">Privacy</a> · <a href="docs.html">Docs</a> · <a href="jobs.html">Job board</a> · <a href="https://github.com/VishStack01/careeros">GitHub</a> · <a href="https://github.com/VishStack01/careeros/blob/main/docs/responsible-use.md">Responsible use</a></span>
+  <div class="wrap fgrid">
+    <div><a class="brand" href="./">propelo<i></i></a><p>Fresh roles from company career pages, honest checks, and applications built only from your real experience. Made in India, MIT licensed.</p></div>
+    <div><h4>Product</h4><ul><li><a href="jobs.html">Job board</a></li><li><a href="#product">Dashboard</a></li><li><a href="#app">App</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+    <div><h4>Developers</h4><ul><li><a href="docs.html">Docs</a></li><li><a href="https://github.com/VishStack01/careeros">GitHub</a></li><li><a href="https://vishstack01.github.io/careeros/demo/">Demo</a></li><li><a href="feed.xml">RSS feed</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a data-app="/terms" href="https://careeros-web.onrender.com/terms">Terms</a></li><li><a data-app="/privacy" href="https://careeros-web.onrender.com/privacy">Privacy</a></li><li><a data-app="/refunds" href="https://careeros-web.onrender.com/refunds">Refunds</a></li></ul></div>
   </div>
+  <div class="wrap fbase"><span>© 2026 Propelo · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span><span>MIT licence</span></div>
 </footer>
 <script src="assets/site.js"></script>
 </body>

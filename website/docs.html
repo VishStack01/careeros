@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,24 +7,28 @@
 <meta name="description" content="Install Propelo, connect your own model (Anthropic, OpenAI, Gemini or Ollama) and run the open-source job-search agent on your machine.">
 <meta name="theme-color" content="#FAF3E6">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<script>document.documentElement.className = document.documentElement.className.replace('no-js', 'js');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body data-page="docs">
 <a class="skip" href="#main">Skip to content</a>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol></svg>
 <nav class="top" aria-label="Main">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="Propelo home"><svg><use href="assets/shapes.svg#mark"/></svg>propelo</a>
-    <div class="links">
+    <a class="brand" href="./" aria-label="Propelo home">propelo<i></i></a>
+    <div class="links" id="links">
       <a href="./#approach">Approach</a>
       <a href="./#product">Product</a>
+      <a href="./#pricing">Pricing</a>
       <a class="on" href="docs.html">Docs</a>
       <a href="jobs.html">Job board</a>
-      <a class="btn" href="https://github.com/VishStack01/careeros">GitHub ↗</a>
+      <a class="btn sm" href="https://github.com/VishStack01/careeros">GitHub</a>
     </div>
+    <button class="menu" type="button" aria-label="Menu" aria-expanded="false" aria-controls="links"><svg><use href="#i-menu"/></svg></button>
   </div>
 </nav>
 
@@ -44,8 +48,8 @@
     </aside>
 
     <article class="doc">
-      <div class="pills reveal" data-stagger><span class="pill">Docs</span><span class="pill">Quick start</span></div>
-      <h1 class="split-words">Run Propelo on your machine, with your own model.</h1>
+      <div class="pills reveal"><span class="pill">Docs</span><span class="pill">Quick start</span></div>
+      <h1 class="split">Run Propelo on your machine, with your own model.</h1>
       <p class="intro reveal">Propelo is a Python package (standard library only), a local dashboard and a set of agent skills. The AI steps use the provider and API key you choose. Everything else, including the job scan and every check, runs without a model.</p>
 
       <h2 id="install">Install</h2>
@@ -144,10 +148,13 @@ pytest -q</pre>
 </main>
 
 <footer>
-  <div class="wrap">
-    <span>Propelo · MIT licence · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span>
-    <span><a href="./">Home</a> · <a href="jobs.html">Job board</a> · <a href="https://github.com/VishStack01/careeros">GitHub</a></span>
+  <div class="wrap fgrid">
+    <div><a class="brand" href="./">propelo<i></i></a><p>Fresh roles from company career pages, honest checks, and applications built only from your real experience. Made in India, MIT licensed.</p></div>
+    <div><h4>Product</h4><ul><li><a href="jobs.html">Job board</a></li><li><a href="./#product">Dashboard</a></li><li><a href="./#app">App</a></li><li><a href="./#pricing">Pricing</a></li></ul></div>
+    <div><h4>Developers</h4><ul><li><a href="docs.html">Docs</a></li><li><a href="https://github.com/VishStack01/careeros">GitHub</a></li><li><a href="https://vishstack01.github.io/careeros/demo/">Demo</a></li><li><a href="feed.xml">RSS feed</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li><a data-app="/terms" href="https://careeros-web.onrender.com/terms">Terms</a></li><li><a data-app="/privacy" href="https://careeros-web.onrender.com/privacy">Privacy</a></li><li><a data-app="/refunds" href="https://careeros-web.onrender.com/refunds">Refunds</a></li></ul></div>
   </div>
+  <div class="wrap fbase"><span>© 2026 Propelo · built by <a href="https://github.com/VishStack01">Venkata Vishnu Vardhan Raju Chakravarthula</a></span><span>MIT licence</span></div>
 </footer>
 <script src="assets/site.js"></script>
 </body>

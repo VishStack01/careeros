@@ -14,7 +14,7 @@
 <title>Propelo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <style>
 /* Layout: a black sidebar (Home, Profile, Base resume, Fresh roles, Applications, Outreach, Calendar, Skipped, Settings)
    beside the work surface. Fresh roles keeps the big headline with the freshness toggle,
@@ -985,52 +985,56 @@ input:focus,select:focus,textarea:focus{border-color:var(--ink);box-shadow:0 0 0
 .step0.done{opacity:.55}
 
 
-/* ===== Propelo unslop layer (direction: exact, warm, unhurried; paper and ink) =====
-   Quiet warm-neutral chrome, one accent (pink) for the selection and the primary action, colour only in
-   category dots and the charts, sentence case, 4px grid, weights 400 to 600, one easing curve. */
+/* ===== Propelo layer (see docs/design.md) =====
+   Direction: honest, bright, unhurried; a campus placement notice board. Quiet cream-and-ink chrome with one
+   pink accent for the selection. Colour lives in two moments: the best-fit card and the four tiles on Home,
+   drawn like notes on a board (pastel paper, an ink outline). Figtree everywhere, weights 400 to 600,
+   sentence case, a 4px grid and one easing curve. */
 :root:root:root:root{
-  --canvas:#F7F4EE; --page:#F7F4EE; --panel:#FDFBF7; --panel-2:#EFE9DF; --field:#FDFBF7; --line:rgba(31,27,22,.10); --sand-2:#EFE9DF;
-  --ink:#1F1B16; --ink-2:#5E554A; --muted:#756C60; --btn:#1F1B16; --btn-ink:#FDFBF7; --btn-soft:#EFE9DF;
-  --side-bg:#FDFBF7; --side-ink:#1F1B16; --side-muted:#756C60;
-  --r-xl:20px; --r-lg:16px; --r-md:12px; --r-sm:10px;
-  --ease:cubic-bezier(.22,1,.36,1); --t-press:120ms; --t-in:300ms; --t-out:180ms;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --canvas:#F7F2E9; --page:#F7F2E9; --panel:#FFFCF7; --panel-2:#F0E8DA; --field:#FFFCF7; --line:rgba(21,21,21,.09); --sand-2:#F0E8DA;
+  --ink:#151515; --ink-2:#4F4A44; --muted:#6E675D; --btn:#151515; --btn-ink:#FAF3E6; --btn-soft:#F0E8DA;
+  --side-bg:#FFFCF7; --side-ink:#151515; --side-muted:#6E675D;
+  --pink:#FF85BA; --pink-ink:#B42D6A; --bblue:#BDB6FC; --lav:#BDB6FC; --bgreen:#FF7034; --orange:#FF7034; --yellow:#FCF15C; --gold:#FCC63E; --on-pastel:#151515;
+  --f:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif; --serif:var(--f); --mono:var(--f);
+  --r-xl:24px; --r-lg:20px; --r-md:14px; --r-sm:12px;
+  --ease:cubic-bezier(.16,1,.3,1); --t-press:120ms; --t-in:300ms; --t-out:180ms;
 }
 @media (prefers-color-scheme: dark){:root:root:root:root:not([data-theme="light"]){
-  --canvas:#161513; --page:#161513; --panel:#1C1A18; --panel-2:#262421; --field:#1C1A18; --line:rgba(239,233,222,.09); --sand-2:#262421;
-  --ink:#EFE9DE; --ink-2:#AAA398; --muted:#948D82; --btn:#EFE9DE; --btn-ink:#161513; --btn-soft:#262421; --side-bg:#12110F; --side-ink:#EFE9DE; --side-muted:#948D82}}
+  --canvas:#141311; --page:#141311; --panel:#1C1A17; --panel-2:#26231F; --field:#1C1A17; --line:rgba(243,236,224,.09); --sand-2:#26231F;
+  --ink:#F3ECE0; --ink-2:#D2CABE; --muted:#9E978B; --btn:#F3ECE0; --btn-ink:#141311; --btn-soft:#26231F; --side-bg:#100F0D; --side-ink:#F3ECE0; --side-muted:#9E978B; --pink-ink:#FF9CC8}}
 :root:root:root:root[data-theme="dark"]{
-  --canvas:#161513; --page:#161513; --panel:#1C1A18; --panel-2:#262421; --field:#1C1A18; --line:rgba(239,233,222,.09); --sand-2:#262421;
-  --ink:#EFE9DE; --ink-2:#AAA398; --muted:#948D82; --btn:#EFE9DE; --btn-ink:#161513; --btn-soft:#262421; --side-bg:#12110F; --side-ink:#EFE9DE; --side-muted:#948D82}
+  --canvas:#141311; --page:#141311; --panel:#1C1A17; --panel-2:#26231F; --field:#1C1A17; --line:rgba(243,236,224,.09); --sand-2:#26231F;
+  --ink:#F3ECE0; --ink-2:#D2CABE; --muted:#9E978B; --btn:#F3ECE0; --btn-ink:#141311; --btn-soft:#26231F; --side-bg:#100F0D; --side-ink:#F3ECE0; --side-muted:#9E978B; --pink-ink:#FF9CC8}
 body{background:var(--page)}
 h1,h2,h3,.phead h1,.sh h2,.card h2,.empty b,.tier-head h3,.jcard h3{font-weight:500;letter-spacing:-.02em}
 .phead h1{font-weight:500;font-size:clamp(30px,3.6vw,44px);letter-spacing:-.03em}
 /* sidebar: a quiet paper column with a hairline, not a black slab */
 .side{background:var(--side-bg);color:var(--side-ink);box-shadow:inset 0 0 0 1px var(--line);border-radius:var(--r-xl)}
 .side .brand{color:var(--ink)}
-.side .bt{color:var(--ink);font-size:20px;font-weight:600;letter-spacing:-.02em}
+.side .bt{display:flex;align-items:baseline;color:var(--ink);font-size:24px;font-weight:600;letter-spacing:-.05em;text-transform:lowercase}
+.side .bt::after{content:"";display:inline-block;width:7px;height:7px;margin-left:2px;border-radius:50%;background:var(--pink)}
 .side .bt small{display:none}
-.side .mark{border-radius:8px}
-.side .newbtn{background:var(--btn);color:var(--btn-ink);border-color:var(--btn);border-radius:var(--r-sm);font-weight:500}
+.side .mark{display:none}
+.side .newbtn{background:var(--btn);color:var(--btn-ink);border-color:var(--btn);border-radius:999px;font-weight:500}
 .side .grp{color:var(--side-muted);font-size:12.5px;padding:20px 12px 6px;text-transform:none;letter-spacing:0}
-.side .tab{color:var(--ink-2);font-size:14px;min-height:36px;border-radius:8px}
+.side .tab{color:var(--ink-2);font-size:14px;min-height:36px;border-radius:10px}
 .side .tab:hover{background:var(--panel-2);color:var(--ink)}
 .side .tab[aria-selected="true"]{background:var(--panel-2);color:var(--ink);font-weight:500;box-shadow:inset 2px 0 0 var(--pink)}
-.side .tab .ct,.side .tab .ct.hot,.side .tab[aria-selected="true"] .ct{background:none;color:var(--muted);font-family:var(--mono);font-weight:400;font-size:12px;min-width:0;padding:0}
+.side .tab .ct,.side .tab .ct.hot,.side .tab[aria-selected="true"] .ct{background:none;color:var(--muted);font-weight:400;font-size:12.5px;min-width:0;padding:0}
 .side .tab .ct.hot{color:var(--ink);font-weight:500}
 .side .bottom,.who{border-top:1px solid var(--line)}
 .who b{color:var(--ink)} .who small{color:var(--side-muted)}
 .who .av{background:var(--panel-2);color:var(--ink)}
 .topbar{border:1px solid var(--line);border-radius:var(--r-md);background:var(--panel)}
-.topbar .btn.solid{border-radius:var(--r-sm)}
-/* controls: radius by size, not pills everywhere */
-.btn{border-radius:var(--r-sm);border-width:1px;padding:10px 16px;font-weight:500}
-.btn.sm{border-radius:8px;padding:6px 12px}
+.topbar .btn.solid{border-radius:999px}
+/* controls: pill buttons and chips, 12px inputs */
+.btn{border-radius:999px;border-width:1px;padding:10px 18px;font-weight:500}
+.btn.sm{border-radius:999px;padding:6px 12px}
 .btn.solid:hover{opacity:.9;background:var(--btn)}
 .btn:active,.jcard:active,.ctile:active,.cbtn:active,.trow:active,.tab:active{transform:scale(.98)}
-.seg,.pseg,.seg .thumb{border-radius:var(--r-sm)}
-.pill{border-radius:6px}
-.fchip{border-radius:8px}
+.seg,.pseg,.seg .thumb{border-radius:999px}
+.pill{border-radius:999px}
+.fchip{border-radius:999px}
 input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb,var(--ink) 40%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 35%,transparent)}
 /* surfaces: one raised card on the page, hairlines, no pastel slabs */
 .card,.panel,.empty,.jcard,.row,.kpi,.tier,.score,.hl,.plan{background:var(--panel);box-shadow:inset 0 0 0 1px var(--line)}
@@ -1048,7 +1052,7 @@ input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb,var(--ink
 .plan li::before{width:6px;height:6px;margin-top:8px;background:var(--ink-2)}
 .needbox{background:color-mix(in srgb,var(--yellow) 22%,var(--panel))}
 /* home: one bright moment (the fit score), a quiet list, numbers-only cards */
-.score .num{font-weight:500;letter-spacing:-.05em}
+.score .num{font-weight:600;letter-spacing:-.06em}
 .score .num svg{display:none}
 .score .lab{font-size:14px;color:var(--ink-2)}
 .cbtn{background:var(--panel-2)} .cbtn:hover{background:var(--pink);color:#1F1B16}
@@ -1062,12 +1066,12 @@ input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb,var(--ink
 .trow .dot{width:8px;height:8px;border-radius:50%}
 .trow .tn{font-weight:500}
 .trow small{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.trow b{font-family:var(--mono);font-weight:500;font-size:15px}
+.trow b{font-weight:600;font-size:15px}
 .tiles4{gap:12px}
 .ctile,.ctile.y,.ctile.p,.ctile.g,.ctile.b{background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:var(--ink);min-height:0;padding:20px;gap:4px;border-radius:var(--r-lg)}
 .ctile:hover{filter:none;background:var(--field);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 22%,transparent)}
 .ctile .k{font-size:13.5px;color:var(--ink-2)}
-.ctile b{font-family:var(--serif);font-weight:500;font-size:32px;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.ctile b{font-weight:600;font-size:32px;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
 .ctile small{font-size:13px;color:var(--muted)}
 .stats b{font-weight:500}
 .stage{text-transform:none;letter-spacing:0}
@@ -1084,6 +1088,33 @@ input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb,var(--ink
 .filebtn{position:relative;overflow:hidden}
 @media (max-width:640px){.trow small{display:none}.trow{grid-template-columns:12px minmax(0,1fr) auto}}
 @media (min-width:900px){#p-home .phead .btn.solid{display:none}}
+
+/* labels: sentence case, no wide tracking */
+.notice button,.eyebrow,.foot h4,.dhead .co,.gapcard .k,.lphead,.rvlab,.ctile .nums span{text-transform:none;letter-spacing:0;font-weight:500}
+.eyebrow,.foot h4,.rvlab{font-size:13px;color:var(--muted)}
+/* role sheet header: the stage colour as pastel paper with ink text */
+.dhead{--on-color:#151515;background:var(--lav);color:#151515;box-shadow:inset 0 -1.5px 0 #151515}
+.dhead.ready,.dhead.approved{background:var(--yellow)} .dhead.applied,.dhead.assessment{background:var(--pink)} .dhead.screen,.dhead.interview,.dhead.offer{background:var(--orange)}
+.dhead.skipped,.dhead.rejected,.dhead.withdrawn,.dhead.archived{background:#E6DED0}
+.dhead .co{font-size:13px;opacity:.75}
+/* moments: the best-fit card and the four tiles, like notes pinned on a board */
+#p-home .score,#p-today .score{background:var(--lav);box-shadow:inset 0 0 0 1.5px #151515;color:#151515}
+#p-home .score .lab,#p-home .score .q{color:#4F4A44}
+#p-home .score .btn.solid{background:#151515;color:#FAF3E6;border-color:#151515}
+#p-home .score .cbtn{background:rgba(255,252,247,.7);color:#151515} #p-home .score .cbtn:hover{background:#FFFCF7}
+.tiles4 .ctile{box-shadow:inset 0 0 0 1.5px #151515;color:#151515}
+.tiles4 .ctile:nth-child(1){background:var(--yellow)} .tiles4 .ctile:nth-child(2){background:var(--pink)}
+.tiles4 .ctile:nth-child(3){background:#FFFCF7} .tiles4 .ctile:nth-child(4){background:var(--orange)}
+.tiles4 .ctile .k,.tiles4 .ctile small{color:rgba(21,21,21,.72)}
+.tiles4 .ctile:hover{background-color:inherit;filter:brightness(.97);box-shadow:inset 0 0 0 1.5px #151515}
+.tiles4 .ctile:nth-child(1):hover{background:var(--yellow)} .tiles4 .ctile:nth-child(2):hover{background:var(--pink)} .tiles4 .ctile:nth-child(3):hover{background:#FFFCF7} .tiles4 .ctile:nth-child(4):hover{background:var(--orange)}
+/* page heads on the work pages: quiet, with the page's colour as a small dot */
+.phead h1{font-weight:500}
+/* motion: one entrance, a short fade and rise, staggered */
+.enter{animation:rise var(--t-in) var(--ease) both}
+.tiles4 .ctile{animation:rise 420ms var(--ease) both}
+.tiles4 .ctile:nth-child(2){animation-delay:60ms} .tiles4 .ctile:nth-child(3){animation-delay:120ms} .tiles4 .ctile:nth-child(4){animation-delay:180ms}
+@media (prefers-reduced-motion: reduce){.enter,.tiles4 .ctile{animation:none}}
 </style>
 </head>
 <body>
@@ -2140,7 +2171,7 @@ function renderDrawer(){
     <div class="dbody">
       ${parts.body}
       <div class="dsec"><h3>Your notes</h3><textarea id="notes-${esc(j.id)}" data-act="notes" data-id="${esc(j.id)}" rows="3" placeholder="Anything to remember about this one"${ro}>${esc(j.notes || '')}</textarea></div>
-      ${sec('Timeline', parts.timeline)}
+      ${parts.timeline ? `<div class="dsec"><h3>Timeline</h3>${parts.timeline}</div>` : ''}
     </div>
     <div class="dfoot"><label class="muted" for="stage-sel" style="font-size:13.5px;margin-right:auto;display:inline-flex;gap:8px;align-items:center">Stage <select id="stage-sel" data-act="stage" data-id="${esc(j.id)}"${ro}>${parts.stageOpts}</select></label>${parts.actions}</div>`;
   const wasHidden = dr.hidden;
@@ -2720,7 +2751,7 @@ function firstRunBlock(){
   ];
   const left = steps.filter(x => !x[5]).length, nm = firstName() ? esc(firstName()) : '';
   return `<div class="today">
-    <section class="score"><p class="q">${nm ? 'Welcome, ' + nm : 'Welcome'}</p>
+    <section class="score"><p class="q">Getting started</p>
       <div class="num">${left}<svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s-spark"/></svg></div>
       <p class="lab">${left === 1 ? 'step' : 'steps'} to your first matches</p>
       <div class="acts"><button class="btn solid" data-act="tab" data-tab="${filtersOk ? 'profile' : 'setup'}">${filtersOk ? 'Add your resume' : 'Set your filters'}</button></div></section>

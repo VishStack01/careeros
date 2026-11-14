@@ -185,7 +185,7 @@ def test_public_pages_and_installable_app(cloud):
     assert m.status_code == 200 and m.headers["content-type"].startswith("application/manifest+json") and m.json()["display"] == "standalone"
     sw = c.get("/sw.js")
     assert sw.status_code == 200 and "javascript" in sw.headers["content-type"] and "caches" in sw.text
-    assert c.get("/offline").status_code == 200 and "Ooops!" in c.get("/offline").text
+    assert c.get("/offline").status_code == 200 and "You're offline" in c.get("/offline").text
     assert c.get("/icons/icon-192.png").content.startswith(b"\x89PNG")
     assert c.get("/icons/../app.py").status_code == 404 and c.get("/icons/nope.png").status_code == 404
     assert c.get("/apple-touch-icon.png").status_code == 200

@@ -1,6 +1,6 @@
 # Propelo illustrations: prompts and requirements
 
-The website has four illustration slots. Each one stays invisible until its file exists in `website/assets/art/`, so nothing half-finished ever shows. Generate the images with the prompts below, save them under the exact file names, and push: the site picks them up on the next build.
+**On hold.** The website has no illustrations for now (1.4.0 removed the slots). When they come back, these prompts and sizes are the starting point.
 
 The style follows the unslop references (one bright moment per screen, quiet chrome around it, a visual you can explain in one sentence). The subjects are Propelo's own: paper, notices and a kite, because Propelo is about lifting a job search off the notice board.
 
@@ -34,10 +34,10 @@ All sizes are twice the display size, so they stay sharp on phones and retina sc
 
 | Role | Light | Dark |
 |---|---|---|
-| Page background (edges of every scene blend into it) | `#F7F4EE` warm paper | `#161513` warm charcoal |
-| Ink (strings, outlines, shadows) | `#1F1B16` | `#EFE9DE` |
-| Accent, used once per image | `#F5B8DB` blush pink | `#F5B8DB` |
-| Supporting tints, small amounts only | `#B6CAEB` powder blue, `#9AAB63` sage, `#F5D867` soft yellow | same |
+| Page background (edges of every scene blend into it) | `#FAF3E6` warm paper | `#141311` warm charcoal |
+| Ink (strings, outlines, shadows) | `#151515` | `#F3ECE0` |
+| Accent, used once per image | `#FF85BA` pink | `#FF85BA` |
+| Supporting tints, small amounts only | `#BDB6FC` lavender, `#FF7034` orange, `#FCF15C` yellow | same |
 
 ### Consistency rules
 
@@ -60,7 +60,7 @@ Each prompt follows the same order: subject, setting, light and palette, style, 
 ```
 A single paper kite folded from a cream printed sheet, with a thin blush-pink tail, rising on a taut dark string into a calm morning sky; the paper has soft visible folds that catch the light.
 Setting: open sky with a few crisp, soft clouds; low sage-green hills just visible along the very bottom edge.
-Light and palette: soft morning sunlight from the upper left; warm off-white sky that fades to exactly #F7F4EE at all four edges; blush pink #F5B8DB only on the kite tail; powder blue #B6CAEB in the cloud shadows; the string in ink #1F1B16.
+Light and palette: soft morning sunlight from the upper left; warm off-white sky that fades to exactly #FAF3E6 at all four edges; pink #FF85BA only on the kite tail; lavender #BDB6FC in the cloud shadows; the string in ink #151515.
 Style: soft stylized 3D render, matte paper and cloud materials, gentle ambient occlusion, very shallow depth of field, calm and friendly, premium product illustration.
 Composition: the kite in the right third, a little above the middle; the string runs down to the bottom-right corner; the whole left half and the bottom fifth are calm empty sky.
 Exclusions: no text, no letters, no numbers, no logos, no people, no UI, no watermark, no glossy surfaces, no neon, no purple.
@@ -72,7 +72,7 @@ Format: 16:9, 2880 x 1620.
 ```
 The same paper kite with the thin blush-pink tail, rising on a taut string, now at dusk.
 Setting: a deep, quiet evening sky with a few faint stars; low dark hills along the very bottom edge.
-Light and palette: warm low light from the lower left, as if from a distant streetlamp, catching the kite's folds; the sky is warm charcoal and fades to exactly #161513 at all four edges; blush pink #F5B8DB only on the tail; the string in warm off-white #EFE9DE.
+Light and palette: warm low light from the lower left, as if from a distant streetlamp, catching the kite's folds; the sky is warm charcoal and fades to exactly #141311 at all four edges; pink #FF85BA only on the tail; the string in warm off-white #F3ECE0.
 Style: soft stylized 3D render, matte materials, gentle ambient occlusion, calm.
 Composition: identical to the light version: kite in the right third, string to the bottom-right corner, left half and bottom fifth empty.
 Exclusions: no text, no letters, no numbers, no logos, no people, no UI, no watermark, no glow effects, no neon, no purple.
@@ -82,9 +82,9 @@ Format: 16:9, 2880 x 1620.
 ### 3. Stamp object (`stamp.webp`)
 
 ```
-A single rubber stamp with a polished brass collar and a rounded walnut handle, standing upright, its rubber face freshly inked in blush pink #F5B8DB and just visible at the bottom.
+A single rubber stamp with a polished brass collar and a rounded walnut handle, standing upright, its rubber face freshly inked in pink #FF85BA and just visible at the bottom.
 Setting: nothing else in frame.
-Light and palette: studio light from the upper left; plain background in exactly #F7F4EE; a soft, small contact shadow under the stamp.
+Light and palette: studio light from the upper left; plain background in exactly #FAF3E6; a soft, small contact shadow under the stamp.
 Style: soft stylized 3D render, matte walnut and brushed brass, realistic weight, friendly and simple.
 Composition: the stamp centred, tilted 15 degrees to the right, seen slightly from above, filling about 70% of the frame.
 Exclusions: no text or letters on the stamp face or anywhere, no logos, no hands, no paper, no watermark.
@@ -96,7 +96,7 @@ Format: 1:1, 960 x 960, then remove the background and export at 480 x 480.
 ```
 Soft rolling sage-green hills at golden hour with three small paper kites at different heights in the sky, far apart, their strings disappearing behind the hills.
 Setting: the hills fill the lower 45% of the frame; one kite has a blush-pink tail, the other two are plain cream paper.
-Light and palette: warm golden-hour light from the left; the sky fades to exactly #F7F4EE at the top and both side edges; hills in sage #9AAB63 with soft yellow #F5D867 highlights; blush pink #F5B8DB on one tail only.
+Light and palette: warm golden-hour light from the left; the sky fades to exactly #FAF3E6 at the top and both side edges; hills in orange #FF7034 with soft yellow #FCF15C highlights; pink #FF85BA on one tail only.
 Style: soft stylized 3D render, matte grass and paper, gentle depth, calm and open.
 Composition: the top 40% is calm empty sky; kites spread across the middle band; nothing important in the outer 10% on each side.
 Exclusions: no text, no letters, no logos, no people, no buildings, no UI, no watermark, no crystals or glossy shapes, no purple.
@@ -107,7 +107,7 @@ Format: wide, 2880 x 1100.
 
 ```
 The same rolling hills and three paper kites, after sunset.
-Light and palette: the last warm light on the horizon at the left; the sky fades to exactly #161513 at the top and both side edges; hills in deep muted sage; blush pink #F5B8DB on one kite tail only; a few faint stars.
+Light and palette: the last warm light on the horizon at the left; the sky fades to exactly #141311 at the top and both side edges; hills in deep muted sage; pink #FF85BA on one kite tail only; a few faint stars.
 Style, composition and exclusions: the same as the light version.
 Format: wide, 2880 x 1100.
 ```
